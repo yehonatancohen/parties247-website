@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html lang="he">
+  <head>
+    <meta charset="UTF-M" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Party 24/7 - המסיבות הכי שוות בישראל</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'neon-pink': '#f0f',
+              'neon-cyan': '#0ff',
+              'brand-bg': '#0a0a0a',
+              'brand-surface': '#1a1a1a',
+              'brand-primary': '#d400ff',
+              'brand-secondary': '#00d5ff',
+            },
+            fontFamily: {
+              sans: ['"Assistant"', 'sans-serif'],
+            },
+            boxShadow: {
+              'neon-glow': '0 0 5px theme("colors.brand-primary"), 0 0 10px theme("colors.brand-primary"), 0 0 20px theme("colors.brand-secondary"), 0 0 40px theme("colors.brand-secondary")',
+            }
+          }
+        }
+      }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+      body {
+          direction: rtl;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.1.1",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
+    "react/": "https://aistudiocdn.com/react@^19.1.1/",
+    "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.8.2",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.17.0"
+  }
+}
+</script>
+</head>
+  <body class="bg-brand-bg text-gray-100 font-sans">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
