@@ -51,7 +51,7 @@ const HomePage: React.FC = () => {
             className="absolute z-0 w-auto min-w-full min-h-full max-w-none object-cover brightness-[0.6]"
             poster="https://images.pexels.com/photos/857195/pexels-photo-857195.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
         >
-            <source src="https://videocdn.cdnpk.net/videos/b8cc56d3-f230-4e12-8d6b-b8c6c66d1cb3/horizontal/previews/clear/large.mp4?token=exp=1757071702~hmac=33a062f11514d82851caedb307a80b25c02c3408828aa9fb2b418b35be9b302c" type="video/mp4" />
+            <source src="https://www.pexels.com/download/video/7722221/" type="video/mp4" />
             Your browser does not support the video tag.
         </video>
         <div className="relative z-10 p-4">

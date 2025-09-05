@@ -1,7 +1,6 @@
 import React from 'react';
 import { useParties } from '../hooks/useParties';
 import { Party } from '../types';
-import { Link } from 'react-router-dom';
 import { AFFILIATE_CODE } from '../constants';
 
 const HotPartyCard: React.FC<{ party: Party }> = ({ party }) => {
@@ -33,11 +32,43 @@ const HotPartyCard: React.FC<{ party: Party }> = ({ party }) => {
 
 const HotEventsCarousel: React.FC = () => {
   const { parties } = useParties();
-  const hotParties = parties.filter(p => p.isHot);
+  const now = new Date();
+  const hotParties = parties
+    .filter(p => p.isHot && new Date(p.date) >= now)
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   if (hotParties.length === 0) {
     return null;
   }
+
+  // Only create an animated carousel if there are enough items to potentially overflow a typical screen.
+  const isAnimated = hotParties.length > 4;
+  
+  // If not animated, return the original scrollable container
+  if (!isAnimated) {
+    return (
+        <div className="mb-12">
+            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                <span className="text-orange-400">🔥</span>
+                <span className="text-white">אירועים חמים</span>
+            </h2>
+            <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
+                {hotParties.map(party => (
+                <HotPartyCard key={party.id} party={party} />
+                ))}
+                <style>{`.scrollbar-hide::-webkit-scrollbar { display: none; } .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
+            </div>
+        </div>
+    );
+  }
+
+  // For the animated carousel, duplicate the items for a seamless loop
+  const carouselParties = [...hotParties, ...hotParties];
+  
+  // Constants for animation
+  const cardWidthWithGap = 288 + 16; // w-72 (288px) + gap-4 (16px)
+  const animationDistance = cardWidthWithGap * hotParties.length;
+  const animationDuration = hotParties.length * 5; // ~5s per item
 
   return (
     <div className="mb-12">
@@ -45,12 +76,22 @@ const HotEventsCarousel: React.FC = () => {
         <span className="text-orange-400">🔥</span>
         <span className="text-white">אירועים חמים</span>
       </h2>
-      <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
-        {hotParties.map(party => (
-          <HotPartyCard key={party.id} party={party} />
-        ))}
-        <style>{`.scrollbar-hide::-webkit-scrollbar { display: none; } .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
+      <div className="group relative w-full overflow-hidden" style={{ maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)' }}>
+        <div className="flex gap-4 group-hover:[animation-play-state:paused] animate-scroll">
+          {carouselParties.map((party, index) => (
+            <HotPartyCard key={`${party.id}-${index}`} party={party} />
+          ))}
+        </div>
       </div>
+      <style>{`
+        @keyframes scroll {
+          from { transform: translateX(0); }
+          to { transform: translateX(-${animationDistance}px); }
+        }
+        .animate-scroll {
+          animation: scroll ${animationDuration}s linear infinite;
+        }
+      `}</style>
     </div>
   );
 };
