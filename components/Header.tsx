@@ -8,7 +8,7 @@ const Header: React.FC = () => {
         <div className="flex justify-between items-center h-20">
           {/* Brand Logo */}
           <Link to="/" className="flex items-center">
-            <img src="/logo.png" alt="Party 24/7 Logo" className="h-16 w-auto" />
+            <img src="../logo.png" alt="Party 24/7 Logo" className="h-16 w-auto" />
           </Link>
 
           {/* Navigation */}
