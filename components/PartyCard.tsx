@@ -34,7 +34,7 @@ const PartyCard: React.FC<PartyCardProps> = ({ party }) => {
   return (
     <div className="bg-brand-surface rounded-xl overflow-hidden shadow-lg hover:shadow-neon-glow/30 transition-all duration-300 flex flex-col group transform hover:-translate-y-1">
       <div className="relative">
-        <img src={party.imageUrl} alt={party.name} className="w-full h-64 object-cover" />
+        <img src={party.imageUrl} alt={party.name} className="w-full aspect-[3/4] object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
         <div className="absolute top-3 right-3 flex flex-col gap-2">
           {party.isHot && (

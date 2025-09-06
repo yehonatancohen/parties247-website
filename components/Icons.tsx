@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 type IconProps = {
@@ -43,4 +44,10 @@ export const FireIcon: React.FC<IconProps> = ({ className }) => (
   <svg className={className} fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
     <path d="M10 18a7.963 7.963 0 004.992-1.922 1 1 0 00.274-1.383 5.964 5.964 0 01-3.266-5.43V6.333a1 1 0 10-2 0v2.932a5.965 5.965 0 01-3.266 5.43 1 1 0 00.274 1.383A7.963 7.963 0 0010 18z" />
   </svg>
+);
+
+export const SearchIcon: React.FC<IconProps> = ({ className }) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+    </svg>
 );

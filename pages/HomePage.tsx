@@ -8,15 +8,27 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import HotEventsCarousel from '../components/HotEventsCarousel';
 import AdvancedFilter from '../components/AdvancedFilter';
 import { FilterState, Party } from '../types';
+import { SearchIcon } from '../components/Icons';
 
 const HomePage: React.FC = () => {
   const { parties, isLoading } = useParties();
   const [filters, setFilters] = useState<FilterState>({ tags: [] });
+  const [searchTerm, setSearchTerm] = useState('');
 
   const filteredParties = useMemo(() => {
-    if (!filters) return parties;
+    const lowercasedTerm = searchTerm.toLowerCase();
     
     return parties.filter(party => {
+        // Search filter
+        if (searchTerm &&
+            !party.name.toLowerCase().includes(lowercasedTerm) &&
+            !party.location.toLowerCase().includes(lowercasedTerm) &&
+            !party.description.toLowerCase().includes(lowercasedTerm)
+        ) {
+            return false;
+        }
+
+        // Advanced filters
         if (filters.region && party.region !== filters.region) return false;
         if (filters.musicType && party.musicType !== filters.musicType) return false;
         if (filters.eventType && party.eventType !== filters.eventType) return false;
@@ -29,7 +41,7 @@ const HomePage: React.FC = () => {
         }
         return true;
     });
-  }, [parties, filters]);
+  }, [parties, filters, searchTerm]);
 
   const pageTitle = 'Party 24/7 - כל המסיבות הכי שוות בישראל';
   const pageDescription = 'האתר המוביל לחיי הלילה בישראל. גלו מסיבות, רייבים ואירועים מיוחדים בכל רחבי הארץ ורכשו כרטיסים בקלות.';
@@ -66,6 +78,23 @@ const HomePage: React.FC = () => {
       
       <div id="all-parties" className="mt-16">
         <h2 className="text-3xl font-bold text-center mb-4 text-white">כל המסיבות</h2>
+        
+        <div className="mb-6 max-w-2xl mx-auto">
+          <div className="relative">
+              <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                  <SearchIcon className="w-5 h-5 text-gray-400" />
+              </div>
+              <input
+                  type="text"
+                  aria-label="Search for a party by name, location or description"
+                  placeholder="חיפוש מסיבה (לפי שם, מקום...)"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="bg-brand-surface border border-gray-700 text-white text-sm rounded-lg focus:ring-brand-primary focus:border-brand-primary block w-full p-3.5 pr-12"
+              />
+          </div>
+        </div>
+
         <AdvancedFilter onFilterChange={setFilters} />
         <PartyGrid parties={filteredParties} />
       </div>

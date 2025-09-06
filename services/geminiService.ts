@@ -88,8 +88,32 @@ export const scrapePartyDetails = async (url: string): Promise<ScrapedPartyDetai
     const eventData = jsonData?.props?.pageProps?.event;
     if (!eventData) throw new Error("Event data not in expected format.");
 
-    const imageMeta = doc.querySelector('meta[property="og:image"]');
-    const imageUrl = imageMeta?.getAttribute('content');
+    let imageUrl = '';
+    let imagePath = '';
+    
+    // Priority 1: Use CoverImage.Url from JSON data
+    if (eventData.CoverImage?.Url) {
+        imagePath = eventData.CoverImage.Url;
+    } 
+    // Priority 2: Use WhatsappImage.Url from JSON data if CoverImage is missing
+    else if (eventData.WhatsappImage?.Url) {
+        imagePath = eventData.WhatsappImage.Url;
+    }
+    
+    // If we got a path from JSON, ensure it's the cover image version
+    if (imagePath) {
+        const coverImagePath = imagePath.replace('_whatsappImage.jpg', '_coverImage.jpg');
+        imageUrl = `https://d15q6k8l9pfut7.cloudfront.net/${coverImagePath}`;
+    } else {
+        // Priority 3: Fallback to og:image meta tag
+        const imageMeta = doc.querySelector('meta[property="og:image"]');
+        const ogImageUrl = imageMeta?.getAttribute('content') || '';
+        if (ogImageUrl) {
+            // Also try to upgrade it to the cover image version
+            imageUrl = ogImageUrl.replace('_whatsappImage.jpg', '_coverImage.jpg');
+        }
+    }
+
     if (!imageUrl) throw new Error("Could not find party image URL.");
 
     let description = (eventData.Description || '').split('\n').filter(Boolean).slice(0, 3).join(' ').trim();

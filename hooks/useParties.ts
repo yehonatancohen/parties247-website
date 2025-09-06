@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback } from 'react';
 import { Party } from '../types';
 
@@ -17,7 +18,7 @@ const initialParties: Party[] = [
     {
         id: "2025-08-15T23:00:00.000Z",
         name: "Rave Generation Tel Aviv",
-        imageUrl: "https://picsum.photos/seed/rave1/600/400",
+        imageUrl: "https://picsum.photos/seed/rave1/400/600",
         date: "2025-08-15T23:00:00.000Z",
         location: "גגרין, תל אביב",
         description: "מסיבת טכנו מחתרתית עם מיטב הדיג'יים המובילים בסצנה המקומית.",
@@ -33,7 +34,7 @@ const initialParties: Party[] = [
     {
         id: "2025-08-22T22:30:00.000Z",
         name: "Summer Vibes Beach Party",
-        imageUrl: "https://picsum.photos/seed/beachparty/600/400",
+        imageUrl: "https://picsum.photos/seed/beachparty/400/600",
         date: "2025-08-22T22:30:00.000Z",
         location: "חוף דור, חיפה",
         description: "מסיבת חוף ענקית עם מוזיקת מיינסטרים, קוקטיילים קרירים ואווירה מחשמלת עד הזריחה.",
@@ -49,7 +50,7 @@ const initialParties: Party[] = [
      {
         id: "2025-09-05T21:00:00.000Z",
         name: "Jerusalem Rooftop Sessions",
-        imageUrl: "https://picsum.photos/seed/rooftop/600/400",
+        imageUrl: "https://picsum.photos/seed/rooftop/400/600",
         date: "2025-09-05T21:00:00.000Z",
         location: "גג מלון, ירושלים",
         description: "ערב של מוזיקת האוס אלגנטית על גג עם נוף עוצר נשימה לעיר העתיקה.",
@@ -65,7 +66,7 @@ const initialParties: Party[] = [
     {
         id: "2025-08-16T23:00:00.000Z",
         name: "Psytrance Forest Gathering",
-        imageUrl: "https://picsum.photos/seed/psytrance/600/400",
+        imageUrl: "https://picsum.photos/seed/psytrance/400/600",
         date: "2025-08-16T23:00:00.000Z",
         location: "יער בן שמן",
         description: "מסע פסיכדלי בלב יער בן שמן עם אמנים בינלאומיים.",
@@ -81,7 +82,7 @@ const initialParties: Party[] = [
     {
         id: "2025-08-23T22:00:00.000Z",
         name: "Eilat Ultimate Pool Party",
-        imageUrl: "https://picsum.photos/seed/poolparty/600/400",
+        imageUrl: "https://picsum.photos/seed/poolparty/400/600",
         date: "2025-08-23T22:00:00.000Z",
         location: "מלון רויאל גארדן, אילת",
         description: "מסיבת בריכה מטורפת באילת עם דיג'יים שינגנו את כל הלהיטים של הקיץ.",
@@ -97,7 +98,7 @@ const initialParties: Party[] = [
     {
         id: "2025-08-29T23:59:00.000Z",
         name: "Secret Warehouse Techno",
-        imageUrl: "https://picsum.photos/seed/warehouse/600/400",
+        imageUrl: "https://picsum.photos/seed/warehouse/400/600",
         date: "2025-08-29T23:59:00.000Z",
         location: "לוקיישן סודי, תל אביב",
         description: "רייב טכנו במחסן תעשייתי. המיקום יישלח לרוכשים ביום האירוע.",
