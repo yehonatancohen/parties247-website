@@ -62,16 +62,18 @@ const AdminDashboard: React.FC = () => {
     setError(null);
     try {
       const partyDetails = await scrapePartyDetails(url);
-      const newParty: Party = {
+      const newParty: Omit<Party, 'id'> = {
         ...partyDetails,
-        id: new Date().toISOString() + Math.random(),
         originalUrl: url,
       };
-      addParty(newParty);
+      // The context's addParty function now returns a promise
+      await addParty(newParty as Party);
       setUrl('');
     } catch (err) {
       console.error(err);
-      setError('Failed to scrape party details. Please check the URL and try again.');
+      // The error is now thrown from the context, so we can display a generic message.
+      // Specific alerts are handled within the context hook.
+      setError('Failed to add party. See console for details.');
     } finally {
       setIsLoading(false);
     }

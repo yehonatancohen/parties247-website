@@ -1,13 +1,14 @@
-import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback, useRef } from 'react';
+import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback } from 'react';
 import { Party, Carousel } from '../types';
-import * as db from '../services/db';
+import * as api from '../services/api';
+import * as carouselDb from '../services/db';
 
 interface PartyContextType {
   parties: Party[];
   carousels: Carousel[];
-  addParty: (party: Party) => void;
-  deleteParty: (partyId: string) => void;
-  updateParty: (party: Party) => void;
+  addParty: (party: Party) => Promise<void>;
+  deleteParty: (partyId: string) => Promise<void>;
+  updateParty: (party: Party) => Promise<void>;
   addCarousel: (title: string) => void;
   updateCarousel: (carousel: Carousel) => void;
   deleteCarousel: (carouselId: string) => void;
@@ -20,28 +21,21 @@ export const PartyProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const [parties, setParties] = useState<Party[]>([]);
   const [carousels, setCarousels] = useState<Carousel[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const isInitialLoad = useRef(true);
 
-  // Effect for initial data load from the mock DB service
+  // Effect for initial data load
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { parties: fetchedParties, carousels: fetchedCarousels } = await db.getPartiesAndCarousels();
-        // One-time migration from old format for users who have old data
-        const migratedParties = fetchedParties.map(p => {
-            if ((p as any).isHot || (p as any).demand || (p.tags && p.tags.some((t: string) => t.includes('🔥') || t.includes('🎉')))) {
-                const newTags = (p.tags || []).map((t: string) => t.replace('🔥 ', '').replace('🎉 ', ''));
-                if ((p as any).isHot && !newTags.includes('לוהט')) newTags.push('לוהט');
-                if ((p as any).demand === 'high' && !newTags.includes('ביקוש גבוה')) newTags.push('ביקוש גבוה');
-                const { isHot, demand, ...rest } = p as any;
-                return { ...rest, tags: newTags };
-            }
-            return p;
-        });
-        setParties(migratedParties);
+        // Fetch parties from backend and carousels from local DB concurrently
+        const [fetchedParties, fetchedCarousels] = await Promise.all([
+            api.getParties(),
+            carouselDb.getCarousels()
+        ]);
+        setParties(fetchedParties);
         setCarousels(fetchedCarousels);
       } catch (error) {
-        console.error('Failed to load data from DB service', error);
+        console.error('Failed to load initial data', error);
+        // Handle error state in UI if necessary
       } finally {
         setIsLoading(false);
       }
@@ -49,41 +43,51 @@ export const PartyProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     fetchData();
   }, []);
 
-  // Effect for persisting data to the mock DB on any state change
+  // Effect for persisting carousel data to localStorage on any change
   useEffect(() => {
-    // Prevent saving on the initial render until data is loaded
-    if (isInitialLoad.current) {
-        if (!isLoading) {
-            isInitialLoad.current = false;
-        }
-        return;
+    if (!isLoading) { // Don't save during initial load
+        carouselDb.saveCarousels(carousels).catch(err => {
+            console.error("Failed to save carousels to mock DB", err);
+        });
     }
+  }, [carousels, isLoading]);
 
-    // Debounce saving to avoid rapid writes on consecutive state updates
-    const debounceSave = setTimeout(() => {
-      db.savePartiesAndCarousels(parties, carousels).catch(err => {
-          console.error("Failed to save changes to mock DB", err);
-          // In a real app, you might show an error to the user here
-      });
-    }, 500);
-
-    return () => clearTimeout(debounceSave);
-  }, [parties, carousels, isLoading]);
-
-  const addParty = useCallback((party: Party) => {
-    setParties(prev => prev.some(p => p.originalUrl === party.originalUrl) ? prev : [...prev, party]);
+  const addParty = useCallback(async (party: Party) => {
+    try {
+        const newParty = await api.addParty(party);
+        setParties(prev => [newParty, ...prev]);
+    } catch (error) {
+        console.error("Failed to add party:", error);
+        alert(`Error: Could not add party. The party may already exist, or there was a server error.`);
+        throw error; // Re-throw to allow component to handle it
+    }
   }, []);
   
-  const updateParty = useCallback((updatedParty: Party) => {
-    setParties(prev => prev.map(p => p.id === updatedParty.id ? updatedParty : p));
+  const updateParty = useCallback(async (updatedParty: Party) => {
+    try {
+        await api.updateParty(updatedParty.id, { tags: updatedParty.tags });
+        setParties(prev => prev.map(p => p.id === updatedParty.id ? updatedParty : p));
+    } catch (error) {
+        console.error("Failed to update party:", error);
+        alert("Error: Could not update party.");
+        throw error;
+    }
   }, []);
 
-  const deleteParty = useCallback((partyId: string) => {
-    setParties(prev => prev.filter(p => p.id !== partyId));
-    // Also remove the party from any carousels it might be in
-    setCarousels(prev => prev.map(c => ({...c, partyIds: c.partyIds.filter(id => id !== partyId)})));
+  const deleteParty = useCallback(async (partyId: string) => {
+    try {
+        await api.deleteParty(partyId);
+        setParties(prev => prev.filter(p => p.id !== partyId));
+        // Also remove the party from any carousels it might be in
+        setCarousels(prev => prev.map(c => ({...c, partyIds: c.partyIds.filter(id => id !== partyId)})));
+    } catch (error) {
+        console.error("Failed to delete party:", error);
+        alert("Error: Could not delete party.");
+        throw error;
+    }
   }, []);
   
+  // Carousel functions remain synchronous as they only affect local state
   const addCarousel = useCallback((title: string) => {
     const newCarousel: Carousel = { id: Date.now().toString(), title, partyIds: [] };
     setCarousels(prev => [...prev, newCarousel]);

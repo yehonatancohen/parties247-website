@@ -1,20 +1,19 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Auth from '../components/Auth';
 import AdminDashboard from '../components/AdminDashboard';
 import SeoManager from '../components/SeoManager';
 
+const ADMIN_KEY_STORAGE = 'adminSecretKey';
+
 const AdminPage: React.FC = () => {
-  // Using sessionStorage to persist login across refreshes but not new tabs/windows.
+  // Check session storage for an auth key to persist login across refreshes.
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => 
-    sessionStorage.getItem('isAdminAuthenticated') === 'true'
+    !!sessionStorage.getItem(ADMIN_KEY_STORAGE)
   );
 
-  useEffect(() => {
-    sessionStorage.setItem('isAdminAuthenticated', String(isAuthenticated));
-  }, [isAuthenticated]);
-
-  const handleAuthSuccess = () => {
+  const handleAuthSuccess = (key: string) => {
+    // When authentication is successful, store the key and update state.
+    sessionStorage.setItem(ADMIN_KEY_STORAGE, key);
     setIsAuthenticated(true);
   };
 
