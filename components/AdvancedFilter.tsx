@@ -65,8 +65,8 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({ onFilterChange }) => {
     setFilters(initialFilters);
   };
 
-  const inputBaseClasses = "bg-brand-surface border border-gray-700 text-white text-sm rounded-lg focus:ring-brand-primary focus:border-brand-primary block w-full p-2.5";
-  const labelBaseClasses = "block mb-1 text-sm font-medium text-gray-400";
+  const inputBaseClasses = "bg-jungle-surface border border-wood-brown text-white text-sm rounded-lg focus:ring-jungle-lime focus:border-jungle-lime block w-full p-2.5";
+  const labelBaseClasses = "block mb-1 text-sm font-medium text-jungle-text/70";
   
   const tags = ['אלכוהול חופשי', 'בחוץ', 'אילת', 'תל אביב'];
   
@@ -75,7 +75,7 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({ onFilterChange }) => {
   const selectedDateForPicker = filters.date ? new Date(filters.date) : null;
 
   return (
-    <div className="bg-brand-surface/50 p-4 rounded-lg mb-8 backdrop-blur-sm relative z-10">
+    <div className="bg-jungle-surface/50 p-4 rounded-lg mb-8 backdrop-blur-sm relative z-10 border border-wood-brown/50">
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {/* Region Filter */}
         <div>
@@ -145,15 +145,15 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({ onFilterChange }) => {
         <div className="flex flex-wrap gap-x-4 gap-y-2">
             {tags.map(tag => (
               <div key={tag} className="flex items-center">
-                <input id={`tag-${tag}`} type="checkbox" value={tag} checked={filters.tags.includes(tag)} onChange={handleTagChange} className="w-4 h-4 text-brand-primary bg-gray-700 border-gray-600 rounded focus:ring-brand-primary" />
-                <label htmlFor={`tag-${tag}`} className="mr-2 text-sm font-medium text-gray-300">{tag}</label>
+                <input id={`tag-${tag}`} type="checkbox" value={tag} checked={filters.tags.includes(tag)} onChange={handleTagChange} className="w-4 h-4 text-jungle-lime bg-jungle-deep border-wood-brown rounded focus:ring-jungle-lime" />
+                <label htmlFor={`tag-${tag}`} className="mr-2 text-sm font-medium text-jungle-text">{tag}</label>
               </div>
             ))}
         </div>
       </div>
        {/* Clear Button */}
       <div className="mt-4 flex justify-between items-center">
-        <button onClick={clearFilters} className="text-brand-secondary hover:text-white text-sm font-semibold transition-colors">
+        <button onClick={clearFilters} className="text-jungle-accent hover:text-white text-sm font-semibold transition-colors">
             נקה סינון
         </button>
       </div>

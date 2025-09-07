@@ -1,8 +1,7 @@
-
 <!DOCTYPE html>
 <html lang="he">
   <head>
-    <meta charset="UTF-M" />
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Party 24/7 - המסיבות הכי שוות בישראל</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -11,18 +10,19 @@
         theme: {
           extend: {
             colors: {
-              'neon-pink': '#f0f',
-              'neon-cyan': '#0ff',
-              'brand-bg': '#0a0a0a',
-              'brand-surface': '#1a1a1a',
-              'brand-primary': '#d400ff',
-              'brand-secondary': '#00d5ff',
+              'jungle-deep': '#0a1a1a',
+              'jungle-surface': '#162b2b',
+              'jungle-accent': '#76c893', // Leafy green
+              'jungle-lime': '#a7ff83',   // Bright lime accent
+              'jungle-text': '#e0f0e3',   // Off-white with a hint of green
+              'wood-brown': '#4d3b2a',
             },
             fontFamily: {
               sans: ['"Assistant"', 'sans-serif'],
+              display: ['"Secular One"', 'sans-serif'],
             },
             boxShadow: {
-              'neon-glow': '0 0 5px theme("colors.brand-primary"), 0 0 10px theme("colors.brand-primary"), 0 0 20px theme("colors.brand-secondary"), 0 0 40px theme("colors.brand-secondary")',
+              'jungle-glow': '0 0 8px theme("colors.jungle-lime"), 0 0 15px theme("colors.jungle-lime/50")',
             }
           }
         }
@@ -30,10 +30,29 @@
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&family=Secular+One&display=swap" rel="stylesheet">
     <style>
       body {
           direction: rtl;
+          color: #e0f0e3; /* default text color */
+          background-color: #0a1a1a;
+          background-image: linear-gradient(rgba(10, 26, 26, 0.92), rgba(10, 26, 26, 0.98)), url('https://images.unsplash.com/photo-1516214124229-3174474849d5?q=80&w=1974&auto=format&fit=crop');
+          background-size: cover;
+          background-position: center center;
+          background-attachment: fixed;
+      }
+      .page-transition {
+        animation: fade-in 0.4s ease-out;
+      }
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
     </style>
   <script type="importmap">
@@ -48,7 +67,7 @@
 }
 </script>
 </head>
-  <body class="bg-brand-bg text-gray-100 font-sans">
+  <body class="bg-jungle-deep text-jungle-text font-sans">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>

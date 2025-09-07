@@ -1,184 +1,105 @@
-
-import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback } from 'react';
-import { Party } from '../types';
+import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback, useRef } from 'react';
+import { Party, Carousel } from '../types';
+import * as db from '../services/db';
 
 interface PartyContextType {
   parties: Party[];
+  carousels: Carousel[];
   addParty: (party: Party) => void;
   deleteParty: (partyId: string) => void;
-  toggleHotParty: (partyId: string) => void;
-  togglePartyDemand: (partyId: string) => void;
+  updateParty: (party: Party) => void;
+  addCarousel: (title: string) => void;
+  updateCarousel: (carousel: Carousel) => void;
+  deleteCarousel: (carouselId: string) => void;
   isLoading: boolean;
 }
 
 const PartyContext = createContext<PartyContextType | undefined>(undefined);
-const STORAGE_KEY = 'parties_v2'; // Use a new versioned key to invalidate old storage.
-
-const initialParties: Party[] = [
-    {
-        id: "2025-08-15T23:00:00.000Z",
-        name: "Rave Generation Tel Aviv",
-        imageUrl: "https://picsum.photos/seed/rave1/400/600",
-        date: "2025-08-15T23:00:00.000Z",
-        location: "גגרין, תל אביב",
-        description: "מסיבת טכנו מחתרתית עם מיטב הדיג'יים המובילים בסצנה המקומית.",
-        originalUrl: "https://www.go-out.co.il/event/example1",
-        isHot: true,
-        region: "מרכז",
-        musicType: "טכנו",
-        eventType: "מסיבת מועדון",
-        age: "18+",
-        tags: ["תל אביב"],
-        demand: 'high',
-    },
-    {
-        id: "2025-08-22T22:30:00.000Z",
-        name: "Summer Vibes Beach Party",
-        imageUrl: "https://picsum.photos/seed/beachparty/400/600",
-        date: "2025-08-22T22:30:00.000Z",
-        location: "חוף דור, חיפה",
-        description: "מסיבת חוף ענקית עם מוזיקת מיינסטרים, קוקטיילים קרירים ואווירה מחשמלת עד הזריחה.",
-        originalUrl: "https://www.go-out.co.il/event/example2",
-        isHot: true,
-        region: "צפון",
-        musicType: "מיינסטרים",
-        eventType: "מסיבת טבע",
-        age: "21+",
-        tags: ["בחוץ"],
-        demand: 'normal',
-    },
-     {
-        id: "2025-09-05T21:00:00.000Z",
-        name: "Jerusalem Rooftop Sessions",
-        imageUrl: "https://picsum.photos/seed/rooftop/400/600",
-        date: "2025-09-05T21:00:00.000Z",
-        location: "גג מלון, ירושלים",
-        description: "ערב של מוזיקת האוס אלגנטית על גג עם נוף עוצר נשימה לעיר העתיקה.",
-        originalUrl: "https://www.go-out.co.il/event/example3",
-        isHot: false,
-        region: "מרכז",
-        musicType: "אחר",
-        eventType: "מסיבת מועדון",
-        age: "21+",
-        tags: ["בחוץ"],
-        demand: 'high',
-    },
-    {
-        id: "2025-08-16T23:00:00.000Z",
-        name: "Psytrance Forest Gathering",
-        imageUrl: "https://picsum.photos/seed/psytrance/400/600",
-        date: "2025-08-16T23:00:00.000Z",
-        location: "יער בן שמן",
-        description: "מסע פסיכדלי בלב יער בן שמן עם אמנים בינלאומיים.",
-        originalUrl: "https://www.go-out.co.il/event/example4",
-        isHot: true,
-        region: "מרכז",
-        musicType: "טראנס",
-        eventType: "מסיבת טבע",
-        age: "18+",
-        tags: ["בחוץ"],
-        demand: 'normal',
-    },
-    {
-        id: "2025-08-23T22:00:00.000Z",
-        name: "Eilat Ultimate Pool Party",
-        imageUrl: "https://picsum.photos/seed/poolparty/400/600",
-        date: "2025-08-23T22:00:00.000Z",
-        location: "מלון רויאל גארדן, אילת",
-        description: "מסיבת בריכה מטורפת באילת עם דיג'יים שינגנו את כל הלהיטים של הקיץ.",
-        originalUrl: "https://www.go-out.co.il/event/example5",
-        isHot: true,
-        region: "דרום",
-        musicType: "מיינסטרים",
-        eventType: "אחר",
-        age: "18+",
-        tags: ["אילת", "בחוץ"],
-        demand: 'high',
-    },
-    {
-        id: "2025-08-29T23:59:00.000Z",
-        name: "Secret Warehouse Techno",
-        imageUrl: "https://picsum.photos/seed/warehouse/400/600",
-        date: "2025-08-29T23:59:00.000Z",
-        location: "לוקיישן סודי, תל אביב",
-        description: "רייב טכנו במחסן תעשייתי. המיקום יישלח לרוכשים ביום האירוע.",
-        originalUrl: "https://www.go-out.co.il/event/example6",
-        isHot: true,
-        region: "מרכז",
-        musicType: "טכנו",
-        eventType: "מסיבת מועדון",
-        age: "21+",
-        tags: ["תל אביב"],
-        demand: 'normal',
-    }
-];
 
 export const PartyProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [parties, setParties] = useState<Party[]>([]);
+  const [carousels, setCarousels] = useState<Carousel[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const isInitialLoad = useRef(true);
 
+  // Effect for initial data load from the mock DB service
   useEffect(() => {
-    try {
-      const storedPartiesJSON = localStorage.getItem(STORAGE_KEY);
-      if (storedPartiesJSON) {
-        const storedParties: Party[] = JSON.parse(storedPartiesJSON);
-        setParties(storedParties);
-      } else {
-        // If no data under the new key, initialize with defaults.
-        setParties(initialParties);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(initialParties));
-      }
-    } catch (error) {
-      console.error('Failed to load parties from localStorage', error);
-      setParties(initialParties);
-    } finally {
+    const fetchData = async () => {
+      try {
+        const { parties: fetchedParties, carousels: fetchedCarousels } = await db.getPartiesAndCarousels();
+        // One-time migration from old format for users who have old data
+        const migratedParties = fetchedParties.map(p => {
+            if ((p as any).isHot || (p as any).demand || (p.tags && p.tags.some((t: string) => t.includes('🔥') || t.includes('🎉')))) {
+                const newTags = (p.tags || []).map((t: string) => t.replace('🔥 ', '').replace('🎉 ', ''));
+                if ((p as any).isHot && !newTags.includes('לוהט')) newTags.push('לוהט');
+                if ((p as any).demand === 'high' && !newTags.includes('ביקוש גבוה')) newTags.push('ביקוש גבוה');
+                const { isHot, demand, ...rest } = p as any;
+                return { ...rest, tags: newTags };
+            }
+            return p;
+        });
+        setParties(migratedParties);
+        setCarousels(fetchedCarousels);
+      } catch (error) {
+        console.error('Failed to load data from DB service', error);
+      } finally {
         setIsLoading(false);
-    }
+      }
+    };
+    fetchData();
   }, []);
 
+  // Effect for persisting data to the mock DB on any state change
   useEffect(() => {
-    if(!isLoading) {
-        try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(parties));
-        } catch (error) {
-            console.error('Failed to save parties to localStorage', error);
+    // Prevent saving on the initial render until data is loaded
+    if (isInitialLoad.current) {
+        if (!isLoading) {
+            isInitialLoad.current = false;
         }
+        return;
     }
-  }, [parties, isLoading]);
+
+    // Debounce saving to avoid rapid writes on consecutive state updates
+    const debounceSave = setTimeout(() => {
+      db.savePartiesAndCarousels(parties, carousels).catch(err => {
+          console.error("Failed to save changes to mock DB", err);
+          // In a real app, you might show an error to the user here
+      });
+    }, 500);
+
+    return () => clearTimeout(debounceSave);
+  }, [parties, carousels, isLoading]);
 
   const addParty = useCallback((party: Party) => {
-    setParties(prevParties => {
-      // Prevent duplicates based on originalUrl
-      if (prevParties.some(p => p.originalUrl === party.originalUrl)) {
-        return prevParties;
-      }
-      return [...prevParties, party]
-    });
+    setParties(prev => prev.some(p => p.originalUrl === party.originalUrl) ? prev : [...prev, party]);
+  }, []);
+  
+  const updateParty = useCallback((updatedParty: Party) => {
+    setParties(prev => prev.map(p => p.id === updatedParty.id ? updatedParty : p));
   }, []);
 
   const deleteParty = useCallback((partyId: string) => {
-    setParties(prevParties => prevParties.filter(p => p.id !== partyId));
+    setParties(prev => prev.filter(p => p.id !== partyId));
+    // Also remove the party from any carousels it might be in
+    setCarousels(prev => prev.map(c => ({...c, partyIds: c.partyIds.filter(id => id !== partyId)})));
+  }, []);
+  
+  const addCarousel = useCallback((title: string) => {
+    const newCarousel: Carousel = { id: Date.now().toString(), title, partyIds: [] };
+    setCarousels(prev => [...prev, newCarousel]);
   }, []);
 
-  const toggleHotParty = useCallback((partyId: string) => {
-    setParties(prevParties =>
-      prevParties.map(p =>
-        p.id === partyId ? { ...p, isHot: !p.isHot } : p
-      )
-    );
+  const updateCarousel = useCallback((updatedCarousel: Carousel) => {
+    setCarousels(prev => prev.map(c => c.id === updatedCarousel.id ? updatedCarousel : c));
   }, []);
 
-  const togglePartyDemand = useCallback((partyId: string) => {
-    setParties(prevParties =>
-      prevParties.map(p =>
-        p.id === partyId ? { ...p, demand: p.demand === 'high' ? 'normal' : 'high' } : p
-      )
-    );
+  const deleteCarousel = useCallback((carouselId: string) => {
+    setCarousels(prev => prev.filter(c => c.id !== carouselId));
   }, []);
   
   return React.createElement(
     PartyContext.Provider,
-    { value: { parties, addParty, deleteParty, toggleHotParty, togglePartyDemand, isLoading } },
+    { value: { parties, carousels, addParty, deleteParty, updateParty, addCarousel, updateCarousel, deleteCarousel, isLoading } },
     children
   );
 };

@@ -3,7 +3,7 @@ import { Link, NavLink } from 'react-router-dom';
 
 const Header: React.FC = () => {
   return (
-    <header className="bg-brand-surface/80 backdrop-blur-sm sticky top-0 z-50 shadow-lg" aria-label="Main Navigation">
+    <header className="bg-jungle-surface/80 backdrop-blur-sm sticky top-0 z-50 shadow-lg border-b-2 border-wood-brown/50" aria-label="Main Navigation">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-20">
           {/* Brand Logo */}
@@ -13,13 +13,23 @@ const Header: React.FC = () => {
 
           {/* Navigation */}
           <nav>
-            <ul className="flex items-center gap-6">
+            <ul className="flex items-center gap-6 font-display text-xl">
               <li>
                 <NavLink 
                   to="/" 
                   end
                   className={({ isActive }) => 
-                    `text-gray-300 hover:text-white transition-colors font-medium ${isActive ? 'text-brand-secondary' : ''}`
+                    `text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`
+                  }
+                >
+                  עמוד הבית
+                </NavLink>
+              </li>
+              <li>
+                <NavLink 
+                  to="/all-parties" 
+                  className={({ isActive }) => 
+                    `text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`
                   }
                 >
                   כל המסיבות
@@ -27,9 +37,29 @@ const Header: React.FC = () => {
               </li>
               <li>
                 <NavLink 
+                  to="/blog" 
+                  className={({ isActive }) => 
+                    `text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`
+                  }
+                >
+                  כתבות
+                </NavLink>
+              </li>
+               <li>
+                <NavLink 
+                  to="/about" 
+                  className={({ isActive }) => 
+                    `text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`
+                  }
+                >
+                  עלינו
+                </NavLink>
+              </li>
+              <li>
+                <NavLink 
                   to="/admin" 
                   className={({ isActive }) => 
-                    `text-gray-300 hover:text-white transition-colors font-medium ${isActive ? 'text-brand-primary' : ''}`
+                    `text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-lime' : ''}`
                   }
                 >
                   אדמין

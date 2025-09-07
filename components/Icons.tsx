@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 type IconProps = {
@@ -41,13 +40,27 @@ export const LocationIcon: React.FC<IconProps> = ({ className }) => (
 );
 
 export const FireIcon: React.FC<IconProps> = ({ className }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-    <path d="M10 18a7.963 7.963 0 004.992-1.922 1 1 0 00.274-1.383 5.964 5.964 0 01-3.266-5.43V6.333a1 1 0 10-2 0v2.932a5.965 5.965 0 01-3.266 5.43 1 1 0 00.274 1.383A7.963 7.963 0 0010 18z" />
-  </svg>
+    <svg className={className} fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+        <path fillRule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM10 18a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+        <path d="M10 18a7.963 7.963 0 004.992-1.922 1 1 0 00.274-1.383 5.964 5.964 0 01-3.266-5.43V6.333a1 1 0 10-2 0v2.932a5.965 5.965 0 01-3.266 5.43 1 1 0 00.274 1.383A7.963 7.963 0 0010 18z" />
+    </svg>
 );
+
+export const LeafIcon: React.FC<IconProps> = ({ className }) => (
+    <svg className={className} fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 2a1 1 0 00-1 1v1a1 1 0 002 0V3a1 1 0 00-1-1zM4 4h3a3 3 0 006 0h3a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2z" />
+    </svg>
+);
+
 
 export const SearchIcon: React.FC<IconProps> = ({ className }) => (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+    </svg>
+);
+
+export const CloseIcon: React.FC<IconProps> = ({ className }) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
     </svg>
 );

@@ -4,10 +4,10 @@ import { InstagramIcon, TikTokIcon } from './Icons';
 
 const SocialsCta: React.FC = () => {
   return (
-    <section className="bg-brand-surface py-12 mt-16">
+    <section className="bg-jungle-surface py-12 mt-16 border-y-2 border-wood-brown/50">
       <div className="container mx-auto px-4 text-center">
-        <h2 className="text-3xl font-bold mb-2 text-white">אל תפספסו אף מסיבה!</h2>
-        <p className="text-lg text-gray-300 mb-6">הצטרפו ל-50,000+ העוקבים שלנו בסושיאל</p>
+        <h2 className="text-4xl font-display mb-2 text-white">אל תפספסו אף מסיבה!</h2>
+        <p className="text-lg text-jungle-text/80 mb-6">הצטרפו ל-50,000+ העוקבים שלנו בג'ונגל</p>
         <div className="flex justify-center items-center gap-4">
           <a
             href={SOCIAL_LINKS.instagram}

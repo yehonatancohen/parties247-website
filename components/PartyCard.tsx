@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { Party } from '../types';
 import { AFFILIATE_CODE } from '../constants';
-import { CalendarIcon, LocationIcon } from './Icons';
+import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon, LeafIcon } from './Icons';
 
 interface PartyCardProps {
   party: Party;
@@ -30,32 +29,45 @@ const PartyCard: React.FC<PartyCardProps> = ({ party }) => {
       return originalUrl; // Fallback if URL is invalid
     }
   };
+  
+  const getTagColor = (tag: string) => {
+    if (tag === 'לוהט') return 'bg-jungle-lime/80 text-jungle-deep';
+    if (tag === 'ביקוש גבוה') return 'bg-jungle-accent/80 text-jungle-deep';
+    if (tag.includes('חינם')) return 'bg-green-500/80 text-white';
+    if (tag.includes('+')) return 'bg-wood-brown/80 text-jungle-text';
+    return 'bg-jungle-accent/80 text-jungle-deep';
+  };
+  
+  const renderTagContent = (tag: string) => {
+    if (tag === 'לוהט') return <><FireIcon className="w-3.5 h-3.5 ml-1" />{tag}</>;
+    if (tag === 'ביקוש גבוה') return <><PartyPopperIcon className="w-3.5 h-3.5 ml-1" />{tag}</>;
+    return tag;
+  };
 
   return (
-    <div className="bg-brand-surface rounded-xl overflow-hidden shadow-lg hover:shadow-neon-glow/30 transition-all duration-300 flex flex-col group transform hover:-translate-y-1">
+    <div className="bg-jungle-surface rounded-xl overflow-hidden shadow-lg hover:shadow-jungle-glow/60 transition-all duration-300 flex flex-col group transform hover:-translate-y-1 border border-wood-brown/50">
       <div className="relative">
         <img src={party.imageUrl} alt={party.name} className="w-full aspect-[3/4] object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
         <div className="absolute top-3 right-3 flex flex-col gap-2">
-          {party.isHot && (
-            <span className="bg-orange-500/80 backdrop-blur-sm text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg">🔥 לוהט</span>
-          )}
-          {party.demand === 'high' && (
-            <span className="bg-brand-primary/80 backdrop-blur-sm text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg">🎉 ביקוש גבוה</span>
-          )}
+          {party.tags.slice(0, 2).map(tag => (
+            <span key={tag} className={`${getTagColor(tag)} backdrop-blur-sm text-xs font-bold px-2 py-1 rounded-full shadow-lg flex items-center`}>
+              {renderTagContent(tag)}
+            </span>
+          ))}
         </div>
         <div className="absolute bottom-0 left-0 p-4 w-full">
-           <h3 className="text-2xl font-bold text-white mb-1 truncate" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.7)' }}>{party.name}</h3>
+           <h3 className="font-display text-3xl text-white mb-1 truncate" style={{ textShadow: '2px 2px 6px rgba(0,0,0,0.9)' }}>{party.name}</h3>
         </div>
       </div>
       <div className="p-4 flex flex-col flex-grow">
-        <div className="flex flex-col sm:flex-row justify-between sm:items-center text-gray-300 text-md mb-4 gap-2 sm:gap-4">
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center text-jungle-text/80 text-md mb-4 gap-2 sm:gap-4">
             <div className="flex items-center gap-2">
-                <CalendarIcon className="h-5 w-5 text-brand-secondary flex-shrink-0" />
+                <CalendarIcon className="h-5 w-5 text-jungle-accent flex-shrink-0" />
                 <span className="font-semibold">{formattedDate} | {formattedTime}</span>
             </div>
             <div className="flex items-center gap-2">
-                <LocationIcon className="h-5 w-5 text-brand-secondary flex-shrink-0" />
+                <LocationIcon className="h-5 w-5 text-jungle-accent flex-shrink-0" />
                 <span className="truncate">{party.location}</span>
             </div>
         </div>
@@ -63,9 +75,10 @@ const PartyCard: React.FC<PartyCardProps> = ({ party }) => {
           href={getAffiliateUrl(party.originalUrl)}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-auto block text-center bg-gradient-to-r from-brand-primary to-brand-secondary hover:from-brand-primary/80 hover:to-brand-secondary/80 text-white font-bold py-3 px-4 rounded-lg transition-all w-full text-lg group-hover:scale-105"
+          className="mt-auto flex items-center justify-center gap-2 text-center bg-gradient-to-r from-jungle-lime to-jungle-accent hover:from-jungle-lime/80 hover:to-jungle-accent/80 text-jungle-deep font-display text-2xl py-3 px-4 rounded-lg transition-all w-full group-hover:scale-105 tracking-wider"
         >
-          קחו אותי לשם 🚀
+          <span>בואו נלך!</span>
+          <LeafIcon className="w-5 h-5" />
         </a>
       </div>
     </div>

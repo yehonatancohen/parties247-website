@@ -1,60 +1,118 @@
-import React from 'react';
-import { useParties } from '../hooks/useParties';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { Party } from '../types';
 import { AFFILIATE_CODE } from '../constants';
 
-const HotPartyCard: React.FC<{ party: Party }> = ({ party }) => {
+const CarouselPartyCard: React.FC<{ party: Party }> = ({ party }) => {
     const getAffiliateUrl = (originalUrl: string) => {
-    try {
-      const url = new URL(originalUrl);
-      url.searchParams.set('aff', AFFILIATE_CODE);
-      return url.toString();
-    } catch (error) {
-      return originalUrl;
-    }
-  };
+        try {
+          const url = new URL(originalUrl);
+          url.searchParams.set('aff', AFFILIATE_CODE);
+          return url.toString();
+        } catch (error) {
+          return originalUrl;
+        }
+    };
+
+    const partyDate = new Date(party.date);
+    const formattedDate = new Intl.DateTimeFormat('he-IL', {
+        weekday: 'long',
+        day: '2-digit',
+        month: '2-digit',
+    }).format(partyDate);
 
     return (
         <a 
             href={getAffiliateUrl(party.originalUrl)}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-shrink-0 w-72 h-40 bg-brand-surface rounded-lg overflow-hidden relative group shadow-lg hover:shadow-neon-glow/30 transition-shadow duration-300"
+            className="flex-shrink-0 w-64 group"
         >
-            <img src={party.imageUrl} alt={party.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-4">
-                <h3 className="text-lg font-bold text-white truncate">{party.name}</h3>
-                <p className="text-sm text-gray-300 truncate">{party.location}</p>
+            <div className="relative rounded-xl overflow-hidden shadow-lg hover:shadow-jungle-glow/60 transition-all duration-300 transform group-hover:-translate-y-1 border border-wood-brown/50">
+                <img 
+                    src={party.imageUrl} 
+                    alt={party.name} 
+                    className="w-full aspect-[3/4] object-cover transition-transform duration-300 group-hover:scale-105" 
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                    <h3 className="font-display text-2xl text-white truncate" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.7)' }}>
+                        {party.name}
+                    </h3>
+                </div>
+            </div>
+            <div className="mt-2 text-center">
+                 <p className="text-md font-semibold text-jungle-text/80">{formattedDate}</p>
             </div>
         </a>
     );
 };
 
-const HotEventsCarousel: React.FC = () => {
-  const { parties } = useParties();
-  const now = new Date();
-  const hotParties = parties
-    .filter(p => p.isHot && new Date(p.date) >= now)
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+interface PartyCarouselProps {
+    title: string;
+    parties: Party[];
+    viewAllLink: string;
+}
 
-  if (hotParties.length === 0) {
+const PartyCarousel: React.FC<PartyCarouselProps> = ({ title, parties, viewAllLink }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
+
+  const now = new Date();
+  const upcomingParties = useMemo(() => parties
+    .filter(p => new Date(p.date) >= now)
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()), [parties]);
+  
+  const itemsToRender = useMemo(() => {
+    // We need at least one full screen of items cloned for a smooth loop
+    return upcomingParties.length > 4 ? [...upcomingParties, ...upcomingParties.slice(0, 5)] : upcomingParties;
+  }, [upcomingParties]);
+
+  const startCarousel = useCallback(() => {
+    intervalRef.current = setInterval(() => {
+      setCurrentIndex(prevIndex => prevIndex + 1);
+    }, 3000);
+  }, []);
+
+  const pauseCarousel = useCallback(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+  }, []);
+  
+  useEffect(() => {
+    if (itemsToRender.length > upcomingParties.length) { // Check if animation is active
+        startCarousel();
+    }
+    return () => pauseCarousel();
+  }, [itemsToRender.length, upcomingParties.length, startCarousel, pauseCarousel]);
+  
+  const handleTransitionEnd = () => {
+    if (currentIndex >= upcomingParties.length) {
+      if (carouselRef.current) {
+        carouselRef.current.style.transition = 'none';
+        setCurrentIndex(0);
+        // Force a reflow to apply the new index without transition
+        carouselRef.current.offsetHeight; 
+        carouselRef.current.style.transition = 'transform 0.5s ease-in-out';
+      }
+    }
+  };
+
+  if (upcomingParties.length === 0) {
     return null;
   }
-
-  // Only create an animated carousel if there are enough items to potentially overflow a typical screen.
-  const isAnimated = hotParties.length > 4;
   
-  // If not animated, return the original scrollable container
+  const isAnimated = upcomingParties.length > 4;
+
   if (!isAnimated) {
     return (
-        <div className="mb-12">
-            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                <span className="text-orange-400">🔥</span>
-                <span className="text-white">אירועים חמים</span>
-            </h2>
+        <div>
+            <div className="flex justify-between items-center mb-4">
+                <h2 className="text-3xl font-display text-white">{title}</h2>
+                <Link to={viewAllLink} className="text-jungle-accent hover:text-white transition-colors">הצג הכל</Link>
+            </div>
             <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
-                {hotParties.map(party => (
-                <HotPartyCard key={party.id} party={party} />
+                {upcomingParties.map(party => (
+                  <CarouselPartyCard key={party.id} party={party} />
                 ))}
                 <style>{`.scrollbar-hide::-webkit-scrollbar { display: none; } .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
             </div>
@@ -62,38 +120,37 @@ const HotEventsCarousel: React.FC = () => {
     );
   }
 
-  // For the animated carousel, duplicate the items for a seamless loop
-  const carouselParties = [...hotParties, ...hotParties];
-  
-  // Constants for animation
-  const cardWidthWithGap = 288 + 16; // w-72 (288px) + gap-4 (16px)
-  const animationDistance = cardWidthWithGap * hotParties.length;
-  const animationDuration = hotParties.length * 5; // ~5s per item
+  const cardWidthWithGap = 256 + 16; // w-64 (256px) + gap-4 (16px)
+  const carouselStyle = {
+    transform: `translateX(-${currentIndex * cardWidthWithGap}px)`,
+    transition: 'transform 0.5s ease-in-out',
+  };
 
   return (
-    <div className="mb-12">
-      <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-        <span className="text-orange-400">🔥</span>
-        <span className="text-white">אירועים חמים</span>
-      </h2>
-      <div className="group relative w-full overflow-hidden" style={{ maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)' }}>
-        <div className="flex gap-4 group-hover:[animation-play-state:paused] animate-scroll">
-          {carouselParties.map((party, index) => (
-            <HotPartyCard key={`${party.id}-${index}`} party={party} />
+    <div>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-3xl font-display text-white">{title}</h2>
+        <Link to={viewAllLink} className="text-jungle-accent hover:text-white transition-colors">הצג הכל</Link>
+      </div>
+      <div 
+        className="relative w-full overflow-hidden" 
+        style={{ maskImage: 'linear-gradient(to left, transparent, black 5%, black 95%, transparent)' }}
+        onMouseEnter={pauseCarousel}
+        onMouseLeave={startCarousel}
+      >
+        <div 
+          ref={carouselRef}
+          className="flex gap-4" 
+          style={carouselStyle}
+          onTransitionEnd={handleTransitionEnd}
+        >
+          {itemsToRender.map((party, index) => (
+            <CarouselPartyCard key={`${party.id}-${index}`} party={party} />
           ))}
         </div>
       </div>
-      <style>{`
-        @keyframes scroll {
-          from { transform: translateX(0); }
-          to { transform: translateX(-${animationDistance}px); }
-        }
-        .animate-scroll {
-          animation: scroll ${animationDuration}s linear infinite;
-        }
-      `}</style>
     </div>
   );
 };
 
-export default HotEventsCarousel;
+export default PartyCarousel;

@@ -1,4 +1,3 @@
-
 export interface Party {
   id: string;
   name: string;
@@ -7,13 +6,17 @@ export interface Party {
   location: string;
   description: string;
   originalUrl: string;
-  isHot: boolean;
   region: 'דרום' | 'מרכז' | 'צפון' | 'לא ידוע';
   musicType: 'מיינסטרים' | 'טכנו' | 'טראנס' | 'אחר';
   eventType: 'מסיבת בית' | 'מסיבת מועדון' | 'מסיבת טבע' | 'פסטיבל' | 'אחר';
   age: 'נוער' | '18+' | '21+' | 'כל הגילאים';
   tags: string[];
-  demand?: 'high' | 'normal';
+}
+
+export interface Carousel {
+  id: string;
+  title: string;
+  partyIds: string[];
 }
 
 export interface Article {

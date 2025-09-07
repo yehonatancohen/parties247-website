@@ -53,9 +53,9 @@ const DatePicker: React.FC<DatePickerProps> = ({ selectedDate, onDateSelect }) =
         today.getUTCFullYear() === year;
 
       const dayClasses = `w-8 h-8 flex items-center justify-center rounded-full cursor-pointer transition-colors text-sm
-        ${isSelected ? 'bg-brand-primary text-white font-bold' : ''}
-        ${!isSelected && isToday ? 'border border-brand-secondary text-brand-secondary' : ''}
-        ${!isSelected && !isToday ? 'hover:bg-brand-surface' : ''}
+        ${isSelected ? 'bg-jungle-lime text-jungle-deep font-bold' : ''}
+        ${!isSelected && isToday ? 'border border-jungle-accent text-jungle-accent' : ''}
+        ${!isSelected && !isToday ? 'hover:bg-jungle-surface' : ''}
       `;
       days.push(
         <button key={day} onClick={() => handleDateClick(day)} className={dayClasses}>
@@ -67,18 +67,18 @@ const DatePicker: React.FC<DatePickerProps> = ({ selectedDate, onDateSelect }) =
   };
 
   return (
-    <div className="absolute top-full right-0 mt-2 bg-gray-800 border border-gray-700 rounded-lg p-4 shadow-2xl z-50 w-64">
+    <div className="absolute top-full right-0 mt-2 bg-jungle-deep border border-wood-brown rounded-lg p-4 shadow-2xl z-50 w-64">
       <div className="flex justify-between items-center mb-4">
-        <button onClick={handlePrevMonth} className="p-1 rounded-full hover:bg-brand-surface text-lg">‹</button>
+        <button onClick={handlePrevMonth} className="p-1 rounded-full hover:bg-jungle-surface text-lg">‹</button>
         <div className="font-bold text-white">
           {new Intl.DateTimeFormat('he-IL', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(viewDate)}
         </div>
-        <button onClick={handleNextMonth} className="p-1 rounded-full hover:bg-brand-surface text-lg">›</button>
+        <button onClick={handleNextMonth} className="p-1 rounded-full hover:bg-jungle-surface text-lg">›</button>
       </div>
-      <div className="grid grid-cols-7 gap-1 text-center text-gray-400 text-xs mb-2">
+      <div className="grid grid-cols-7 gap-1 text-center text-jungle-text/60 text-xs mb-2">
         {daysOfWeek.map(day => <div key={day}>{day}</div>)}
       </div>
-      <div className="grid grid-cols-7 gap-1 text-center text-gray-200">
+      <div className="grid grid-cols-7 gap-1 text-center text-jungle-text">
         {renderDays()}
       </div>
     </div>
