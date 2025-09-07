@@ -14,6 +14,7 @@ import CommunityPopup from './components/CommunityPopup';
 import CookieBanner from './components/CookieBanner';
 import JungleDecorations from './components/JungleDecorations';
 import BlogPage from './pages/BlogPage';
+import ScrollToTop from './components/ScrollToTop';
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -38,6 +39,7 @@ function App() {
   return (
     <PartyProvider>
       <HashRouter>
+        <ScrollToTop />
         <JungleDecorations />
         <div className="min-h-screen flex flex-col relative z-10">
           <Header />
