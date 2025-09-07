@@ -19,29 +19,25 @@ const getAuthHeader = (): { [key: string]: string } => {
 
 /**
  * Maps a party object from the backend schema to the frontend schema.
+ * This function now explicitly maps each field to prevent any properties
+ * from being missed, which was the likely cause of the duplicate party error.
  * @param backendParty - The party object received from the API.
  * @returns A party object compliant with the frontend's `Party` type.
  */
 const mapPartyToFrontend = (backendParty: any): Party => {
-  const { _id, goOutUrl, ...rest } = backendParty;
   return {
-    ...rest,
-    id: _id,
-    originalUrl: goOutUrl,
-  };
-};
-
-/**
- * Maps a party object from the frontend schema to the backend schema for sending.
- * @param frontendParty - The party object from the frontend.
- * @returns A plain object compliant with the backend's expected schema.
- */
-const mapPartyToBackend = (frontendParty: Party): any => {
-    // Backend creates the ID, so we don't send it.
-  const { id, originalUrl, ...rest } = frontendParty;
-  return {
-    ...rest,
-    originalUrl: originalUrl, // Backend expects originalUrl
+    id: backendParty._id,
+    name: backendParty.name,
+    imageUrl: backendParty.imageUrl,
+    date: backendParty.date,
+    location: backendParty.location,
+    description: backendParty.description,
+    originalUrl: backendParty.originalUrl,
+    region: backendParty.region,
+    musicType: backendParty.musicType,
+    eventType: backendParty.eventType,
+    age: backendParty.age,
+    tags: backendParty.tags || [], // Ensure tags is always an array
   };
 };
 
@@ -61,17 +57,17 @@ export const getParties = async (): Promise<Party[]> => {
 };
 
 /**
- * Adds a new party to the database.
- * @param party - The party data to add (without an ID).
+ * Adds a new party to the database by sending the URL to be scraped by the backend.
+ * @param url - The party's go-out.co URL to add.
  */
-export const addParty = async (party: Omit<Party, 'id'>): Promise<Party> => {
+export const addParty = async (url: string): Promise<Party> => {
   const response = await fetch(`${API_URL}/admin/add-party`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       ...getAuthHeader(),
     },
-    body: JSON.stringify(mapPartyToBackend(party as Party)),
+    body: JSON.stringify({ url }),
   });
 
   const responseData = await response.json();

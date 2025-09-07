@@ -6,7 +6,7 @@ import * as carouselDb from '../services/db';
 interface PartyContextType {
   parties: Party[];
   carousels: Carousel[];
-  addParty: (party: Party) => Promise<void>;
+  addParty: (url: string) => Promise<void>;
   deleteParty: (partyId: string) => Promise<void>;
   updateParty: (party: Party) => Promise<void>;
   addCarousel: (title: string) => void;
@@ -52,13 +52,14 @@ export const PartyProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
   }, [carousels, isLoading]);
 
-  const addParty = useCallback(async (party: Party) => {
+  const addParty = useCallback(async (url: string) => {
     try {
-        const newParty = await api.addParty(party);
+        const newParty = await api.addParty(url);
         setParties(prev => [newParty, ...prev]);
     } catch (error) {
         console.error("Failed to add party:", error);
-        alert(`Error: Could not add party. The party may already exist, or there was a server error.`);
+        const errorMessage = error instanceof Error ? error.message : "Could not add party.";
+        alert(`Error: ${errorMessage}`);
         throw error; // Re-throw to allow component to handle it
     }
   }, []);

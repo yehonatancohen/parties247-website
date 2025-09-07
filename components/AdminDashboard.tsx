@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
 import { useParties } from '../hooks/useParties';
-import { scrapePartyDetails } from '../services/geminiService';
 import { Party, Carousel } from '../types';
 import LoadingSpinner from './LoadingSpinner';
 
@@ -54,30 +53,31 @@ const AdminDashboard: React.FC = () => {
   const [editingCarousel, setEditingCarousel] = useState<Carousel | null>(null);
 
   const handleAddParty = useCallback(async () => {
-    if (!url.trim() || !url.includes('go-out.co')) {
+    const trimmedUrl = url.trim();
+    if (!trimmedUrl || !trimmedUrl.includes('go-out.co')) {
       setError('Please enter a valid go-out.co URL.');
       return;
     }
+
+    // Client-side check for duplicates
+    if (parties.some(party => party.originalUrl === trimmedUrl)) {
+      setError('This party has already been added.');
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
     try {
-      const partyDetails = await scrapePartyDetails(url);
-      const newParty: Omit<Party, 'id'> = {
-        ...partyDetails,
-        originalUrl: url,
-      };
-      // The context's addParty function now returns a promise
-      await addParty(newParty as Party);
+      await addParty(trimmedUrl);
       setUrl('');
     } catch (err) {
       console.error(err);
-      // The error is now thrown from the context, so we can display a generic message.
-      // Specific alerts are handled within the context hook.
-      setError('Failed to add party. See console for details.');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to add party.';
+      setError(`Error: ${errorMessage}`);
     } finally {
       setIsLoading(false);
     }
-  }, [url, addParty]);
+  }, [url, addParty, parties]);
   
   const handleCreateCarousel = () => {
     if (newCarouselTitle.trim()) {
