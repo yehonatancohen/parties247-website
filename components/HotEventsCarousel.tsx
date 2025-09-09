@@ -55,8 +55,8 @@ interface PartyCarouselProps {
 
 const PartyCarousel: React.FC<PartyCarouselProps> = ({ title, parties, viewAllLink }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isJumping, setIsJumping] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const carouselRef = useRef<HTMLDivElement>(null);
 
   const now = new Date();
   const upcomingParties = useMemo(() => parties
@@ -69,6 +69,7 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({ title, parties, viewAllLi
   }, [upcomingParties]);
 
   const startCarousel = useCallback(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
     intervalRef.current = setInterval(() => {
       setCurrentIndex(prevIndex => prevIndex + 1);
     }, 3000);
@@ -79,6 +80,8 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({ title, parties, viewAllLi
   }, []);
   
   useEffect(() => {
+    if (upcomingParties.length === 0) return;
+
     if (itemsToRender.length > upcomingParties.length) { // Check if animation is active
         startCarousel();
     }
@@ -87,15 +90,28 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({ title, parties, viewAllLi
   
   const handleTransitionEnd = () => {
     if (currentIndex >= upcomingParties.length) {
-      if (carouselRef.current) {
-        carouselRef.current.style.transition = 'none';
-        setCurrentIndex(0);
-        // Force a reflow to apply the new index without transition
-        carouselRef.current.offsetHeight; 
-        carouselRef.current.style.transition = 'transform 0.5s ease-in-out';
-      }
+      setIsJumping(true);
     }
   };
+
+  useEffect(() => {
+    if (isJumping) {
+        // After the transition ends and we are at a cloned item,
+        // set the index to 0. This will be an instant jump because
+        // `isJumping` will set `transition: 'none'`.
+        setCurrentIndex(0);
+    }
+  }, [isJumping]);
+  
+  useEffect(() => {
+      // This effect runs after the index has been reset to 0.
+      // We wait a moment and then turn transitions back on by setting isJumping to false.
+      if (currentIndex === 0 && isJumping) {
+          const timeoutId = setTimeout(() => setIsJumping(false), 50);
+          return () => clearTimeout(timeoutId);
+      }
+  }, [currentIndex, isJumping]);
+
 
   if (upcomingParties.length === 0) {
     return null;
@@ -123,7 +139,7 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({ title, parties, viewAllLi
   const cardWidthWithGap = 256 + 16; // w-64 (256px) + gap-4 (16px)
   const carouselStyle = {
     transform: `translateX(-${currentIndex * cardWidthWithGap}px)`,
-    transition: 'transform 0.5s ease-in-out',
+    transition: isJumping ? 'none' : 'transform 0.5s ease-in-out',
   };
 
   return (
@@ -139,7 +155,6 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({ title, parties, viewAllLi
         onMouseLeave={startCarousel}
       >
         <div 
-          ref={carouselRef}
           className="flex gap-4" 
           style={carouselStyle}
           onTransitionEnd={handleTransitionEnd}

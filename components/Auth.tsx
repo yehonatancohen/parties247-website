@@ -1,5 +1,6 @@
 import React, { useState, FormEvent } from 'react';
 import LoadingSpinner from './LoadingSpinner';
+import * as api from '../services/api';
 
 interface AuthProps {
   onAuthSuccess: (key: string) => void;
@@ -8,19 +9,30 @@ interface AuthProps {
 const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!password.trim()) return;
+    const key = password.trim();
+    if (!key) return;
 
     setIsLoading(true);
+    setError(null);
 
-    // Simulate a small delay for better UX, then treat the password as the secret key.
-    // The key's validity will be checked by the first protected API call.
-    setTimeout(() => {
-        onAuthSuccess(password);
-    }, 500);
+    // Temporarily set the key in session storage so the API service can use it.
+    sessionStorage.setItem('adminSecretKey', key);
+
+    try {
+      await api.verifyAdminKey();
+      // If verification succeeds, notify the parent component.
+      onAuthSuccess(key);
+    } catch (err) {
+      // If it fails, clear the invalid key and display an error.
+      sessionStorage.removeItem('adminSecretKey');
+      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
+      setError(`Login failed: ${errorMessage}`);
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -36,11 +48,13 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
             onChange={(e) => setPassword(e.target.value)}
             className="w-full bg-jungle-deep text-white p-2 rounded-md border border-wood-brown focus:ring-2 focus:ring-jungle-lime focus:outline-none"
             disabled={isLoading}
+            aria-describedby="error-message"
           />
         </div>
+        {error && <p id="error-message" className="text-red-500 text-sm mb-4 text-center">{error}</p>}
         <button 
           type="submit" 
-          className="w-full bg-jungle-lime text-jungle-deep font-bold py-2 px-4 rounded-md hover:bg-opacity-80 transition-colors flex justify-center items-center h-10"
+          className="w-full bg-jungle-lime text-jungle-deep font-bold py-2 px-4 rounded-md hover:bg-opacity-80 transition-colors flex justify-center items-center h-10 disabled:bg-gray-600 disabled:cursor-not-allowed"
           disabled={isLoading || !password.trim()}
         >
           {isLoading ? <LoadingSpinner /> : 'Login'}

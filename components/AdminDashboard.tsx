@@ -59,7 +59,6 @@ const AdminDashboard: React.FC = () => {
       return;
     }
 
-    // Client-side check for duplicates
     if (parties.some(party => party.originalUrl === trimmedUrl)) {
       setError('This party has already been added.');
       return;
@@ -79,22 +78,47 @@ const AdminDashboard: React.FC = () => {
     }
   }, [url, addParty, parties]);
   
-  const handleCreateCarousel = () => {
+  const handleCreateCarousel = async () => {
     if (newCarouselTitle.trim()) {
-      addCarousel(newCarouselTitle.trim());
-      setNewCarouselTitle('');
+      try {
+        await addCarousel(newCarouselTitle.trim());
+        setNewCarouselTitle('');
+      } catch (err) {
+        alert('Failed to create carousel. See console for details.');
+        console.error(err);
+      }
     }
   };
   
-  const handleUpdateCarouselParties = (partyId: string, isInCarousel: boolean) => {
+  const handleUpdateCarouselParties = async (partyId: string, isInCarousel: boolean) => {
     if (!editingCarousel) return;
+    const originalCarousel = { ...editingCarousel };
+
     const newPartyIds = isInCarousel
       ? editingCarousel.partyIds.filter(id => id !== partyId)
       : [...editingCarousel.partyIds, partyId];
     
     const updated = { ...editingCarousel, partyIds: newPartyIds };
-    updateCarousel(updated);
-    setEditingCarousel(updated);
+    setEditingCarousel(updated); // Optimistic update
+    
+    try {
+      await updateCarousel(updated);
+    } catch (err) {
+        alert('Failed to update carousel. See console for details.');
+        console.error(err);
+        setEditingCarousel(originalCarousel); // Revert on error
+    }
+  };
+
+  const handleDeleteCarousel = async (carouselId: string) => {
+    if (window.confirm('Are you sure you want to delete this carousel? This action cannot be undone.')) {
+        try {
+            await deleteCarousel(carouselId);
+        } catch (err) {
+            alert('Failed to delete carousel. See console for details.');
+            console.error(err);
+        }
+    }
   };
 
   const sortedParties = [...parties].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -191,7 +215,7 @@ const AdminDashboard: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-2">
                    <button onClick={() => setEditingCarousel(carousel)} className="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700 text-sm">Edit</button>
-                  <button onClick={() => deleteCarousel(carousel.id)} className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 text-sm">Delete</button>
+                  <button onClick={() => handleDeleteCarousel(carousel.id)} className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 text-sm">Delete</button>
                 </div>
               </div>
             ))}

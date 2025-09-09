@@ -1,7 +1,6 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback } from 'react';
 import { Party, Carousel } from '../types';
 import * as api from '../services/api';
-import * as carouselDb from '../services/db';
 
 interface PartyContextType {
   parties: Party[];
@@ -9,9 +8,9 @@ interface PartyContextType {
   addParty: (url: string) => Promise<void>;
   deleteParty: (partyId: string) => Promise<void>;
   updateParty: (party: Party) => Promise<void>;
-  addCarousel: (title: string) => void;
-  updateCarousel: (carousel: Carousel) => void;
-  deleteCarousel: (carouselId: string) => void;
+  addCarousel: (title: string) => Promise<void>;
+  updateCarousel: (carousel: Carousel) => Promise<void>;
+  deleteCarousel: (carouselId: string) => Promise<void>;
   isLoading: boolean;
 }
 
@@ -26,10 +25,10 @@ export const PartyProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch parties from backend and carousels from local DB concurrently
+        // Fetch parties and carousels from the backend API concurrently
         const [fetchedParties, fetchedCarousels] = await Promise.all([
             api.getParties(),
-            carouselDb.getCarousels()
+            api.getCarousels()
         ]);
         setParties(fetchedParties);
         setCarousels(fetchedCarousels);
@@ -42,15 +41,6 @@ export const PartyProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     };
     fetchData();
   }, []);
-
-  // Effect for persisting carousel data to localStorage on any change
-  useEffect(() => {
-    if (!isLoading) { // Don't save during initial load
-        carouselDb.saveCarousels(carousels).catch(err => {
-            console.error("Failed to save carousels to mock DB", err);
-        });
-    }
-  }, [carousels, isLoading]);
 
   const addParty = useCallback(async (url: string) => {
     try {
@@ -88,18 +78,37 @@ export const PartyProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
   }, []);
   
-  // Carousel functions remain synchronous as they only affect local state
-  const addCarousel = useCallback((title: string) => {
-    const newCarousel: Carousel = { id: Date.now().toString(), title, partyIds: [] };
-    setCarousels(prev => [...prev, newCarousel]);
+  const addCarousel = useCallback(async (title: string) => {
+    try {
+      const newCarousel = await api.addCarousel(title);
+      setCarousels(prev => [...prev, newCarousel]);
+    } catch (error) {
+      console.error("Failed to add carousel:", error);
+      alert("Error: Could not add carousel.");
+      throw error;
+    }
   }, []);
 
-  const updateCarousel = useCallback((updatedCarousel: Carousel) => {
-    setCarousels(prev => prev.map(c => c.id === updatedCarousel.id ? updatedCarousel : c));
+  const updateCarousel = useCallback(async (updatedCarousel: Carousel) => {
+    try {
+      const savedCarousel = await api.updateCarousel(updatedCarousel);
+      setCarousels(prev => prev.map(c => c.id === savedCarousel.id ? savedCarousel : c));
+    } catch (error) {
+      console.error("Failed to update carousel:", error);
+      alert("Error: Could not update carousel.");
+      throw error;
+    }
   }, []);
 
-  const deleteCarousel = useCallback((carouselId: string) => {
-    setCarousels(prev => prev.filter(c => c.id !== carouselId));
+  const deleteCarousel = useCallback(async (carouselId: string) => {
+    try {
+      await api.deleteCarousel(carouselId);
+      setCarousels(prev => prev.filter(c => c.id !== carouselId));
+    } catch (error) {
+      console.error("Failed to delete carousel:", error);
+      alert("Error: Could not delete carousel.");
+      throw error;
+    }
   }, []);
   
   return React.createElement(

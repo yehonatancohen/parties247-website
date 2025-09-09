@@ -1,4 +1,4 @@
-import { Party } from '../types';
+import { Party, Carousel } from '../types';
 
 const API_URL = 'https://parties247-backend.onrender.com/api';
 const ADMIN_KEY_STORAGE = 'adminSecretKey';
@@ -7,7 +7,7 @@ const ADMIN_KEY_STORAGE = 'adminSecretKey';
 
 /**
  * Retrieves the admin secret key from session storage and builds the auth header.
- * @returns An object containing the Authorization header, or an empty object.
+ * @returns An object containing the x-admin-secret-key header, or an empty object.
  */
 const getAuthHeader = (): { [key: string]: string } => {
   const key = sessionStorage.getItem(ADMIN_KEY_STORAGE);
@@ -19,8 +19,6 @@ const getAuthHeader = (): { [key: string]: string } => {
 
 /**
  * Maps a party object from the backend schema to the frontend schema.
- * This function now explicitly maps each field to prevent any properties
- * from being missed, which was the likely cause of the duplicate party error.
  * @param backendParty - The party object received from the API.
  * @returns A party object compliant with the frontend's `Party` type.
  */
@@ -41,6 +39,19 @@ const mapPartyToFrontend = (backendParty: any): Party => {
   };
 };
 
+/**
+ * Maps a carousel object from the backend schema to the frontend schema.
+ * @param backendCarousel - The carousel object received from the API.
+ * @returns A carousel object compliant with the frontend's `Carousel` type.
+ */
+const mapCarouselToFrontend = (backendCarousel: any): Carousel => {
+  return {
+    id: backendCarousel._id || backendCarousel.id, // Handle both _id (from admin routes) and id (from public route)
+    title: backendCarousel.title,
+    partyIds: backendCarousel.partyIds || [],
+  };
+};
+
 
 // --- API Functions ---
 
@@ -54,6 +65,18 @@ export const getParties = async (): Promise<Party[]> => {
   }
   const data = await response.json();
   return data.map(mapPartyToFrontend);
+};
+
+/**
+ * Fetches all carousels from the backend.
+ */
+export const getCarousels = async (): Promise<Carousel[]> => {
+    const response = await fetch(`${API_URL}/carousels`);
+    if (!response.ok) {
+        throw new Error('Failed to fetch carousels');
+    }
+    const data = await response.json();
+    return data.map(mapCarouselToFrontend);
 };
 
 /**
@@ -113,5 +136,72 @@ export const updateParty = async (partyId: string, partyData: Partial<Party>): P
   if (!response.ok) {
     const responseData = await response.json();
     throw new Error(responseData.message || 'Failed to update party');
+  }
+};
+
+/**
+ * Adds a new carousel to the database.
+ * @param title - The title of the new carousel.
+ */
+export const addCarousel = async (title: string): Promise<Carousel> => {
+    const response = await fetch(`${API_URL}/admin/carousels`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+        body: JSON.stringify({ title }),
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Failed to create carousel');
+    return mapCarouselToFrontend(data);
+};
+
+/**
+ * Updates a carousel in the database.
+ * @param carousel - The carousel object with updated data.
+ */
+export const updateCarousel = async (carousel: Carousel): Promise<Carousel> => {
+    const response = await fetch(`${API_URL}/admin/carousels/${carousel.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+        body: JSON.stringify({ title: carousel.title, partyIds: carousel.partyIds }),
+    });
+    if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Failed to update carousel');
+    }
+    // Backend only returns a success message, so return the original object for optimistic UI updates.
+    return carousel;
+};
+
+/**
+ * Deletes a carousel from the database.
+ * @param carouselId - The ID of the carousel to delete.
+ */
+export const deleteCarousel = async (carouselId: string): Promise<void> => {
+    const response = await fetch(`${API_URL}/admin/carousels/${carouselId}`, {
+        method: 'DELETE',
+        headers: getAuthHeader(),
+    });
+    if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Failed to delete carousel');
+    }
+};
+
+/**
+ * Verifies if the provided admin key is valid by making a request to a protected endpoint.
+ * @returns A promise that resolves if the key is valid, and rejects otherwise.
+ */
+export const verifyAdminKey = async (): Promise<void> => {
+  const response = await fetch(`${API_URL}/admin/verify-key`, {
+    method: 'POST',
+    headers: {
+      ...getAuthHeader(),
+    },
+  });
+
+  if (!response.ok) {
+    // Try to parse the error message from backend, with a fallback.
+    const message = (await response.json().catch(() => ({}))).message || 'Invalid admin key';
+    throw new Error(message);
   }
 };
