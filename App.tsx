@@ -9,7 +9,6 @@ import AllPartiesPage from './pages/AllPartiesPage';
 import AboutPage from './pages/AboutPage';
 import CategoryPage from './pages/CategoryPage';
 import LegalPage from './pages/LegalPage';
-import SocialsCta from './components/SocialsCta';
 import CommunityPopup from './components/CommunityPopup';
 import CookieBanner from './components/CookieBanner';
 import JungleDecorations from './components/JungleDecorations';
@@ -46,7 +45,6 @@ function App() {
           <main className="flex-grow container mx-auto px-4 py-8">
             <AnimatedRoutes />
           </main>
-          <SocialsCta />
           <Footer />
         </div>
         <CommunityPopup />

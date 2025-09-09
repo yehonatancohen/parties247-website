@@ -1,3 +1,6 @@
+// FIX: Import React to make React's DetailedHTMLProps available for JSX namespace augmentation.
+import React from 'react';
+
 export interface Party {
   id: string;
   name: string;
@@ -34,3 +37,31 @@ export type FilterState = {
     tags: string[];
     date?: string;
 };
+
+// Swiper types for React
+// FIX: Add comprehensive type definitions for Swiper custom elements to fix TypeScript errors.
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      'swiper-container': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      > & {
+        init?: 'true' | 'false';
+        // Add other common Swiper attributes for better type safety
+        navigation?: 'true' | 'false';
+        pagination?: 'true' | 'false';
+        loop?: 'true' | 'false';
+        effect?: 'slide' | 'fade' | 'cube' | 'coverflow' | 'flip';
+        'slides-per-view'?: number | 'auto';
+        'centered-slides'?: 'true' | 'false';
+      };
+      'swiper-slide': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      > & {
+        lazy?: 'true' | 'false';
+      };
+    }
+  }
+}

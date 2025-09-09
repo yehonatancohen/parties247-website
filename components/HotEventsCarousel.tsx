@@ -1,171 +1,187 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useRef, useEffect, useMemo, FC } from 'react';
 import { Link } from 'react-router-dom';
 import { Party } from '../types';
 import { AFFILIATE_CODE } from '../constants';
+import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
 
-const CarouselPartyCard: React.FC<{ party: Party }> = ({ party }) => {
+// --- SVG Arrow Icons ---
+const ArrowLeft: FC<{ className?: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+  </svg>
+);
+
+const ArrowRight: FC<{ className?: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+  </svg>
+);
+
+// --- Tag Helpers (adapted from PartyCard) ---
+const getTagColor = (tag: string) => {
+    if (tag === 'לוהט') return 'bg-jungle-lime/80 text-jungle-deep';
+    if (tag === 'ביקוש גבוה') return 'bg-jungle-accent/80 text-jungle-deep';
+    if (tag.includes('חינם')) return 'bg-green-500/80 text-white';
+    if (tag.includes('+')) return 'bg-wood-brown/80 text-jungle-text';
+    return 'bg-jungle-accent/80 text-jungle-deep';
+};
+
+const renderTagContent = (tag: string) => {
+    if (tag === 'לוהט') return <><FireIcon className="w-3.5 h-3.5 ml-1" />{tag}</>;
+    if (tag === 'ביקוש גבוה') return <><PartyPopperIcon className="w-3.5 h-3.5 ml-1" />{tag}</>;
+    return tag;
+};
+
+const CarouselPartyCard: FC<{ party: Party }> = React.memo(({ party }) => {
     const getAffiliateUrl = (originalUrl: string) => {
         try {
-          const url = new URL(originalUrl);
-          url.searchParams.set('aff', AFFILIATE_CODE);
-          return url.toString();
+            const url = new URL(originalUrl);
+            url.searchParams.set('aff', AFFILIATE_CODE);
+            return url.toString();
         } catch (error) {
-          return originalUrl;
+            return originalUrl;
         }
     };
 
     const partyDate = new Date(party.date);
     const formattedDate = new Intl.DateTimeFormat('he-IL', {
-        weekday: 'long',
-        day: '2-digit',
-        month: '2-digit',
+        weekday: 'long', day: '2-digit', month: '2-digit',
     }).format(partyDate);
 
     return (
-        <a 
+        <a
             href={getAffiliateUrl(party.originalUrl)}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-shrink-0 w-64 group"
+            className="group block outline-none"
+            aria-label={`View details for ${party.name}`}
         >
-            <div className="relative rounded-xl overflow-hidden shadow-lg hover:shadow-jungle-glow/60 transition-all duration-300 transform group-hover:-translate-y-1 border border-wood-brown/50">
-                <img 
-                    src={party.imageUrl} 
-                    alt={party.name} 
-                    className="w-full aspect-[3/4] object-cover transition-transform duration-300 group-hover:scale-105" 
+            <div className="party-card-glow relative rounded-xl overflow-hidden shadow-lg transition-all duration-500 ease-in-out border border-wood-brown/50">
+                <img
+                    src={party.imageUrl}
+                    alt={party.name}
+                    className="w-full aspect-[3/4] object-cover"
+                    loading="lazy"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                    <h3 className="font-display text-2xl text-white truncate" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.7)' }}>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                
+                 <div className="absolute top-3 right-3 flex flex-col gap-2 z-10">
+                    {party.tags.slice(0, 2).map(tag => (
+                        <span key={tag} className={`${getTagColor(tag)} backdrop-blur-sm text-xs font-bold px-2 py-1 rounded-full shadow-lg flex items-center`}>
+                        {renderTagContent(tag)}
+                        </span>
+                    ))}
+                </div>
+
+                <div className="absolute bottom-0 left-0 p-4 w-full">
+                     <div className="extra-info opacity-0 transition-opacity duration-500">
+                        <div className="flex items-center text-xs text-jungle-text/80 mb-1">
+                             <CalendarIcon className="w-3.5 h-3.5 ml-1.5 text-jungle-accent" />
+                             <span>{formattedDate}</span>
+                        </div>
+                        <div className="flex items-center text-xs text-jungle-text/80 mb-2">
+                            <LocationIcon className="w-3.5 h-3.5 ml-1.5 text-jungle-accent" />
+                            <span className="truncate">{party.location}</span>
+                        </div>
+                    </div>
+                     <h3 className="font-display text-2xl text-white truncate" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.7)' }}>
                         {party.name}
                     </h3>
                 </div>
             </div>
-            <div className="mt-2 text-center">
-                 <p className="text-md font-semibold text-jungle-text/80">{formattedDate}</p>
-            </div>
         </a>
     );
-};
+});
 
 interface PartyCarouselProps {
     title: string;
     parties: Party[];
     viewAllLink: string;
+    variant?: 'coverflow' | 'standard';
 }
 
-const PartyCarousel: React.FC<PartyCarouselProps> = ({ title, parties, viewAllLink }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isJumping, setIsJumping] = useState(false);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+const PartyCarousel: React.FC<PartyCarouselProps> = ({ title, parties, viewAllLink, variant = 'coverflow' }) => {
+    const swiperElRef = useRef<any>(null);
+    const uniqueId = useMemo(() => `carousel-${Math.random().toString(36).substr(2, 9)}`, []);
 
-  const now = new Date();
-  const upcomingParties = useMemo(() => parties
-    .filter(p => new Date(p.date) >= now)
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()), [parties]);
-  
-  const itemsToRender = useMemo(() => {
-    // We need at least one full screen of items cloned for a smooth loop
-    return upcomingParties.length > 4 ? [...upcomingParties, ...upcomingParties.slice(0, 5)] : upcomingParties;
-  }, [upcomingParties]);
-
-  const startCarousel = useCallback(() => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    intervalRef.current = setInterval(() => {
-      setCurrentIndex(prevIndex => prevIndex + 1);
-    }, 3000);
-  }, []);
-
-  const pauseCarousel = useCallback(() => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-  }, []);
-  
-  useEffect(() => {
-    if (upcomingParties.length === 0) return;
-
-    if (itemsToRender.length > upcomingParties.length) { // Check if animation is active
-        startCarousel();
-    }
-    return () => pauseCarousel();
-  }, [itemsToRender.length, upcomingParties.length, startCarousel, pauseCarousel]);
-  
-  const handleTransitionEnd = () => {
-    if (currentIndex >= upcomingParties.length) {
-      setIsJumping(true);
-    }
-  };
-
-  useEffect(() => {
-    if (isJumping) {
-        // After the transition ends and we are at a cloned item,
-        // set the index to 0. This will be an instant jump because
-        // `isJumping` will set `transition: 'none'`.
-        setCurrentIndex(0);
-    }
-  }, [isJumping]);
-  
-  useEffect(() => {
-      // This effect runs after the index has been reset to 0.
-      // We wait a moment and then turn transitions back on by setting isJumping to false.
-      if (currentIndex === 0 && isJumping) {
-          const timeoutId = setTimeout(() => setIsJumping(false), 50);
-          return () => clearTimeout(timeoutId);
-      }
-  }, [currentIndex, isJumping]);
+    const now = new Date();
+    const upcomingParties = useMemo(() => parties
+        .filter(p => new Date(p.date) >= now)
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()), [parties]);
 
 
-  if (upcomingParties.length === 0) {
-    return null;
-  }
-  
-  const isAnimated = upcomingParties.length > 4;
+    useEffect(() => {
+        if (!swiperElRef.current) return;
 
-  if (!isAnimated) {
+        const swiperContainer = swiperElRef.current;
+        let params = {};
+        
+        if (variant === 'coverflow') {
+            params = {
+                loop: upcomingParties.length > 3,
+                centeredSlides: true,
+                slidesPerView: 'auto',
+                spaceBetween: 16,
+                autoplay: {
+                    delay: 3500,
+                    disableOnInteraction: false,
+                    pauseOnMouseEnter: true,
+                },
+                navigation: {
+                    nextEl: `#next-${uniqueId}`,
+                    prevEl: `#prev-${uniqueId}`,
+                },
+                effect: 'coverflow',
+                coverflowEffect: {
+                    rotate: 0,
+                    stretch: 50,
+                    depth: 120,
+                    modifier: 1,
+                    slideShadows: false,
+                },
+            };
+        } else { // standard variant
+             params = {
+                loop: upcomingParties.length > 5,
+                centeredSlides: false,
+                slidesPerView: 'auto',
+                spaceBetween: 16,
+                navigation: {
+                    nextEl: `#next-${uniqueId}`,
+                    prevEl: `#prev-${uniqueId}`,
+                },
+            };
+        }
+
+        Object.assign(swiperContainer, params);
+        swiperContainer.initialize();
+    }, [upcomingParties, variant, uniqueId]);
+
+
+    if (upcomingParties.length === 0) return null;
+
+    const carouselClasses = `relative party-carousel ${variant === 'coverflow' ? 'party-carousel-coverflow' : 'party-carousel-standard'}`;
+    const slideStyle = { width: variant === 'coverflow' ? '224px' : '288px' };
+
     return (
-        <div>
-            <div className="flex justify-between items-center mb-4">
+        <div className="py-4">
+            <div className="flex justify-between items-center mb-4 px-4 sm:px-0">
                 <h2 className="text-3xl font-display text-white">{title}</h2>
                 <Link to={viewAllLink} className="text-jungle-accent hover:text-white transition-colors">הצג הכל</Link>
             </div>
-            <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
-                {upcomingParties.map(party => (
-                  <CarouselPartyCard key={party.id} party={party} />
-                ))}
-                <style>{`.scrollbar-hide::-webkit-scrollbar { display: none; } .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
+            <div className={carouselClasses}>
+                <swiper-container ref={swiperElRef} init="false" className="py-4">
+                    {upcomingParties.map((party) => (
+                        <swiper-slide key={party.id} style={slideStyle}>
+                            <CarouselPartyCard party={party} />
+                        </swiper-slide>
+                    ))}
+                </swiper-container>
+                <button id={`next-${uniqueId}`} className="swiper-button-next !right-0 sm:!-right-2"><ArrowRight className="w-6 h-6" /></button>
+                <button id={`prev-${uniqueId}`} className="swiper-button-prev !left-0 sm:!-left-2"><ArrowLeft className="w-6 h-6" /></button>
             </div>
         </div>
     );
-  }
-
-  const cardWidthWithGap = 256 + 16; // w-64 (256px) + gap-4 (16px)
-  const carouselStyle = {
-    transform: `translateX(-${currentIndex * cardWidthWithGap}px)`,
-    transition: isJumping ? 'none' : 'transform 0.5s ease-in-out',
-  };
-
-  return (
-    <div>
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-3xl font-display text-white">{title}</h2>
-        <Link to={viewAllLink} className="text-jungle-accent hover:text-white transition-colors">הצג הכל</Link>
-      </div>
-      <div 
-        className="relative w-full overflow-hidden" 
-        style={{ maskImage: 'linear-gradient(to left, transparent, black 5%, black 95%, transparent)' }}
-        onMouseEnter={pauseCarousel}
-        onMouseLeave={startCarousel}
-      >
-        <div 
-          className="flex gap-4" 
-          style={carouselStyle}
-          onTransitionEnd={handleTransitionEnd}
-        >
-          {itemsToRender.map((party, index) => (
-            <CarouselPartyCard key={`${party.id}-${index}`} party={party} />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
 };
 
 export default PartyCarousel;
