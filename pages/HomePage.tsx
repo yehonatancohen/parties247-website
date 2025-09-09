@@ -3,7 +3,6 @@ import { useParties } from '../hooks/useParties';
 import SeoManager from '../components/SeoManager';
 import LoadingSpinner from '../components/LoadingSpinner';
 import PartyCarousel from '../components/HotEventsCarousel'; 
-// FIX: Import the 'Party' type to resolve a TypeScript error.
 import { Party } from '../types';
 
 const HomePage: React.FC = () => {
@@ -31,6 +30,7 @@ const HomePage: React.FC = () => {
         <video
           src="https://vjkiztnx7gionfos.public.blob.vercel-storage.com/party_video.mp4"
           className="absolute z-0 w-full h-full object-cover brightness-[0.6]"
+          preload="metadata"
           autoPlay
           loop
           muted
