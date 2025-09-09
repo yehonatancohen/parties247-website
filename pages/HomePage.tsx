@@ -28,11 +28,15 @@ const HomePage: React.FC = () => {
       <SeoManager title={pageTitle} description={pageDescription} parties={parties} />
 
       <div className="relative text-center mb-12 -mt-8 h-[60vh] flex items-center justify-center overflow-hidden rounded-b-2xl shadow-lg -mx-4 sm:mx-0 border-b-4 border-wood-brown">
-        <img
-            src="https://images.unsplash.com/photo-1587280501635-397de3b339f4?q=80&w=2070"
-            alt="Jungle Party"
-            className="absolute z-0 w-full h-full object-cover brightness-[0.6]"
-        />
+        <video
+          src="https://vjkiztnx7gionfos.public.blob.vercel-storage.com/party_video.mp4"
+          className="absolute z-0 w-full h-full object-cover brightness-[0.6]"
+          autoPlay
+          loop
+          muted
+          playsInline
+        >
+        </video>
         <div className="absolute inset-0 bg-gradient-to-t from-jungle-deep via-transparent to-jungle-deep/50"></div>
         <div className="relative z-10 p-4">
             <h1 
