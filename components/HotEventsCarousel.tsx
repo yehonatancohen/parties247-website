@@ -141,75 +141,61 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({ title, parties, viewAllLi
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()), [parties]);
 
     const carouselParties = useMemo(() => {
-        if (upcomingParties.length === 0) {
-            return [];
-        }
-        // To ensure seamless looping, Swiper needs enough slides. We duplicate the array if it's too short.
-        const minSlides = variant === 'coverflow' ? 5 : 6;
-        if (upcomingParties.length > 0 && upcomingParties.length < minSlides) {
-            let duplicatedParties: Party[] = [];
-            while (duplicatedParties.length < minSlides) {
-                duplicatedParties = duplicatedParties.concat(upcomingParties);
-            }
-            return duplicatedParties;
-        }
-        return upcomingParties;
+        if (upcomingParties.length === 0) return [];
+        const min = variant === 'coverflow' ? 6 : 6; // enough for loop + auto width
+        if (upcomingParties.length >= min) return upcomingParties;
+        const times = Math.ceil(min / upcomingParties.length);
+        return Array.from({ length: times }, () => upcomingParties).flat().slice(0, min);
     }, [upcomingParties, variant]);
+
 
     useEffect(() => {
         if (!swiperElRef.current || carouselParties.length === 0) return;
 
         const swiperContainer = swiperElRef.current;
-        let params = {};
-        
-        if (variant === 'coverflow') {
-            params = {
-                loop: true,
+
+        const base = {
+            loop: true,
+            slidesPerView: 'auto',
+            spaceBetween: 16,
+            // lazy removed. If you want Swiper lazy, also set preloadImages:false and use swiper-lazy + data-src on <img>.
+            loopAdditionalSlides: 6,        // prevents “empty leftmost” during loop
+            observer: true,
+            observeParents: true,
+            watchSlidesProgress: true,
+            navigation: {
+            nextEl: `#next-${uniqueId}`,
+            prevEl: `#prev-${uniqueId}`,
+            },
+        };
+
+        const params =
+            variant === 'coverflow'
+            ? {
+                ...base,
                 centeredSlides: true,
-                slidesPerView: 'auto',
-                spaceBetween: 16,
-                lazy: {
-                    loadPrevNext: true,
-                    loadPrevNextAmount: 5,
-                },
-                autoplay: {
-                    delay: 3500,
-                    disableOnInteraction: false,
-                    pauseOnMouseEnter: true,
-                },
-                navigation: {
-                    nextEl: `#next-${uniqueId}`,
-                    prevEl: `#prev-${uniqueId}`,
-                },
                 effect: 'coverflow',
-                coverflowEffect: {
-                    rotate: 0,
-                    stretch: 50,
-                    depth: 120,
-                    modifier: 1,
-                    slideShadows: false,
-                },
-            };
-        } else { // standard variant
-             params = {
-                loop: true,
+                coverflowEffect: { rotate: 0, stretch: 50, depth: 120, modifier: 1, slideShadows: false },
+                autoplay: { delay: 3500, disableOnInteraction: false, pauseOnMouseEnter: true },
+                }
+            : {
+                ...base,
                 centeredSlides: false,
-                slidesPerView: 'auto',
-                spaceBetween: 16,
-                lazy: {
-                    loadPrevNext: true,
-                    loadPrevNextAmount: 5,
-                },
-                navigation: {
-                    nextEl: `#next-${uniqueId}`,
-                    prevEl: `#prev-${uniqueId}`,
-                },
-            };
-        }
+                };
 
         Object.assign(swiperContainer, params);
         swiperContainer.initialize();
-    }, [carouselParties, upcomingParties.length, variant, uniqueId]);
+
+        // ensure correct measurements and cloned slides are ready
+        const s = swiperContainer.swiper;
+        if (s) {
+            s.updateSlides();
+            s.updateAutoHeight();
+            s.update();
+            s.slideToLoop(0, 0, false);
+        }
+        }, [carouselParties, variant, uniqueId]);
+
 
 
     if (upcomingParties.length === 0) return null;
