@@ -4,8 +4,33 @@ import { Party } from '../types';
 import { AFFILIATE_CODE } from '../constants';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
 
-// FIX: Removed redundant Swiper custom element type definitions to resolve JSX errors.
-// The necessary types are already declared globally in `types.ts`.
+// FIX: Re-added Swiper custom element type definitions to resolve JSX errors for 'swiper-container' and 'swiper-slide'.
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      'swiper-container': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      > & {
+        init?: 'true' | 'false';
+        class?: string;
+        navigation?: 'true' | 'false';
+        pagination?: 'true' | 'false';
+        loop?: 'true' | 'false';
+        effect?: 'slide' | 'fade' | 'cube' | 'coverflow' | 'flip';
+        'slides-per-view'?: number | 'auto';
+        'centered-slides'?: 'true' | 'false';
+        lazy?: 'true' | 'false';
+      };
+      'swiper-slide': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      > & {
+        lazy?: 'true' | 'false';
+      };
+    }
+  }
+}
 
 // --- SVG Arrow Icons ---
 const ArrowLeft: FC<{ className?: string }> = ({ className }) => (
@@ -62,8 +87,9 @@ const CarouselPartyCard: FC<{ party: Party }> = React.memo(({ party }) => {
         >
             <div className="relative rounded-xl overflow-hidden shadow-lg transition-all duration-500 ease-in-out border border-wood-brown/50">
                 <img
-                    data-src={party.imageUrl}
+                    src={party.imageUrl}
                     alt={party.name}
+                    loading="lazy"
                     className="swiper-lazy w-full aspect-[3/4] object-cover"
                 />
                 <div className="swiper-lazy-preloader"></div>
@@ -204,7 +230,7 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({ title, parties, viewAllLi
                 </div>
             </div>
             <div className={carouselClasses}>
-                <swiper-container ref={swiperElRef} init="false" class="py-4">
+                <swiper-container ref={swiperElRef} init="false" class="py-4" lazy="true">
                     {carouselParties.map((party, index) => (
                         <swiper-slide key={`${party.id}-${index}`} style={slideStyle} lazy="true">
                             <CarouselPartyCard party={party} />
