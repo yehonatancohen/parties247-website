@@ -4,18 +4,46 @@ import { Party } from '../types';
 import { AFFILIATE_CODE } from '../constants';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
 
+// FIX: Add Swiper custom element type definitions to resolve JSX errors for swiper-container and swiper-slide.
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      'swiper-container': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      > & {
+        init?: 'true' | 'false';
+        class?: string;
+        navigation?: 'true' | 'false';
+        pagination?: 'true' | 'false';
+        loop?: 'true' | 'false';
+        effect?: 'slide' | 'fade' | 'cube' | 'coverflow' | 'flip';
+        'slides-per-view'?: number | 'auto';
+        'centered-slides'?: 'true' | 'false';
+      };
+      'swiper-slide': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      > & {
+        lazy?: 'true' | 'false';
+      };
+    }
+  }
+}
+
 // --- SVG Arrow Icons ---
 const ArrowLeft: FC<{ className?: string }> = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
   </svg>
 );
 
 const ArrowRight: FC<{ className?: string }> = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
   </svg>
 );
+
 
 // --- Tag Helpers (adapted from PartyCard) ---
 const getTagColor = (tag: string) => {
@@ -56,13 +84,14 @@ const CarouselPartyCard: FC<{ party: Party }> = React.memo(({ party }) => {
             className="group block outline-none"
             aria-label={`View details for ${party.name}`}
         >
-            <div className="party-card-glow relative rounded-xl overflow-hidden shadow-lg transition-all duration-500 ease-in-out border border-wood-brown/50">
+            <div className="relative rounded-xl overflow-hidden shadow-lg transition-all duration-500 ease-in-out border border-wood-brown/50">
                 <img
-                    src={party.imageUrl}
+                    data-src={party.imageUrl}
                     alt={party.name}
-                    className="w-full aspect-[3/4] object-cover"
-                    loading="lazy"
+                    className="swiper-lazy w-full aspect-[3/4] object-cover"
                 />
+                <div className="swiper-lazy-preloader"></div>
+
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                 
                  <div className="absolute top-3 right-3 flex flex-col gap-2 z-10">
@@ -109,19 +138,38 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({ title, parties, viewAllLi
         .filter(p => new Date(p.date) >= now)
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()), [parties]);
 
+    const carouselParties = useMemo(() => {
+        if (upcomingParties.length === 0) {
+            return [];
+        }
+        // To ensure seamless looping, Swiper needs enough slides. We duplicate the array if it's too short.
+        const minSlides = variant === 'coverflow' ? 5 : 6;
+        if (upcomingParties.length > 0 && upcomingParties.length < minSlides) {
+            let duplicatedParties: Party[] = [];
+            while (duplicatedParties.length < minSlides) {
+                duplicatedParties = duplicatedParties.concat(upcomingParties);
+            }
+            return duplicatedParties;
+        }
+        return upcomingParties;
+    }, [upcomingParties, variant]);
 
     useEffect(() => {
-        if (!swiperElRef.current) return;
+        if (!swiperElRef.current || carouselParties.length === 0) return;
 
         const swiperContainer = swiperElRef.current;
         let params = {};
         
         if (variant === 'coverflow') {
             params = {
-                loop: upcomingParties.length > 3,
+                loop: true,
                 centeredSlides: true,
                 slidesPerView: 'auto',
                 spaceBetween: 16,
+                lazy: {
+                    loadPrevNext: true,
+                    loadPrevNextAmount: 5,
+                },
                 autoplay: {
                     delay: 3500,
                     disableOnInteraction: false,
@@ -142,10 +190,14 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({ title, parties, viewAllLi
             };
         } else { // standard variant
              params = {
-                loop: upcomingParties.length > 5,
+                loop: true,
                 centeredSlides: false,
                 slidesPerView: 'auto',
                 spaceBetween: 16,
+                lazy: {
+                    loadPrevNext: true,
+                    loadPrevNextAmount: 5,
+                },
                 navigation: {
                     nextEl: `#next-${uniqueId}`,
                     prevEl: `#prev-${uniqueId}`,
@@ -155,7 +207,7 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({ title, parties, viewAllLi
 
         Object.assign(swiperContainer, params);
         swiperContainer.initialize();
-    }, [upcomingParties, variant, uniqueId]);
+    }, [carouselParties, upcomingParties.length, variant, uniqueId]);
 
 
     if (upcomingParties.length === 0) return null;
@@ -167,18 +219,22 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({ title, parties, viewAllLi
         <div className="py-4">
             <div className="flex justify-between items-center mb-4 px-4 sm:px-0">
                 <h2 className="text-3xl font-display text-white">{title}</h2>
-                <Link to={viewAllLink} className="text-jungle-accent hover:text-white transition-colors">הצג הכל</Link>
+                <div className="flex items-center gap-4">
+                    <Link to={viewAllLink} className="text-jungle-accent hover:text-white transition-colors">הצג הכל</Link>
+                    <div className="flex gap-2">
+                        <button id={`prev-${uniqueId}`} className="swiper-button-prev !static !w-11 !h-11"><ArrowRight className="w-6 h-6" /></button>
+                        <button id={`next-${uniqueId}`} className="swiper-button-next !static !w-11 !h-11"><ArrowLeft className="w-6 h-6" /></button>
+                    </div>
+                </div>
             </div>
             <div className={carouselClasses}>
-                <swiper-container ref={swiperElRef} init="false" className="py-4">
-                    {upcomingParties.map((party) => (
-                        <swiper-slide key={party.id} style={slideStyle}>
+                <swiper-container ref={swiperElRef} init="false" class="py-4">
+                    {carouselParties.map((party, index) => (
+                        <swiper-slide key={`${party.id}-${index}`} style={slideStyle} lazy="true">
                             <CarouselPartyCard party={party} />
                         </swiper-slide>
                     ))}
                 </swiper-container>
-                <button id={`next-${uniqueId}`} className="swiper-button-next !right-0 sm:!-right-2"><ArrowRight className="w-6 h-6" /></button>
-                <button id={`prev-${uniqueId}`} className="swiper-button-prev !left-0 sm:!-left-2"><ArrowLeft className="w-6 h-6" /></button>
             </div>
         </div>
     );

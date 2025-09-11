@@ -48,6 +48,8 @@ declare global {
         HTMLElement
       > & {
         init?: 'true' | 'false';
+        // FIX: Add class property to resolve declaration conflicts and support web component usage.
+        class?: string;
         // Add other common Swiper attributes for better type safety
         navigation?: 'true' | 'false';
         pagination?: 'true' | 'false';
