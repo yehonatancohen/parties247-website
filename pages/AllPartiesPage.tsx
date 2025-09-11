@@ -38,7 +38,7 @@ const AllPartiesPage: React.FC = () => {
     });
   }, [parties, filters, searchTerm]);
 
-  const pageTitle = 'כל המסיבות - Party 24/7';
+  const pageTitle = 'כל המסיבות - Parties 24/7';
   const pageDescription = 'חיפוש וסינון בכל המסיבות, הרייבים והאירועים בישראל. מצאו את המסיבה המושלמת עבורכם לפי אזור, סגנון מוזיקה, תאריך ועוד.';
 
   if (isLoading) {

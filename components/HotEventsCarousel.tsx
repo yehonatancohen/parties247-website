@@ -4,32 +4,8 @@ import { Party } from '../types';
 import { AFFILIATE_CODE } from '../constants';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
 
-// FIX: Add Swiper custom element type definitions to resolve JSX errors for swiper-container and swiper-slide.
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      'swiper-container': React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement>,
-        HTMLElement
-      > & {
-        init?: 'true' | 'false';
-        class?: string;
-        navigation?: 'true' | 'false';
-        pagination?: 'true' | 'false';
-        loop?: 'true' | 'false';
-        effect?: 'slide' | 'fade' | 'cube' | 'coverflow' | 'flip';
-        'slides-per-view'?: number | 'auto';
-        'centered-slides'?: 'true' | 'false';
-      };
-      'swiper-slide': React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement>,
-        HTMLElement
-      > & {
-        lazy?: 'true' | 'false';
-      };
-    }
-  }
-}
+// FIX: Removed redundant Swiper custom element type definitions to resolve JSX errors.
+// The necessary types are already declared globally in `types.ts`.
 
 // --- SVG Arrow Icons ---
 const ArrowLeft: FC<{ className?: string }> = ({ className }) => (

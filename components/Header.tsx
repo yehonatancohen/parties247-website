@@ -82,7 +82,7 @@ const Header: React.FC = () => {
             {/* Brand Logo */}
             <div onClick={handleLogoClick} className="cursor-pointer flex-shrink-0 z-50">
                <Link to="/" className="flex items-center">
-                 <img src="https://vjkiztnx7gionfos.public.blob.vercel-storage.com/Partieslogo.PNG" alt="Party 24/7 Logo" className="h-16 w-auto" />
+                 <img src="https://vjkiztnx7gionfos.public.blob.vercel-storage.com/Partieslogo.PNG" alt="Parties 24/7 Logo" className="h-16 w-auto" />
                </Link>
             </div>
 

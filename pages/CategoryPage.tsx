@@ -32,7 +32,7 @@ const CategoryPage: React.FC = () => {
 
   return (
     <>
-      <SeoManager title={`${carousel.title} - Party 24/7`} description={`רשימת המסיבות המלאה לקטגוריית ${carousel.title}.`} />
+      <SeoManager title={`${carousel.title} - Parties 24/7`} description={`רשימת המסיבות המלאה לקטגוריית ${carousel.title}.`} />
       <div>
         <h1 className="text-5xl font-display text-center mb-8 text-white">{carousel.title}</h1>
         <PartyGrid parties={categoryParties} />

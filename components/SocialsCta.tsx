@@ -7,7 +7,7 @@ const SocialsCta: React.FC = () => {
     <section className="bg-jungle-surface py-12 mt-16 border-y-2 border-wood-brown/50">
       <div className="container mx-auto px-4 text-center">
         <h2 className="text-3xl md:text-4xl font-display mb-2 text-white">אל תפספסו אף מסיבה!</h2>
-        <p className="text-base md:text-lg text-jungle-text/80 mb-6">הצטרפו ל-50,000+ העוקבים שלנו בג'ונגל</p>
+        <p className="text-base md:text-lg text-jungle-text/80 mb-6">הצטרפו ל-10,000+ העוקבים שלנו בג'ונגל</p>
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
           <a
             href={SOCIAL_LINKS.instagram}

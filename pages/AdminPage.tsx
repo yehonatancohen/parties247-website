@@ -51,7 +51,7 @@ const AdminPage: React.FC = () => {
 
   return (
     <>
-      <SeoManager title="Admin Panel - Party 24/7" description="Manage parties for Party 24/7." />
+      <SeoManager title="Admin Panel - Parties 24/7" description="Manage parties for Parties 24/7." />
       <div>
         {renderContent()}
       </div>

@@ -9,7 +9,7 @@ import { Party } from '../types';
 const HomePage: React.FC = () => {
   const { parties, carousels, isLoading } = useParties();
 
-  const pageTitle = 'Party 24/7 - כל המסיבות הכי שוות בישראל';
+  const pageTitle = 'Parties 24/7 - כל המסיבות הכי שוות בישראל';
   const pageDescription = 'האתר המוביל לחיי הלילה בישראל. גלו מסיבות, רייבים ואירועים מיוחדים בכל רחבי הארץ ורכשו כרטיסים בקלות.';
 
   if (isLoading) {
