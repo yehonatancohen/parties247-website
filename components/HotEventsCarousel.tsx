@@ -214,8 +214,8 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({ title, parties, viewAllLi
           <div className="flex items-center gap-4">
             <Link to={viewAllLink} className="text-jungle-accent hover:text-white transition-colors">הצג הכל</Link>
             <div className="flex gap-2">
-              <button id={`prev-${uniqueId}`} className="swiper-button-prev !static !w-11 !h-11"><ArrowRight className="w-6 h-6" /></button>
-              <button id={`next-${uniqueId}`} className="swiper-button-next !static !w-11 !h-11"><ArrowLeft className="w-6 h-6" /></button>
+              <button id={`prev-${uniqueId}`} className="swiper-button-prev !static !w-11 !h-11"><ArrowLeft className="w-6 h-6" /></button>
+              <button id={`next-${uniqueId}`} className="swiper-button-next !static !w-11 !h-11"><ArrowRight className="w-6 h-6" /></button>
             </div>
           </div>
         </div>
