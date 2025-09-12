@@ -57,6 +57,8 @@ declare global {
         effect?: 'slide' | 'fade' | 'cube' | 'coverflow' | 'flip';
         'slides-per-view'?: number | 'auto';
         'centered-slides'?: 'true' | 'false';
+        // FIX: Add 'lazy' property to resolve type conflict with its use in HotEventsCarousel.tsx.
+        lazy?: 'true' | 'false';
       };
       'swiper-slide': React.DetailedHTMLProps<
         React.HTMLAttributes<HTMLElement>,

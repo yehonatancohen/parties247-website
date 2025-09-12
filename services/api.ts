@@ -1,18 +1,18 @@
 import { Party, Carousel } from '../types';
 
 const API_URL = 'https://parties247-backend.onrender.com/api';
-const ADMIN_KEY_STORAGE = 'adminSecretKey';
+const JWT_TOKEN_STORAGE = 'jwtAuthToken';
 
 // --- Helper Functions ---
 
 /**
- * Retrieves the admin secret key from session storage and builds the auth header.
- * @returns An object containing the x-admin-secret-key header, or an empty object.
+ * Retrieves the JWT from session storage and builds the Authorization header.
+ * @returns An object containing the Authorization header, or an empty object.
  */
 const getAuthHeader = (): { [key: string]: string } => {
-  const key = sessionStorage.getItem(ADMIN_KEY_STORAGE);
-  if (key) {
-    return { 'x-admin-secret-key': key };
+  const token = sessionStorage.getItem(JWT_TOKEN_STORAGE);
+  if (token) {
+    return { 'Authorization': `Bearer ${token}` };
   }
   return {};
 };
@@ -188,11 +188,32 @@ export const deleteCarousel = async (carouselId: string): Promise<void> => {
 };
 
 /**
- * Verifies if the provided admin key is valid by making a request to a protected endpoint.
- * @returns A promise that resolves if the key is valid, and rejects otherwise.
+ * Authenticates the admin with a password to get a JWT.
+ * @param password - The admin password.
  */
-export const verifyAdminKey = async (): Promise<void> => {
-  const response = await fetch(`${API_URL}/admin/verify-key`, {
+export const login = async (password: string): Promise<void> => {
+  const response = await fetch(`${API_URL}/admin/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password }),
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || 'Login failed');
+  }
+  if (data.token) {
+    sessionStorage.setItem(JWT_TOKEN_STORAGE, data.token);
+  } else {
+    throw new Error('Login response did not include a token.');
+  }
+};
+
+/**
+ * Verifies if the stored JWT is valid by making a request to a protected endpoint.
+ * @returns A promise that resolves if the token is valid, and rejects otherwise.
+ */
+export const verifyToken = async (): Promise<void> => {
+  const response = await fetch(`${API_URL}/admin/verify-token`, {
     method: 'POST',
     headers: {
       ...getAuthHeader(),
@@ -201,7 +222,7 @@ export const verifyAdminKey = async (): Promise<void> => {
 
   if (!response.ok) {
     // Try to parse the error message from backend, with a fallback.
-    const message = (await response.json().catch(() => ({}))).message || 'Invalid admin key';
+    const message = (await response.json().catch(() => ({}))).message || 'Invalid or expired token';
     throw new Error(message);
   }
 };

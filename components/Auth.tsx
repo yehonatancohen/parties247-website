@@ -3,7 +3,7 @@ import LoadingSpinner from './LoadingSpinner';
 import * as api from '../services/api';
 
 interface AuthProps {
-  onAuthSuccess: (key: string) => void;
+  onAuthSuccess: () => void;
 }
 
 const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
@@ -13,25 +13,20 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const key = password.trim();
-    if (!key) return;
+    const pass = password.trim();
+    if (!pass) return;
 
     setIsLoading(true);
     setError(null);
 
-    // Temporarily set the key in session storage so the API service can use it.
-    sessionStorage.setItem('adminSecretKey', key);
-
     try {
-      await api.verifyAdminKey();
-      // If verification succeeds, notify the parent component.
-      onAuthSuccess(key);
+      await api.login(pass);
+      onAuthSuccess();
     } catch (err) {
-      // If it fails, clear the invalid key and display an error.
-      sessionStorage.removeItem('adminSecretKey');
       const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
       setError(`Login failed: ${errorMessage}`);
-      setIsLoading(false);
+    } finally {
+        setIsLoading(false);
     }
   };
 
@@ -40,7 +35,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
       <form onSubmit={handleSubmit} className="bg-jungle-surface p-8 rounded-lg shadow-lg border border-wood-brown/50">
         <h2 className="text-center text-3xl font-display mb-6 text-white">Admin Access</h2>
         <div className="mb-4">
-          <label htmlFor="password" className="block text-sm font-medium text-jungle-text/80 mb-2">Secret Key</label>
+          <label htmlFor="password" className="block text-sm font-medium text-jungle-text/80 mb-2">Password</label>
           <input
             type="password"
             id="password"

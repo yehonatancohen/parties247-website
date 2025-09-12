@@ -5,22 +5,22 @@ import SeoManager from '../components/SeoManager';
 import * as api from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 
-const ADMIN_KEY_STORAGE = 'adminSecretKey';
+const JWT_TOKEN_STORAGE = 'jwtAuthToken';
 
 const AdminPage: React.FC = () => {
   const [authStatus, setAuthStatus] = useState<'checking' | 'authenticated' | 'unauthenticated'>('checking');
 
   useEffect(() => {
-    const verifyKeyOnLoad = async () => {
-      const key = sessionStorage.getItem(ADMIN_KEY_STORAGE);
-      if (key) {
+    const verifyTokenOnLoad = async () => {
+      const token = sessionStorage.getItem(JWT_TOKEN_STORAGE);
+      if (token) {
         try {
-          // Validate the key from session storage against the backend.
-          await api.verifyAdminKey();
+          // Validate the token from session storage against the backend.
+          await api.verifyToken();
           setAuthStatus('authenticated');
         } catch (error) {
-          // If validation fails, remove the invalid key.
-          sessionStorage.removeItem(ADMIN_KEY_STORAGE);
+          // If validation fails, remove the invalid token.
+          sessionStorage.removeItem(JWT_TOKEN_STORAGE);
           setAuthStatus('unauthenticated');
         }
       } else {
@@ -28,11 +28,11 @@ const AdminPage: React.FC = () => {
       }
     };
 
-    verifyKeyOnLoad();
+    verifyTokenOnLoad();
   }, []);
 
-  const handleAuthSuccess = (key: string) => {
-    // The key has already been verified by the Auth component.
+  const handleAuthSuccess = () => {
+    // The token is now stored in sessionStorage by the api.login service.
     // We just need to update the state to render the dashboard.
     setAuthStatus('authenticated');
   };
