@@ -21,7 +21,8 @@ const HomePage: React.FC = () => {
       .map(id => parties.find(p => p.id === id))
       .filter((p): p is Party => Boolean(p));
     return { ...carousel, parties: carouselParties };
-  }).filter(c => c.parties.length > 0);
+  }).filter(c => c.parties.length > 0)
+    .sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity));
 
   return (
     <>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Party } from '../types';
-import { AFFILIATE_CODE } from '../constants';
+import { useParties } from '../hooks/useParties';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon, LeafIcon } from './Icons';
 
 interface PartyCardProps {
@@ -8,6 +8,8 @@ interface PartyCardProps {
 }
 
 const PartyCard: React.FC<PartyCardProps> = ({ party }) => {
+  const { defaultReferral } = useParties();
+  
   const partyDate = new Date(party.date);
   const formattedDate = new Intl.DateTimeFormat('he-IL', {
     weekday: 'long',
@@ -20,13 +22,22 @@ const PartyCard: React.FC<PartyCardProps> = ({ party }) => {
   }).format(partyDate);
 
 
-  const getAffiliateUrl = (originalUrl: string) => {
+  const getReferralUrl = (originalUrl: string, partyReferral?: string): string => {
     try {
+      const referralCode = partyReferral || defaultReferral;
+  
+      if (!referralCode) {
+        return originalUrl;
+      }
+  
       const url = new URL(originalUrl);
-      url.searchParams.set('aff', AFFILIATE_CODE);
+      url.searchParams.delete('aff');
+      url.searchParams.delete('ref');
+      url.searchParams.set('ref', referralCode);
       return url.toString();
     } catch (error) {
-      return originalUrl; // Fallback if URL is invalid
+      console.error("Error creating referral URL:", error);
+      return originalUrl;
     }
   };
   
@@ -72,7 +83,7 @@ const PartyCard: React.FC<PartyCardProps> = ({ party }) => {
             </div>
         </div>
         <a
-          href={getAffiliateUrl(party.originalUrl)}
+          href={getReferralUrl(party.originalUrl, party.referralCode)}
           target="_blank"
           rel="noopener noreferrer"
           className="mt-auto flex items-center justify-center gap-2 text-center bg-gradient-to-r from-jungle-lime to-jungle-accent hover:from-jungle-lime/80 hover:to-jungle-accent/80 text-jungle-deep font-display text-2xl py-3 px-4 rounded-lg transition-all w-full group-hover:scale-105 tracking-wider"

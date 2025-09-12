@@ -1,18 +1,6 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback } from 'react';
-import { Party, Carousel } from '../types';
+import { Party, Carousel, PartyContextType } from '../types';
 import * as api from '../services/api';
-
-interface PartyContextType {
-  parties: Party[];
-  carousels: Carousel[];
-  addParty: (url: string) => Promise<void>;
-  deleteParty: (partyId: string) => Promise<void>;
-  updateParty: (party: Party) => Promise<void>;
-  addCarousel: (title: string) => Promise<void>;
-  updateCarousel: (carousel: Carousel) => Promise<void>;
-  deleteCarousel: (carouselId: string) => Promise<void>;
-  isLoading: boolean;
-}
 
 const PartyContext = createContext<PartyContextType | undefined>(undefined);
 
@@ -20,21 +8,31 @@ export const PartyProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const [parties, setParties] = useState<Party[]>([]);
   const [carousels, setCarousels] = useState<Carousel[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [defaultReferral, setDefaultReferralState] = useState<string>('');
+
+  const fetchCarousels = useCallback(async () => {
+    try {
+      const fetchedCarousels = await api.getCarousels();
+      setCarousels(fetchedCarousels);
+    } catch (error) {
+      console.error('Failed to refetch carousels', error);
+    }
+  }, []);
 
   // Effect for initial data load
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch parties and carousels from the backend API concurrently
-        const [fetchedParties, fetchedCarousels] = await Promise.all([
+        const [fetchedParties, fetchedCarousels, fetchedReferral] = await Promise.all([
             api.getParties(),
-            api.getCarousels()
+            api.getCarousels(),
+            api.getDefaultReferral(),
         ]);
         setParties(fetchedParties);
         setCarousels(fetchedCarousels);
+        setDefaultReferralState(fetchedReferral);
       } catch (error) {
         console.error('Failed to load initial data', error);
-        // Handle error state in UI if necessary
       } finally {
         setIsLoading(false);
       }
@@ -46,30 +44,33 @@ export const PartyProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     try {
         const newParty = await api.addParty(url);
         setParties(prev => [newParty, ...prev]);
+        return newParty;
     } catch (error) {
         console.error("Failed to add party:", error);
         const errorMessage = error instanceof Error ? error.message : "Could not add party.";
         alert(`Error: ${errorMessage}`);
-        throw error; // Re-throw to allow component to handle it
-    }
-  }, []);
-  
-  const updateParty = useCallback(async (updatedParty: Party) => {
-    try {
-        await api.updateParty(updatedParty.id, { tags: updatedParty.tags });
-        setParties(prev => prev.map(p => p.id === updatedParty.id ? updatedParty : p));
-    } catch (error) {
-        console.error("Failed to update party:", error);
-        alert("Error: Could not update party.");
         throw error;
     }
   }, []);
+  
+  const updateParty = useCallback(async (partyToUpdate: Party) => {
+    try {
+        const { id, ...partyData } = partyToUpdate;
+        await api.updateParty(id, partyData);
+        setParties(prev => prev.map(p => p.id === id ? partyToUpdate : p));
+    } catch (error) {
+        console.error("Failed to update party:", error);
+        const errorMessage = error instanceof Error ? error.message : "Could not update party.";
+        alert(`Error: ${errorMessage}`);
+        throw error;
+    }
+  }, []);
+
 
   const deleteParty = useCallback(async (partyId: string) => {
     try {
         await api.deleteParty(partyId);
         setParties(prev => prev.filter(p => p.id !== partyId));
-        // Also remove the party from any carousels it might be in
         setCarousels(prev => prev.map(c => ({...c, partyIds: c.partyIds.filter(id => id !== partyId)})));
     } catch (error) {
         console.error("Failed to delete party:", error);
@@ -91,8 +92,8 @@ export const PartyProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
   const updateCarousel = useCallback(async (updatedCarousel: Carousel) => {
     try {
-      const savedCarousel = await api.updateCarousel(updatedCarousel);
-      setCarousels(prev => prev.map(c => c.id === savedCarousel.id ? savedCarousel : c));
+      await api.updateCarousel(updatedCarousel);
+      setCarousels(prev => prev.map(c => c.id === updatedCarousel.id ? updatedCarousel : c));
     } catch (error) {
       console.error("Failed to update carousel:", error);
       alert("Error: Could not update carousel.");
@@ -110,10 +111,40 @@ export const PartyProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       throw error;
     }
   }, []);
+
+  const refetchCarousels = useCallback(async () => {
+    await fetchCarousels();
+  }, [fetchCarousels]);
+
+  const setDefaultReferral = useCallback(async (code: string) => {
+    try {
+      await api.setDefaultReferral(code);
+      setDefaultReferralState(code);
+    } catch (error) {
+      console.error("Failed to set default referral:", error);
+      alert("Error: Could not set default referral code.");
+      throw error;
+    }
+  }, []);
   
+  const contextValue: PartyContextType = {
+    parties,
+    carousels,
+    addParty,
+    deleteParty,
+    updateParty,
+    addCarousel,
+    updateCarousel,
+    deleteCarousel,
+    isLoading,
+    refetchCarousels,
+    defaultReferral,
+    setDefaultReferral,
+  };
+
   return React.createElement(
     PartyContext.Provider,
-    { value: { parties, carousels, addParty, deleteParty, updateParty, addCarousel, updateCarousel, deleteCarousel, isLoading } },
+    { value: contextValue },
     children
   );
 };

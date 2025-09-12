@@ -1,8 +1,12 @@
 import React, { useRef, useEffect, useMemo, FC } from 'react';
 import { Link } from 'react-router-dom';
 import { Party } from '../types';
-import { AFFILIATE_CODE } from '../constants';
+import { useParties } from '../hooks/useParties';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
+
+// FIX: Removed duplicated Swiper element type definitions. 
+// These are already declared globally in 'types.ts'. Relying on the single source of truth
+// in the global types file resolves JSX intrinsic element errors for swiper components.
 
 // --- SVG Arrow Icons ---
 const ArrowLeft: FC<{ className?: string }> = ({ className }) => (
@@ -33,12 +37,23 @@ const renderTagContent = (tag: string) => {
 };
 
 const CarouselPartyCard: FC<{ party: Party }> = React.memo(({ party }) => {
-  const getAffiliateUrl = (originalUrl: string) => {
+  const { defaultReferral } = useParties();
+
+  const getReferralUrl = (originalUrl: string, partyReferral?: string): string => {
     try {
+      const referralCode = partyReferral || defaultReferral;
+  
+      if (!referralCode) {
+        return originalUrl;
+      }
+  
       const url = new URL(originalUrl);
-      url.searchParams.set('aff', AFFILIATE_CODE);
+      url.searchParams.delete('aff');
+      url.searchParams.delete('ref');
+      url.searchParams.set('ref', referralCode);
       return url.toString();
-    } catch {
+    } catch (error) {
+      console.error("Error creating referral URL:", error);
       return originalUrl;
     }
   };
@@ -50,7 +65,7 @@ const CarouselPartyCard: FC<{ party: Party }> = React.memo(({ party }) => {
 
   return (
     <a
-      href={getAffiliateUrl(party.originalUrl)}
+      href={getReferralUrl(party.originalUrl, party.referralCode)}
       target="_blank"
       rel="noopener noreferrer"
       className="group block outline-none"
@@ -154,9 +169,6 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({ title, parties, viewAllLi
     const swiperEl = swiperElRef.current;
     if (!swiperEl || slides.length === 0) return;
     
-    // The main fix is simplifying the configuration. By manually duplicating the slides,
-    // we satisfy Swiper's loop requirements. We no longer need conflicting parameters
-    // like `loopedSlides`. A simple `loop: true` is sufficient.
     const commonParams = {
       breakpoints: BREAKPOINTS,
       spaceBetween: 12,

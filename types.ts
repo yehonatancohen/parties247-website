@@ -1,4 +1,3 @@
-// FIX: Import React to make React's DetailedHTMLProps available for JSX namespace augmentation.
 import React from 'react';
 
 export interface Party {
@@ -14,12 +13,14 @@ export interface Party {
   eventType: 'מסיבת בית' | 'מסיבת מועדון' | 'מסיבת טבע' | 'פסטיבל' | 'אחר';
   age: 'נוער' | '18+' | '21+' | 'כל הגילאים';
   tags: string[];
+  referralCode?: string;
 }
 
 export interface Carousel {
   id: string;
   title: string;
   partyIds: string[];
+  order?: number;
 }
 
 export interface Article {
@@ -38,38 +39,41 @@ export type FilterState = {
     date?: string;
 };
 
+export interface PartyContextType {
+  parties: Party[];
+  carousels: Carousel[];
+  addParty: (url: string) => Promise<Party>;
+  deleteParty: (partyId: string) => Promise<void>;
+  updateParty: (partyToUpdate: Party) => Promise<void>;
+  addCarousel: (title: string) => Promise<void>;
+  updateCarousel: (carousel: Carousel) => Promise<void>;
+  deleteCarousel: (carouselId: string) => Promise<void>;
+  isLoading: boolean;
+  refetchCarousels: () => Promise<void>;
+  defaultReferral: string;
+  setDefaultReferral: (code: string) => Promise<void>;
+}
+
+
 // Swiper types for React
-// FIX: Refactored the Swiper custom element type definitions to resolve JSX errors.
-// By explicitly merging custom props with React.HTMLAttributes inside React.DetailedHTMLProps,
-// we ensure TypeScript correctly recognizes 'swiper-container' and 'swiper-slide'
-// as valid JSX elements, along with all standard and custom attributes.
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      'swiper-container': React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement> & {
-          // Swiper-specific attributes used in JSX
-          init?: 'true' | 'false';
-          navigation?: 'true' | 'false';
-          pagination?: 'true' | 'false';
-          loop?: 'true' | 'false';
-          effect?: 'slide' | 'fade' | 'cube' | 'coverflow' | 'flip';
-          'slides-per-view'?: number | 'auto';
-          'centered-slides'?: 'true' | 'false';
-          lazy?: 'true' | 'false';
-          // The `class` attribute is used for web components instead of `className`
-          class?: string;
-        },
-        HTMLElement
-      >;
-      'swiper-slide': React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement> & {
-          lazy?: 'true' | 'false';
-          // The `class` attribute is used for web components instead of `className`
-          class?: string;
-        },
-        HTMLElement
-      >;
+      'swiper-container': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement> & {
+        init?: 'true' | 'false';
+        navigation?: 'true' | 'false';
+        pagination?: 'true' | 'false';
+        loop?: 'true' | 'false';
+        effect?: 'slide' | 'fade' | 'cube' | 'coverflow' | 'flip';
+        'slides-per-view'?: number | 'auto';
+        'centered-slides'?: 'true' | 'false';
+        lazy?: 'true' | 'false';
+        class?: string;
+      }, HTMLElement>;
+      'swiper-slide': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement> & {
+        lazy?: 'true' | 'false';
+        class?: string;
+      }, HTMLElement>;
     }
   }
 }

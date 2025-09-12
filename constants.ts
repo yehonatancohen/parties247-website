@@ -1,6 +1,4 @@
-
-
-export const AFFILIATE_CODE = 'party247';
+export const AFFILIATE_CODE = 'party247'; // Legacy - replaced by dynamic referral codes
 export const SOCIAL_LINKS = {
   instagram: 'https://www.instagram.com/parties_24.7/',
   tiktok: 'https://www.tiktok.com/@parties_24.7',

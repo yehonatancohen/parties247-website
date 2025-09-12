@@ -36,6 +36,7 @@ const mapPartyToFrontend = (backendParty: any): Party => {
     eventType: backendParty.eventType,
     age: backendParty.age,
     tags: backendParty.tags || [], // Ensure tags is always an array
+    referralCode: backendParty.referralCode,
   };
 };
 
@@ -49,6 +50,7 @@ const mapCarouselToFrontend = (backendCarousel: any): Carousel => {
     id: backendCarousel._id || backendCarousel.id, // Handle both _id (from admin routes) and id (from public route)
     title: backendCarousel.title,
     partyIds: backendCarousel.partyIds || [],
+    order: backendCarousel.order,
   };
 };
 
@@ -93,7 +95,15 @@ export const addParty = async (url: string): Promise<Party> => {
     body: JSON.stringify({ url }),
   });
 
-  const responseData = await response.json();
+  let responseData;
+  try {
+    responseData = await response.json();
+  } catch (e) {
+      const errorText = await response.text();
+      console.error("Server returned non-JSON response:", errorText);
+      throw new Error("Unexpected server response. The server may be down or returning an HTML error page.");
+  }
+  
   if (!response.ok) {
     throw new Error(responseData.message || 'Failed to add party');
   }
@@ -121,9 +131,9 @@ export const deleteParty = async (partyId: string): Promise<void> => {
 /**
  * Updates a party in the database.
  * @param partyId - The ID of the party to update.
- * @param partyData - An object with the fields to update (e.g., { tags: [...] }).
+ * @param partyData - An object with all party fields (excluding id).
  */
-export const updateParty = async (partyId: string, partyData: Partial<Party>): Promise<void> => {
+export const updateParty = async (partyId: string, partyData: Omit<Party, 'id'>): Promise<void> => {
   const response = await fetch(`${API_URL}/admin/update-party/${partyId}`, {
     method: 'PUT',
     headers: {
@@ -134,7 +144,14 @@ export const updateParty = async (partyId: string, partyData: Partial<Party>): P
   });
 
   if (!response.ok) {
-    const responseData = await response.json();
+    let responseData;
+    try {
+        responseData = await response.json();
+    } catch (e) {
+        const errorText = await response.text();
+        console.error("Server returned non-JSON response on update:", errorText);
+        throw new Error("Unexpected server response on update.");
+    }
     throw new Error(responseData.message || 'Failed to update party');
   }
 };
@@ -159,18 +176,27 @@ export const addCarousel = async (title: string): Promise<Carousel> => {
  * @param carousel - The carousel object with updated data.
  */
 export const updateCarousel = async (carousel: Carousel): Promise<Carousel> => {
+    const payload: { title: string; partyIds: string[]; order?: number } = {
+        title: carousel.title,
+        partyIds: carousel.partyIds || [],
+    };
+    if (typeof carousel.order === 'number') {
+        payload.order = carousel.order;
+    }
+
     const response = await fetch(`${API_URL}/admin/carousels/${carousel.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-        body: JSON.stringify({ title: carousel.title, partyIds: carousel.partyIds }),
+        body: JSON.stringify(payload),
     });
+
     if (!response.ok) {
-        const data = await response.json();
+        const data = await response.json().catch(() => ({ message: 'Invalid carousel data' }));
         throw new Error(data.message || 'Failed to update carousel');
     }
-    // Backend only returns a success message, so return the original object for optimistic UI updates.
     return carousel;
 };
+
 
 /**
  * Deletes a carousel from the database.
@@ -210,7 +236,7 @@ export const login = async (password: string): Promise<void> => {
 
 /**
  * Verifies if the stored JWT is valid by making a request to a protected endpoint.
- * @returns A promise that resolves if the token is valid, and rejects otherwise.
+ * @returns a promise that resolves if the token is valid, and rejects otherwise.
  */
 export const verifyToken = async (): Promise<void> => {
   const response = await fetch(`${API_URL}/admin/verify-token`, {
@@ -221,8 +247,60 @@ export const verifyToken = async (): Promise<void> => {
   });
 
   if (!response.ok) {
-    // Try to parse the error message from backend, with a fallback.
     const message = (await response.json().catch(() => ({}))).message || 'Invalid or expired token';
     throw new Error(message);
+  }
+};
+
+/**
+ * Sends the new order of carousels to the backend.
+ * @param orderedIds - An array of carousel IDs in the desired order.
+ */
+export const reorderCarousels = async (orderedIds: string[]): Promise<void> => {
+  const response = await fetch(`${API_URL}/admin/carousels/reorder`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...getAuthHeader(),
+    },
+    body: JSON.stringify({ orderedIds }),
+  });
+
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({ message: 'Failed to reorder carousels' }));
+    throw new Error(data.message || 'Failed to reorder carousels');
+  }
+};
+
+/**
+ * Fetches the default referral code from the backend.
+ */
+export const getDefaultReferral = async (): Promise<string> => {
+  const response = await fetch(`${API_URL}/referral`);
+  if (!response.ok) {
+    if (response.status === 404) return ''; // Not set yet, return empty
+    throw new Error('Failed to fetch default referral code');
+  }
+  const data = await response.json();
+  return data.code || '';
+};
+
+/**
+ * Sets the default referral code in the backend.
+ * @param code - The new default referral code.
+ */
+export const setDefaultReferral = async (code: string): Promise<void> => {
+  const response = await fetch(`${API_URL}/admin/referral`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...getAuthHeader(),
+    },
+    body: JSON.stringify({ code }),
+  });
+
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({ message: 'Failed to set referral code' }));
+    throw new Error(data.message || 'Failed to set default referral code');
   }
 };
