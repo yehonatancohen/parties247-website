@@ -27,18 +27,20 @@ const BlogPage: React.FC = () => {
   return (
     <>
       <SeoManager title="מגזין חיי הלילה - Parties 24/7" description="כתבות, מדריכים וטיפים על סצנת חיי הלילה בישראל." />
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-5xl font-display text-center mb-8 text-white">מגזין חיי הלילה</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {articles.map(article => (
-            <div key={article.id} className="bg-jungle-surface rounded-lg overflow-hidden group border border-wood-brown/50 transform hover:-translate-y-1 transition-transform duration-300">
-              <img src={article.imageUrl} alt={article.title} className="w-full h-48 object-cover" />
-              <div className="p-5">
-                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-jungle-accent transition-colors">{article.title}</h3>
-                <p className="text-jungle-text/70 text-sm">{article.summary}</p>
+      <div className="container mx-auto px-4">
+        <div className="max-w-6xl mx-auto">
+          <h1 className="text-5xl font-display text-center mb-8 text-white">מגזין חיי הלילה</h1>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {articles.map(article => (
+              <div key={article.id} className="bg-jungle-surface rounded-lg overflow-hidden group border border-wood-brown/50 transform hover:-translate-y-1 transition-transform duration-300">
+                <img src={article.imageUrl} alt={article.title} className="w-full h-48 object-cover" />
+                <div className="p-5">
+                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-jungle-accent transition-colors">{article.title}</h3>
+                  <p className="text-jungle-text/70 text-sm">{article.summary}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </>

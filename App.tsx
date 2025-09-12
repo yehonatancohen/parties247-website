@@ -42,7 +42,7 @@ function App() {
         <JungleDecorations />
         <div className="min-h-screen flex flex-col relative z-10">
           <Header />
-          <main className="flex-grow container mx-auto px-4 py-8">
+          <main className="flex-grow py-8">
             <AnimatedRoutes />
           </main>
           <Footer />

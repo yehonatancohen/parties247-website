@@ -39,33 +39,37 @@ export type FilterState = {
 };
 
 // Swiper types for React
-// FIX: Add comprehensive type definitions for Swiper custom elements to fix TypeScript errors.
+// FIX: Refactored the Swiper custom element type definitions to resolve JSX errors.
+// By explicitly merging custom props with React.HTMLAttributes inside React.DetailedHTMLProps,
+// we ensure TypeScript correctly recognizes 'swiper-container' and 'swiper-slide'
+// as valid JSX elements, along with all standard and custom attributes.
 declare global {
   namespace JSX {
     interface IntrinsicElements {
       'swiper-container': React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement>,
+        React.HTMLAttributes<HTMLElement> & {
+          // Swiper-specific attributes used in JSX
+          init?: 'true' | 'false';
+          navigation?: 'true' | 'false';
+          pagination?: 'true' | 'false';
+          loop?: 'true' | 'false';
+          effect?: 'slide' | 'fade' | 'cube' | 'coverflow' | 'flip';
+          'slides-per-view'?: number | 'auto';
+          'centered-slides'?: 'true' | 'false';
+          lazy?: 'true' | 'false';
+          // The `class` attribute is used for web components instead of `className`
+          class?: string;
+        },
         HTMLElement
-      > & {
-        init?: 'true' | 'false';
-        // FIX: Add class property to resolve declaration conflicts and support web component usage.
-        class?: string;
-        // Add other common Swiper attributes for better type safety
-        navigation?: 'true' | 'false';
-        pagination?: 'true' | 'false';
-        loop?: 'true' | 'false';
-        effect?: 'slide' | 'fade' | 'cube' | 'coverflow' | 'flip';
-        'slides-per-view'?: number | 'auto';
-        'centered-slides'?: 'true' | 'false';
-        // FIX: Add 'lazy' property to resolve type conflict with its use in HotEventsCarousel.tsx.
-        lazy?: 'true' | 'false';
-      };
+      >;
       'swiper-slide': React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement>,
+        React.HTMLAttributes<HTMLElement> & {
+          lazy?: 'true' | 'false';
+          // The `class` attribute is used for web components instead of `className`
+          class?: string;
+        },
         HTMLElement
-      > & {
-        lazy?: 'true' | 'false';
-      };
+      >;
     }
   }
 }

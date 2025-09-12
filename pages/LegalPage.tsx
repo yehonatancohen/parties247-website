@@ -53,10 +53,12 @@ const LegalPage: React.FC<LegalPageProps> = ({ pageType }) => {
   return (
     <>
       <SeoManager title={`${title} - Parties 24/7`} description={description} />
-      <div className="max-w-4xl mx-auto text-jungle-text/90">
-        <h1 className="text-5xl font-display text-center mb-8 text-white">{title}</h1>
-        <div className="space-y-4 bg-jungle-surface p-8 rounded-lg border border-wood-brown/50">
-          {content}
+      <div className="container mx-auto px-4">
+        <div className="max-w-4xl mx-auto text-jungle-text/90">
+          <h1 className="text-5xl font-display text-center mb-8 text-white">{title}</h1>
+          <div className="space-y-4 bg-jungle-surface p-8 rounded-lg border border-wood-brown/50">
+            {content}
+          </div>
         </div>
       </div>
     </>

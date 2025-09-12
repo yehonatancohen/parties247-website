@@ -22,9 +22,9 @@ const CategoryPage: React.FC = () => {
 
   if (!carousel) {
     return (
-      <div className="text-center py-16">
+      <div className="text-center py-16 container mx-auto px-4">
         <h1 className="text-4xl font-display text-white mb-4">אופס! קטגוריה לא נמצאה</h1>
-        <p className="text-jungle-text/80">לא מצאנו את אוסף המסיבות שחיפשת.</p>
+        <p className="text-jungle-text/80">לא מצאנו את אוסף המсиבות שחיפשת.</p>
         <Link to="/" className="mt-6 inline-block text-jungle-accent hover:text-white font-semibold">חזרה לעמוד הבית</Link>
       </div>
     );
@@ -33,7 +33,7 @@ const CategoryPage: React.FC = () => {
   return (
     <>
       <SeoManager title={`${carousel.title} - Parties 24/7`} description={`רשימת המסיבות המלאה לקטגוריית ${carousel.title}.`} />
-      <div>
+      <div className="container mx-auto px-4">
         <h1 className="text-5xl font-display text-center mb-8 text-white">{carousel.title}</h1>
         <PartyGrid parties={categoryParties} />
       </div>

@@ -7,13 +7,13 @@ import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
 // --- SVG Arrow Icons ---
 const ArrowLeft: FC<{ className?: string }> = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
   </svg>
 );
 
 const ArrowRight: FC<{ className?: string }> = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
   </svg>
 );
 
@@ -208,13 +208,15 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({ title, parties, viewAllLi
 
   return (
     <div className="py-4">
-      <div className="flex justify-between items-center mb-4 px-4 sm:px-0">
-        <h2 className="text-3xl font-display text-white">{title}</h2>
-        <div className="flex items-center gap-4">
-          <Link to={viewAllLink} className="text-jungle-accent hover:text-white transition-colors">הצג הכל</Link>
-          <div className="flex gap-2">
-            <button id={`prev-${uniqueId}`} className="swiper-button-prev !static !w-11 !h-11"><ArrowRight className="w-6 h-6" /></button>
-            <button id={`next-${uniqueId}`} className="swiper-button-next !static !w-11 !h-11"><ArrowLeft className="w-6 h-6" /></button>
+      <div className="container mx-auto px-4">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-3xl font-display text-white">{title}</h2>
+          <div className="flex items-center gap-4">
+            <Link to={viewAllLink} className="text-jungle-accent hover:text-white transition-colors">הצג הכל</Link>
+            <div className="flex gap-2">
+              <button id={`prev-${uniqueId}`} className="swiper-button-prev !static !w-11 !h-11"><ArrowRight className="w-6 h-6" /></button>
+              <button id={`next-${uniqueId}`} className="swiper-button-next !static !w-11 !h-11"><ArrowLeft className="w-6 h-6" /></button>
+            </div>
           </div>
         </div>
       </div>

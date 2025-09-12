@@ -27,7 +27,7 @@ const HomePage: React.FC = () => {
     <>
       <SeoManager title={pageTitle} description={pageDescription} parties={parties} />
 
-      <div className="relative text-center mb-12 -mt-8 h-[70vh] sm:h-[60vh] flex items-center justify-center overflow-hidden -mx-4">
+      <div className="relative text-center mb-12 -mt-8 h-[70vh] sm:h-[60vh] flex items-center justify-center overflow-hidden">
         <video
           src="https://vjkiztnx7gionfos.public.blob.vercel-storage.com/party_video.mp4"
           className="absolute z-0 w-full h-full object-cover brightness-[0.6]"

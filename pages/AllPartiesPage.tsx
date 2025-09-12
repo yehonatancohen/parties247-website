@@ -49,7 +49,7 @@ const AllPartiesPage: React.FC = () => {
     <>
       <SeoManager title={pageTitle} description={pageDescription} parties={parties} />
 
-      <div id="all-parties">
+      <div id="all-parties" className="container mx-auto px-4">
         <h1 className="text-4xl md:text-5xl font-display text-center mb-4 text-white">כל המסיבות</h1>
         <p className="text-center text-jungle-text/80 mb-8 max-w-lg mx-auto">מצאו את הבילוי הבא שלכם בג'ונגל העירוני</p>
         
