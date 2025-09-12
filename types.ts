@@ -45,9 +45,10 @@ export interface PartyContextType {
   addParty: (url: string) => Promise<Party>;
   deleteParty: (partyId: string) => Promise<void>;
   updateParty: (partyToUpdate: Party) => Promise<void>;
-  addCarousel: (title: string) => Promise<void>;
+  addCarousel: (title: string) => Promise<Carousel>;
   updateCarousel: (carousel: Carousel) => Promise<void>;
   deleteCarousel: (carouselId: string) => Promise<void>;
+  renameTag: (tagId: string, newName: string) => Promise<void>;
   isLoading: boolean;
   refetchCarousels: () => Promise<void>;
   defaultReferral: string;

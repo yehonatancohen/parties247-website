@@ -10,6 +10,15 @@ export const PartyProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const [isLoading, setIsLoading] = useState(true);
   const [defaultReferral, setDefaultReferralState] = useState<string>('');
 
+  const fetchParties = useCallback(async () => {
+    try {
+      const fetchedParties = await api.getParties();
+      setParties(fetchedParties);
+    } catch (error) {
+      console.error('Failed to refetch parties', error);
+    }
+  }, []);
+
   const fetchCarousels = useCallback(async () => {
     try {
       const fetchedCarousels = await api.getCarousels();
@@ -22,6 +31,7 @@ export const PartyProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   // Effect for initial data load
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const [fetchedParties, fetchedCarousels, fetchedReferral] = await Promise.all([
             api.getParties(),
@@ -79,10 +89,11 @@ export const PartyProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
   }, []);
   
-  const addCarousel = useCallback(async (title: string) => {
+  const addCarousel = useCallback(async (title: string): Promise<Carousel> => {
     try {
       const newCarousel = await api.addCarousel(title);
       setCarousels(prev => [...prev, newCarousel]);
+      return newCarousel;
     } catch (error) {
       console.error("Failed to add carousel:", error);
       alert("Error: Could not add carousel.");
@@ -111,6 +122,18 @@ export const PartyProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       throw error;
     }
   }, []);
+  
+  const renameTag = useCallback(async (tagId: string, newName: string) => {
+    try {
+      await api.renameTag(tagId, newName);
+      // As requested, refresh both carousels and parties
+      await Promise.all([fetchCarousels(), fetchParties()]);
+    } catch (error) {
+      console.error("Failed to rename tag:", error);
+      alert(`Error: ${error instanceof Error ? error.message : 'Could not rename tag.'}`);
+      throw error;
+    }
+  }, [fetchCarousels, fetchParties]);
 
   const refetchCarousels = useCallback(async () => {
     await fetchCarousels();
@@ -136,6 +159,7 @@ export const PartyProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     addCarousel,
     updateCarousel,
     deleteCarousel,
+    renameTag,
     isLoading,
     refetchCarousels,
     defaultReferral,

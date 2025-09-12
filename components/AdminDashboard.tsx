@@ -45,7 +45,7 @@ const TagInput: React.FC<{ tags: string[]; onTagsChange: (tags: string[]) => voi
 };
 
 const AdminDashboard: React.FC = () => {
-  const { parties, addParty, deleteParty, updateParty, carousels, addCarousel, updateCarousel, deleteCarousel, refetchCarousels, defaultReferral, setDefaultReferral } = useParties();
+  const { parties, addParty, deleteParty, updateParty, carousels, addCarousel, updateCarousel, deleteCarousel, refetchCarousels, defaultReferral, setDefaultReferral, renameTag } = useParties();
   
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -110,59 +110,83 @@ const AdminDashboard: React.FC = () => {
 
   const handleScrapeSection = async () => {
     if (!sectionUrl.trim() || !sectionTag.trim()) {
-      setSectionError('Please provide both a section URL and a tag name.');
-      return;
+        setSectionError('Please provide both a section URL and a tag name.');
+        return;
     }
     setSectionIsLoading(true);
     setSectionError(null);
     setSectionProgress('Fetching section page...');
 
     try {
-      const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(sectionUrl)}`;
-      const response = await fetch(proxyUrl);
-      if (!response.ok) throw new Error(`Failed to fetch from proxy: ${response.statusText}`);
-      const htmlText = await response.text();
-      
-      setSectionProgress('Extracting party URLs...');
-      const partyUrls = scrapePartyUrlsFromSection(htmlText);
+        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(sectionUrl)}`;
+        const response = await fetch(proxyUrl);
+        if (!response.ok) throw new Error(`Failed to fetch from proxy: ${response.statusText}`);
+        const htmlText = await response.text();
 
-      if (partyUrls.length === 0) {
-        setSectionError('No party URLs found on the page.');
-        setSectionIsLoading(false);
-        return;
-      }
-      
-      for (let i = 0; i < partyUrls.length; i++) {
-        const pUrl = partyUrls[i];
-        setSectionProgress(`Adding party ${i + 1} of ${partyUrls.length}...`);
+        setSectionProgress('Extracting party URLs...');
+        const partyUrls = scrapePartyUrlsFromSection(htmlText);
 
-        if (parties.some(p => p.originalUrl === pUrl)) {
-          console.log(`Skipping already existing party: ${pUrl}`);
-          continue;
+        if (partyUrls.length === 0) {
+            setSectionError('No party URLs found on the page.');
+            setSectionIsLoading(false);
+            return;
         }
 
-        try {
-          const newParty = await addParty(pUrl);
-          const partyWithUpdates = {
-            ...newParty,
-            tags: [...newParty.tags, sectionTag.trim()],
-            referralCode: defaultReferral || ''
-          };
-          await updateParty(partyWithUpdates);
-        } catch (addError) {
-          console.error(`Failed to add party ${pUrl}:`, addError);
-        }
-      }
+        const newPartyIds: string[] = [];
+        for (let i = 0; i < partyUrls.length; i++) {
+            const pUrl = partyUrls[i];
+            setSectionProgress(`Adding party ${i + 1} of ${partyUrls.length}...`);
 
-      setSectionProgress(`Done! Added parties with tag "${sectionTag}".`);
-      setSectionUrl('');
-      setSectionTag('');
+            if (parties.some(p => p.originalUrl === pUrl)) {
+                console.log(`Skipping already existing party: ${pUrl}`);
+                continue;
+            }
+
+            try {
+                const newParty = await addParty(pUrl);
+                newPartyIds.push(newParty.id);
+                // Also update the individual party with the default referral code
+                if (defaultReferral) {
+                    await updateParty({ ...newParty, referralCode: defaultReferral });
+                }
+            } catch (addError) {
+                console.error(`Failed to add party ${pUrl}:`, addError);
+            }
+        }
+
+        if (newPartyIds.length > 0) {
+            setSectionProgress('Updating category with new parties...');
+            const trimmedTag = sectionTag.trim();
+            let targetCarousel = carousels.find(c => c.title === trimmedTag);
+
+            if (!targetCarousel) {
+                try {
+                    targetCarousel = await addCarousel(trimmedTag);
+                } catch (createError) {
+                    setSectionError(`Failed to create new category "${trimmedTag}".`);
+                    return; // Stop execution
+                }
+            }
+
+            const existingPartyIds = new Set(targetCarousel.partyIds);
+            newPartyIds.forEach(id => existingPartyIds.add(id));
+
+            const updatedCarousel = { ...targetCarousel, partyIds: Array.from(existingPartyIds) };
+
+            await updateCarousel(updatedCarousel);
+            setSectionProgress(`Done! Added ${newPartyIds.length} parties to "${trimmedTag}".`);
+        } else {
+            setSectionProgress('No new parties to add.');
+        }
+
+        setSectionUrl('');
+        setSectionTag('');
 
     } catch (err) {
-      console.error(err);
-      setSectionError(err instanceof Error ? err.message : 'An unknown error occurred.');
+        console.error(err);
+        setSectionError(err instanceof Error ? err.message : 'An unknown error occurred.');
     } finally {
-      setSectionIsLoading(false);
+        setSectionIsLoading(false);
     }
   };
   
@@ -199,7 +223,7 @@ const AdminDashboard: React.FC = () => {
   const handleTitleSave = async (carouselId: string) => {
     const carousel = carousels.find(c => c.id === carouselId);
     if (carousel && tempTitle.trim() && carousel.title !== tempTitle.trim()) {
-      await updateCarousel({ ...carousel, title: tempTitle.trim() });
+      await renameTag(carouselId, tempTitle.trim());
     }
     setEditingTitleId(null);
   };

@@ -4,10 +4,6 @@ import { Party } from '../types';
 import { useParties } from '../hooks/useParties';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
 
-// FIX: Removed duplicated Swiper element type definitions. 
-// These are already declared globally in 'types.ts'. Relying on the single source of truth
-// in the global types file resolves JSX intrinsic element errors for swiper components.
-
 // --- SVG Arrow Icons ---
 const ArrowLeft: FC<{ className?: string }> = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>

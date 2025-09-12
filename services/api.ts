@@ -214,6 +214,28 @@ export const deleteCarousel = async (carouselId: string): Promise<void> => {
 };
 
 /**
+ * Renames a tag/carousel in the database.
+ * @param tagId - The ID of the tag/carousel to rename.
+ * @param newName - The new name for the tag/carousel.
+ */
+export const renameTag = async (tagId: string, newName: string): Promise<void> => {
+  const response = await fetch(`${API_URL}/admin/tags/rename`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...getAuthHeader(),
+    },
+    body: JSON.stringify({ tagId, newName }),
+  });
+
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({ message: 'Failed to rename tag' }));
+    throw new Error(data.message || 'Failed to rename tag');
+  }
+};
+
+
+/**
  * Authenticates the admin with a password to get a JWT.
  * @param password - The admin password.
  */
