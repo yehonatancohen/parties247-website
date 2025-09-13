@@ -54,3 +54,27 @@ export interface PartyContextType {
   defaultReferral: string;
   setDefaultReferral: (code: string) => Promise<void>;
 }
+
+
+// Swiper types for React
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      'swiper-container': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement> & {
+        init?: 'true' | 'false';
+        navigation?: 'true' | 'false';
+        pagination?: 'true' | 'false';
+        loop?: 'true' | 'false';
+        effect?: 'slide' | 'fade' | 'cube' | 'coverflow' | 'flip';
+        'slides-per-view'?: number | 'auto';
+        'centered-slides'?: 'true' | 'false';
+        lazy?: 'true' | 'false';
+        class?: string;
+      }, HTMLElement>;
+      'swiper-slide': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement> & {
+        lazy?: 'true' | 'false';
+        class?: string;
+      }, HTMLElement>;
+    }
+  }
+}
