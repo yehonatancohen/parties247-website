@@ -215,22 +215,22 @@ export const deleteCarousel = async (carouselId: string): Promise<void> => {
 
 /**
  * Renames a tag/carousel in the database.
- * @param tagId - The ID of the tag/carousel to rename.
+ * @param carouselId - The ID of the tag/carousel to rename.
  * @param newName - The new name for the tag/carousel.
  */
-export const renameTag = async (tagId: string, newName: string): Promise<void> => {
-  const response = await fetch(`${API_URL}/admin/tags/rename`, {
+export const renameTag = async (carouselId: string, newName: string): Promise<void> => {
+  const response = await fetch(`${API_URL}/admin/carousel/rename`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       ...getAuthHeader(),
     },
-    body: JSON.stringify({ tagId, newName }),
+    body: JSON.stringify({ carouselId, newName }),
   });
 
   if (!response.ok) {
-    const data = await response.json().catch(() => ({ message: 'Failed to rename tag' }));
-    throw new Error(data.message || 'Failed to rename tag');
+    const data = await response.json().catch(() => ({ message: 'Failed to rename carousel' }));
+    throw new Error(data.message || 'Failed to rename carousel');
   }
 };
 
