@@ -4,7 +4,6 @@ import { useParties } from '../hooks/useParties';
 import PartyGrid from '../components/PartyGrid';
 import SeoManager from '../components/SeoManager';
 import LoadingSpinner from '../components/LoadingSpinner';
-// FIX: Import the 'Party' type to resolve a TypeScript error.
 import { Party } from '../types';
 
 const CategoryPage: React.FC = () => {
@@ -17,14 +16,14 @@ const CategoryPage: React.FC = () => {
 
   const carousel = carousels.find(c => c.id === categoryId);
   const categoryParties = carousel
-    ? carousel.partyIds.map(id => parties.find(p => p.id === id)).filter(Boolean) as Party[]
+    ? carousel.partyIds.map(id => parties.find(p => p.id === id)).filter((p): p is Party => Boolean(p))
     : [];
 
   if (!carousel) {
     return (
       <div className="text-center py-16 container mx-auto px-4">
         <h1 className="text-4xl font-display text-white mb-4">אופס! קטגוריה לא נמצאה</h1>
-        <p className="text-jungle-text/80">לא מצאנו את אוסף המсиבות שחיפשת.</p>
+        <p className="text-jungle-text/80">לא מצאנו את אוסף המסיבות שחיפשת.</p>
         <Link to="/" className="mt-6 inline-block text-jungle-accent hover:text-white font-semibold">חזרה לעמוד הבית</Link>
       </div>
     );
