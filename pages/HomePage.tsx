@@ -45,9 +45,9 @@ const HomePage: React.FC = () => {
                 className="font-display text-5xl sm:text-6xl md:text-8xl mb-4 text-white"
                 style={{ textShadow: '3px 3px 8px rgba(0,0,0,0.7)' }}
             >
-                הדופק של העיר
+                איפה תהיה המסיבה הבאה שלך?
             </h1>
-            <p className="text-lg sm:text-xl text-jungle-text">האירועים הכי חמים בג'ונגל העירוני.</p>
+            <p className="text-lg sm:text-xl text-jungle-text">אתר המסיבות של ישראל</p>
         </div>
       </div>
       
