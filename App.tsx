@@ -15,6 +15,7 @@ import JungleDecorations from './components/JungleDecorations';
 import BlogPage from './pages/BlogPage';
 import ScrollToTop from './components/ScrollToTop';
 import EventPage from './pages/EventPage';
+import ArticlePage from './pages/ArticlePage';
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -25,6 +26,7 @@ const AnimatedRoutes = () => {
         <Route path="/all-parties" element={<AllPartiesPage />} />
         <Route path="/event/:slug" element={<EventPage />} />
         <Route path="/blog" element={<BlogPage />} />
+        <Route path="/blog/:slug" element={<ArticlePage />} />
         <Route path="/category/:categoryId" element={<CategoryPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/admin" element={<AdminPage />} />

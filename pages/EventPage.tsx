@@ -41,7 +41,8 @@ const EventPage: React.FC = () => {
       const referralCode = partyReferral || defaultReferral;
       if (!referralCode) return originalUrl;
       const url = new URL(originalUrl);
-      url.searchParams.set('ref', referralCode);
+      url.searchParams.delete('ref');
+      url.searchParams.set('aff', referralCode);
       return url.toString();
     } catch (e) {
       return originalUrl;

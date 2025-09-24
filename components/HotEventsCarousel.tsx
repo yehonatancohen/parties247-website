@@ -44,9 +44,8 @@ const CarouselPartyCard: FC<{ party: Party }> = React.memo(({ party }) => {
       }
   
       const url = new URL(originalUrl);
-      url.searchParams.delete('aff');
-      url.searchParams.delete('ref');
-      url.searchParams.set('ref', referralCode);
+      url.searchParams.delete('ref'); // remove old param if exists
+      url.searchParams.set('aff', referralCode);
       return url.toString();
     } catch (error) {
       console.error("Error creating referral URL:", error);

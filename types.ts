@@ -40,9 +40,11 @@ export interface Carousel {
 
 export interface Article {
   id:string;
+  slug: string;
   title: string;
   summary: string;
   imageUrl: string;
+  content: string;
 }
 
 export type FilterState = {
