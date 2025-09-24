@@ -1,6 +1,6 @@
 import React from 'react';
 import { Article } from '../types';
-import SeoManager from '../components/SeoManager';
+import SEO from '../components/SeoManager';
 
 const articles: Article[] = [
   {
@@ -26,7 +26,7 @@ const articles: Article[] = [
 const BlogPage: React.FC = () => {
   return (
     <>
-      <SeoManager title="מגזין חיי הלילה - Parties 24/7" description="כתבות, מדריכים וטיפים על סצנת חיי הלילה בישראל." />
+      <SEO title="מגזין חיי הלילה - Parties 24/7" description="כתבות, מדריכים וטיפים על סצנת חיי הלילה בישראל." canonicalPath="/blog" />
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           <h1 className="text-5xl font-display text-center mb-8 text-white">מגזין חיי הלילה</h1>

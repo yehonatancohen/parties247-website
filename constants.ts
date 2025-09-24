@@ -4,3 +4,4 @@ export const SOCIAL_LINKS = {
   tiktok: 'https://www.tiktok.com/@parties_24.7',
 };
 export const POPULAR_CITIES = ['תל אביב', 'חיפה', 'ירושלים', 'באר שבע'];
+export const BASE_URL = 'https://parties247-website.vercel.app';

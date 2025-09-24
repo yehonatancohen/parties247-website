@@ -1,5 +1,5 @@
 import React from 'react';
-import SeoManager from '../components/SeoManager';
+import SEO from '../components/SeoManager';
 
 interface LegalPageProps {
   pageType: 'terms' | 'privacy' | 'accessibility';
@@ -9,6 +9,7 @@ const legalContent = {
   terms: {
     title: 'תנאי שימוש',
     description: 'תנאי השימוש של אתר Parties 24/7.',
+    canonicalPath: '/terms',
     content: (
       <>
         <p>ברוכים הבאים ל-Parties 24/7. השימוש באתר ובשירותיו כפוף לתנאים המפורטים להלן. אנא קראו אותם בעיון.</p>
@@ -22,6 +23,7 @@ const legalContent = {
   privacy: {
     title: 'מדיניות פרטיות',
     description: 'מדיניות הפרטיות של אתר Parties 24/7.',
+    canonicalPath: '/privacy',
     content: (
       <>
         <p>אנו מכבדים את פרטיות המשתמשים שלנו. מסמך זה מפרט את המידע שאנו אוספים וכיצד אנו משתמשים בו.</p>
@@ -35,6 +37,7 @@ const legalContent = {
   accessibility: {
     title: 'הצהרת נגישות',
     description: 'הצהרת הנגישות של אתר Parties 24/7.',
+    canonicalPath: '/accessibility',
     content: (
       <>
         <p>אנו ב-Parties 24/7 רואים חשיבות עליונה בהנגשת האתר שלנו לאנשים עם מוגבלויות, על מנת לאפשר לכלל האוכלוסייה לגלוש בנוחות ובקלות.</p>
@@ -48,11 +51,11 @@ const legalContent = {
 };
 
 const LegalPage: React.FC<LegalPageProps> = ({ pageType }) => {
-  const { title, description, content } = legalContent[pageType];
+  const { title, description, content, canonicalPath } = legalContent[pageType];
 
   return (
     <>
-      <SeoManager title={`${title} - Parties 24/7`} description={description} />
+      <SEO title={`${title} - Parties 24/7`} description={description} canonicalPath={canonicalPath} />
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto text-jungle-text/90">
           <h1 className="text-5xl font-display text-center mb-8 text-white">{title}</h1>

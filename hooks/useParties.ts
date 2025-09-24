@@ -9,6 +9,8 @@ export const PartyProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const [carousels, setCarousels] = useState<Carousel[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [defaultReferral, setDefaultReferralState] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
+  const [loadingMessage, setLoadingMessage] = useState<string | null>(null);
 
   const fetchParties = useCallback(async () => {
     try {
@@ -32,19 +34,35 @@ export const PartyProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      try {
-        const [fetchedParties, fetchedCarousels, fetchedReferral] = await Promise.all([
+      setError(null);
+      setLoadingMessage(null);
+
+      for (let i = 0; i < 4; i++) {
+        try {
+          const [fetchedParties, fetchedCarousels, fetchedReferral] = await Promise.all([
             api.getParties(),
             api.getCarousels(),
             api.getDefaultReferral(),
-        ]);
-        setParties(fetchedParties);
-        setCarousels(fetchedCarousels);
-        setDefaultReferralState(fetchedReferral);
-      } catch (error) {
-        console.error('Failed to load initial data', error);
-      } finally {
-        setIsLoading(false);
+          ]);
+          setParties(fetchedParties);
+          setCarousels(fetchedCarousels);
+          setDefaultReferralState(fetchedReferral);
+          setIsLoading(false);
+          setLoadingMessage(null);
+          return; // Success, exit function
+        } catch (err) {
+          if (err instanceof TypeError && err.message === 'Failed to fetch' && i < 3) {
+            setLoadingMessage(`Server is waking up... Retrying (attempt ${i + 2}/4)`);
+            // Exponential backoff: 2s, 4s, 8s
+            await new Promise(resolve => setTimeout(resolve, 2000 * Math.pow(2, i)));
+          } else {
+            console.error('Failed to load initial data after retries', err);
+            setError("Could not connect to the server. Please check your internet connection or try again later.");
+            setIsLoading(false);
+            setLoadingMessage(null);
+            return; // Failure, exit function
+          }
+        }
       }
     };
     fetchData();
@@ -164,6 +182,8 @@ export const PartyProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     refetchCarousels,
     defaultReferral,
     setDefaultReferral,
+    error,
+    loadingMessage,
   };
 
   return React.createElement(

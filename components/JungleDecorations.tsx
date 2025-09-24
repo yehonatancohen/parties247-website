@@ -17,13 +17,6 @@ const JungleDecorations: React.FC = () => {
         aria-hidden="true"
         className="block fixed bottom-6 sm:bottom-10 right-[-30%] sm:right-[-15%] w-2/3 sm:w-1/2 max-w-[320px] sm:max-w-[500px] pointer-events-none z-0 opacity-70"
       />
-      {/* Bottom-left Monstera leaves */}
-      <img
-        src="https://purepng.com/public/uploads/large/purepng.com-monstera-leafmonstera-deliciosaplant-leaf-green-evergreen-981524673295ulv5c.png"
-        alt=""
-        aria-hidden="true"
-        className="block fixed bottom-0 left-0 w-1/3 sm:w-1/6 max-w-[180px] sm:max-w-[250px] -translate-x-1/3 translate-y-1/4 -scale-x-100 pointer-events-none z-0 opacity-40"
-      />
     </>
   );
 };

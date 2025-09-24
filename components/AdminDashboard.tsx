@@ -118,7 +118,9 @@ const AdminDashboard: React.FC = () => {
     setSectionProgress('Fetching section page...');
 
     try {
-        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(sectionUrl)}`;
+        const encodedUrl = encodeURIComponent(sectionUrl);
+        const proxyUrl = `https://api.allorigins.win/raw?url=${encodedUrl}`;
+        
         const response = await fetch(proxyUrl);
         if (!response.ok) throw new Error(`Failed to fetch from proxy: ${response.statusText}`);
         const htmlText = await response.text();
@@ -174,7 +176,7 @@ const AdminDashboard: React.FC = () => {
             const updatedCarousel = { ...targetCarousel, partyIds: Array.from(existingPartyIds) };
 
             await updateCarousel(updatedCarousel);
-            setSectionProgress(`Done! Added ${newPartyIds.length} parties to "${trimmedTag}".`);
+            setSectionProgress(`Done! Added ${newPartyIds.length} new parties to "${trimmedTag}".`);
         } else {
             setSectionProgress('No new parties to add.');
         }
@@ -270,7 +272,7 @@ const AdminDashboard: React.FC = () => {
   if (editingCarousel) {
     const filteredPartiesForModal = sortedParties.filter(p => 
         p.name.toLowerCase().includes(modalSearchTerm.toLowerCase()) || 
-        p.location.toLowerCase().includes(modalSearchTerm.toLowerCase())
+        p.location.name.toLowerCase().includes(modalSearchTerm.toLowerCase())
     );
 
     return (
@@ -303,7 +305,7 @@ const AdminDashboard: React.FC = () => {
                                 />
                                 <label htmlFor={`party-check-${party.id}`} className="mr-3 text-white truncate flex-grow cursor-pointer">
                                     <span className="font-semibold">{party.name}</span>
-                                    <span className="text-xs text-jungle-text/60 block">{party.location}</span>
+                                    <span className="text-xs text-jungle-text/60 block">{party.location.name}</span>
                                 </label>
                             </div>
                         )
@@ -381,7 +383,7 @@ const AdminDashboard: React.FC = () => {
                 <div className="flex justify-between items-start gap-2">
                   <div className="flex-grow min-w-0">
                     <p className="font-semibold text-white truncate">{party.name}</p>
-                    <p className="text-sm text-jungle-text/60">{party.location} - {new Date(party.date).toLocaleDateString('he-IL')}</p>
+                    <p className="text-sm text-jungle-text/60">{party.location.name} - {new Date(party.date).toLocaleDateString('he-IL')}</p>
                     <div className="flex items-center gap-1 mt-1">
                       <label htmlFor={`ref-${party.id}`} className="text-xs text-jungle-text/60">Ref:</label>
                       <input 

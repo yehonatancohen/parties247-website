@@ -1,19 +1,52 @@
 import React from 'react';
 import { useParties } from '../hooks/useParties';
-import SeoManager from '../components/SeoManager';
+import SEO from '../components/SeoManager';
 import LoadingSpinner from '../components/LoadingSpinner';
 import PartyCarousel from '../components/HotEventsCarousel'; 
 import SocialsCta from '../components/SocialsCta';
 import { Party } from '../types';
+import { BASE_URL, SOCIAL_LINKS } from '../constants';
 
 const HomePage: React.FC = () => {
-  const { parties, carousels, isLoading } = useParties();
+  const { parties, carousels, isLoading, error, loadingMessage } = useParties();
 
   const pageTitle = 'Parties 24/7 - כל המסיבות הכי שוות בישראל';
   const pageDescription = 'האתר המוביל לחיי הלילה בישראל. גלו מסיבות, רייבים ואירועים מיוחדים בכל רחבי הארץ ורכשו כרטיסים בקלות.';
 
+  const organizationJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    'name': 'Parties 24/7',
+    'url': BASE_URL,
+    'logo': 'https://vjkiztnx7gionfos.public.blob.vercel-storage.com/Partieslogo.PNG',
+    'sameAs': [
+      SOCIAL_LINKS.instagram,
+      SOCIAL_LINKS.tiktok,
+    ],
+  };
+  
+  const feedLinks = [
+    { title: 'All Parties RSS Feed', href: '/feeds/events.rss', type: 'application/rss+xml' as const },
+    { title: 'All Parties Atom Feed', href: '/feeds/events.atom', type: 'application/atom+xml' as const },
+    { title: 'All Parties JSON Feed', href: '/feeds/events.json', type: 'application/json' as const },
+  ];
+
   if (isLoading) {
-    return <div className="flex justify-center items-center h-64"><LoadingSpinner /></div>;
+    return (
+      <div className="flex flex-col justify-center items-center h-64 text-center">
+        <LoadingSpinner />
+        {loadingMessage && <p className="text-jungle-accent mt-4 animate-pulse">{loadingMessage}</p>}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 text-center py-16">
+        <h2 className="text-2xl font-bold text-red-400">Something went wrong</h2>
+        <p className="text-red-300/80 mt-2">{error}</p>
+      </div>
+    );
   }
   
   const carouselsWithParties = carousels.map(carousel => {
@@ -26,7 +59,13 @@ const HomePage: React.FC = () => {
 
   return (
     <>
-      <SeoManager title={pageTitle} description={pageDescription} parties={parties} />
+      <SEO 
+        title={pageTitle} 
+        description={pageDescription}
+        canonicalPath="/"
+        jsonLd={organizationJsonLd}
+        feedLinks={feedLinks}
+      />
 
       <div className="relative text-center mb-12 -mt-8 h-[70vh] sm:h-[60vh] flex items-center justify-center overflow-hidden">
         <video

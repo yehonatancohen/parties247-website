@@ -4,25 +4,6 @@ import { Party } from '../types';
 import { useParties } from '../hooks/useParties';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
 
-// FIX: Declare Swiper component types for TypeScript JSX
-// Swiper types for React
-// The previous 'any' type was not being picked up correctly. This more specific
-// declaration using React.DetailedHTMLProps lets TypeScript know about the
-// custom elements and their specific attributes like 'init' and 'class'.
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      'swiper-container': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement> & {
-        init?: string;
-        class?: string;
-      }, HTMLElement>;
-      'swiper-slide': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement> & {
-        class?: string;
-      }, HTMLElement>;
-    }
-  }
-}
-
 // --- SVG Arrow Icons ---
 const ArrowLeft: FC<{ className?: string }> = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
@@ -109,7 +90,8 @@ const CarouselPartyCard: FC<{ party: Party }> = React.memo(({ party }) => {
             </div>
             <div className="flex items-center text-xs text-jungle-text/80 mb-2">
               <LocationIcon className="w-3.5 h-3.5 ml-1.5 text-jungle-accent" />
-              <span className="truncate">{party.location}</span>
+              {/* FIX: Use party.location.name as party.location is an object */}
+              <span className="truncate">{party.location.name}</span>
             </div>
           </div>
           <h3 className="font-display text-xl md:text-2xl text-white truncate" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.7)' }}>
@@ -248,13 +230,23 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({ title, parties, viewAllLi
         </div>
       </div>
       <div className={carouselClasses}>
-        <swiper-container ref={swiperElRef} init="false" class="py-4">
-          {slides.map((party, index) => (
-            <swiper-slide key={`${party.id}-${index}`}>
+        {/* 
+          FIX: The TypeScript definitions for Swiper web components were not being recognized,
+          causing "Property does not exist on type 'JSX.IntrinsicElements'" errors.
+          Using React.createElement bypasses the JSX type-checking for these custom elements,
+          resolving the issue without resorting to `any` or altering global types.
+        */}
+        {React.createElement(
+          'swiper-container',
+          { ref: swiperElRef, init: 'false', className: 'py-4' },
+          ...slides.map((party, index) =>
+            React.createElement(
+              'swiper-slide',
+              { key: `${party.id}-${index}` },
               <CarouselPartyCard party={party} />
-            </swiper-slide>
-          ))}
-        </swiper-container>
+            )
+          )
+        )}
       </div>
     </div>
   );

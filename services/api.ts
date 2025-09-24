@@ -23,12 +23,32 @@ const getAuthHeader = (): { [key: string]: string } => {
  * @returns A party object compliant with the frontend's `Party` type.
  */
 const mapPartyToFrontend = (backendParty: any): Party => {
+  let slug = backendParty.slug;
+
+  // Fallback for missing slug: attempt to extract it from originalUrl
+  if (!slug && backendParty.originalUrl && typeof backendParty.originalUrl === 'string') {
+    try {
+      // Example URL: https://www.go-out.co/event/1757001416867
+      const match = backendParty.originalUrl.match(/\/event\/([^/?#]+)/);
+      if (match && match[1]) {
+        slug = match[1];
+      }
+    } catch (e) {
+      console.error('Could not parse originalUrl to derive slug:', backendParty.originalUrl);
+    }
+  }
+
   return {
     id: backendParty._id,
+    slug: slug,
     name: backendParty.name,
     imageUrl: backendParty.imageUrl,
     date: backendParty.date,
-    location: backendParty.location,
+    location: { // Ensure location is always an object
+      name: typeof backendParty.location === 'string' ? backendParty.location : backendParty.location?.name,
+      address: backendParty.location?.address,
+      geo: backendParty.location?.geo,
+    },
     description: backendParty.description,
     originalUrl: backendParty.originalUrl,
     region: backendParty.region,
@@ -37,6 +57,10 @@ const mapPartyToFrontend = (backendParty: any): Party => {
     age: backendParty.age,
     tags: backendParty.tags || [], // Ensure tags is always an array
     referralCode: backendParty.referralCode,
+    eventStatus: backendParty.eventStatus,
+    eventAttendanceMode: backendParty.eventAttendanceMode,
+    organizer: backendParty.organizer,
+    performer: backendParty.performer,
   };
 };
 
@@ -66,7 +90,26 @@ export const getParties = async (): Promise<Party[]> => {
     throw new Error('Failed to fetch parties');
   }
   const data = await response.json();
-  return data.map(mapPartyToFrontend);
+  // Filter out parties that lack a slug to prevent generating broken links.
+  return data.map(mapPartyToFrontend).filter(party => {
+    if (!party.slug) {
+      console.warn('Party data from API is missing a slug, filtering it out:', party);
+      return false;
+    }
+    return true;
+  });
+};
+
+/**
+ * Fetches a single party by its slug.
+ */
+export const getPartyBySlug = async (slug: string): Promise<Party> => {
+  const response = await fetch(`${API_URL}/events/${slug}`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch party with slug: ${slug}`);
+  }
+  const data = await response.json();
+  return mapPartyToFrontend(data);
 };
 
 /**

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Auth from '../components/Auth';
 import AdminDashboard from '../components/AdminDashboard';
-import SeoManager from '../components/SeoManager';
+import SEO from '../components/SeoManager';
 import * as api from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 
@@ -51,7 +51,7 @@ const AdminPage: React.FC = () => {
 
   return (
     <>
-      <SeoManager title="Admin Panel - Parties 24/7" description="Manage parties for Parties 24/7." />
+      <SEO title="Admin Panel - Parties 24/7" description="Manage parties for Parties 24/7." canonicalPath="/admin" />
       <div className="container mx-auto px-4">
         {renderContent()}
       </div>

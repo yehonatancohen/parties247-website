@@ -1,6 +1,7 @@
 import { Party } from '../types';
 
-type ScrapedPartyDetails = Omit<Party, 'id' | 'originalUrl' | 'isHot' | 'demand'>;
+// FIX: Align Omit with the actual Party type and remove non-existent properties.
+type ScrapedPartyDetails = Omit<Party, 'id' | 'originalUrl' | 'referralCode' | 'eventStatus' | 'eventAttendanceMode' | 'organizer' | 'performer'>;
 
 // --- Classification Helpers ---
 
@@ -122,10 +123,13 @@ export const scrapePartyDetails = async (url: string): Promise<ScrapedPartyDetai
     const fullText = `${eventData.Title} ${eventData.Description}`;
 
     const partyDetails: ScrapedPartyDetails = {
+      // FIX: Add slug property which is required by ScrapedPartyDetails.
+      slug: eventData.Url,
       name: eventData.Title,
       imageUrl: imageUrl,
       date: eventData.StartingDate,
-      location: eventData.Adress,
+      // FIX: Format location as an object to match the Party type.
+      location: { name: eventData.Adress },
       description: description || 'No description available.',
       region: getRegion(eventData.Adress),
       musicType: getMusicType(fullText),
@@ -134,8 +138,8 @@ export const scrapePartyDetails = async (url: string): Promise<ScrapedPartyDetai
       tags: getTags(fullText, eventData.Adress),
     };
     
-    if (!partyDetails.name || !partyDetails.date || !partyDetails.location) {
-        throw new Error("Scraped data is missing critical fields.");
+    if (!partyDetails.slug || !partyDetails.name || !partyDetails.date || !partyDetails.location.name) {
+        throw new Error("Scraped data is missing critical fields (slug, name, date, or location).");
     }
 
     return partyDetails;

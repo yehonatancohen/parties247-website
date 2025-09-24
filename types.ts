@@ -1,9 +1,17 @@
 export interface Party {
   id: string;
+  slug: string;
   name: string;
   imageUrl: string;
   date: string; // ISO 8601 format
-  location: string;
+  location: {
+    name: string;
+    address?: string;
+    geo?: {
+      latitude: string;
+      longitude: string;
+    };
+  };
   description: string;
   originalUrl: string;
   region: 'דרום' | 'מרכז' | 'צפון' | 'לא ידוע';
@@ -12,6 +20,15 @@ export interface Party {
   age: 'נוער' | '18+' | '21+' | 'כל הגילאים';
   tags: string[];
   referralCode?: string;
+  eventStatus?: 'EventScheduled' | 'EventCancelled' | 'EventPostponed' | 'EventRescheduled';
+  eventAttendanceMode?: 'OnlineEventAttendanceMode' | 'OfflineEventAttendanceMode' | 'MixedEventAttendanceMode';
+  organizer?: {
+    name: string;
+    url?: string;
+  };
+  performer?: {
+    name: string;
+  };
 }
 
 export interface Carousel {
@@ -22,7 +39,7 @@ export interface Carousel {
 }
 
 export interface Article {
-  id: string;
+  id:string;
   title: string;
   summary: string;
   imageUrl: string;
@@ -51,4 +68,6 @@ export interface PartyContextType {
   refetchCarousels: () => Promise<void>;
   defaultReferral: string;
   setDefaultReferral: (code: string) => Promise<void>;
+  error: string | null;
+  loadingMessage: string | null;
 }
