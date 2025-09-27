@@ -1,3 +1,4 @@
+
 import { Party, Carousel } from '../types';
 
 const API_URL = 'https://parties247-backend.onrender.com/api';
@@ -166,15 +167,14 @@ export const deleteParty = async (partyId: string): Promise<void> => {
  * @param partyData - An object with all party fields (excluding id).
  */
 export const updateParty = async (partyId: string, partyData: Omit<Party, 'id'>): Promise<void> => {
-  // FIX: Changed 'date' to 'startsAt' to match the backend's expected field for party updates,
-  // which likely was not reverted along with other changes.
-  const updatePayload: { [key: string]: any } = {
+  // The backend's PartyUpdateSchema is very strict and rejects certain fields.
+  // We can only send fields that are explicitly intended for update.
+  // Fields like date ('startsAt') and location ('venue') are set during scraping and are not updatable via this endpoint.
+  const updatePayload = {
     name: partyData.name,
     description: partyData.description,
     tags: partyData.tags,
     referralCode: partyData.referralCode,
-    startsAt: partyData.date,
-    venue: partyData.location.name,
   };
   
   const response = await fetch(`${API_URL}/admin/update-party/${partyId}`, {

@@ -88,6 +88,7 @@ const EditPartyModal: React.FC<{ party: Party; onClose: () => void; onSave: (upd
   };
 
   const inputClass = "w-full bg-jungle-deep text-white p-2 rounded-md border border-wood-brown focus:ring-2 focus:ring-jungle-lime focus:outline-none";
+  const readOnlyInputClass = `${inputClass} bg-jungle-surface/50 cursor-not-allowed`;
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
@@ -102,12 +103,13 @@ const EditPartyModal: React.FC<{ party: Party; onClose: () => void; onSave: (upd
                     <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} className={inputClass} required />
                 </div>
                 <div>
-                    <label htmlFor="date" className="block text-sm text-jungle-text/80 mb-1">Date</label>
-                    <input type="datetime-local" id="date" name="date" value={getLocalDateTimeString(formData.date)} onChange={handleChange} className={inputClass} required />
+                    <label htmlFor="date" className="block text-sm text-jungle-text/80 mb-1">Date (Read-only)</label>
+                    <input type="datetime-local" id="date" name="date" value={getLocalDateTimeString(formData.date)} className={readOnlyInputClass} required readOnly />
                 </div>
                  <div>
-                    <label htmlFor="location.name" className="block text-sm text-jungle-text/80 mb-1">Location Name</label>
-                    <input type="text" id="location.name" name="location.name" value={formData.location.name} onChange={handleChange} className={inputClass} required />
+                    <label htmlFor="location.name" className="block text-sm text-jungle-text/80 mb-1">Location Name (Read-only)</label>
+                    <input type="text" id="location.name" name="location.name" value={formData.location.name} className={readOnlyInputClass} required readOnly />
+                    <p className="text-xs text-jungle-text/60 mt-1">Date and Location are set during the initial scraping and cannot be edited.</p>
                 </div>
                  <div>
                     <label htmlFor="description" className="block text-sm text-jungle-text/80 mb-1">Description</label>

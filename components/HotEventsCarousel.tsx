@@ -1,7 +1,7 @@
+
 import React, { useRef, useEffect, useMemo, FC } from 'react';
 import { Link } from 'react-router-dom';
 import { Party } from '../types';
-import { useParties } from '../hooks/useParties';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
 
 // --- SVG Arrow Icons ---
@@ -33,36 +33,14 @@ const renderTagContent = (tag: string) => {
 };
 
 const CarouselPartyCard: FC<{ party: Party }> = React.memo(({ party }) => {
-  const { defaultReferral } = useParties();
-
-  const getReferralUrl = (originalUrl: string, partyReferral?: string): string => {
-    try {
-      const referralCode = partyReferral || defaultReferral;
-  
-      if (!referralCode) {
-        return originalUrl;
-      }
-  
-      const url = new URL(originalUrl);
-      url.searchParams.delete('ref'); // remove old param if exists
-      url.searchParams.set('aff', referralCode);
-      return url.toString();
-    } catch (error) {
-      console.error("Error creating referral URL:", error);
-      return originalUrl;
-    }
-  };
-
   const partyDate = new Date(party.date);
   const formattedDate = new Intl.DateTimeFormat('he-IL', {
     weekday: 'long', day: '2-digit', month: '2-digit',
   }).format(partyDate);
 
   return (
-    <a
-      href={getReferralUrl(party.originalUrl, party.referralCode)}
-      target="_blank"
-      rel="noopener noreferrer"
+    <Link
+      to={`/event/${party.slug}`}
       className="group block outline-none"
       aria-label={`View details for ${party.name}`}
     >
@@ -89,7 +67,6 @@ const CarouselPartyCard: FC<{ party: Party }> = React.memo(({ party }) => {
             </div>
             <div className="flex items-center text-xs text-jungle-text/80 mb-2">
               <LocationIcon className="w-3.5 h-3.5 ml-1.5 text-jungle-accent" />
-              {/* FIX: Use party.location.name as party.location is an object */}
               <span className="truncate">{party.location.name}</span>
             </div>
           </div>
@@ -98,7 +75,7 @@ const CarouselPartyCard: FC<{ party: Party }> = React.memo(({ party }) => {
           </h3>
         </div>
       </div>
-    </a>
+    </Link>
   );
 });
 
