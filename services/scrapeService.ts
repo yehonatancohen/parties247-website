@@ -161,10 +161,11 @@ export const scrapePartyUrlsFromSection = (htmlText: string): string[] => {
     }
     
     const jsonData = JSON.parse(nextDataScript.textContent);
-    const events = jsonData?.props?.pageProps?.pageInitialParams?.events;
+    // FIX: Updated path to find events list after website structure change.
+    const events = jsonData?.props?.pageProps?.events;
 
     if (!Array.isArray(events)) {
-      throw new Error("Events data is not in the expected format (props.pageProps.pageInitialParams.events).");
+      throw new Error("Events data is not in the expected format (props.pageProps.events).");
     }
     
     const partyUrls = events.map(event => {

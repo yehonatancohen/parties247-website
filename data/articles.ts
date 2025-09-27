@@ -6,7 +6,7 @@ export const articles: Article[] = [
     slug: 'top-5-underground-techno-clubs-tel-aviv',
     title: '5 מועדוני הטכנו הכי טובים בתל אביב (שחייבים להכיר)',
     summary: 'תל אביב היא בירת הטכנו של המזרח התיכון, אבל איפה נמצאים המקומות האמיתיים? צללנו לסצנת האנדרגראונד וחזרנו עם המלצות.',
-    imageUrl: 'https://images.unsplash.com/photo-1516999654410-9309267a21da?q=80&w=2070&auto=format&fit=crop',
+    imageUrl: 'https://vjkiztnx7gionfos.public.blob.vercel-storage.com/techno-club-unsplash.jpg',
     content: `סצנת הטכנו של תל אביב היא חיה ובועטת, אבל עם כל כך הרבה אפשרויות, קל ללכת לאיבוד. כדי לעזור לכם למצוא את הסאונד והאווירה המדויקים, יצאנו למסע במרתפים האפלים והחללים התעשייתיים של העיר. אלו המקומות שלא תרצו לפספס.
 
 ### 1. הבלוק (The Block)
@@ -29,7 +29,7 @@ export const articles: Article[] = [
     slug: 'psytrance-nature-party-beginners-guide',
     title: 'המדריך המלא למסיבת הטבע הראשונה שלכם',
     summary: 'רוצים לחוות את הקסם של רייב בטבע אבל לא יודעים מאיפה להתחיל? כל הטיפים שיבטיחו לכם נחיתה רכה בעולם הפסיי-טראנס.',
-    imageUrl: 'https://images.unsplash.com/photo-1614149299103-15337bf57a05?q=80&w=2070&auto=format&fit=crop',
+    imageUrl: 'https://vjkiztnx7gionfos.public.blob.vercel-storage.com/psytrance-nature-unsplash.jpg',
     content: `מסיבת טבע היא הרבה יותר מסתם מסיבה. זו חוויה הוליסטית שמחברת בין מוזיקה, טבע, קהילה ותודעה. אם זו הפעם הראשונה שלכם, כמה טיפים קטנים יכולים לעשות הבדל גדול.
 
 ### 1. ציוד: מה להביא?
@@ -52,7 +52,7 @@ export const articles: Article[] = [
     slug: 'rise-of-mainstream-israeli-pop',
     title: 'עליית המיינסטרים: איך הפופ הישראלי כבש את הרחבות',
     summary: 'פעם הרחבות היו שייכות לטכנו ולטראנס, אבל היום המיינסטרים הישראלי שולט. איך קרה המהפך ומה זה אומר על תרבות הבילוי שלנו?',
-    imageUrl: 'https://images.unsplash.com/photo-1546238697-334b0271e54c?q=80&w=1968&auto=format&fit=crop',
+    imageUrl: 'https://vjkiztnx7gionfos.public.blob.vercel-storage.com/mainstream-party-unsplash.jpg',
     content: `בשנים האחרונות, אנחנו עדים לתופעה מרתקת בחיי הלילה של ישראל: המיינסטרים, ובעיקר הפופ הישראלי, כובש את רחבות הריקודים שהיו פעם נחלתם הבלעדית של ז'אנרים אלקטרוניים. אמנים כמו נועה קירל, עדן חסון ואנה זק הפכו לחלק בלתי נפרד מהפלייליסט של כל מועדון מוביל.
 
 ### הגורמים לשינוי

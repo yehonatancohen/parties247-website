@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useParties } from '../hooks/useParties';
@@ -31,7 +32,7 @@ const CategoryPage: React.FC = () => {
 
   const carousel = carousels.find(c => c.id === categoryId);
   const categoryParties = carousel
-    ? carousel.partyIds.map(id => parties.find(p => p.id === id)).filter(Boolean) as Party[]
+    ? parties.filter(p => carousel.partyIds.includes(p.id))
     : [];
 
   if (!carousel) {
@@ -59,19 +60,13 @@ const CategoryPage: React.FC = () => {
     }]
   };
   
-  const feedLinks = [
-    { title: `${carousel.title} RSS Feed`, href: `/feeds/genre/${carousel.id}.rss`, type: 'application/rss+xml' as const },
-    { title: `${carousel.title} Atom Feed`, href: `/feeds/genre/${carousel.id}.atom`, type: 'application/atom+xml' as const },
-  ];
-
   return (
     <>
       <SEO 
         title={`${carousel.title} - Parties 24/7`} 
         description={`רשימת המסיבות המלאה לקטגוריית ${carousel.title}.`}
-        canonicalPath={`/genre/${carousel.id}`}
+        canonicalPath={`/category/${carousel.id}`}
         jsonLd={breadcrumbJsonLd}
-        feedLinks={feedLinks}
       />
       <div className="container mx-auto px-4">
         <h1 className="text-5xl font-display text-center mb-8 text-white">{carousel.title}</h1>

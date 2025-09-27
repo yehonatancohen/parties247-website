@@ -1,4 +1,4 @@
-import { Party, Carousel } from '../types';
+import { Party } from '../types';
 
 const API_URL = 'https://parties247-backend.onrender.com/api';
 const JWT_TOKEN_STORAGE = 'jwtAuthToken';
@@ -24,57 +24,45 @@ const getAuthHeader = (): { [key: string]: string } => {
  */
 const mapPartyToFrontend = (backendParty: any): Party => {
   let slug = backendParty.slug;
+  const urlForSlug = backendParty.goOutUrl || backendParty.originalUrl;
 
-  // Fallback for missing slug: attempt to extract it from originalUrl
-  if (!slug && backendParty.originalUrl && typeof backendParty.originalUrl === 'string') {
+  // Fallback for missing slug: attempt to extract it from a URL
+  if (!slug && urlForSlug && typeof urlForSlug === 'string') {
     try {
-      // Example URL: https://www.go-out.co/event/1757001416867
-      const match = backendParty.originalUrl.match(/\/event\/([^/?#]+)/);
+      const match = urlForSlug.match(/\/event\/([^/?#]+)/);
       if (match && match[1]) {
         slug = match[1];
       }
     } catch (e) {
-      console.error('Could not parse originalUrl to derive slug:', backendParty.originalUrl);
+      console.error('Could not parse URL to derive slug:', urlForSlug);
     }
   }
+  
+  const locationName = backendParty.venue || backendParty.city || (typeof backendParty.location === 'string' ? backendParty.location : backendParty.location?.name) || 'Location not specified';
 
   return {
     id: backendParty._id,
     slug: slug,
     name: backendParty.name,
     imageUrl: backendParty.imageUrl,
-    date: backendParty.date,
-    location: { // Ensure location is always an object
-      name: typeof backendParty.location === 'string' ? backendParty.location : backendParty.location?.name,
-      address: backendParty.location?.address,
+    date: backendParty.startsAt || backendParty.date, // Prioritize new `startsAt` field
+    location: {
+      name: locationName,
+      address: backendParty.venue || backendParty.location?.address,
       geo: backendParty.location?.geo,
     },
     description: backendParty.description,
-    originalUrl: backendParty.originalUrl,
+    originalUrl: backendParty.originalUrl || backendParty.goOutUrl,
     region: backendParty.region,
     musicType: backendParty.musicType,
     eventType: backendParty.eventType,
     age: backendParty.age,
-    tags: backendParty.tags || [], // Ensure tags is always an array
+    tags: backendParty.tags || [],
     referralCode: backendParty.referralCode,
     eventStatus: backendParty.eventStatus,
     eventAttendanceMode: backendParty.eventAttendanceMode,
     organizer: backendParty.organizer,
     performer: backendParty.performer,
-  };
-};
-
-/**
- * Maps a carousel object from the backend schema to the frontend schema.
- * @param backendCarousel - The carousel object received from the API.
- * @returns A carousel object compliant with the frontend's `Carousel` type.
- */
-const mapCarouselToFrontend = (backendCarousel: any): Carousel => {
-  return {
-    id: backendCarousel._id || backendCarousel.id, // Handle both _id (from admin routes) and id (from public route)
-    title: backendCarousel.title,
-    partyIds: backendCarousel.partyIds || [],
-    order: backendCarousel.order,
   };
 };
 
@@ -110,18 +98,6 @@ export const getPartyBySlug = async (slug: string): Promise<Party> => {
   }
   const data = await response.json();
   return mapPartyToFrontend(data);
-};
-
-/**
- * Fetches all carousels from the backend.
- */
-export const getCarousels = async (): Promise<Carousel[]> => {
-    const response = await fetch(`${API_URL}/carousels`);
-    if (!response.ok) {
-        throw new Error('Failed to fetch carousels');
-    }
-    const data = await response.json();
-    return data.map(mapCarouselToFrontend);
 };
 
 /**
@@ -172,18 +148,29 @@ export const deleteParty = async (partyId: string): Promise<void> => {
 };
 
 /**
- * Updates a party in the database.
+ * Updates a party in the a database.
  * @param partyId - The ID of the party to update.
  * @param partyData - An object with all party fields (excluding id).
  */
 export const updateParty = async (partyId: string, partyData: Omit<Party, 'id'>): Promise<void> => {
+  // FIX: Changed 'date' to 'startsAt' to match the backend's expected field for party updates,
+  // which likely was not reverted along with other changes.
+  const updatePayload: { [key: string]: any } = {
+    name: partyData.name,
+    description: partyData.description,
+    tags: partyData.tags,
+    referralCode: partyData.referralCode,
+    startsAt: partyData.date,
+    venue: partyData.location.name,
+  };
+  
   const response = await fetch(`${API_URL}/admin/update-party/${partyId}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
       ...getAuthHeader(),
     },
-    body: JSON.stringify(partyData),
+    body: JSON.stringify(updatePayload),
   });
 
   if (!response.ok) {
@@ -198,85 +185,6 @@ export const updateParty = async (partyId: string, partyData: Omit<Party, 'id'>)
     throw new Error(responseData.message || 'Failed to update party');
   }
 };
-
-/**
- * Adds a new carousel to the database.
- * @param title - The title of the new carousel.
- */
-export const addCarousel = async (title: string): Promise<Carousel> => {
-    const response = await fetch(`${API_URL}/admin/carousels`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-        body: JSON.stringify({ title }),
-    });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.message || 'Failed to create carousel');
-    return mapCarouselToFrontend(data);
-};
-
-/**
- * Updates a carousel in the database.
- * @param carousel - The carousel object with updated data.
- */
-export const updateCarousel = async (carousel: Carousel): Promise<Carousel> => {
-    const payload: { title: string; partyIds: string[]; order?: number } = {
-        title: carousel.title,
-        partyIds: carousel.partyIds || [],
-    };
-    if (typeof carousel.order === 'number') {
-        payload.order = carousel.order;
-    }
-
-    const response = await fetch(`${API_URL}/admin/carousels/${carousel.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-        body: JSON.stringify(payload),
-    });
-
-    if (!response.ok) {
-        const data = await response.json().catch(() => ({ message: 'Invalid carousel data' }));
-        throw new Error(data.message || 'Failed to update carousel');
-    }
-    return carousel;
-};
-
-
-/**
- * Deletes a carousel from the database.
- * @param carouselId - The ID of the carousel to delete.
- */
-export const deleteCarousel = async (carouselId: string): Promise<void> => {
-    const response = await fetch(`${API_URL}/admin/carousels/${carouselId}`, {
-        method: 'DELETE',
-        headers: getAuthHeader(),
-    });
-    if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || 'Failed to delete carousel');
-    }
-};
-
-/**
- * Renames a tag/carousel in the database.
- * @param carouselId - The ID of the tag/carousel to rename.
- * @param newName - The new name for the tag/carousel.
- */
-export const renameTag = async (carouselId: string, newName: string): Promise<void> => {
-  const response = await fetch(`${API_URL}/admin/carousel/rename`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...getAuthHeader(),
-    },
-    body: JSON.stringify({ carouselId, newName }),
-  });
-
-  if (!response.ok) {
-    const data = await response.json().catch(() => ({ message: 'Failed to rename carousel' }));
-    throw new Error(data.message || 'Failed to rename carousel');
-  }
-};
-
 
 /**
  * Authenticates the admin with a password to get a JWT.
@@ -318,26 +226,6 @@ export const verifyToken = async (): Promise<void> => {
 };
 
 /**
- * Sends the new order of carousels to the backend.
- * @param orderedIds - An array of carousel IDs in the desired order.
- */
-export const reorderCarousels = async (orderedIds: string[]): Promise<void> => {
-  const response = await fetch(`${API_URL}/admin/carousels/reorder`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...getAuthHeader(),
-    },
-    body: JSON.stringify({ orderedIds }),
-  });
-
-  if (!response.ok) {
-    const data = await response.json().catch(() => ({ message: 'Failed to reorder carousels' }));
-    throw new Error(data.message || 'Failed to reorder carousels');
-  }
-};
-
-/**
  * Fetches the default referral code from the backend.
  */
 export const getDefaultReferral = async (): Promise<string> => {
@@ -347,7 +235,7 @@ export const getDefaultReferral = async (): Promise<string> => {
     throw new Error('Failed to fetch default referral code');
   }
   const data = await response.json();
-  return data.code || '';
+  return data.referral || '';
 };
 
 /**

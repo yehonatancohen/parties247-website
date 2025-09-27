@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useParties } from '../hooks/useParties';
 import SEO from '../components/SeoManager';
@@ -50,12 +51,9 @@ const HomePage: React.FC = () => {
   }
   
   const carouselsWithParties = carousels.map(carousel => {
-    const carouselParties = carousel.partyIds
-      .map(id => parties.find(p => p.id === id))
-      .filter((p): p is Party => Boolean(p));
+    const carouselParties = parties.filter(p => carousel.partyIds.includes(p.id));
     return { ...carousel, parties: carouselParties };
-  }).filter(c => c.parties.length > 0)
-    .sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity));
+  }).filter(c => c.parties.length > 0);
 
   return (
     <>

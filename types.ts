@@ -1,3 +1,4 @@
+
 export interface Party {
   id: string;
   slug: string;
@@ -31,13 +32,6 @@ export interface Party {
   };
 }
 
-export interface Carousel {
-  id: string;
-  title: string;
-  partyIds: string[];
-  order?: number;
-}
-
 export interface Article {
   id:string;
   slug: string;
@@ -45,6 +39,12 @@ export interface Article {
   summary: string;
   imageUrl: string;
   content: string;
+}
+
+export interface Carousel {
+  id: string;
+  title: string;
+  partyIds: string[];
 }
 
 export type FilterState = {
@@ -62,12 +62,13 @@ export interface PartyContextType {
   addParty: (url: string) => Promise<Party>;
   deleteParty: (partyId: string) => Promise<void>;
   updateParty: (partyToUpdate: Party) => Promise<void>;
-  addCarousel: (title: string) => Promise<Carousel>;
-  updateCarousel: (carousel: Carousel) => Promise<void>;
+  addCarousel: (title: string) => Promise<void>;
   deleteCarousel: (carouselId: string) => Promise<void>;
-  renameTag: (tagId: string, newName: string) => Promise<void>;
+  updateCarousel: (carouselToUpdate: Carousel) => Promise<void>;
+  updateCarouselOrder: (reorderedCarousels: Carousel[]) => Promise<void>;
+  addPartyToCarousel: (carouselId: string, partyId: string) => Promise<void>;
+  removePartyFromCarousel: (carouselId: string, partyId: string) => Promise<void>;
   isLoading: boolean;
-  refetchCarousels: () => Promise<void>;
   defaultReferral: string;
   setDefaultReferral: (code: string) => Promise<void>;
   error: string | null;

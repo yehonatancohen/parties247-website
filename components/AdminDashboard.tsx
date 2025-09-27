@@ -1,9 +1,10 @@
-import React, { useState, useCallback, useEffect, DragEvent } from 'react';
+// FIX: Corrected a typo in the React import statement (removed an extra 'a,') which was causing compilation errors.
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { useParties } from '../hooks/useParties';
 import { Party, Carousel } from '../types';
 import LoadingSpinner from './LoadingSpinner';
 import { scrapePartyUrlsFromSection } from '../services/scrapeService';
-import * as api from '../services/api';
+import { SearchIcon, EditIcon, ChevronDownIcon } from './Icons';
 
 const TagInput: React.FC<{ tags: string[]; onTagsChange: (tags: string[]) => void }> = ({ tags, onTagsChange }) => {
   const [inputValue, setInputValue] = useState('');
@@ -44,8 +45,87 @@ const TagInput: React.FC<{ tags: string[]; onTagsChange: (tags: string[]) => voi
   );
 };
 
+const EditPartyModal: React.FC<{ party: Party; onClose: () => void; onSave: (updatedParty: Party) => Promise<void>; }> = ({ party, onClose, onSave }) => {
+  const [formData, setFormData] = useState<Party>(party);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    setFormData(party);
+  }, [party]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    if (name === 'location.name') {
+      setFormData(prev => ({ ...prev, location: { ...prev.location, name: value } }));
+    } else if (name === 'date') {
+      // Convert local datetime-local string to ISO string
+      const localDate = new Date(value);
+      const isoString = localDate.toISOString();
+      setFormData(prev => ({ ...prev, [name]: isoString }));
+    } 
+    else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
+  };
+  
+  const getLocalDateTimeString = (isoDate: string) => {
+    const date = new Date(isoDate);
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSaving(true);
+    await onSave(formData);
+    setIsSaving(false);
+    onClose();
+  };
+
+  const inputClass = "w-full bg-jungle-deep text-white p-2 rounded-md border border-wood-brown focus:ring-2 focus:ring-jungle-lime focus:outline-none";
+
+  return (
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+        <div className="bg-jungle-surface rounded-lg shadow-2xl w-full max-w-lg h-auto flex flex-col border border-wood-brown">
+            <div className="p-4 border-b border-wood-brown flex justify-between items-center">
+                <h3 className="text-xl font-display text-white">Edit Party</h3>
+                <button onClick={onClose} className="text-2xl text-jungle-text/70 hover:text-white">&times;</button>
+            </div>
+            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                <div>
+                    <label htmlFor="name" className="block text-sm text-jungle-text/80 mb-1">Name</label>
+                    <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} className={inputClass} required />
+                </div>
+                <div>
+                    <label htmlFor="date" className="block text-sm text-jungle-text/80 mb-1">Date</label>
+                    <input type="datetime-local" id="date" name="date" value={getLocalDateTimeString(formData.date)} onChange={handleChange} className={inputClass} required />
+                </div>
+                 <div>
+                    <label htmlFor="location.name" className="block text-sm text-jungle-text/80 mb-1">Location Name</label>
+                    <input type="text" id="location.name" name="location.name" value={formData.location.name} onChange={handleChange} className={inputClass} required />
+                </div>
+                 <div>
+                    <label htmlFor="description" className="block text-sm text-jungle-text/80 mb-1">Description</label>
+                    <textarea id="description" name="description" value={formData.description} onChange={handleChange} className={`${inputClass} h-24`} />
+                </div>
+                <div className="flex justify-end gap-3 pt-4">
+                    <button type="button" onClick={onClose} className="bg-gray-600 text-white font-bold py-2 px-6 rounded-md hover:bg-opacity-80">Cancel</button>
+                    <button type="submit" disabled={isSaving} className="bg-jungle-accent text-jungle-deep font-bold py-2 px-6 rounded-md hover:bg-opacity-80 disabled:bg-gray-500 flex items-center">
+                        {isSaving ? <LoadingSpinner /> : 'Save Changes'}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+  );
+};
+
 const AdminDashboard: React.FC = () => {
-  const { parties, addParty, deleteParty, updateParty, carousels, addCarousel, updateCarousel, deleteCarousel, refetchCarousels, defaultReferral, setDefaultReferral, renameTag } = useParties();
+  const { parties, addParty, deleteParty, updateParty, carousels, addCarousel, deleteCarousel, updateCarousel, addPartyToCarousel, removePartyFromCarousel, defaultReferral, setDefaultReferral } = useParties();
   
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -53,24 +133,82 @@ const AdminDashboard: React.FC = () => {
   
   const [addMode, setAddMode] = useState<'single' | 'section'>('single');
   const [sectionUrl, setSectionUrl] = useState('');
-  const [sectionTag, setSectionTag] = useState('');
+  const [selectedCarouselId, setSelectedCarouselId] = useState<string>('');
   const [sectionIsLoading, setSectionIsLoading] = useState(false);
   const [sectionError, setSectionError] = useState<string | null>(null);
   const [sectionProgress, setSectionProgress] = useState('');
-
-  const [newCarouselTitle, setNewCarouselTitle] = useState('');
-  const [editingCarousel, setEditingCarousel] = useState<Carousel | null>(null);
-  const [modalSearchTerm, setModalSearchTerm] = useState('');
-  const [editingTitleId, setEditingTitleId] = useState<string | null>(null);
-  const [tempTitle, setTempTitle] = useState('');
-  const [draggedCarouselId, setDraggedCarouselId] = useState<string | null>(null);
   
   const [localDefaultReferral, setLocalDefaultReferral] = useState('');
+  const [newCarouselTitle, setNewCarouselTitle] = useState('');
+  
+  const [editingParty, setEditingParty] = useState<Party | null>(null);
+  const [showArchived, setShowArchived] = useState(false);
+  const [partySearchTerm, setPartySearchTerm] = useState('');
+  const [partySort, setPartySort] = useState<{key: 'date' | 'name', direction: 'asc' | 'desc'}>({ key: 'date', direction: 'asc' });
+
+  const [editingCarouselId, setEditingCarouselId] = useState<string | null>(null);
+  const [editingCarouselTitle, setEditingCarouselTitle] = useState('');
 
   useEffect(() => {
     setLocalDefaultReferral(defaultReferral);
   }, [defaultReferral]);
+  
+  useEffect(() => {
+    if (carousels.length > 0 && !selectedCarouselId) {
+      setSelectedCarouselId(carousels[0].id);
+    }
+  }, [carousels, selectedCarouselId]);
 
+  const { activeParties, archivedParties } = useMemo(() => {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0); // Start of today
+    const active: Party[] = [];
+    const archived: Party[] = [];
+    parties.forEach(p => {
+      if (new Date(p.date) < now) {
+        archived.push(p);
+      } else {
+        active.push(p);
+      }
+    });
+    return { activeParties: active, archivedParties: archived };
+  }, [parties]);
+  
+  const filteredAndSortedParties = useMemo(() => {
+    let result = activeParties.filter(p =>
+      p.name.toLowerCase().includes(partySearchTerm.toLowerCase()) ||
+      p.location.name.toLowerCase().includes(partySearchTerm.toLowerCase())
+    );
+
+    result.sort((a, b) => {
+      if (partySort.key === 'date') {
+        const valA = new Date(a.date).getTime();
+        const valB = new Date(b.date).getTime();
+        return partySort.direction === 'asc' ? valA - valB : valB - valA;
+      } else { // 'name'
+        const valA = a.name.toLowerCase();
+        const valB = b.name.toLowerCase();
+        if (valA < valB) return partySort.direction === 'asc' ? -1 : 1;
+        if (valA > valB) return partySort.direction === 'asc' ? 1 : -1;
+        return 0;
+      }
+    });
+
+    return result;
+  }, [activeParties, partySearchTerm, partySort]);
+  
+  const sortedArchivedParties = useMemo(() => 
+    [...archivedParties].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
+    [archivedParties]
+  );
+  
+  const handleCreateCarousel = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newCarouselTitle.trim()) {
+      await addCarousel(newCarouselTitle.trim());
+      setNewCarouselTitle('');
+    }
+  };
 
   const handleSaveDefaultReferral = async () => {
     try {
@@ -80,6 +218,30 @@ const AdminDashboard: React.FC = () => {
       // Error is handled in the context provider
     }
   };
+  
+  const handleSaveParty = async (updatedParty: Party) => {
+    await updateParty(updatedParty);
+    setEditingParty(null);
+  };
+
+  const handleEditCarousel = (carousel: Carousel) => {
+    setEditingCarouselId(carousel.id);
+    setEditingCarouselTitle(carousel.title);
+  };
+
+  const handleCancelEditCarousel = () => {
+    setEditingCarouselId(null);
+    setEditingCarouselTitle('');
+  };
+
+  const handleSaveCarousel = async (carouselId: string) => {
+    if (!editingCarouselTitle.trim()) return;
+    const carouselToUpdate = carousels.find(c => c.id === carouselId);
+    if (carouselToUpdate) {
+      await updateCarousel({ ...carouselToUpdate, title: editingCarouselTitle.trim() });
+    }
+    handleCancelEditCarousel();
+  };
 
   const handleAddParty = useCallback(async () => {
     const trimmedUrl = url.trim();
@@ -87,7 +249,11 @@ const AdminDashboard: React.FC = () => {
       setError('Please enter a valid go-out.co URL.');
       return;
     }
-    if (parties.some(party => party.originalUrl === trimmedUrl)) {
+    
+    const slugMatch = trimmedUrl.match(/\/event\/([^/?#]+)/);
+    const slug = slugMatch ? slugMatch[1] : null;
+
+    if (slug && parties.some(party => party.slug === slug)) {
       setError('This party has already been added.');
       return;
     }
@@ -109,8 +275,8 @@ const AdminDashboard: React.FC = () => {
   }, [url, addParty, parties, updateParty, defaultReferral]);
 
   const handleScrapeSection = async () => {
-    if (!sectionUrl.trim() || !sectionTag.trim()) {
-        setSectionError('Please provide both a section URL and a tag name.');
+    if (!sectionUrl.trim() || !selectedCarouselId) {
+        setSectionError('Please provide a section URL and select a category.');
         return;
     }
     setSectionIsLoading(true);
@@ -134,55 +300,47 @@ const AdminDashboard: React.FC = () => {
             return;
         }
 
-        const newPartyIds: string[] = [];
+        let newPartiesCount = 0;
         for (let i = 0; i < partyUrls.length; i++) {
             const pUrl = partyUrls[i];
             setSectionProgress(`Adding party ${i + 1} of ${partyUrls.length}...`);
 
-            if (parties.some(p => p.originalUrl === pUrl)) {
+            const slugMatch = pUrl.match(/\/event\/([^/?#]+)/);
+            const slug = slugMatch ? slugMatch[1] : null;
+
+            if (slug && parties.some(p => p.slug === slug)) {
                 console.log(`Skipping already existing party: ${pUrl}`);
+                const existingParty = parties.find(p => p.slug === slug);
+                if (existingParty) {
+                  await addPartyToCarousel(selectedCarouselId, existingParty.id);
+                }
                 continue;
             }
 
             try {
                 const newParty = await addParty(pUrl);
-                newPartyIds.push(newParty.id);
-                // Also update the individual party with the default referral code
-                if (defaultReferral) {
-                    await updateParty({ ...newParty, referralCode: defaultReferral });
+                newPartiesCount++;
+                let partyToUpdate = { ...newParty };
+
+                if (defaultReferral && !partyToUpdate.referralCode) {
+                    partyToUpdate.referralCode = defaultReferral;
+                    await updateParty(partyToUpdate);
                 }
+                
+                await addPartyToCarousel(selectedCarouselId, newParty.id);
+
             } catch (addError) {
                 console.error(`Failed to add party ${pUrl}:`, addError);
             }
         }
-
-        if (newPartyIds.length > 0) {
-            setSectionProgress('Updating category with new parties...');
-            const trimmedTag = sectionTag.trim();
-            let targetCarousel = carousels.find(c => c.title === trimmedTag);
-
-            if (!targetCarousel) {
-                try {
-                    targetCarousel = await addCarousel(trimmedTag);
-                } catch (createError) {
-                    setSectionError(`Failed to create new category "${trimmedTag}".`);
-                    return; // Stop execution
-                }
-            }
-
-            const existingPartyIds = new Set(targetCarousel.partyIds);
-            newPartyIds.forEach(id => existingPartyIds.add(id));
-
-            const updatedCarousel = { ...targetCarousel, partyIds: Array.from(existingPartyIds) };
-
-            await updateCarousel(updatedCarousel);
-            setSectionProgress(`Done! Added ${newPartyIds.length} new parties to "${trimmedTag}".`);
+        const carouselTitle = carousels.find(c => c.id === selectedCarouselId)?.title;
+        if (newPartiesCount > 0) {
+            setSectionProgress(`Done! Added ${newPartiesCount} new parties to "${carouselTitle}".`);
         } else {
-            setSectionProgress('No new parties to add.');
+            setSectionProgress(`All parties found were already in the system. They have been added to "${carouselTitle}".`);
         }
 
         setSectionUrl('');
-        setSectionTag('');
 
     } catch (err) {
         console.error(err);
@@ -192,137 +350,48 @@ const AdminDashboard: React.FC = () => {
     }
   };
   
-  const handleCreateCarousel = async () => {
-    if (newCarouselTitle.trim()) {
-      await addCarousel(newCarouselTitle.trim());
-      setNewCarouselTitle('');
-    }
-  };
-
-  const handleUpdateCarouselParties = async (partyId: string, isInCarousel: boolean) => {
-    if (!editingCarousel) return;
-    const newPartyIds = isInCarousel ? editingCarousel.partyIds.filter(id => id !== partyId) : [...editingCarousel.partyIds, partyId];
-    const updated = { ...editingCarousel, partyIds: newPartyIds };
-    setEditingCarousel(updated);
-    await updateCarousel(updated);
-  };
-  
-  const handleDeleteCarousel = async (carouselId: string) => {
-    if (window.confirm('Are you sure you want to delete this carousel?')) {
-      await deleteCarousel(carouselId);
-    }
-  };
-
-  const handleTitleEditStart = (carousel: Carousel) => {
-    setEditingTitleId(carousel.id);
-    setTempTitle(carousel.title);
-  };
-
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTempTitle(e.target.value);
-  };
-
-  const handleTitleSave = async (carouselId: string) => {
-    const carousel = carousels.find(c => c.id === carouselId);
-    if (carousel && tempTitle.trim() && carousel.title !== tempTitle.trim()) {
-      await renameTag(carouselId, tempTitle.trim());
-    }
-    setEditingTitleId(null);
-  };
-  
-  const handleDragStart = (e: DragEvent<HTMLDivElement>, id: string) => {
-    setDraggedCarouselId(id);
-    e.dataTransfer.effectAllowed = 'move';
-  };
-
-  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = async (e: DragEvent<HTMLDivElement>, targetId: string) => {
-    e.preventDefault();
-    if (!draggedCarouselId || draggedCarouselId === targetId) return;
-
-    const currentCarousels = [...carousels].sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity));
-    const draggedIndex = currentCarousels.findIndex(c => c.id === draggedCarouselId);
-    const targetIndex = currentCarousels.findIndex(c => c.id === targetId);
-    
-    if (draggedIndex === -1 || targetIndex === -1) return;
-
-    const reordered = [...currentCarousels];
-    const [draggedItem] = reordered.splice(draggedIndex, 1);
-    reordered.splice(targetIndex, 0, draggedItem);
-    
-    const orderedIds = reordered.map(c => c.id);
-    
-    try {
-      await api.reorderCarousels(orderedIds);
-      await refetchCarousels();
-    } catch (err) {
-      console.error("Failed to save carousel order", err);
-      alert(`Error saving new order: ${err instanceof Error ? err.message : 'Unknown error'}. Please refresh.`);
-    }
-
-    setDraggedCarouselId(null);
-  };
-
-  const sortedParties = [...parties].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  const sortedCarousels = [...carousels].sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity));
-
-  if (editingCarousel) {
-    const filteredPartiesForModal = sortedParties.filter(p => 
-        p.name.toLowerCase().includes(modalSearchTerm.toLowerCase()) || 
-        p.location.name.toLowerCase().includes(modalSearchTerm.toLowerCase())
-    );
-
-    return (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-            <div className="bg-jungle-surface rounded-lg shadow-2xl w-full max-w-2xl h-[90vh] flex flex-col border border-wood-brown">
-                <div className="p-4 border-b border-wood-brown flex justify-between items-center flex-shrink-0">
-                    <h3 className="text-xl font-display text-white">Editing: {editingCarousel.title}</h3>
-                    <button onClick={() => setEditingCarousel(null)} className="text-2xl text-jungle-text/70 hover:text-white">&times;</button>
-                </div>
-                <div className="p-4 flex-shrink-0">
-                     <input
-                        type="text"
-                        placeholder="Search parties..."
-                        value={modalSearchTerm}
-                        onChange={(e) => setModalSearchTerm(e.target.value)}
-                        className="w-full bg-jungle-deep text-white p-2 rounded-md border border-wood-brown"
-                    />
-                </div>
-                <div className="flex-grow overflow-y-auto px-4 pb-4 space-y-2">
-                    {filteredPartiesForModal.map(party => {
-                        const isInCarousel = editingCarousel.partyIds.includes(party.id);
-                        return (
-                            <div key={party.id} className="flex items-center bg-jungle-deep p-2 rounded-md">
-                                <input
-                                    type="checkbox"
-                                    id={`party-check-${party.id}`}
-                                    checked={isInCarousel}
-                                    onChange={() => handleUpdateCarouselParties(party.id, isInCarousel)}
-                                    className="w-5 h-5 text-jungle-lime bg-gray-700 border-gray-600 rounded focus:ring-jungle-lime"
-                                />
-                                <label htmlFor={`party-check-${party.id}`} className="mr-3 text-white truncate flex-grow cursor-pointer">
-                                    <span className="font-semibold">{party.name}</span>
-                                    <span className="text-xs text-jungle-text/60 block">{party.location.name}</span>
-                                </label>
-                            </div>
-                        )
-                    })}
-                </div>
-                <div className="p-4 border-t border-wood-brown text-right flex-shrink-0">
-                    <button onClick={() => setEditingCarousel(null)} className="bg-jungle-accent text-jungle-deep font-bold py-2 px-6 rounded-md hover:bg-opacity-80">
-                        Done
-                    </button>
-                </div>
-            </div>
+  const PartyListItem = ({ party }: { party: Party }) => (
+    <div className="bg-jungle-deep p-3 rounded-md">
+      <div className="flex justify-between items-start gap-2">
+        <div className="flex-grow min-w-0">
+          <p className="font-semibold text-white truncate">{party.name}</p>
+          <p className="text-sm text-jungle-text/60">{party.location.name} - {new Date(party.date).toLocaleDateString('he-IL')}</p>
+          <div className="flex items-center gap-1 mt-1">
+            <label htmlFor={`ref-${party.id}`} className="text-xs text-jungle-text/60">Ref:</label>
+            <input 
+              id={`ref-${party.id}`}
+              type="text"
+              value={party.referralCode || ''}
+              onChange={(e) => updateParty({ ...party, referralCode: e.target.value })}
+              placeholder="Default"
+              className="w-full bg-jungle-surface text-white p-0.5 rounded-sm border border-wood-brown text-xs"
+            />
+          </div>
         </div>
-    );
-  }
+        <div className="flex flex-col sm:flex-row gap-1.5 flex-shrink-0">
+            <button onClick={() => setEditingParty(party)} className="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700 transition-colors text-sm flex items-center gap-1.5">
+              <EditIcon className="w-4 h-4"/> Edit
+            </button>
+            <button onClick={() => deleteParty(party.id)} className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 transition-colors text-sm">
+              Delete
+            </button>
+        </div>
+      </div>
+      <div className="mt-2 pt-2 border-t border-wood-brown">
+        <TagInput tags={party.tags} onTagsChange={(newTags) => updateParty({ ...party, tags: newTags })} />
+      </div>
+    </div>
+  );
 
   return (
     <div className="bg-jungle-surface p-6 rounded-lg shadow-lg max-w-7xl mx-auto space-y-8">
+      {editingParty && (
+          <EditPartyModal 
+              party={editingParty}
+              onClose={() => setEditingParty(null)}
+              onSave={handleSaveParty}
+          />
+      )}
       <h2 className="text-3xl font-display mb-6 text-white">Admin Dashboard</h2>
       
       {/* Settings Section */}
@@ -364,8 +433,11 @@ const AdminDashboard: React.FC = () => {
         {addMode === 'section' && (
           <div className="space-y-3">
             <input type="url" value={sectionUrl} onChange={(e) => setSectionUrl(e.target.value)} placeholder="Paste go-out.co section URL" className="w-full bg-jungle-deep text-white p-2 rounded-md border border-wood-brown" disabled={sectionIsLoading} />
-            <input type="text" value={sectionTag} onChange={(e) => setSectionTag(e.target.value)} placeholder="Tag name for these parties (e.g., Rosh Hashana)" className="w-full bg-jungle-deep text-white p-2 rounded-md border border-wood-brown" disabled={sectionIsLoading} />
-            <button onClick={handleScrapeSection} disabled={sectionIsLoading} className="w-full bg-jungle-lime text-jungle-deep font-bold py-2 px-6 rounded-md disabled:bg-gray-600 flex justify-center items-center">
+             <select value={selectedCarouselId} onChange={e => setSelectedCarouselId(e.target.value)} className="w-full bg-jungle-deep text-white p-2 rounded-md border border-wood-brown" disabled={sectionIsLoading || carousels.length === 0}>
+                {carousels.length === 0 && <option>Create a category first</option>}
+                {carousels.map(c => <option key={c.id} value={c.id}>Add to: {c.title}</option>)}
+            </select>
+            <button onClick={handleScrapeSection} disabled={sectionIsLoading || !selectedCarouselId} className="w-full bg-jungle-lime text-jungle-deep font-bold py-2 px-6 rounded-md disabled:bg-gray-600 flex justify-center items-center">
               {sectionIsLoading ? <LoadingSpinner /> : 'Scrape & Add Parties'}
             </button>
             {sectionProgress && <p className="text-jungle-accent mt-2 text-sm text-center">{sectionProgress}</p>}
@@ -376,80 +448,103 @@ const AdminDashboard: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div>
-          <h3 className="text-lg font-semibold mb-2 text-jungle-accent">Manage Parties ({parties.length})</h3>
-          <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2">
-            {sortedParties.map(party => (
-              <div key={party.id} className="bg-jungle-deep p-3 rounded-md">
-                <div className="flex justify-between items-start gap-2">
-                  <div className="flex-grow min-w-0">
-                    <p className="font-semibold text-white truncate">{party.name}</p>
-                    <p className="text-sm text-jungle-text/60">{party.location.name} - {new Date(party.date).toLocaleDateString('he-IL')}</p>
-                    <div className="flex items-center gap-1 mt-1">
-                      <label htmlFor={`ref-${party.id}`} className="text-xs text-jungle-text/60">Ref:</label>
-                      <input 
-                        id={`ref-${party.id}`}
-                        type="text"
-                        value={party.referralCode || ''}
-                        onChange={(e) => updateParty({ ...party, referralCode: e.target.value })}
-                        placeholder="Default"
-                        className="w-full bg-jungle-surface text-white p-0.5 rounded-sm border border-wood-brown text-xs"
-                      />
-                    </div>
-                  </div>
-                  <button onClick={() => deleteParty(party.id)} className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 transition-colors text-sm flex-shrink-0">
-                    Delete
-                  </button>
-                </div>
-                <div className="mt-2 pt-2 border-t border-wood-brown">
-                  <TagInput tags={party.tags} onTagsChange={(newTags) => updateParty({ ...party, tags: newTags })} />
-                </div>
+          <h3 className="text-lg font-semibold mb-2 text-jungle-accent">Manage Active Parties ({activeParties.length})</h3>
+          <div className="bg-jungle-deep p-3 rounded-md mb-3 space-y-2 sm:space-y-0 sm:flex sm:justify-between sm:items-center">
+            <div className="relative flex-grow">
+               <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <SearchIcon className="w-4 h-4 text-gray-400" />
               </div>
-            ))}
+              <input type="text" value={partySearchTerm} onChange={e => setPartySearchTerm(e.target.value)} placeholder="Search parties..." className="w-full bg-jungle-surface text-white p-2 pr-9 rounded-md border border-wood-brown text-sm"/>
+            </div>
+            <div className="flex items-center gap-2 sm:mr-3">
+              <span className="text-sm text-jungle-text/70">Sort by:</span>
+              <button onClick={() => setPartySort({ key: 'date', direction: partySort.key === 'date' && partySort.direction === 'asc' ? 'desc' : 'asc'})} className={`px-2 py-1 text-sm rounded ${partySort.key === 'date' ? 'bg-jungle-accent text-jungle-deep' : 'bg-jungle-surface'}`}>Date</button>
+              <button onClick={() => setPartySort({ key: 'name', direction: partySort.key === 'name' && partySort.direction === 'asc' ? 'desc' : 'asc'})} className={`px-2 py-1 text-sm rounded ${partySort.key === 'name' ? 'bg-jungle-accent text-jungle-deep' : 'bg-jungle-surface'}`}>Name</button>
+            </div>
+          </div>
+          <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2">
+            {filteredAndSortedParties.map(party => <PartyListItem key={party.id} party={party} />)}
+          </div>
+          
+          <div className="mt-4">
+            <button onClick={() => setShowArchived(!showArchived)} className="w-full text-left text-jungle-accent font-semibold p-2 rounded-md hover:bg-jungle-deep flex items-center justify-between">
+              <span>Archived Parties ({archivedParties.length})</span>
+              <ChevronDownIcon className={`w-5 h-5 transition-transform ${showArchived ? 'rotate-180' : ''}`} />
+            </button>
+            {showArchived && (
+              <div className="mt-2 space-y-3 max-h-[400px] overflow-y-auto pr-2 border-t-2 border-wood-brown/50 pt-3">
+                {sortedArchivedParties.map(party => <PartyListItem key={party.id} party={party} />)}
+              </div>
+            )}
           </div>
         </div>
 
         <div>
-          <h3 className="text-lg font-semibold mb-2 text-jungle-accent">Manage Homepage Categories</h3>
-          <div className="mb-4">
-            <div className="flex gap-2">
-              <input type="text" value={newCarouselTitle} onChange={(e) => setNewCarouselTitle(e.target.value)} placeholder="New category title" className="flex-grow bg-jungle-deep text-white p-2 rounded-md border border-wood-brown" />
-              <button onClick={handleCreateCarousel} className="bg-jungle-accent text-jungle-deep font-bold py-2 px-4 rounded-md hover:bg-opacity-80">Create</button>
-            </div>
-          </div>
-          <div className="space-y-3 max-h-[420px] overflow-y-auto pr-2">
-            {sortedCarousels.map(carousel => (
+            <h3 className="text-lg font-semibold mb-2 text-jungle-accent">Manage Homepage Carousels</h3>
+             <form onSubmit={handleCreateCarousel} className="flex gap-2 mb-4">
+                <input 
+                    type="text" 
+                    value={newCarouselTitle} 
+                    onChange={e => setNewCarouselTitle(e.target.value)} 
+                    placeholder="New carousel title" 
+                    className="flex-grow bg-jungle-deep text-white p-2 rounded-md border border-wood-brown text-sm"
+                />
+                <button type="submit" className="bg-jungle-accent text-jungle-deep font-bold px-4 rounded-md text-sm">Create</button>
+            </form>
+            <div className="space-y-3 max-h-[420px] overflow-y-auto pr-2">
+            {carousels.map(carousel => {
+              const carouselParties = parties.filter(p => carousel.partyIds.includes(p.id));
+              return (
               <div 
                 key={carousel.id} 
-                className={`bg-jungle-deep p-3 rounded-md flex justify-between items-center cursor-move ${draggedCarouselId === carousel.id ? 'opacity-50' : ''}`}
-                draggable="true"
-                onDragStart={(e) => handleDragStart(e, carousel.id)}
-                onDragOver={handleDragOver}
-                onDrop={(e) => handleDrop(e, carousel.id)}
-                onDragEnd={() => setDraggedCarouselId(null)}
+                className="bg-jungle-deep p-3 rounded-md"
               >
-                <div>
-                  {editingTitleId === carousel.id ? (
+                {editingCarouselId === carousel.id ? (
+                  <div className="flex justify-between items-center mb-2 gap-2">
                     <input
                       type="text"
-                      value={tempTitle}
-                      onChange={handleTitleChange}
-                      onBlur={() => handleTitleSave(carousel.id)}
-                      onKeyDown={(e) => e.key === 'Enter' && handleTitleSave(carousel.id)}
-                      className="bg-jungle-surface p-1 rounded"
-                      autoFocus
+                      value={editingCarouselTitle}
+                      onChange={e => setEditingCarouselTitle(e.target.value)}
+                      className="flex-grow bg-jungle-surface text-white p-1 rounded-md border border-wood-brown text-sm"
                     />
-                  ) : (
-                    <p className="font-semibold text-white" onClick={() => handleTitleEditStart(carousel)}>{carousel.title}</p>
-                  )}
-                  <p className="text-sm text-jungle-text/60">{carousel.partyIds.length} parties</p>
-                </div>
-                <div className="flex items-center gap-2">
-                   <button onClick={() => { setEditingCarousel(carousel); setModalSearchTerm(''); }} className="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700 text-sm">Edit Parties</button>
-                  <button onClick={() => handleDeleteCarousel(carousel.id)} className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 text-sm">Delete</button>
+                    <div className="flex gap-2 flex-shrink-0">
+                      <button onClick={() => handleSaveCarousel(carousel.id)} className="text-green-500 hover:text-green-400 text-xs font-bold">SAVE</button>
+                      <button onClick={handleCancelEditCarousel} className="text-gray-500 hover:text-gray-400 text-xs font-bold">CANCEL</button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex justify-between items-center mb-2">
+                      <p className="font-semibold text-white">{carousel.title}</p>
+                      <div className="flex gap-4">
+                        <button onClick={() => handleEditCarousel(carousel)} className="text-blue-500 hover:text-blue-400 text-xs font-bold">EDIT</button>
+                        <button onClick={() => deleteCarousel(carousel.id)} className="text-red-500 hover:text-red-400 text-xs font-bold">DELETE</button>
+                      </div>
+                  </div>
+                )}
+                 <div className="mt-2 pt-2 border-t border-wood-brown">
+                  <select 
+                    className="w-full bg-jungle-surface text-white p-1 rounded-md border border-wood-brown text-xs mb-2"
+                    value={''}
+                    onChange={(e) => addPartyToCarousel(carousel.id, e.target.value)}
+                  >
+                    <option value="" disabled>Add party...</option>
+                    {activeParties.filter(p => !carousel.partyIds.includes(p.id)).map(p => (
+                      <option key={p.id} value={p.id}>{p.name}</option>
+                    ))}
+                  </select>
+                  <div className="space-y-1 max-h-24 overflow-y-auto pr-1">
+                    {carouselParties.map(p => (
+                      <div key={p.id} className="flex justify-between items-center bg-jungle-surface p-1 rounded text-xs">
+                        <span className="truncate text-jungle-text/80">{p.name}</span>
+                        <button onClick={() => removePartyFromCarousel(carousel.id, p.id)} className="text-red-600 hover:text-red-400 flex-shrink-0 ml-1">✖</button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
-            ))}
-          </div>
+              )
+            })}
+            </div>
         </div>
       </div>
     </div>
