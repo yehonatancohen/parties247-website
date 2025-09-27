@@ -45,6 +45,7 @@ export interface Carousel {
   id: string;
   title: string;
   partyIds: string[];
+  order: number;
 }
 
 export type FilterState = {
@@ -64,9 +65,10 @@ export interface PartyContextType {
   updateParty: (partyToUpdate: Party) => Promise<void>;
   addCarousel: (title: string) => Promise<void>;
   deleteCarousel: (carouselId: string) => Promise<void>;
-  updateCarouselTitle: (carouselId: string, title: string) => Promise<void>;
+  updateCarousel: (carouselId: string, updates: { title?: string; order?: number }) => Promise<void>;
   addPartyToCarousel: (carouselId: string, partyId: string) => Promise<void>;
   removePartyFromCarousel: (carouselId: string, partyId: string) => Promise<void>;
+  addPartiesFromSection: (payload: { carouselId: string; carouselTitle: string; url: string; }) => Promise<{ message: string; partyCount: number; warnings: any[] }>;
   isLoading: boolean;
   defaultReferral: string;
   setDefaultReferral: (code: string) => Promise<void>;

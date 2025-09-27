@@ -4,8 +4,7 @@ import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { useParties } from '../hooks/useParties';
 import { Party, Carousel } from '../types';
 import LoadingSpinner from './LoadingSpinner';
-import { scrapePartyUrlsFromSection } from '../services/scrapeService';
-import { SearchIcon, EditIcon, ChevronDownIcon } from './Icons';
+import { SearchIcon, EditIcon, ChevronDownIcon, ArrowUpIcon, ArrowDownIcon } from './Icons';
 
 const TagInput: React.FC<{ tags: string[]; onTagsChange: (tags: string[]) => void }> = ({ tags, onTagsChange }) => {
   const [inputValue, setInputValue] = useState('');
@@ -128,7 +127,7 @@ const EditPartyModal: React.FC<{ party: Party; onClose: () => void; onSave: (upd
 };
 
 const AdminDashboard: React.FC = () => {
-  const { parties, addParty, deleteParty, updateParty, carousels, addCarousel, deleteCarousel, updateCarouselTitle, addPartyToCarousel, removePartyFromCarousel, defaultReferral, setDefaultReferral } = useParties();
+  const { parties, addParty, deleteParty, updateParty, carousels, addCarousel, deleteCarousel, updateCarousel, addPartyToCarousel, removePartyFromCarousel, defaultReferral, setDefaultReferral, addPartiesFromSection } = useParties();
   
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -205,6 +204,8 @@ const AdminDashboard: React.FC = () => {
     [archivedParties]
   );
   
+  const sortedCarousels = useMemo(() => [...carousels].sort((a, b) => a.order - b.order), [carousels]);
+
   const handleCreateCarousel = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newCarouselTitle.trim()) {
@@ -239,8 +240,28 @@ const AdminDashboard: React.FC = () => {
 
   const handleSaveCarousel = async (carouselId: string) => {
     if (!editingCarouselTitle.trim()) return;
-    await updateCarouselTitle(carouselId, editingCarouselTitle.trim());
+    await updateCarousel(carouselId, { title: editingCarouselTitle.trim() });
     handleCancelEditCarousel();
+  };
+
+  const handleMoveCarousel = async (carouselId: string, direction: 'up' | 'down') => {
+    const currentIndex = sortedCarousels.findIndex(c => c.id === carouselId);
+    if (currentIndex === -1) return;
+
+    const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    if (targetIndex < 0 || targetIndex >= sortedCarousels.length) return;
+
+    const carouselA = sortedCarousels[currentIndex];
+    const carouselB = sortedCarousels[targetIndex];
+    
+    // Swap order properties serially to prevent race conditions.
+    try {
+      await updateCarousel(carouselA.id, { order: carouselB.order });
+      await updateCarousel(carouselB.id, { order: carouselA.order });
+    } catch (e) {
+      // Error is handled by the hook, but we can log it here if needed.
+      console.error('An error occurred during the swap operation:', e);
+    }
   };
 
   const handleAddParty = useCallback(async () => {
@@ -275,82 +296,46 @@ const AdminDashboard: React.FC = () => {
   }, [url, addParty, parties, updateParty, defaultReferral]);
 
   const handleScrapeSection = async () => {
-    if (!sectionUrl.trim() || !selectedCarouselId) {
-        setSectionError('Please provide a section URL and select a category.');
-        return;
+    const selectedCarousel = carousels.find(c => c.id === selectedCarouselId);
+    if (!sectionUrl.trim() || !selectedCarousel) {
+      setSectionError('Please provide a section URL and select a category.');
+      return;
     }
+    
     setSectionIsLoading(true);
     setSectionError(null);
-    setSectionProgress('Fetching section page...');
+    setSectionProgress('Scraping section via backend...');
 
     try {
-        const encodedUrl = encodeURIComponent(sectionUrl);
-        const proxyUrl = `https://api.allorigins.win/raw?url=${encodedUrl}`;
-        
-        const response = await fetch(proxyUrl);
-        if (!response.ok) throw new Error(`Failed to fetch from proxy: ${response.statusText}`);
-        const htmlText = await response.text();
+        const result = await addPartiesFromSection({
+            carouselId: selectedCarousel.id,
+            carouselTitle: selectedCarousel.title,
+            url: sectionUrl.trim(),
+        });
 
-        setSectionProgress('Extracting party URLs...');
-        const partyUrls = scrapePartyUrlsFromSection(htmlText);
+        let progressMessage = `${result.message}. Parties processed: ${result.partyCount}.`;
+        setSectionProgress(progressMessage);
 
-        if (partyUrls.length === 0) {
-            setSectionError('No party URLs found on the page.');
-            setSectionIsLoading(false);
-            return;
-        }
-
-        let newPartiesCount = 0;
-        for (let i = 0; i < partyUrls.length; i++) {
-            const pUrl = partyUrls[i];
-            setSectionProgress(`Adding party ${i + 1} of ${partyUrls.length}...`);
-
-            const slugMatch = pUrl.match(/\/event\/([^/?#]+)/);
-            const slug = slugMatch ? slugMatch[1] : null;
-
-            if (slug && parties.some(p => p.slug === slug)) {
-                console.log(`Skipping already existing party: ${pUrl}`);
-                const existingParty = parties.find(p => p.slug === slug);
-                if (existingParty) {
-                  await addPartyToCarousel(selectedCarouselId, existingParty.id);
-                }
-                continue;
-            }
-
-            try {
-                const newParty = await addParty(pUrl);
-                newPartiesCount++;
-                let partyToUpdate = { ...newParty };
-
-                if (defaultReferral && !partyToUpdate.referralCode) {
-                    partyToUpdate.referralCode = defaultReferral;
-                    await updateParty(partyToUpdate);
-                }
-                
-                await addPartyToCarousel(selectedCarouselId, newParty.id);
-
-            } catch (addError) {
-                console.error(`Failed to add party ${pUrl}:`, addError);
-            }
-        }
-        const carouselTitle = carousels.find(c => c.id === selectedCarouselId)?.title;
-        if (newPartiesCount > 0) {
-            setSectionProgress(`Done! Added ${newPartiesCount} new parties to "${carouselTitle}".`);
+        if (result.warnings && result.warnings.length > 0) {
+            const warningText = result.warnings.map(w => `URL: ${w.url} - Error: ${w.error}`).join('\n');
+            setSectionError(`Process completed with warnings:\n${warningText}`);
         } else {
-            setSectionProgress(`All parties found were already in the system. They have been added to "${carouselTitle}".`);
+            setSectionError(null);
         }
-
         setSectionUrl('');
 
     } catch (err) {
         console.error(err);
-        setSectionError(err instanceof Error ? err.message : 'An unknown error occurred.');
+        const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
+        setSectionError(errorMessage);
+        setSectionProgress('');
     } finally {
         setSectionIsLoading(false);
     }
   };
-  
-  const PartyListItem = ({ party }: { party: Party }) => (
+
+  // FIX: Explicitly type PartyListItem as React.FC to correctly handle props like 'key' and resolve assignment errors.
+  const PartyListItem: React.FC<{ party: Party }> = ({ party }) => (
     <div className="bg-jungle-deep p-3 rounded-md">
       <div className="flex justify-between items-start gap-2">
         <div className="flex-grow min-w-0">
@@ -441,7 +426,7 @@ const AdminDashboard: React.FC = () => {
               {sectionIsLoading ? <LoadingSpinner /> : 'Scrape & Add Parties'}
             </button>
             {sectionProgress && <p className="text-jungle-accent mt-2 text-sm text-center">{sectionProgress}</p>}
-            {sectionError && <p className="text-red-500 mt-2 text-sm text-center">{sectionError}</p>}
+            {sectionError && <p className="text-red-500 mt-2 text-sm text-center whitespace-pre-line">{sectionError}</p>}
           </div>
         )}
       </div>
@@ -492,7 +477,7 @@ const AdminDashboard: React.FC = () => {
                 <button type="submit" className="bg-jungle-accent text-jungle-deep font-bold px-4 rounded-md text-sm">Create</button>
             </form>
             <div className="space-y-3 max-h-[420px] overflow-y-auto pr-2">
-            {carousels.map(carousel => {
+            {sortedCarousels.map((carousel, index) => {
               const carouselParties = parties.filter(p => carousel.partyIds.includes(p.id));
               return (
               <div 
@@ -515,7 +500,11 @@ const AdminDashboard: React.FC = () => {
                 ) : (
                   <div className="flex justify-between items-center mb-2">
                       <p className="font-semibold text-white">{carousel.title}</p>
-                      <div className="flex gap-4">
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center">
+                          <button onClick={() => handleMoveCarousel(carousel.id, 'up')} disabled={index === 0} className="text-gray-400 disabled:opacity-30 hover:text-white"><ArrowUpIcon className="w-4 h-4" /></button>
+                          <button onClick={() => handleMoveCarousel(carousel.id, 'down')} disabled={index === sortedCarousels.length - 1} className="text-gray-400 disabled:opacity-30 hover:text-white"><ArrowDownIcon className="w-4 h-4" /></button>
+                        </div>
                         <button onClick={() => handleEditCarousel(carousel)} className="text-blue-500 hover:text-blue-400 text-xs font-bold">EDIT</button>
                         <button onClick={() => deleteCarousel(carousel.id)} className="text-red-500 hover:text-red-400 text-xs font-bold">DELETE</button>
                       </div>

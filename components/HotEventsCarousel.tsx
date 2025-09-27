@@ -3,6 +3,7 @@ import React, { useRef, useEffect, useMemo, FC } from 'react';
 import { Link } from 'react-router-dom';
 import { Party } from '../types';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
+import { useParties } from '../hooks/useParties';
 
 // --- SVG Arrow Icons ---
 const ArrowLeft: FC<{ className?: string }> = ({ className }) => (
@@ -32,17 +33,19 @@ const renderTagContent = (tag: string) => {
   return tag;
 };
 
-const CarouselPartyCard: FC<{ party: Party }> = React.memo(({ party }) => {
+const CarouselPartyCard: FC<{ party: Party; directUrl: string }> = React.memo(({ party, directUrl }) => {
   const partyDate = new Date(party.date);
   const formattedDate = new Intl.DateTimeFormat('he-IL', {
     weekday: 'long', day: '2-digit', month: '2-digit',
   }).format(partyDate);
 
   return (
-    <Link
-      to={`/event/${party.slug}`}
+    <a
+      href={directUrl}
+      target="_blank"
+      rel="noopener noreferrer"
       className="group block outline-none"
-      aria-label={`View details for ${party.name}`}
+      aria-label={`Buy tickets for ${party.name}`}
     >
       <div className="relative rounded-xl overflow-hidden shadow-lg transition-all duration-500 ease-in-out border border-wood-brown/50">
         <img
@@ -75,7 +78,7 @@ const CarouselPartyCard: FC<{ party: Party }> = React.memo(({ party }) => {
           </h3>
         </div>
       </div>
-    </Link>
+    </a>
   );
 });
 
@@ -92,6 +95,22 @@ const getMaxSlidesPerView = (bps: Record<number, { slidesPerView: number }>) =>
 const PartyCarousel: React.FC<PartyCarouselProps> = ({ title, parties, viewAllLink, variant = 'coverflow' }) => {
   const swiperElRef = useRef<any>(null);
   const uniqueId = useMemo(() => `carousel-${Math.random().toString(36).substring(2, 11)}`, []);
+  const { defaultReferral } = useParties();
+
+  const getReferralUrl = (originalUrl: string, partyReferral?: string): string => {
+    try {
+      const referralCode = partyReferral || defaultReferral;
+      if (!referralCode || !originalUrl) return originalUrl || '#';
+      const url = new URL(originalUrl);
+      url.searchParams.delete('aff');
+      url.searchParams.delete('referrer');
+      url.searchParams.set('ref', referralCode);
+      return url.toString();
+    } catch (e) {
+      console.error(`Could not create referral URL for: ${originalUrl}`, e);
+      return originalUrl || '#';
+    }
+  };
 
   const upcomingParties = useMemo(
     () =>
@@ -219,7 +238,7 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({ title, parties, viewAllLi
             React.createElement(
               'swiper-slide',
               { key: `${party.id}-${index}` },
-              <CarouselPartyCard party={party} />
+              <CarouselPartyCard party={party} directUrl={getReferralUrl(party.originalUrl, party.referralCode)} />
             )
           )
         )}

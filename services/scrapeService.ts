@@ -1,3 +1,4 @@
+
 import { Party } from '../types';
 
 // FIX: Align Omit with the actual Party type and remove non-existent properties.
@@ -147,38 +148,5 @@ export const scrapePartyDetails = async (url: string): Promise<ScrapedPartyDetai
   } catch (error) {
     console.error("Error scraping party details:", error);
     throw new Error(`Failed to process the party URL. Please check the link and network. Error: ${error instanceof Error ? error.message : String(error)}`);
-  }
-};
-
-export const scrapePartyUrlsFromSection = (htmlText: string): string[] => {
-  try {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(htmlText, 'text/html');
-    
-    const nextDataScript = doc.getElementById('__NEXT_DATA__');
-    if (!nextDataScript?.textContent) {
-      throw new Error("Could not find party data script (__NEXT_DATA__).");
-    }
-    
-    const jsonData = JSON.parse(nextDataScript.textContent);
-    // FIX: Updated path to find events list after website structure change.
-    const events = jsonData?.props?.pageProps?.events;
-
-    if (!Array.isArray(events)) {
-      throw new Error("Events data is not in the expected format (props.pageProps.events).");
-    }
-    
-    const partyUrls = events.map(event => {
-      if (event.Url) {
-        return `https://www.go-out.co/event/${event.Url}`;
-      }
-      return null;
-    }).filter((url): url is string => url !== null);
-    
-    return partyUrls;
-  } catch (error) {
-    console.error("Error scraping section for party URLs:", error);
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    throw new Error(`Failed to process the section page. ${errorMessage}`);
   }
 };

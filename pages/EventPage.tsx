@@ -1,3 +1,4 @@
+
 // FIX: Corrected a typo in the React import statement (removed an extra 'a,') which was causing compilation errors.
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
@@ -39,10 +40,11 @@ const EventPage: React.FC = () => {
   const getReferralUrl = (originalUrl: string, partyReferral?: string): string => {
     try {
       const referralCode = partyReferral || defaultReferral;
-      if (!referralCode) return originalUrl;
+      if (!referralCode || !originalUrl) return originalUrl;
       const url = new URL(originalUrl);
-      url.searchParams.delete('ref');
-      url.searchParams.set('aff', referralCode);
+      url.searchParams.delete('aff');
+      url.searchParams.delete('referrer');
+      url.searchParams.set('ref', referralCode);
       return url.toString();
     } catch (e) {
       return originalUrl;

@@ -4,10 +4,11 @@ const CAROUSELS_STORAGE_KEY = 'carousels_v1';
 const DB_SIMULATION_DELAY = 100; // ms to simulate local storage access
 
 // --- Initial Seed Data ---
+// FIX: Add missing 'order' property to satisfy the Carousel type.
 const initialCarousels: Carousel[] = [
     // This will be populated by the backend data on first load if empty
-    { id: 'hot-now', title: '🔥 חם עכשיו', partyIds: [] },
-    { id: 'techno', title: '🎵 טכנו', partyIds: [] }
+    { id: 'hot-now', title: '🔥 חם עכשיו', partyIds: [], order: 0 },
+    { id: 'techno', title: '🎵 טכנו', partyIds: [], order: 1 }
 ];
 
 // --- DB Service Functions ---

@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback } from 'react';
 import { Party, Carousel, PartyContextType } from '../types';
 import * as api from '../services/api';
@@ -115,24 +116,36 @@ export const PartyProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
   }, []);
   
-  const updateCarouselTitle = useCallback(async (carouselId: string, title: string) => {
-    let originalCarousels: Carousel[] = [];
-    setCarousels(prev => {
-        originalCarousels = prev;
-        return prev.map(c => c.id === carouselId ? { ...c, title } : c);
-    });
+  const updateCarousel = useCallback(async (carouselId: string, updates: { title?: string; order?: number }) => {
+    const originalCarousels = carousels;
+    const carouselToUpdate = originalCarousels.find(c => c.id === carouselId);
+
+    if (!carouselToUpdate) {
+      console.error("Carousel not found for update:", carouselId);
+      throw new Error("Carousel not found for update.");
+    }
+    
+    // Optimistic UI update
+    setCarousels(prev => prev.map(c => c.id === carouselId ? { ...c, ...updates } : c));
 
     try {
-        const updatedCarousel = await api.updateCarouselInfo(carouselId, { title });
-        // Sync with server response
+        const payload = {
+            title: updates.title ?? carouselToUpdate.title,
+            order: updates.order ?? carouselToUpdate.order,
+        };
+
+        const updatedCarousel = await api.updateCarouselInfo(carouselId, payload);
+        // Sync with server response on success for consistency
         setCarousels(prev => prev.map(c => c.id === carouselId ? updatedCarousel : c));
     } catch (error) {
-        console.error("Error updating carousel title, rolling back.", error);
+        console.error("Error updating carousel, rolling back.", error);
         alert("Error: " + (error as Error).message);
+        // Roll back the optimistic update on failure
         setCarousels(originalCarousels);
         throw error;
     }
-  }, []);
+  }, [carousels]);
+
 
   const addPartyToCarousel = useCallback(async (carouselId: string, partyId: string) => {
     let originalCarousels: Carousel[] = [];
@@ -212,6 +225,28 @@ export const PartyProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
   }, []);
   
+  const addPartiesFromSection = useCallback(async (payload: { carouselId: string; carouselTitle: string; url: string; }) => {
+    try {
+      const { carouselTitle, url } = payload;
+      // The backend uses carouselName and title. We'll send the same value for both.
+      const result = await api.addSection({ carouselName: carouselTitle, title: carouselTitle, url });
+
+      // After a bulk operation, re-sync the entire state to ensure consistency
+      const [fetchedParties, fetchedCarousels] = await Promise.all([
+        api.getParties(),
+        api.getCarousels(),
+      ]);
+      setParties(fetchedParties);
+      setCarousels(fetchedCarousels);
+      
+      return { message: result.message, partyCount: result.partyCount, warnings: result.warnings };
+    } catch (error) {
+      console.error("Failed to add parties from section:", error);
+      alert("Error: " + (error as Error).message);
+      throw error;
+    }
+  }, []);
+
   const contextValue: PartyContextType = {
     parties,
     carousels,
@@ -220,9 +255,10 @@ export const PartyProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     updateParty,
     addCarousel,
     deleteCarousel,
-    updateCarouselTitle,
+    updateCarousel,
     addPartyToCarousel,
     removePartyFromCarousel,
+    addPartiesFromSection,
     isLoading,
     defaultReferral,
     setDefaultReferral,

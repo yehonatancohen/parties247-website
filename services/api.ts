@@ -77,6 +77,7 @@ const mapCarouselToFrontend = (backendCarousel: any): Carousel => {
     id: backendCarousel._id || backendCarousel.id,
     title: backendCarousel.title,
     partyIds: backendCarousel.partyIds || [], // Ensure partyIds is always an array
+    order: backendCarousel.order ?? 0,
   };
 };
 
@@ -303,9 +304,9 @@ export const addCarousel = async (title: string): Promise<Carousel> => {
 /**
  * Updates an existing carousel's metadata (title, order) on the backend.
  * @param carouselId - The ID of the carousel to update.
- * @param data - The data to update (e.g., { title }).
+ * @param data - The data to update (e.g., { title, order }).
  */
-export const updateCarouselInfo = async (carouselId: string, data: { title: string }): Promise<Carousel> => {
+export const updateCarouselInfo = async (carouselId: string, data: { title: string, order: number }): Promise<Carousel> => {
     const response = await fetch(`${API_URL}/admin/carousels/${carouselId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
@@ -349,4 +350,29 @@ export const deleteCarousel = async (carouselId: string): Promise<void> => {
     const data = await response.json();
     throw new Error(data.message || 'Failed to delete carousel');
   }
+};
+
+/**
+ * Scrapes a section URL via the backend and adds parties to a carousel.
+ * @param payload - The data for the section scraping request.
+ */
+interface AddSectionPayload {
+  carouselName: string;
+  title: string;
+  url: string;
+}
+export const addSection = async (payload: AddSectionPayload): Promise<{ carousel: Carousel; message: string; partyCount: number; warnings: any[] }> => {
+  const response = await fetch(`${API_URL}/admin/sections`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    body: JSON.stringify(payload),
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || 'Failed to add section');
+  }
+  return {
+      ...data,
+      carousel: mapCarouselToFrontend(data.carousel),
+  };
 };
