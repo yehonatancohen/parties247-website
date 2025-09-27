@@ -1,3 +1,4 @@
+
 // FIX: Corrected a typo in the React import statement (removed an extra 'a,') which was causing compilation errors.
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { useParties } from '../hooks/useParties';
@@ -125,7 +126,7 @@ const EditPartyModal: React.FC<{ party: Party; onClose: () => void; onSave: (upd
 };
 
 const AdminDashboard: React.FC = () => {
-  const { parties, addParty, deleteParty, updateParty, carousels, addCarousel, deleteCarousel, updateCarousel, addPartyToCarousel, removePartyFromCarousel, defaultReferral, setDefaultReferral } = useParties();
+  const { parties, addParty, deleteParty, updateParty, carousels, addCarousel, deleteCarousel, updateCarouselTitle, addPartyToCarousel, removePartyFromCarousel, defaultReferral, setDefaultReferral } = useParties();
   
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -236,10 +237,7 @@ const AdminDashboard: React.FC = () => {
 
   const handleSaveCarousel = async (carouselId: string) => {
     if (!editingCarouselTitle.trim()) return;
-    const carouselToUpdate = carousels.find(c => c.id === carouselId);
-    if (carouselToUpdate) {
-      await updateCarousel({ ...carouselToUpdate, title: editingCarouselTitle.trim() });
-    }
+    await updateCarouselTitle(carouselId, editingCarouselTitle.trim());
     handleCancelEditCarousel();
   };
 

@@ -1,4 +1,4 @@
-import { Party } from '../types';
+import { Party, Carousel } from '../types';
 
 const API_URL = 'https://parties247-backend.onrender.com/api';
 const JWT_TOKEN_STORAGE = 'jwtAuthToken';
@@ -63,6 +63,19 @@ const mapPartyToFrontend = (backendParty: any): Party => {
     eventAttendanceMode: backendParty.eventAttendanceMode,
     organizer: backendParty.organizer,
     performer: backendParty.performer,
+  };
+};
+
+/**
+ * Maps a carousel object from the backend schema to the frontend schema.
+ * @param backendCarousel - The carousel object received from the API.
+ * @returns A carousel object compliant with the frontend's `Carousel` type.
+ */
+const mapCarouselToFrontend = (backendCarousel: any): Carousel => {
+  return {
+    id: backendCarousel._id || backendCarousel.id,
+    title: backendCarousel.title,
+    partyIds: backendCarousel.partyIds || [], // Ensure partyIds is always an array
   };
 };
 
@@ -255,5 +268,85 @@ export const setDefaultReferral = async (code: string): Promise<void> => {
   if (!response.ok) {
     const data = await response.json().catch(() => ({ message: 'Failed to set referral code' }));
     throw new Error(data.message || 'Failed to set default referral code');
+  }
+};
+
+/**
+ * Fetches all carousels from the backend.
+ */
+export const getCarousels = async (): Promise<Carousel[]> => {
+  const response = await fetch(`${API_URL}/carousels`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch carousels');
+  }
+  const data = await response.json();
+  return Array.isArray(data) ? data.map(mapCarouselToFrontend) : [];
+};
+
+/**
+ * Creates a new carousel on the backend.
+ * @param title - The title for the new carousel.
+ */
+export const addCarousel = async (title: string): Promise<Carousel> => {
+  const response = await fetch(`${API_URL}/admin/carousels`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    body: JSON.stringify({ title }),
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || 'Failed to create carousel');
+  }
+  return mapCarouselToFrontend(data);
+};
+
+/**
+ * Updates an existing carousel's metadata (title, order) on the backend.
+ * @param carouselId - The ID of the carousel to update.
+ * @param data - The data to update (e.g., { title }).
+ */
+export const updateCarouselInfo = async (carouselId: string, data: { title: string }): Promise<Carousel> => {
+    const response = await fetch(`${API_URL}/admin/carousels/${carouselId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+        body: JSON.stringify(data),
+    });
+    const resData = await response.json();
+    if (!response.ok) {
+        throw new Error(resData.message || 'Failed to update carousel info');
+    }
+    return mapCarouselToFrontend(resData.carousel);
+};
+
+/**
+ * Replaces the list of parties for a carousel on the backend.
+ * @param carouselId - The ID of the carousel to update.
+ * @param partyIds - The complete new list of party IDs.
+ */
+export const updateCarouselParties = async (carouselId: string, partyIds: string[]): Promise<Carousel> => {
+    const response = await fetch(`${API_URL}/admin/carousels/${carouselId}/parties`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+        body: JSON.stringify({ partyIds }),
+    });
+    const resData = await response.json();
+    if (!response.ok) {
+        throw new Error(resData.message || 'Failed to update carousel parties');
+    }
+    return mapCarouselToFrontend(resData.carousel);
+};
+
+/**
+ * Deletes a carousel from the backend.
+ * @param carouselId - The ID of the carousel to delete.
+ */
+export const deleteCarousel = async (carouselId: string): Promise<void> => {
+  const response = await fetch(`${API_URL}/admin/carousels/${carouselId}`, {
+    method: 'DELETE',
+    headers: { ...getAuthHeader() },
+  });
+  if (!response.ok) {
+    const data = await response.json();
+    throw new Error(data.message || 'Failed to delete carousel');
   }
 };

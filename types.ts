@@ -64,8 +64,7 @@ export interface PartyContextType {
   updateParty: (partyToUpdate: Party) => Promise<void>;
   addCarousel: (title: string) => Promise<void>;
   deleteCarousel: (carouselId: string) => Promise<void>;
-  updateCarousel: (carouselToUpdate: Carousel) => Promise<void>;
-  updateCarouselOrder: (reorderedCarousels: Carousel[]) => Promise<void>;
+  updateCarouselTitle: (carouselId: string, title: string) => Promise<void>;
   addPartyToCarousel: (carouselId: string, partyId: string) => Promise<void>;
   removePartyFromCarousel: (carouselId: string, partyId: string) => Promise<void>;
   isLoading: boolean;

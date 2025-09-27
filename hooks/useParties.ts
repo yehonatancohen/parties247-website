@@ -1,7 +1,6 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback } from 'react';
 import { Party, Carousel, PartyContextType } from '../types';
 import * as api from '../services/api';
-import * as db from '../services/db';
 
 const PartyContext = createContext<PartyContextType | undefined>(undefined);
 
@@ -24,7 +23,7 @@ export const PartyProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         try {
           const [fetchedParties, fetchedCarousels, fetchedReferral] = await Promise.all([
             api.getParties(),
-            db.getCarousels(),
+            api.getCarousels(),
             api.getDefaultReferral(),
           ]);
           setParties(fetchedParties);
@@ -81,71 +80,126 @@ export const PartyProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     try {
         await api.deleteParty(partyId);
         setParties(prev => prev.filter(p => p.id !== partyId));
-        // Also remove from any carousels
-        const updatedCarousels = carousels.map(c => ({
+        // Also remove from any carousels in the local state for immediate UI feedback.
+        // The backend should handle the actual removal from its database.
+        setCarousels(prev => prev.map(c => ({
           ...c,
           partyIds: c.partyIds.filter(id => id !== partyId)
-        }));
-        setCarousels(updatedCarousels);
-        await db.saveCarousels(updatedCarousels);
+        })));
     } catch (error) {
         console.error("Failed to delete party:", error);
         alert("Error: Could not delete party.");
         throw error;
     }
-  }, [carousels]);
+  }, []);
 
   const addCarousel = useCallback(async (title: string) => {
-    const newCarousel: Carousel = {
-      id: `c_${Date.now()}`,
-      title,
-      partyIds: [],
-    };
-    const updatedCarousels = [...carousels, newCarousel];
-    setCarousels(updatedCarousels);
-    await db.saveCarousels(updatedCarousels);
-  }, [carousels]);
+    try {
+      const newCarousel = await api.addCarousel(title);
+      setCarousels(prev => [...prev, newCarousel]);
+    } catch (error) {
+      console.error("Failed to add carousel:", error);
+      alert("Error: " + (error as Error).message);
+      throw error;
+    }
+  }, []);
 
   const deleteCarousel = useCallback(async (carouselId: string) => {
-    const updatedCarousels = carousels.filter(c => c.id !== carouselId);
-    setCarousels(updatedCarousels);
-    await db.saveCarousels(updatedCarousels);
-  }, [carousels]);
+    try {
+      await api.deleteCarousel(carouselId);
+      setCarousels(prev => prev.filter(c => c.id !== carouselId));
+    } catch (error) {
+      console.error("Failed to delete carousel:", error);
+      alert("Error: " + (error as Error).message);
+      throw error;
+    }
+  }, []);
+  
+  const updateCarouselTitle = useCallback(async (carouselId: string, title: string) => {
+    let originalCarousels: Carousel[] = [];
+    setCarousels(prev => {
+        originalCarousels = prev;
+        return prev.map(c => c.id === carouselId ? { ...c, title } : c);
+    });
 
-  const updateCarousel = useCallback(async (carouselToUpdate: Carousel) => {
-    const updatedCarousels = carousels.map(c => 
-      c.id === carouselToUpdate.id ? carouselToUpdate : c
-    );
-    setCarousels(updatedCarousels);
-    await db.saveCarousels(updatedCarousels);
-  }, [carousels]);
-
-  const updateCarouselOrder = useCallback(async (reorderedCarousels: Carousel[]) => {
-    setCarousels(reorderedCarousels);
-    await db.saveCarousels(reorderedCarousels);
+    try {
+        const updatedCarousel = await api.updateCarouselInfo(carouselId, { title });
+        // Sync with server response
+        setCarousels(prev => prev.map(c => c.id === carouselId ? updatedCarousel : c));
+    } catch (error) {
+        console.error("Error updating carousel title, rolling back.", error);
+        alert("Error: " + (error as Error).message);
+        setCarousels(originalCarousels);
+        throw error;
+    }
   }, []);
 
   const addPartyToCarousel = useCallback(async (carouselId: string, partyId: string) => {
-    const updatedCarousels = carousels.map(c => {
-      if (c.id === carouselId && !c.partyIds.includes(partyId)) {
-        return { ...c, partyIds: [...c.partyIds, partyId] };
-      }
-      return c;
+    let originalCarousels: Carousel[] = [];
+    let updatedPartyIds: string[] | null = null;
+
+    setCarousels(prevCarousels => {
+        originalCarousels = prevCarousels;
+        const carousel = prevCarousels.find(c => c.id === carouselId);
+        
+        if (!carousel || carousel.partyIds.includes(partyId)) {
+          updatedPartyIds = null; // No change needed, so no API call will be made
+          return prevCarousels;
+        }
+        
+        // Defensive check: Ensure all existing IDs in the carousel are still valid
+        const validExistingPartyIds = carousel.partyIds.filter(id => parties.some(p => p.id === id));
+
+        updatedPartyIds = [...validExistingPartyIds, partyId];
+        
+        // Optimistically update UI
+        return prevCarousels.map(c => c.id === carouselId ? { ...c, partyIds: updatedPartyIds! } : c);
     });
-    setCarousels(updatedCarousels);
-    await db.saveCarousels(updatedCarousels);
-  }, [carousels]);
+
+    if (updatedPartyIds) {
+        try {
+            const updatedCarousel = await api.updateCarouselParties(carouselId, updatedPartyIds);
+            // Sync with server's response on success
+            setCarousels(prev => prev.map(c => c.id === carouselId ? updatedCarousel : c));
+        } catch (error) {
+            console.error("Error adding party to carousel, rolling back.", error);
+            alert("Error: " + (error as Error).message);
+            // Roll back the optimistic update on failure
+            setCarousels(originalCarousels);
+            throw error;
+        }
+    }
+  }, [parties]); // Add `parties` dependency to ensure the function has the latest list for validation
 
   const removePartyFromCarousel = useCallback(async (carouselId: string, partyId: string) => {
-    const updatedCarousels = carousels.map(c => {
-      if (c.id === carouselId) {
-        return { ...c, partyIds: c.partyIds.filter(id => id !== partyId) };
+      let originalCarousels: Carousel[] = [];
+      let updatedPartyIds: string[] | null = null;
+  
+      setCarousels(prev => {
+          originalCarousels = prev;
+          const carousel = prev.find(c => c.id === carouselId);
+          if (!carousel) {
+            updatedPartyIds = null;
+            return prev;
+          }
+          
+          updatedPartyIds = carousel.partyIds.filter(id => id !== partyId);
+          return prev.map(c => c.id === carouselId ? { ...c, partyIds: updatedPartyIds } : c);
+      });
+      
+      if (updatedPartyIds) {
+        try {
+            const updatedCarousel = await api.updateCarouselParties(carouselId, updatedPartyIds);
+            // Sync with server response
+            setCarousels(prev => prev.map(c => c.id === carouselId ? updatedCarousel : c));
+        } catch (error) {
+            console.error("Error removing party from carousel, rolling back.", error);
+            alert("Error: " + (error as Error).message);
+            setCarousels(originalCarousels);
+            throw error;
+        }
       }
-      return c;
-    });
-    setCarousels(updatedCarousels);
-    await db.saveCarousels(updatedCarousels);
-  }, [carousels]);
+  }, []);
   
   const setDefaultReferral = useCallback(async (code: string) => {
     try {
@@ -166,8 +220,7 @@ export const PartyProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     updateParty,
     addCarousel,
     deleteCarousel,
-    updateCarousel,
-    updateCarouselOrder,
+    updateCarouselTitle,
     addPartyToCarousel,
     removePartyFromCarousel,
     isLoading,
