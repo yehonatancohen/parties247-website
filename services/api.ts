@@ -1,4 +1,3 @@
-
 import { Party, Carousel } from '../types';
 
 const API_URL = 'https://parties247-backend.onrender.com/api';
@@ -67,7 +66,17 @@ const mapPartyToFrontend = (backendParty: any): Party => {
       ? { latitude: String(locationGeo.lat), longitude: String(locationGeo.lon) } 
       : undefined;
 
-  const imageUrl = (typeof backendParty.images?.[0] === 'string' ? backendParty.images[0] : backendParty.images?.[0]?.url) || backendParty.imageUrl || '';
+  const rawImageUrl = (typeof backendParty.images?.[0] === 'string' ? backendParty.images[0] : backendParty.images?.[0]?.url) || backendParty.imageUrl || '';
+  let finalImageUrl = rawImageUrl;
+  
+  if (finalImageUrl && !finalImageUrl.startsWith('http')) {
+      // Handle relative paths by prepending CDN and upgrading to cover image
+      const coverImagePath = finalImageUrl.replace('_whatsappImage.jpg', '_coverImage.jpg');
+      finalImageUrl = `https://d15q6k8l9pfut7.cloudfront.net/${coverImagePath.startsWith('/') ? coverImagePath.substring(1) : coverImagePath}`;
+  } else if (finalImageUrl) {
+      // Handle full URLs, but still try to upgrade to cover image for consistency
+      finalImageUrl = finalImageUrl.replace('_whatsappImage.jpg', '_coverImage.jpg');
+  }
 
   let eventStatus: Party['eventStatus'] = backendParty.eventStatus;
   if(backendParty.status) {
@@ -83,7 +92,7 @@ const mapPartyToFrontend = (backendParty: any): Party => {
     id: backendParty._id,
     slug: slug,
     name: name || 'Untitled Event',
-    imageUrl: imageUrl,
+    imageUrl: finalImageUrl,
     date: backendParty.startsAt || backendParty.date,
     location: {
       name: locationName,
@@ -91,7 +100,7 @@ const mapPartyToFrontend = (backendParty: any): Party => {
       geo: geo,
     },
     description: description || 'No description available.',
-    originalUrl: backendParty.originalUrl || backendParty.goOutUrl,
+    originalUrl: backendParty.purchaseUrl || backendParty.originalUrl || backendParty.goOutUrl,
     region: backendParty.region || 'לא ידוע',
     musicType: backendParty.musicType || 'אחר',
     eventType: backendParty.eventType || 'אחר',

@@ -1,4 +1,3 @@
-
 // FIX: Corrected a typo in the React import statement (removed an extra 'a,') which was causing compilation errors.
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
@@ -17,25 +16,54 @@ const EventPage: React.FC = () => {
   const [party, setParty] = useState<Party | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { parties: allParties, defaultReferral } = useParties();
+  const { parties: allParties, defaultReferral, isLoading: partiesLoading } = useParties();
 
   useEffect(() => {
-    const fetchParty = async () => {
-      if (!slug) return;
+    const fetchAndMergeParty = async () => {
+      if (!slug) {
+        setError("No party slug provided.");
+        setIsLoading(false);
+        return;
+      }
+
+      // We wait for the main party list to load, as it contains the correct image URLs.
+      if (partiesLoading) {
+        // The main spinner is active, so we just wait for the next render cycle.
+        return;
+      }
+      
       setIsLoading(true);
       setError(null);
+
       try {
-        const fetchedParty = await getPartyBySlug(slug);
-        setParty(fetchedParty);
+        // Fetch the detailed, potentially more up-to-date, info from the specific event endpoint.
+        const partyFromApi = await getPartyBySlug(slug);
+
+        // Find the same party in the main list, which we know has a valid image URL.
+        const partyFromList = allParties.find(p => p.slug === slug);
+        
+        // Combine the data: use the detailed info from the API, but fall back to the
+        // list's image URL if the API response is missing one.
+        const finalParty = {
+          ...partyFromApi,
+          imageUrl: partyFromApi.imageUrl || partyFromList?.imageUrl || '',
+        };
+
+        if (!finalParty.imageUrl) {
+            console.warn(`Could not find an image URL for party slug: ${slug}`);
+        }
+
+        setParty(finalParty);
       } catch (err) {
-        setError('Party not found.');
+        setError('Failed to load party details.');
         console.error(err);
       } finally {
         setIsLoading(false);
       }
     };
-    fetchParty();
-  }, [slug]);
+
+    fetchAndMergeParty();
+  }, [slug, allParties, partiesLoading]);
 
   const getReferralUrl = (originalUrl: string, partyReferral?: string): string => {
     try {
