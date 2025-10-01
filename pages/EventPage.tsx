@@ -76,6 +76,8 @@ const EventPage: React.FC = () => {
   const partyDate = new Date(party.date);
   const formattedDate = new Intl.DateTimeFormat('he-IL', { dateStyle: 'full', timeZone: 'Asia/Jerusalem' }).format(partyDate);
   const formattedTime = new Intl.DateTimeFormat('he-IL', { timeStyle: 'short', timeZone: 'Asia/Jerusalem' }).format(partyDate);
+  
+  const referralUrl = getReferralUrl(party.originalUrl, party.referralCode);
 
   const eventJsonLd = {
     '@context': 'https://schema.org',
@@ -100,7 +102,7 @@ const EventPage: React.FC = () => {
     'description': party.description,
     'offers': {
       '@type': 'Offer',
-      'url': getReferralUrl(party.originalUrl, party.referralCode),
+      'url': referralUrl,
       'price': '0',
       'priceCurrency': 'ILS',
       'availability': 'https://schema.org/InStock',
@@ -185,11 +187,11 @@ const EventPage: React.FC = () => {
                     <p className="text-jungle-text/90 whitespace-pre-line mb-6">{party.description}</p>
                     
                     <div className="flex items-center justify-between mb-6">
-                      <ShareButtons party={party} />
+                      <ShareButtons partyName={party.name} shareUrl={referralUrl} />
                     </div>
                     
                     <a
-                      href={getReferralUrl(party.originalUrl, party.referralCode)}
+                      href={referralUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-full flex items-center justify-center gap-3 text-center bg-gradient-to-r from-jungle-lime to-jungle-accent hover:from-jungle-lime/80 hover:to-jungle-accent/80 text-jungle-deep font-display text-3xl py-4 px-6 rounded-lg transition-transform hover:scale-105 tracking-wider"

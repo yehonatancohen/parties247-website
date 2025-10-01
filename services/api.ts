@@ -20,10 +20,15 @@ const getAuthHeader = (): { [key: string]: string } => {
 
 /**
  * Maps a party object from the backend schema to the frontend schema.
+ * Handles variations between the /parties list and /events/{slug} detail endpoints.
  * @param backendParty - The party object received from the API.
  * @returns A party object compliant with the frontend's `Party` type.
  */
 const mapPartyToFrontend = (backendParty: any): Party => {
+  if (!backendParty) {
+    throw new Error("Received invalid party data from backend.");
+  }
+    
   let slug = backendParty.slug;
   const urlForSlug = backendParty.goOutUrl || backendParty.originalUrl;
 
@@ -39,28 +44,61 @@ const mapPartyToFrontend = (backendParty: any): Party => {
     }
   }
   
-  const locationName = backendParty.venue || backendParty.city || (typeof backendParty.location === 'string' ? backendParty.location : backendParty.location?.name) || 'Location not specified';
+  const name = (typeof backendParty.title === 'object' && backendParty.title?.he) ? backendParty.title.he : backendParty.name;
+  
+  const description = (typeof backendParty.description === 'object' && backendParty.description?.he) 
+                      ? backendParty.description.he 
+                      : (typeof backendParty.summary === 'object' && backendParty.summary?.he) 
+                        ? backendParty.summary.he
+                        : backendParty.description;
+
+  const locationName = backendParty.geo?.address 
+                       || (backendParty.venue && typeof backendParty.venue === 'object' ? backendParty.venue?.name?.he : backendParty.venue)
+                       || (backendParty.city && typeof backendParty.city === 'object' ? backendParty.city?.name?.he : backendParty.city)
+                       || (backendParty.location && typeof backendParty.location === 'string' ? backendParty.location : backendParty.location?.name) 
+                       || 'Location not specified';
+
+  const locationAddress = backendParty.geo?.address 
+                          || (backendParty.venue && typeof backendParty.venue === 'object' ? backendParty.venue?.geo?.address : undefined)
+                          || backendParty.location?.address;
+
+  const locationGeo = backendParty.geo || backendParty.location?.geo;
+  const geo = locationGeo && locationGeo.lat && locationGeo.lon 
+      ? { latitude: String(locationGeo.lat), longitude: String(locationGeo.lon) } 
+      : undefined;
+
+  const imageUrl = (typeof backendParty.images?.[0] === 'string' ? backendParty.images[0] : backendParty.images?.[0]?.url) || backendParty.imageUrl || '';
+
+  let eventStatus: Party['eventStatus'] = backendParty.eventStatus;
+  if(backendParty.status) {
+      switch(backendParty.status) {
+          case 'scheduled': eventStatus = 'EventScheduled'; break;
+          case 'cancelled': eventStatus = 'EventCancelled'; break;
+          case 'postponed': eventStatus = 'EventPostponed'; break;
+          case 'rescheduled': eventStatus = 'EventRescheduled'; break;
+      }
+  }
 
   return {
     id: backendParty._id,
     slug: slug,
-    name: backendParty.name,
-    imageUrl: backendParty.imageUrl,
-    date: backendParty.startsAt || backendParty.date, // Prioritize new `startsAt` field
+    name: name || 'Untitled Event',
+    imageUrl: imageUrl,
+    date: backendParty.startsAt || backendParty.date,
     location: {
       name: locationName,
-      address: backendParty.venue || backendParty.location?.address,
-      geo: backendParty.location?.geo,
+      address: locationAddress,
+      geo: geo,
     },
-    description: backendParty.description,
+    description: description || 'No description available.',
     originalUrl: backendParty.originalUrl || backendParty.goOutUrl,
-    region: backendParty.region,
-    musicType: backendParty.musicType,
-    eventType: backendParty.eventType,
-    age: backendParty.age,
-    tags: backendParty.tags || [],
+    region: backendParty.region || 'לא ידוע',
+    musicType: backendParty.musicType || 'אחר',
+    eventType: backendParty.eventType || 'אחר',
+    age: backendParty.age || 'כל הגילאים',
+    tags: backendParty.tags || backendParty.genres || [],
     referralCode: backendParty.referralCode,
-    eventStatus: backendParty.eventStatus,
+    eventStatus: eventStatus,
     eventAttendanceMode: backendParty.eventAttendanceMode,
     organizer: backendParty.organizer,
     performer: backendParty.performer,
@@ -112,7 +150,10 @@ export const getPartyBySlug = async (slug: string): Promise<Party> => {
     throw new Error(`Failed to fetch party with slug: ${slug}`);
   }
   const data = await response.json();
-  return mapPartyToFrontend(data);
+  if (!data.event) {
+    throw new Error(`Event data not found in response for slug: ${slug}`);
+  }
+  return mapPartyToFrontend(data.event);
 };
 
 /**

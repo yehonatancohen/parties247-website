@@ -1,15 +1,13 @@
 import React from 'react';
-import { Party } from '../types';
 import { FacebookIcon, ShareIcon, TwitterIcon, WhatsAppIcon } from './Icons';
 
 interface ShareButtonsProps {
-  party: Party;
+  partyName: string;
+  shareUrl: string;
 }
 
-const ShareButtons: React.FC<ShareButtonsProps> = ({ party }) => {
-  // Use a stable URL that works with the hash router for sharing purposes
-  const shareUrl = `${window.location.origin}${window.location.pathname}#/event/${party.slug}`;
-  const title = `Check out this party: ${party.name}!`;
+const ShareButtons: React.FC<ShareButtonsProps> = ({ partyName, shareUrl }) => {
+  const title = `Check out this party: ${partyName}!`;
 
   const platforms = [
     { name: 'WhatsApp', icon: <WhatsAppIcon className="w-5 h-5" />, url: `https://api.whatsapp.com/send?text=${encodeURIComponent(title + ' ' + shareUrl)}` },
@@ -21,8 +19,8 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ party }) => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: party.name,
-          text: `Check out this party: ${party.name}`,
+          title: partyName,
+          text: `Check out this party: ${partyName}`,
           url: shareUrl,
         });
       } catch (error) {
