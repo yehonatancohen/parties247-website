@@ -1,4 +1,3 @@
-
 // FIX: Corrected a typo in the React import statement (removed an extra 'a,') which was causing compilation errors.
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { useParties } from '../hooks/useParties';
@@ -133,6 +132,7 @@ const AdminDashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
+  const [singleAddCarouselId, setSingleAddCarouselId] = useState<string>('');
   const [addMode, setAddMode] = useState<'single' | 'section'>('single');
   const [sectionUrl, setSectionUrl] = useState('');
   const [selectedCarouselId, setSelectedCarouselId] = useState<string>('');
@@ -286,14 +286,18 @@ const AdminDashboard: React.FC = () => {
       if (defaultReferral) {
         await updateParty({ ...newParty, referralCode: defaultReferral });
       }
+      if (singleAddCarouselId) {
+        await addPartyToCarousel(singleAddCarouselId, newParty.id);
+      }
       setUrl('');
+      setSingleAddCarouselId('');
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : 'Failed to add party.');
     } finally {
       setIsLoading(false);
     }
-  }, [url, addParty, parties, updateParty, defaultReferral]);
+  }, [url, addParty, parties, updateParty, defaultReferral, singleAddCarouselId, addPartyToCarousel]);
 
   const handleScrapeSection = async () => {
     const selectedCarousel = carousels.find(c => c.id === selectedCarouselId);
@@ -404,13 +408,17 @@ const AdminDashboard: React.FC = () => {
         </div>
 
         {addMode === 'single' && (
-          <div>
+          <div className="space-y-3">
             <div className="flex flex-col sm:flex-row gap-2">
               <input type="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="Paste go-out.co party URL" className="flex-grow bg-jungle-deep text-white p-2 rounded-md border border-wood-brown focus:ring-2 focus:ring-jungle-lime focus:outline-none" disabled={isLoading} />
               <button onClick={handleAddParty} disabled={isLoading} className="bg-jungle-lime text-jungle-deep font-bold py-2 px-6 rounded-md hover:bg-opacity-80 transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed flex justify-center items-center">
                 {isLoading ? <LoadingSpinner /> : 'Add Party'}
               </button>
             </div>
+            <select value={singleAddCarouselId} onChange={e => setSingleAddCarouselId(e.target.value)} className="w-full bg-jungle-deep text-white p-2 rounded-md border border-wood-brown text-sm" disabled={isLoading || carousels.length === 0}>
+                <option value="">Add to Carousel (Optional)</option>
+                {sortedCarousels.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}
+            </select>
             {error && <p className="text-red-500 mt-2 text-sm">{error}</p>}
           </div>
         )}
@@ -478,7 +486,7 @@ const AdminDashboard: React.FC = () => {
             </form>
             <div className="space-y-3 max-h-[420px] overflow-y-auto pr-2">
             {sortedCarousels.map((carousel, index) => {
-              const carouselParties = parties.filter(p => carousel.partyIds.includes(p.id));
+              const carouselParties = activeParties.filter(p => carousel.partyIds.includes(p.id));
               return (
               <div 
                 key={carousel.id} 
