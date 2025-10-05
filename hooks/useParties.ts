@@ -148,71 +148,58 @@ export const PartyProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
 
   const addPartyToCarousel = useCallback(async (carouselId: string, partyId: string) => {
-    let originalCarousels: Carousel[] = [];
-    let updatedPartyIds: string[] | null = null;
+    const originalCarousels = carousels;
+    const carousel = originalCarousels.find(c => c.id === carouselId);
 
-    setCarousels(prevCarousels => {
-        originalCarousels = prevCarousels;
-        const carousel = prevCarousels.find(c => c.id === carouselId);
-        
-        if (!carousel || carousel.partyIds.includes(partyId)) {
-          updatedPartyIds = null; // No change needed, so no API call will be made
-          return prevCarousels;
-        }
-        
-        // Defensive check: Ensure all existing IDs in the carousel are still valid
-        const validExistingPartyIds = carousel.partyIds.filter(id => parties.some(p => p.id === id));
-
-        updatedPartyIds = [...validExistingPartyIds, partyId];
-        
-        // Optimistically update UI
-        return prevCarousels.map(c => c.id === carouselId ? { ...c, partyIds: updatedPartyIds! } : c);
-    });
-
-    if (updatedPartyIds) {
-        try {
-            const updatedCarousel = await api.updateCarouselParties(carouselId, updatedPartyIds);
-            // Sync with server's response on success
-            setCarousels(prev => prev.map(c => c.id === carouselId ? updatedCarousel : c));
-        } catch (error) {
-            console.error("Error adding party to carousel, rolling back.", error);
-            alert("Error: " + (error as Error).message);
-            // Roll back the optimistic update on failure
-            setCarousels(originalCarousels);
-            throw error;
-        }
+    if (!carousel || carousel.partyIds.includes(partyId)) {
+      return; // No change needed.
     }
-  }, [parties]); // Add `parties` dependency to ensure the function has the latest list for validation
+
+    // Defensive check: Ensure all existing IDs in the carousel are still valid parties.
+    const validExistingPartyIds = carousel.partyIds.filter(id => parties.some(p => p.id === id));
+    const updatedPartyIds = [...validExistingPartyIds, partyId];
+
+    // Optimistically update UI.
+    setCarousels(prev => prev.map(c => c.id === carouselId ? { ...c, partyIds: updatedPartyIds } : c));
+
+    try {
+      const updatedCarousel = await api.updateCarouselParties(carouselId, updatedPartyIds);
+      // Sync with server's response on success for full consistency.
+      setCarousels(prev => prev.map(c => c.id === carouselId ? updatedCarousel : c));
+    } catch (error) {
+      console.error("Error adding party to carousel, rolling back.", error);
+      alert("Error: " + (error as Error).message);
+      // Roll back the optimistic update on failure.
+      setCarousels(originalCarousels);
+      throw error;
+    }
+  }, [carousels, parties]);
 
   const removePartyFromCarousel = useCallback(async (carouselId: string, partyId: string) => {
-      let originalCarousels: Carousel[] = [];
-      let updatedPartyIds: string[] | null = null;
-  
-      setCarousels(prev => {
-          originalCarousels = prev;
-          const carousel = prev.find(c => c.id === carouselId);
-          if (!carousel) {
-            updatedPartyIds = null;
-            return prev;
-          }
-          
-          updatedPartyIds = carousel.partyIds.filter(id => id !== partyId);
-          return prev.map(c => c.id === carouselId ? { ...c, partyIds: updatedPartyIds } : c);
-      });
-      
-      if (updatedPartyIds) {
-        try {
-            const updatedCarousel = await api.updateCarouselParties(carouselId, updatedPartyIds);
-            // Sync with server response
-            setCarousels(prev => prev.map(c => c.id === carouselId ? updatedCarousel : c));
-        } catch (error) {
-            console.error("Error removing party from carousel, rolling back.", error);
-            alert("Error: " + (error as Error).message);
-            setCarousels(originalCarousels);
-            throw error;
-        }
-      }
-  }, []);
+    const originalCarousels = carousels;
+    const carousel = originalCarousels.find(c => c.id === carouselId);
+
+    if (!carousel) {
+      return; // Carousel not found, nothing to do.
+    }
+
+    const updatedPartyIds = carousel.partyIds.filter(id => id !== partyId);
+
+    // Optimistically update UI.
+    setCarousels(prev => prev.map(c => c.id === carouselId ? { ...c, partyIds: updatedPartyIds } : c));
+
+    try {
+      const updatedCarousel = await api.updateCarouselParties(carouselId, updatedPartyIds);
+      // Sync with server response on success.
+      setCarousels(prev => prev.map(c => c.id === carouselId ? updatedCarousel : c));
+    } catch (error) {
+      console.error("Error removing party from carousel, rolling back.", error);
+      alert("Error: " + (error as Error).message);
+      // Roll back the optimistic update on failure.
+      setCarousels(originalCarousels);
+      throw error;
+    }
+  }, [carousels]);
   
   const setDefaultReferral = useCallback(async (code: string) => {
     try {
