@@ -25,7 +25,7 @@ export const cities: TaxonomyConfig[] = [
   {
     type: 'city',
     slug: 'תל-אביב',
-    path: '/תל-אביב',
+    path: '/ערים/תל-אביב',
     label: 'תל אביב',
     title: 'מסיבות בתל אביב – טכנו, גגות וחיי לילה ללא הפסקה',
     description:
@@ -51,19 +51,20 @@ export const cities: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
+      { label: 'ערים' },
       { label: 'תל אביב' },
     ],
-    ogImage: 'https://images.unsplash.com/photo-1526481280695-3c4693c114c1?auto=format&fit=crop&w=1200&q=80',
+    ogImage: 'https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
-      { label: 'תל אביב טכנו', path: '/תל-אביב/טכנו' },
-      { label: 'מסיבות נוער בתל אביב', path: '/תל-אביב/מסיבות-נוער' },
-      { label: 'מסיבות היום בתל אביב', path: '/תל-אביב/היום' },
+      { label: 'תל אביב טכנו', path: '/ערים/תל-אביב/טכנו' },
+      { label: 'מסיבות נוער בתל אביב', path: '/ערים/תל-אביב/מסיבות-נוער' },
+      { label: 'מסיבות היום בתל אביב', path: '/ערים/תל-אביב/היום' },
     ],
   },
   {
     type: 'city',
     slug: 'ירושלים',
-    path: '/ירושלים',
+    path: '/ערים/ירושלים',
     label: 'ירושלים',
     title: 'מסיבות בירושלים – ברים שכונתיים ומועדונים בעיר העתיקה',
     description:
@@ -84,18 +85,19 @@ export const cities: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
+      { label: 'ערים' },
       { label: 'ירושלים' },
     ],
-    ogImage: 'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=1200&q=80',
+    ogImage: 'https://images.unsplash.com/photo-1544984243-ec57ea16fe25?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
-      { label: 'מסיבות סטודנטים בירושלים', path: '/ירושלים/מסיבות-סטודנטים' },
-      { label: 'מסיבות שישי בירושלים', path: '/ירושלים/שישי' },
+      { label: 'מסיבות סטודנטים בירושלים', path: '/ערים/ירושלים/מסיבות-סטודנטים' },
+      { label: 'מסיבות שישי בירושלים', path: '/ערים/ירושלים/שישי' },
     ],
   },
   {
     type: 'city',
     slug: 'חיפה',
-    path: '/חיפה',
+    path: '/ערים/חיפה',
     label: 'חיפה',
     title: 'מסיבות בחיפה – מפרץ צעיר, אירועים ברמת הדר וכרמל',
     description:
@@ -116,18 +118,19 @@ export const cities: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
+      { label: 'ערים' },
       { label: 'חיפה' },
     ],
-    ogImage: 'https://images.unsplash.com/photo-1545153996-30c1c004e7f8?auto=format&fit=crop&w=1200&q=80',
+    ogImage: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
-      { label: 'חיפה טכנו', path: '/חיפה/טכנו' },
-      { label: 'מסיבות סטודנטים בחיפה', path: '/חיפה/מסיבות-סטודנטים' },
+      { label: 'חיפה טכנו', path: '/ערים/חיפה/טכנו' },
+      { label: 'מסיבות סטודנטים בחיפה', path: '/ערים/חיפה/מסיבות-סטודנטים' },
     ],
   },
   {
     type: 'city',
     slug: 'אילת',
-    path: '/אילת',
+    path: '/ערים/אילת',
     label: 'אילת',
     title: 'מסיבות באילת – ברים על החוף וחיי לילה לנופשים',
     description:
@@ -148,13 +151,14 @@ export const cities: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
+      { label: 'ערים' },
       { label: 'אילת' },
     ],
-    ogImage: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80',
+    ogImage: 'https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
-      { label: 'אילת EDM', path: '/אילת/EDM' },
-      { label: 'מסיבות חיילים באילת', path: '/אילת/מסיבות-חיילים' },
-      { label: 'מסיבות חגים באילת', path: '/אילת/חגים/סוכות' },
+      { label: 'אילת EDM', path: '/ערים/אילת/EDM' },
+      { label: 'מסיבות חיילים באילת', path: '/ערים/אילת/מסיבות-חיילים' },
+      { label: 'מסיבות חגים באילת', path: '/ערים/אילת/חגים/סוכות' },
     ],
   },
 ];
@@ -163,7 +167,7 @@ export const genres: TaxonomyConfig[] = [
   {
     type: 'genre',
     slug: 'טכנו',
-    path: '/טכנו',
+    path: '/זאנרים/טכנו',
     label: 'טכנו',
     title: 'מסיבות טכנו בישראל – רייבים מחתרתיים ועד מועדוני ענק',
     description:
@@ -184,19 +188,19 @@ export const genres: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'ז׳אנרים', path: '/זאנרים' },
+      { label: 'ז׳אנרים' },
       { label: 'טכנו' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1464375117522-1311d6a5b81e?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
-      { label: 'תל אביב טכנו', path: '/תל-אביב/טכנו' },
-      { label: 'חיפה טכנו', path: '/חיפה/טכנו' },
+      { label: 'תל אביב טכנו', path: '/ערים/תל-אביב/טכנו' },
+      { label: 'חיפה טכנו', path: '/ערים/חיפה/טכנו' },
     ],
   },
   {
     type: 'genre',
     slug: 'היפ-הופ',
-    path: '/היפ-הופ',
+    path: '/זאנרים/היפ-הופ',
     label: 'היפ הופ',
     title: 'מסיבות היפ הופ ו-R&B ברחבי ישראל',
     description: 'ערבי היפ הופ, R&B וראפ: מסיבות לילה בתל אביב, אירועי ביטים בירושלים והפקות רחוב בחיפה.',
@@ -216,19 +220,19 @@ export const genres: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'ז׳אנרים', path: '/זאנרים' },
+      { label: 'ז׳אנרים' },
       { label: 'היפ הופ' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1518972559570-7cc1309f3229?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
-      { label: 'תל אביב היפ הופ', path: '/תל-אביב/היפ-הופ' },
-      { label: 'ירושלים היפ הופ', path: '/ירושלים/היפ-הופ' },
+      { label: 'תל אביב היפ הופ', path: '/ערים/תל-אביב/היפ-הופ' },
+      { label: 'ירושלים היפ הופ', path: '/ערים/ירושלים/היפ-הופ' },
     ],
   },
   {
     type: 'genre',
     slug: 'EDM',
-    path: '/EDM',
+    path: '/זאנרים/EDM',
     label: 'EDM',
     title: 'מסיבות EDM ופסטיבלים אלקטרוניים בישראל',
     description: 'EDM, ביג-רום ופסטיבלי חוץ – כל האירועים והמסיבות האלקטרוניות המובילות בישראל השנה.',
@@ -248,19 +252,19 @@ export const genres: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'ז׳אנרים', path: '/זאנרים' },
+      { label: 'ז׳אנרים' },
       { label: 'EDM' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
-      { label: 'אילת EDM', path: '/אילת/EDM' },
-      { label: 'מסיבות קיץ', path: '/חגים/סוכות' },
+      { label: 'אילת EDM', path: '/ערים/אילת/EDM' },
+      { label: 'מסיבות קיץ', path: '/מתי/חגים/סוכות' },
     ],
   },
   {
     type: 'genre',
     slug: 'טראנס',
-    path: '/טראנס',
+    path: '/זאנרים/טראנס',
     label: 'טראנס',
     title: 'מסיבות טראנס ופסטיבלים במדבר ובחופים',
     description: 'פסטיבלי טראנס, רייבים במדבר ומסיבות חוף עם ליינים של פסיכדליה ואמביינט ברחבי ישראל.',
@@ -280,13 +284,13 @@ export const genres: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'ז׳אנרים', path: '/זאנרים' },
+      { label: 'ז׳אנרים' },
       { label: 'טראנס' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
-      { label: 'פסטיבלים במדבר', path: '/אילת/טראנס' },
-      { label: 'אירועי לילה בתל אביב', path: '/תל-אביב/טכנו' },
+      { label: 'פסטיבלים במדבר', path: '/ערים/אילת/טראנס' },
+      { label: 'אירועי לילה בתל אביב', path: '/ערים/תל-אביב/טכנו' },
     ],
   },
 ];
@@ -295,7 +299,7 @@ export const audiences: TaxonomyConfig[] = [
   {
     type: 'audience',
     slug: 'מסיבות-נוער',
-    path: '/מסיבות-נוער',
+    path: '/קהל/מסיבות-נוער',
     label: 'מסיבות נוער',
     title: 'מסיבות נוער בישראל – חוויות בטוחות לגילאי 16+',
     description: 'מסיבות נוער מפוקחות ברחבי ישראל: ליינים רשמיים בערים הגדולות, אירועי קיץ בטיילת ואירועי חגים לגילאי 16–18.',
@@ -315,19 +319,19 @@ export const audiences: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'קהל יעד', path: '/קהל' },
+      { label: 'קהל יעד' },
       { label: 'מסיבות נוער' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
-      { label: 'תל אביב לנוער', path: '/תל-אביב/מסיבות-נוער' },
-      { label: 'מסיבות נוער באילת', path: '/אילת/מסיבות-נוער' },
+      { label: 'תל אביב לנוער', path: '/ערים/תל-אביב/מסיבות-נוער' },
+      { label: 'מסיבות נוער באילת', path: '/ערים/אילת/מסיבות-נוער' },
     ],
   },
   {
     type: 'audience',
     slug: 'מסיבות-סטודנטים',
-    path: '/מסיבות-סטודנטים',
+    path: '/קהל/מסיבות-סטודנטים',
     label: 'מסיבות סטודנטים',
     title: 'מסיבות סטודנטים – קמפוסים ואירועי פתיחת שנה',
     description: 'אירועי סטודנטים בכל הארץ: מסיבות פתיחת שנה, ליינים אקדמיים ומבצעי כרטיסים לסטודנטים בלבד.',
@@ -347,19 +351,19 @@ export const audiences: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'קהל יעד', path: '/קהל' },
+      { label: 'קהל יעד' },
       { label: 'מסיבות סטודנטים' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1532634896-26909d0d4b86?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
-      { label: 'סטודנטים בתל אביב', path: '/תל-אביב/מסיבות-סטודנטים' },
-      { label: 'סטודנטים בירושלים', path: '/ירושלים/מסיבות-סטודנטים' },
+      { label: 'סטודנטים בתל אביב', path: '/ערים/תל-אביב/מסיבות-סטודנטים' },
+      { label: 'סטודנטים בירושלים', path: '/ערים/ירושלים/מסיבות-סטודנטים' },
     ],
   },
   {
     type: 'audience',
     slug: 'מסיבות-חיילים',
-    path: '/מסיבות-חיילים',
+    path: '/קהל/מסיבות-חיילים',
     label: 'מסיבות חיילים',
     title: 'מסיבות חיילים – ליינים עד לפנות בוקר אחרי הבסיס',
     description: 'ליינים מיוחדים לחיילי צה"ל: מסיבות מוזלות, הנחות מיוחדות בכניסה ומתחמים פתוחים בסופי שבוע.',
@@ -379,19 +383,19 @@ export const audiences: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'קהל יעד', path: '/קהל' },
+      { label: 'קהל יעד' },
       { label: 'מסיבות חיילים' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
-      { label: 'חיילים באילת', path: '/אילת/מסיבות-חיילים' },
-      { label: 'חיילים במרכז', path: '/תל-אביב/מסיבות-חיילים' },
+      { label: 'חיילים באילת', path: '/ערים/אילת/מסיבות-חיילים' },
+      { label: 'חיילים במרכז', path: '/ערים/תל-אביב/מסיבות-חיילים' },
     ],
   },
   {
     type: 'audience',
     slug: 'מסיבות-להטב',
-    path: '/מסיבות-להטב',
+    path: '/קהל/מסיבות-להטב',
     label: 'מסיבות להט"ב',
     title: 'מסיבות להט״ב – ליינים קוויריים, דרג ושלל רחבות',
     description: 'מסיבות להט"ב וקוויריות בכל הארץ: ערבי דרג, ליינים ייעודיים בתל אביב, חיפה וירושלים ומסיבות חגים מיוחדות.',
@@ -411,13 +415,13 @@ export const audiences: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'קהל יעד', path: '/קהל' },
+      { label: 'קהל יעד' },
       { label: 'מסיבות להט"ב' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1529158062015-cad636e69505?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
-      { label: 'תל אביב להט"ב', path: '/תל-אביב/מסיבות-להטב' },
-      { label: 'ליינים נשיים', path: '/תל-אביב/מסיבות-להטב/עמוד/2' },
+      { label: 'תל אביב להט"ב', path: '/ערים/תל-אביב/מסיבות-להטב' },
+      { label: 'ליינים נשיים', path: '/ערים/תל-אביב/מסיבות-להטב/עמוד/2' },
     ],
   },
 ];
@@ -426,7 +430,7 @@ export const timeIntents: TaxonomyConfig[] = [
   {
     type: 'time',
     slug: 'היום',
-    path: '/היום',
+    path: '/מתי/היום',
     label: 'מסיבות היום',
     title: 'מסיבות היום בישראל – מה קורה הערב?',
     description: 'גילוי מהיר של המסיבות שמתרחשות היום בכל רחבי ישראל – עדכונים חיים והזדמנות לאפס את ה FOMO.',
@@ -446,19 +450,19 @@ export const timeIntents: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'מתי', path: '/מתי' },
+      { label: 'מתי' },
       { label: 'היום' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1449793077955-0c55b4f90291?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
-      { label: 'מחר', path: '/מחר' },
-      { label: 'סוף שבוע בתל אביב', path: '/תל-אביב/שישי' },
+      { label: 'מחר', path: '/מתי/מחר' },
+      { label: 'סוף שבוע בתל אביב', path: '/ערים/תל-אביב/שישי' },
     ],
   },
   {
     type: 'time',
     slug: 'מחר',
-    path: '/מחר',
+    path: '/מתי/מחר',
     label: 'מסיבות מחר',
     title: 'מסיבות מחר – תכננו את הלילה הבא',
     description: 'מסיבות שמתוכננות למחר ברחבי ישראל – חוויות גג, מסיבות חוף, ליינים סטודנטיאליים ועוד.',
@@ -478,19 +482,19 @@ export const timeIntents: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'מתי', path: '/מתי' },
+      { label: 'מתי' },
       { label: 'מחר' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
-      { label: 'היום', path: '/היום' },
-      { label: 'השבוע', path: '/השבוע' },
+      { label: 'היום', path: '/מתי/היום' },
+      { label: 'השבוע', path: '/מתי/השבוע' },
     ],
   },
   {
     type: 'time',
     slug: 'השבוע',
-    path: '/השבוע',
+    path: '/מתי/השבוע',
     label: 'מסיבות השבוע',
     title: 'מסיבות השבוע – סקירה של כל האירועים החמים',
     description: 'לוח מסיבות שבועי: חמישי עד שבת, מסיבות סטודנטים באמצע השבוע וליינים קבועים בעיר שלכם.',
@@ -510,19 +514,19 @@ export const timeIntents: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'מתי', path: '/מתי' },
+      { label: 'מתי' },
       { label: 'השבוע' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1475727993574-db0e2dd5683c?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
-      { label: 'שישי', path: '/שישי' },
-      { label: 'חגים', path: '/חגים/פורים' },
+      { label: 'שישי', path: '/מתי/שישי' },
+      { label: 'חגים', path: '/מתי/חגים/פורים' },
     ],
   },
   {
     type: 'time',
     slug: 'שישי',
-    path: '/שישי',
+    path: '/מתי/שישי',
     label: 'מסיבות שישי',
     title: 'מסיבות שישי – קבלו את הסופ״ש בקצב הנכון',
     description: 'מסיבות שישי בכל הארץ: טכנו בשעות הקטנות, אירועי חוף בבוקר ומסיבות קונספט למשפחות.',
@@ -542,13 +546,13 @@ export const timeIntents: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'מתי', path: '/מתי' },
+      { label: 'מתי' },
       { label: 'שישי' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1464374277361-22192c8e5125?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
-      { label: 'שבת', path: '/השבוע' },
-      { label: 'חמישי', path: '/חמישי' },
+      { label: 'שבת', path: '/מתי/השבוע' },
+      { label: 'היום', path: '/מתי/היום' },
     ],
   },
 ];
@@ -557,7 +561,7 @@ export const holidayIntents: TaxonomyConfig[] = [
   {
     type: 'time',
     slug: 'חגים/סוכות',
-    path: '/חגים/סוכות',
+    path: '/מתי/חגים/סוכות',
     label: 'חג סוכות',
     title: 'מסיבות חג סוכות – אירועים תחת כיפת השמיים',
     description: 'אירועי חג סוכות: מסיבות פתוחות בחופים, רייבים במדבר ומפגשי קהילה בסוכות עירוניות.',
@@ -577,19 +581,20 @@ export const holidayIntents: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'חגים', path: '/חגים' },
+      { label: 'מתי' },
+      { label: 'חגים' },
       { label: 'סוכות' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1521335629791-ce4aec67dd47?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
-      { label: 'חג פורים', path: '/חגים/פורים' },
-      { label: 'מסיבות משפחתיות', path: '/מסיבות-נוער' },
+      { label: 'חג פורים', path: '/מתי/חגים/פורים' },
+      { label: 'מסיבות משפחתיות', path: '/קהל/מסיבות-נוער' },
     ],
   },
   {
     type: 'time',
     slug: 'חגים/פורים',
-    path: '/חגים/פורים',
+    path: '/מתי/חגים/פורים',
     label: 'חג פורים',
     title: 'מסיבות פורים – קרנבל תחפושות ללא הפסקה',
     description: 'כל המסיבות לפורים: קרנבלים, אירועים משפחתיים, רייבים עד הבוקר ומסיבות להט"ב נוצצות.',
@@ -609,13 +614,14 @@ export const holidayIntents: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'חגים', path: '/חגים' },
+      { label: 'מתי' },
+      { label: 'חגים' },
       { label: 'פורים' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1521579971123-1192931a1452?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
-      { label: 'מסיבות נוער', path: '/מסיבות-נוער' },
-      { label: 'מסיבות להט"ב', path: '/מסיבות-להטב' },
+      { label: 'מסיבות נוער', path: '/קהל/מסיבות-נוער' },
+      { label: 'מסיבות להט"ב', path: '/קהל/מסיבות-להטב' },
     ],
   },
 ];
@@ -676,7 +682,7 @@ export const cityGenreCombos: TaxonomyConfig[] = (() => {
       combos.push({
         type: 'combo',
         slug: `${city.slug}/${genre.slug}`,
-        path: `/${city.slug}/${genre.slug}`,
+        path: `/ערים/${city.slug}/${genre.slug}`,
         label: `${city.label} ${genre.label}`,
         title: `מסיבות ${genre.label} ב${city.label}`,
         description: `גילוי מסיבות ${genre.label} ב${city.label} – המועדונים, הליינים והאירועים החמים בעיר.`,
@@ -693,6 +699,7 @@ export const cityGenreCombos: TaxonomyConfig[] = (() => {
         ],
         breadcrumbs: [
           { label: 'בית', path: '/' },
+          { label: 'ערים' },
           { label: city.label, path: city.path },
           { label: genre.label },
         ],
@@ -710,7 +717,7 @@ export const cityAudienceCombos: TaxonomyConfig[] = (() => {
       combos.push({
         type: 'combo',
         slug: `${city.slug}/${audience.slug}`,
-        path: `/${city.slug}/${audience.slug}`,
+        path: `/ערים/${city.slug}/${audience.slug}`,
         label: `${audience.label} ב${city.label}`,
         title: `${audience.label} ב${city.label}`,
         description: `${audience.label} ב${city.label}: כל הליינים וההפקות שמיועדות לקהל הזה בעיר.`,
@@ -727,6 +734,7 @@ export const cityAudienceCombos: TaxonomyConfig[] = (() => {
         ],
         breadcrumbs: [
           { label: 'בית', path: '/' },
+          { label: 'ערים' },
           { label: city.label, path: city.path },
           { label: audience.label },
         ],
@@ -745,7 +753,7 @@ export const cityTimeCombos: TaxonomyConfig[] = (() => {
       combos.push({
         type: 'combo',
         slug: `${city.slug}/${timeIntent.slug}`,
-        path: `/${city.slug}/${timeIntent.slug}`,
+        path: `/ערים/${city.slug}/${timeIntent.slug}`,
         label: `${timeIntent.label} ב${city.label}`,
         title: `${timeIntent.label} ב${city.label}`,
         description: `${timeIntent.label} ב${city.label}: כל האירועים החמים שמתאימים ללוח הזמנים שלכם בעיר.`,
@@ -758,6 +766,7 @@ export const cityTimeCombos: TaxonomyConfig[] = (() => {
         ],
         breadcrumbs: [
           { label: 'בית', path: '/' },
+          { label: 'ערים' },
           { label: city.label, path: city.path },
           { label: timeIntent.label },
         ],
