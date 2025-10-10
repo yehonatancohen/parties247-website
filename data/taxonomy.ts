@@ -935,7 +935,7 @@ const filterByTime = (parties: Party[], slug: string) => {
       const targetDay = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'].indexOf(primary);
       return parties.filter((party) => {
         const eventDate = new Date(party.date);
-        return eventDate.getDay() === ((targetDay + 1) % 7);
+        return eventDate.getDay() === targetDay;
       });
     }
     case 'חגים': {

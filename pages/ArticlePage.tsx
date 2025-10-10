@@ -2,7 +2,7 @@ import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import SeoManager from '../components/SeoManager';
 import { articles } from '../data/articles';
-import { BASE_URL } from '../constants';
+import { BASE_URL, DEFAULT_TAXONOMY_IMAGE } from '../constants';
 
 const ArticlePage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -42,11 +42,13 @@ const ArticlePage: React.FC = () => {
     ],
   };
   
+  const imageUrl = article.imageUrl || DEFAULT_TAXONOMY_IMAGE;
+
   const articleJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     'headline': article.title,
-    'image': article.imageUrl,
+    'image': imageUrl,
     'description': article.summary,
     'author': {
         '@type': 'Organization',
@@ -69,7 +71,7 @@ const ArticlePage: React.FC = () => {
         title={`${article.title} - Parties 24/7`}
         description={article.summary}
         canonicalPath={`/כתבות/${article.slug}`}
-        ogImage={article.imageUrl}
+        ogImage={imageUrl}
         ogType="article"
         jsonLd={[breadcrumbJsonLd, articleJsonLd]}
       />
@@ -82,7 +84,15 @@ const ArticlePage: React.FC = () => {
             <h1 className="text-4xl md:text-5xl font-display text-center text-white">{article.title}</h1>
           </header>
           
-          <img src={article.imageUrl} alt={article.title} className="w-full aspect-video object-cover rounded-lg mb-8" />
+          <img
+            src={imageUrl}
+            alt={article.title}
+            className="w-full aspect-video object-cover rounded-lg mb-8"
+            loading="lazy"
+            onError={(event) => {
+              event.currentTarget.src = DEFAULT_TAXONOMY_IMAGE;
+            }}
+          />
           
           <div className="prose prose-invert prose-lg max-w-none bg-jungle-surface p-8 rounded-lg border border-wood-brown/50">
             {article.content.split('\n\n').map((paragraph, index) => {

@@ -16,4 +16,8 @@
     <loc>https://www.parties247.co.il/טראנס</loc>
     <changefreq>weekly</changefreq>
   </url>
+  <url>
+    <loc>https://www.parties247.co.il/זאנרים</loc>
+    <changefreq>weekly</changefreq>
+  </url>
 </urlset>

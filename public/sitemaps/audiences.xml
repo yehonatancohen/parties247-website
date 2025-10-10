@@ -16,4 +16,8 @@
     <loc>https://www.parties247.co.il/מסיבות-להטב</loc>
     <changefreq>weekly</changefreq>
   </url>
+  <url>
+    <loc>https://www.parties247.co.il/קהל</loc>
+    <changefreq>weekly</changefreq>
+  </url>
 </urlset>

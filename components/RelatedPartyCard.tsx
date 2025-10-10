@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Party } from '../types';
 import { CalendarIcon, LocationIcon } from './Icons';
+import { DEFAULT_PARTY_IMAGE } from '../constants';
 
 interface RelatedPartyCardProps {
   party: Party;
@@ -15,16 +16,21 @@ const RelatedPartyCard: React.FC<RelatedPartyCardProps> = ({ party }) => {
     year: 'numeric'
   }).format(partyDate);
 
+  const imageSrc = party.imageUrl || DEFAULT_PARTY_IMAGE;
+
   return (
     <Link to={`/event/${party.slug}`} className="bg-jungle-deep rounded-lg overflow-hidden shadow-lg hover:shadow-jungle-glow/30 transition-all duration-300 flex flex-col group transform hover:-translate-y-1 border border-wood-brown/30">
         <div className="relative">
-          <img 
-            src={party.imageUrl} 
-            alt={party.name} 
-            className="w-full aspect-[4/3] object-cover" 
+          <img
+            src={imageSrc}
+            alt={party.name}
+            className="w-full aspect-[4/3] object-cover"
             loading="lazy"
             width="400"
             height="300"
+            onError={(event) => {
+              event.currentTarget.src = DEFAULT_PARTY_IMAGE;
+            }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
         </div>

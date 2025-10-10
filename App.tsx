@@ -18,6 +18,9 @@ import EventPage from './pages/EventPage';
 import ArticlePage from './pages/ArticlePage';
 import TaxonomyPage from './pages/TaxonomyPage';
 import { taxonomyConfigs } from './data/taxonomy';
+import TaxonomyIndexPage from './pages/TaxonomyIndexPage';
+import { taxonomyIndexConfigs } from './data/taxonomyIndex';
+import LegacyPaginationRedirect from './components/LegacyPaginationRedirect';
 
 interface AppProps {
   initialState?: PartyProviderInitialState;
@@ -44,6 +47,19 @@ function App({ initialState }: AppProps) {
               <Route path="/terms" element={<LegalPage pageType="terms" />} />
               <Route path="/privacy" element={<LegalPage pageType="privacy" />} />
               <Route path="/accessibility" element={<LegalPage pageType="accessibility" />} />
+              {taxonomyIndexConfigs.map((config) => (
+                <Route
+                  key={config.path}
+                  path={config.path.replace(/^\//, '')}
+                  element={<TaxonomyIndexPage config={config} />}
+                />
+              ))}
+              <Route path=":primary/page/:pageNumber" element={<LegacyPaginationRedirect />} />
+              <Route path=":primary/:secondary/page/:pageNumber" element={<LegacyPaginationRedirect />} />
+              <Route
+                path=":primary/:secondary/:tertiary/page/:pageNumber"
+                element={<LegacyPaginationRedirect />}
+              />
               {taxonomyConfigs
                 .filter((config) => config.type !== 'articles')
                 .map((config) => (
