@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://www.parties247.co.il/היום</loc>
+    <changefreq>hourly</changefreq>
+  </url>
+  <url>
+    <loc>https://www.parties247.co.il/מחר</loc>
+    <changefreq>hourly</changefreq>
+  </url>
+  <url>
+    <loc>https://www.parties247.co.il/השבוע</loc>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://www.parties247.co.il/שישי</loc>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://www.parties247.co.il/חגים/סוכות</loc>
+    <changefreq>yearly</changefreq>
+  </url>
+  <url>
+    <loc>https://www.parties247.co.il/חגים/פורים</loc>
+    <changefreq>yearly</changefreq>
+  </url>
+</urlset>

@@ -1,5 +1,5 @@
 import React from 'react';
-import SEO from '../components/SeoManager';
+import SeoManager from '../components/SeoManager';
 
 interface LegalPageProps {
   pageType: 'terms' | 'privacy' | 'accessibility';
@@ -55,7 +55,7 @@ const LegalPage: React.FC<LegalPageProps> = ({ pageType }) => {
 
   return (
     <>
-      <SEO title={`${title} - Parties 24/7`} description={description} canonicalPath={canonicalPath} />
+      <SeoManager title={`${title} - Parties 24/7`} description={description} canonicalPath={canonicalPath} ogType="article" />
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto text-jungle-text/90">
           <h1 className="text-5xl font-display text-center mb-8 text-white">{title}</h1>

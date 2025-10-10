@@ -1,22 +1,38 @@
 
 import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback } from 'react';
-import { Party, Carousel, PartyContextType } from '../types';
+import { Party, Carousel, PartyContextType, PartyProviderInitialState } from '../types';
 import * as api from '../services/api';
 
 const PartyContext = createContext<PartyContextType | undefined>(undefined);
 
-export const PartyProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [parties, setParties] = useState<Party[]>([]);
-  const [carousels, setCarousels] = useState<Carousel[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [defaultReferral, setDefaultReferralState] = useState<string>('');
+interface PartyProviderProps {
+  children: ReactNode;
+  initialState?: PartyProviderInitialState;
+}
+
+export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialState }) => {
+  const [parties, setParties] = useState<Party[]>(() => initialState?.parties ?? []);
+  const [carousels, setCarousels] = useState<Carousel[]>(() => initialState?.carousels ?? []);
+  const hasInitialData = Boolean(initialState?.parties?.length || initialState?.carousels?.length);
+  const [isLoading, setIsLoading] = useState(!hasInitialData);
+  const [defaultReferral, setDefaultReferralState] = useState<string>(initialState?.defaultReferral ?? '');
   const [error, setError] = useState<string | null>(null);
   const [loadingMessage, setLoadingMessage] = useState<string | null>(null);
+  const skipInitialFetch = initialState?.disableInitialFetch ?? false;
 
   // Effect for initial data load
   useEffect(() => {
+    if (skipInitialFetch) {
+      setIsLoading(false);
+      return;
+    }
+
+    let isCancelled = false;
+
     const fetchData = async () => {
-      setIsLoading(true);
+      if (!hasInitialData) {
+        setIsLoading(true);
+      }
       setError(null);
       setLoadingMessage(null);
 
@@ -27,6 +43,9 @@ export const PartyProvider: React.FC<{ children: ReactNode }> = ({ children }) =
             api.getCarousels(),
             api.getDefaultReferral(),
           ]);
+          if (isCancelled) {
+            return;
+          }
           setParties(fetchedParties);
           setCarousels(fetchedCarousels);
           setDefaultReferralState(fetchedReferral);
@@ -39,16 +58,23 @@ export const PartyProvider: React.FC<{ children: ReactNode }> = ({ children }) =
             await new Promise(resolve => setTimeout(resolve, 2000 * Math.pow(2, i)));
           } else {
             console.error('Failed to load initial data after retries', err);
-            setError("Could not connect to the server. Please check your internet connection or try again later.");
-            setIsLoading(false);
-            setLoadingMessage(null);
+            if (!isCancelled) {
+              setError("Could not connect to the server. Please check your internet connection or try again later.");
+              setIsLoading(false);
+              setLoadingMessage(null);
+            }
             return; // Failure, exit function
           }
         }
       }
     };
+
     fetchData();
-  }, []);
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [skipInitialFetch, hasInitialData]);
 
   const addParty = useCallback(async (url: string) => {
     try {

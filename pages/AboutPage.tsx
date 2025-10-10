@@ -1,10 +1,15 @@
 import React from 'react';
-import SEO from '../components/SeoManager';
+import SeoManager from '../components/SeoManager';
 
 const AboutPage: React.FC = () => {
   return (
     <>
-      <SEO title="אודות - Parties 24/7" description="הסיפור של Parties 24/7 - איך הפכנו למקור מספר אחת לחיי הלילה בישראל." canonicalPath="/about" />
+      <SeoManager
+        title="אודות - Parties 24/7"
+        description="הסיפור של Parties 24/7 - איך הפכנו למקור מספר אחת לחיי הלילה בישראל."
+        canonicalPath="/about"
+        ogType="profile"
+      />
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto text-jungle-text/90">
           <h1 className="text-5xl font-display text-center mb-8 text-white">הסיפור שלנו</h1>
