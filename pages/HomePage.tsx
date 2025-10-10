@@ -11,8 +11,8 @@ import { BASE_URL, SOCIAL_LINKS } from '../constants';
 const HomePage: React.FC = () => {
   const { parties, carousels, isLoading, error, loadingMessage } = useParties();
 
-  const pageTitle = 'Parties 24/7 - כל המסיבות הכי שוות בישראל';
-  const pageDescription = 'האתר המוביל לחיי הלילה בישראל. גלו מסיבות, רייבים ואירועים מיוחדים בכל רחבי הארץ ורכשו כרטיסים בקלות.';
+  const pageTitle = 'מסיבות בתל אביב | Parties247';
+  const pageDescription = 'כל המסיבות הכי חמות בישראל – תל אביב, חיפה, אילת ועוד. Parties247 היא פלטפורמת המסיבות של ישראל.';
 
   const organizationJsonLd = {
     '@context': 'https://schema.org',

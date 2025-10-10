@@ -26,8 +26,8 @@ const AnimatedRoutes = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/all-parties" element={<AllPartiesPage />} />
         <Route path="/event/:slug" element={<EventPage />} />
-        <Route path="/blog" element={<BlogPage />} />
-        <Route path="/blog/:slug" element={<ArticlePage />} />
+        <Route path="/כתבות" element={<BlogPage />} />
+        <Route path="/כתבות/:slug" element={<ArticlePage />} />
         <Route path="/category/:categoryId" element={<CategoryPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/admin" element={<AdminPage />} />

@@ -25,7 +25,7 @@ const SEO: React.FC<SEOProps> = ({
   title, 
   description, 
   canonicalPath,
-  ogImage = 'https://vjkiztnx7gionfos.public.blob.vercel-storage.com/og-image-default.jpg', // Default OG image
+  ogImage = 'https://parties247.co.il/preview.jpg', // Default OG image
   ogType = 'website',
   jsonLd,
   prevPagePath,

@@ -13,7 +13,7 @@ const ArticlePage: React.FC = () => {
       <div className="text-center py-16 container mx-auto px-4">
         <h1 className="text-4xl font-display text-white mb-4">אופס! כתבה לא נמצאה</h1>
         <p className="text-jungle-text/80">לא מצאנו את הכתבה שחיפשת.</p>
-        <Link to="/blog" className="mt-6 inline-block text-jungle-accent hover:text-white font-semibold">חזרה למגזין</Link>
+        <Link to="/כתבות" className="mt-6 inline-block text-jungle-accent hover:text-white font-semibold">חזרה למגזין</Link>
       </div>
     );
   }
@@ -25,7 +25,7 @@ const ArticlePage: React.FC = () => {
       '@type': 'ListItem',
       'position': 1,
       'name': 'מגזין',
-      'item': `${BASE_URL}/#/blog`
+      'item': `${BASE_URL}/#/כתבות`
     },{
       '@type': 'ListItem',
       'position': 2,
@@ -59,7 +59,7 @@ const ArticlePage: React.FC = () => {
       <SEO 
         title={`${article.title} - Parties 24/7`} 
         description={article.summary}
-        canonicalPath={`/blog/${article.slug}`}
+        canonicalPath={`/כתבות/${article.slug}`}
         ogImage={article.imageUrl}
         ogType="article"
         jsonLd={[breadcrumbJsonLd, articleJsonLd]}
@@ -67,7 +67,7 @@ const ArticlePage: React.FC = () => {
       <div className="container mx-auto px-4">
         <article className="max-w-4xl mx-auto text-jungle-text/90">
           <header className="mb-8">
-            <Link to="/blog" className="text-jungle-accent hover:text-white transition-colors mb-4 inline-block">
+            <Link to="/כתבות" className="text-jungle-accent hover:text-white transition-colors mb-4 inline-block">
               &larr; חזרה למגזין
             </Link>
             <h1 className="text-4xl md:text-5xl font-display text-center text-white">{article.title}</h1>
