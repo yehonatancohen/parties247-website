@@ -21,6 +21,21 @@ export interface TaxonomyConfig {
   relatedPaths?: { label: string; path: string }[];
 }
 
+export interface TaxonomyListingSectionConfig {
+  title?: string;
+  description?: string;
+  items: TaxonomyConfig[];
+}
+
+export interface TaxonomyListingConfig {
+  path: string;
+  title: string;
+  description: string;
+  intro: string;
+  breadcrumbs: { label: string; path?: string }[];
+  sections: TaxonomyListingSectionConfig[];
+}
+
 export const cities: TaxonomyConfig[] = [
   {
     type: 'city',
@@ -662,6 +677,86 @@ export const topArticles: TaxonomyConfig[] = [
       { label: 'מסיבות נוער – המדריך להורים' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=1200&q=80',
+  },
+];
+
+export const taxonomyListingConfigs: TaxonomyListingConfig[] = [
+  {
+    path: '/ערים',
+    title: 'מסיבות לפי ערים בישראל – Parties 24/7',
+    description: 'כל הערים שבהן אנו עוקבים אחרי מסיבות, אירועים ורייבים – מתל אביב ועד אילת.',
+    intro:
+      'בחרו את העיר שמעניינת אתכם כדי לראות את הליינים הקבועים, אירועי סוף השבוע וההפקות המיוחדות שמתעדכנות מדי יום.',
+    breadcrumbs: [
+      { label: 'בית', path: '/' },
+      { label: 'ערים' },
+    ],
+    sections: [
+      {
+        title: 'בחרו עיר',
+        description: 'היכנסו לעמוד העיר כדי לגלות את המועדונים, הרייבים והאירועים הבולטים בכל יעד.',
+        items: cities,
+      },
+    ],
+  },
+  {
+    path: '/זאנרים',
+    title: 'מסיבות לפי ז׳אנרים מוזיקליים',
+    description: 'טכנו, האוס, היפ-הופ, טראנס, פופ ועוד – כל הז׳אנרים החמים במסיבות בישראל.',
+    intro:
+      'סננו את המסיבות על פי סגנון המוזיקה שאתם אוהבים וגלו את הליינים הקבועים, הפסטיבלים והמסיבות החד-פעמיות של כל ז׳אנר.',
+    breadcrumbs: [
+      { label: 'בית', path: '/' },
+      { label: 'ז׳אנרים' },
+    ],
+    sections: [
+      {
+        title: 'בחרו ז׳אנר',
+        description: 'מצאו את סגנון המוזיקה שמדליק אתכם ועברו לרשימת האירועים המתעדכנת בזמן אמת.',
+        items: genres,
+      },
+    ],
+  },
+  {
+    path: '/קהל',
+    title: 'מסיבות לפי קהל יעד',
+    description: 'מסיבות נוער, סטודנטים, חיילים, קהילה גאה ועוד – בחרו את הקהל שלכם ואנחנו נמצא את המסיבה.',
+    intro:
+      'כל קהל מחפש חוויה אחרת – ריכזנו עבורכם מסיבות לפי גיל, תחומי עניין ואווירה כדי שתמצאו את מה שמתאים בדיוק לכם.',
+    breadcrumbs: [
+      { label: 'בית', path: '/' },
+      { label: 'קהל יעד' },
+    ],
+    sections: [
+      {
+        title: 'התאימו את המסיבה לקהל שלכם',
+        description: 'עמודים ייעודיים עם המלצות, טיפים והאירועים החמים לכל קהל יעד.',
+        items: audiences,
+      },
+    ],
+  },
+  {
+    path: '/מתי',
+    title: 'מסיבות לפי זמן ותאריך',
+    description: 'אירועים שמתרחשים היום, מחר, בסוף השבוע ובתקופות החגים.',
+    intro:
+      'מתכננים יציאה ספונטנית או רוצים לדעת מה מחכה לכם בסופ״ש ובחגים? כאן תמצאו את כל המסיבות לפי חלונות זמן שונים.',
+    breadcrumbs: [
+      { label: 'בית', path: '/' },
+      { label: 'מתי' },
+    ],
+    sections: [
+      {
+        title: 'אירועים קרובים',
+        description: 'בחרו את חלון הזמן המתאים לכם וגלו אילו מסיבות מתרחשות בדיוק עכשיו.',
+        items: timeIntents,
+      },
+      {
+        title: 'חגים ואירועים מיוחדים',
+        description: 'מסיבות ענק וחוויות עונתיות לחגים ולחופשות הגדולות.',
+        items: holidayIntents,
+      },
+    ],
   },
 ];
 

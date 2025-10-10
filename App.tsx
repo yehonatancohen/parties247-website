@@ -17,7 +17,8 @@ import ScrollToTop from './components/ScrollToTop';
 import EventPage from './pages/EventPage';
 import ArticlePage from './pages/ArticlePage';
 import TaxonomyPage from './pages/TaxonomyPage';
-import { taxonomyConfigs } from './data/taxonomy';
+import TaxonomyListingPage from './pages/TaxonomyListingPage';
+import { taxonomyConfigs, taxonomyListingConfigs } from './data/taxonomy';
 
 interface AppProps {
   initialState?: PartyProviderInitialState;
@@ -44,6 +45,22 @@ function App({ initialState }: AppProps) {
               <Route path="/terms" element={<LegalPage pageType="terms" />} />
               <Route path="/privacy" element={<LegalPage pageType="privacy" />} />
               <Route path="/accessibility" element={<LegalPage pageType="accessibility" />} />
+              {taxonomyListingConfigs.map((config) => (
+                <Route
+                  key={config.path}
+                  path={config.path}
+                  element={
+                    <TaxonomyListingPage
+                      title={config.title}
+                      description={config.description}
+                      intro={config.intro}
+                      canonicalPath={config.path}
+                      breadcrumbs={config.breadcrumbs}
+                      sections={config.sections}
+                    />
+                  }
+                />
+              ))}
               {taxonomyConfigs
                 .filter((config) => config.type !== 'articles')
                 .map((config) => (
