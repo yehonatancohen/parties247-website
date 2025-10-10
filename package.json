@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "prerender": "node static-render/prerender.mjs",
+    "build:ssg": "npm run build && npm run prerender",
     "preview": "vite preview"
   },
   "dependencies": {

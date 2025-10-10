@@ -48,6 +48,13 @@ export interface Carousel {
   order: number;
 }
 
+export interface PartyProviderInitialState {
+  parties?: Party[];
+  carousels?: Carousel[];
+  defaultReferral?: string;
+  disableInitialFetch?: boolean;
+}
+
 export type FilterState = {
     region?: string;
     musicType?: string;

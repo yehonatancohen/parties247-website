@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import SEO from '../components/SeoManager';
+import SeoManager from '../components/SeoManager';
 import { articles } from '../data/articles';
 import { BASE_URL } from '../constants';
 
@@ -21,16 +21,25 @@ const ArticlePage: React.FC = () => {
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
-    'itemListElement': [{
-      '@type': 'ListItem',
-      'position': 1,
-      'name': 'מגזין',
-      'item': `${BASE_URL}/כתבות`
-    },{
-      '@type': 'ListItem',
-      'position': 2,
-      'name': article.title,
-    }]
+    'itemListElement': [
+      {
+        '@type': 'ListItem',
+        'position': 1,
+        'name': 'בית',
+        'item': `${BASE_URL}/`,
+      },
+      {
+        '@type': 'ListItem',
+        'position': 2,
+        'name': 'כתבות',
+        'item': `${BASE_URL}/כתבות`,
+      },
+      {
+        '@type': 'ListItem',
+        'position': 3,
+        'name': article.title,
+      },
+    ],
   };
   
   const articleJsonLd = {
@@ -56,8 +65,8 @@ const ArticlePage: React.FC = () => {
 
   return (
     <>
-      <SEO 
-        title={`${article.title} - Parties 24/7`} 
+      <SeoManager
+        title={`${article.title} - Parties 24/7`}
         description={article.summary}
         canonicalPath={`/כתבות/${article.slug}`}
         ogImage={article.imageUrl}

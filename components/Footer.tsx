@@ -9,11 +9,11 @@ const Footer: React.FC = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-right">
           <div>
-            <h3 className="font-display text-xl text-white mb-4">ניווט מהיר</h3>
+            <h3 className="font-display text-xl text-white mb-4">קיצורי דרך</h3>
             <ul className="space-y-2">
-              <li><Link to="/" className="hover:text-jungle-accent transition-colors">עמוד הבית</Link></li>
-              <li><Link to="/all-parties" className="hover:text-jungle-accent transition-colors">כל המסיבות</Link></li>
-              <li><Link to="/about" className="hover:text-jungle-accent transition-colors">עלינו</Link></li>
+              <li><Link to="/תל-אביב/היום" className="hover:text-jungle-accent transition-colors">מסיבות בתל אביב היום</Link></li>
+              <li><Link to="/תל-אביב/טכנו" className="hover:text-jungle-accent transition-colors">טכנו בתל אביב</Link></li>
+              <li><Link to="/מסיבות-נוער" className="hover:text-jungle-accent transition-colors">מסיבות נוער</Link></li>
             </ul>
           </div>
           <div>

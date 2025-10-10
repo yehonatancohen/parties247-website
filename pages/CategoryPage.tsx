@@ -3,7 +3,7 @@ import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useParties } from '../hooks/useParties';
 import PartyGrid from '../components/PartyGrid';
-import SEO from '../components/SeoManager';
+import SeoManager from '../components/SeoManager';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { Party } from '../types';
 import { BASE_URL } from '../constants';
@@ -62,8 +62,8 @@ const CategoryPage: React.FC = () => {
   
   return (
     <>
-      <SEO 
-        title={`${carousel.title} - Parties 24/7`} 
+      <SeoManager
+        title={`${carousel.title} - Parties 24/7`}
         description={`רשימת המסיבות המלאה לקטגוריית ${carousel.title}.`}
         canonicalPath={`/category/${carousel.id}`}
         jsonLd={breadcrumbJsonLd}

@@ -1,0 +1,954 @@
+import { Party } from '../types';
+
+export type TaxonomyType = 'city' | 'genre' | 'audience' | 'time' | 'combo' | 'articles';
+
+export interface TaxonomyFAQ {
+  question: string;
+  answer: string;
+}
+
+export interface TaxonomyConfig {
+  type: TaxonomyType;
+  slug: string;
+  path: string;
+  label: string;
+  title: string;
+  description: string;
+  intro: string;
+  faq: TaxonomyFAQ[];
+  breadcrumbs: { label: string; path?: string }[];
+  ogImage?: string;
+  relatedPaths?: { label: string; path: string }[];
+}
+
+export const cities: TaxonomyConfig[] = [
+  {
+    type: 'city',
+    slug: 'תל-אביב',
+    path: '/תל-אביב',
+    label: 'תל אביב',
+    title: 'מסיבות בתל אביב – טכנו, גגות וחיי לילה ללא הפסקה',
+    description:
+      'מדריך המסיבות של תל אביב: מסיבות טכנו, חוויות גגות, חיי לילה בחוף וערבי קונספט בברצלונה של המזרח התיכון.',
+    intro:
+      'תל אביב היא העיר שלא הולכת לישון אף פעם: ממועדוני הטכנו בדרום העיר דרך ברים על הגגות בשדרות רוטשילד ועד מסיבות החוף של נמל תל אביב ויפו. המדריך שלנו מרכז את הליינים הקבועים של מועדונים כמו הבלוק ופנגיה, את אירועי הדאנס-פופ של דיזנגוף סנטר ואת מסיבות הסטודנטים של אוניברסיטת תל אביב. לאורך החודשים אנו עוקבים אחרי הפקות עצמאיות בפלורנטין, רייבים בחניונים בנווה צדק וערבי הופעות בלבונטין 7 כדי שלא תפספסו אף לילה.',
+    faq: [
+      {
+        question: 'איפה הכי מומלץ לפתוח ערב מסיבה בתל אביב?',
+        answer:
+          'לערב טכנו רצוי להתחיל בדרום העיר – אזור קריית המלאכה ורחוב אברבנאל מלא בברים ומועדונים. אם מחפשים קוקטייל רגוע לפני המסיבה, ברים סביב דיזנגוף סנטר מציעים אווירה צעירה ומוזיקה חיה.',
+      },
+      {
+        question: 'איך מגיעים למסיבות הגדולות בדרום תל אביב בלילה?',
+        answer:
+          'קווי לילה כמו 405 ו-418 פועלים עד השעות הקטנות ומגיעים לקריית המלאכה. בנוסף, שירותי מוניות שיתופיים נגישים מהתחנות המרכזיות – מומלץ להזמין מראש בלילות עמוסים.',
+      },
+      {
+        question: 'אילו שכונות שוות ביקור לפני או אחרי המסיבה?',
+        answer:
+          'פלורנטין מציעה גרפיטי ובתי קפה אלטרנטיביים ביום ובר-מסעדות בלילה. נווה צדק מושלמת לסיבוב רומנטי לפני המסיבה, ואזור נמל תל אביב נותן בוקר מרענן אחרי לילה ארוך.',
+      },
+    ],
+    breadcrumbs: [
+      { label: 'בית', path: '/' },
+      { label: 'תל אביב' },
+    ],
+    ogImage: 'https://images.unsplash.com/photo-1526481280695-3c4693c114c1?auto=format&fit=crop&w=1200&q=80',
+    relatedPaths: [
+      { label: 'תל אביב טכנו', path: '/תל-אביב/טכנו' },
+      { label: 'מסיבות נוער בתל אביב', path: '/תל-אביב/מסיבות-נוער' },
+      { label: 'מסיבות היום בתל אביב', path: '/תל-אביב/היום' },
+    ],
+  },
+  {
+    type: 'city',
+    slug: 'ירושלים',
+    path: '/ירושלים',
+    label: 'ירושלים',
+    title: 'מסיבות בירושלים – ברים שכונתיים ומועדונים בעיר העתיקה',
+    description:
+      'הפקות ומסיבות בירושלים: ליינים סטודנטיאליים, ברים מתחדשים במרכז העיר ומועדונים ליד שוק מחנה יהודה.',
+    intro:
+      'ירושלים מפתיעה בכל פעם מחדש עם שילוב בין היסטוריה לרייבים עכשוויים. שוק מחנה יהודה מקבל חיי לילה חדשים עם מסיבות רחוב, ברים שמתחלפים לפי נושא והופעות חיות. באזור המושבה הגרמנית נפתחים עוד ועוד ברים שכונתיים עם ערבי קוקטיילים ואוכל טוב, ובתיאטרון החאן מתקיימים ליינים אלטרנטיביים עם מוזיקה אלקטרונית והיפ-הופ. הקמפוסים של האוניברסיטה העברית מביאים מסיבות סטודנטים גדולות ופתוחות לקהל הרחב, כולל אירועי גג מול נוף העיר העתיקה.',
+    faq: [
+      {
+        question: 'איפה אפשר למצוא מסיבות פתוחות בשבת בירושלים?',
+        answer:
+          'שוק מחנה יהודה ממשיך לפעול גם בלילות שישי ושבת עם ברים שמארחים DJs מקומיים. בנוסף, מתחם התחנה הראשונה מקיים אירועים פתוחים למשפחות ולצעירים גם בסופי שבוע.',
+      },
+      {
+        question: 'יש תחבורה ציבורית בלילה בעיר?',
+        answer:
+          'קווי הלילה 106 ו-15 ממשיכים לפעול בסופי שבוע ומחברים בין מרכז העיר לשכונות הצפוניות והדרומיות. בשעות מאוחרות יותר מומלץ להשתמש במוניות שירות שפועלות במסלולים קבועים.',
+      },
+    ],
+    breadcrumbs: [
+      { label: 'בית', path: '/' },
+      { label: 'ירושלים' },
+    ],
+    ogImage: 'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=1200&q=80',
+    relatedPaths: [
+      { label: 'מסיבות סטודנטים בירושלים', path: '/ירושלים/מסיבות-סטודנטים' },
+      { label: 'מסיבות שישי בירושלים', path: '/ירושלים/שישי' },
+    ],
+  },
+  {
+    type: 'city',
+    slug: 'חיפה',
+    path: '/חיפה',
+    label: 'חיפה',
+    title: 'מסיבות בחיפה – מפרץ צעיר, אירועים ברמת הדר וכרמל',
+    description:
+      'מסיבות חיפה והקריות: מסיבות ים, פאבים ברמת הדר, אירועי דיג׳יי בשוק תלפיות ומועדונים בקריות.',
+    intro:
+      'סצנת חיי הלילה של חיפה מתפזרת בין הכרמל, העיר התחתית והקריות. ברמת הדר תמצאו פאבים עם סטים של מוזיקה אלקטרונית חמה, ובשוק תלפיות אירועי סוף שבוע עם מעצבי קול מקומיים שמנגנים טכנו והיפ-הופ. קריית חיים ואזור הנמל מושכים מסיבות חוף, והקמפוסים של הטכניון ואוניברסיטת חיפה יוצרים לייני סטודנטים לאורך כל השנה. המדריך שלנו עוקב אחרי כל הליינים, כולל מסיבות אקסקלוסיביות בגנים הבהאיים ואירועים מחתרתיים במושבה הגרמנית.',
+    faq: [
+      {
+        question: 'איזה מועדונים מובילים את סצנת הטכנו בחיפה?',
+        answer:
+          'בימים אלה מועדון ה-Beach Club בקריית חיים וההפקות החופשיות בשוק תלפיות מובילים את סצנת הטכנו. כדאי לעקוב אחרי הליין Midnight Tel Hanan שמארח תקליטנים בינלאומיים.',
+      },
+      {
+        question: 'האם יש מסיבות למשפחות בסופי שבוע?',
+        answer:
+          'חופי הכרמל מציעים בשבתות מסיבות צהריים עם הופעות חיות ופעילויות לילדים. בנוסף, מרכז קסטרא מקיים ירידי מוזיקה ותרבות עם הופעות רחוב לכל המשפחה.',
+      },
+    ],
+    breadcrumbs: [
+      { label: 'בית', path: '/' },
+      { label: 'חיפה' },
+    ],
+    ogImage: 'https://images.unsplash.com/photo-1545153996-30c1c004e7f8?auto=format&fit=crop&w=1200&q=80',
+    relatedPaths: [
+      { label: 'חיפה טכנו', path: '/חיפה/טכנו' },
+      { label: 'מסיבות סטודנטים בחיפה', path: '/חיפה/מסיבות-סטודנטים' },
+    ],
+  },
+  {
+    type: 'city',
+    slug: 'אילת',
+    path: '/אילת',
+    label: 'אילת',
+    title: 'מסיבות באילת – ברים על החוף וחיי לילה לנופשים',
+    description:
+      'כל המסיבות באילת: מועדוני ריזורט, מסיבות נוער בטיילת, ליינים לחיילים וחוויות חוף עם DJ בינלאומי.',
+    intro:
+      'אילת מציעה שילוב מושלם של חופשה ומוזיקה חזקה. לאורך הטיילת תמצאו מועדונים שמארחים אמני EDM, מסיבות קצף לנוער במתחמי המלונות ולילות צ׳יל אאוט בחופי אלמוג ומעבר לאופק. בימי חמישי מגיעים לעיר מופעי ענק של זמרים ישראלים ובסופי שבוע ארוכים נפתחים מתחמי טראנס במדבר הסמוך. צוות Parties 24/7 מרכז עבורכם את כל האירועים מהמלונות הגדולים, מסיבות חיילים בבר היי-בר ואת ההפקות העצמאיות שמתרחשות באוהלים במדבר.',
+    faq: [
+      {
+        question: 'מה כדאי לדעת על מסיבות נוער באילת?',
+        answer:
+          'העירייה מאשרת מסיבות נוער רשמיות בפיקוח ביטחוני מלא. מומלץ להזמין כרטיסים מראש ולבדוק גיל כניסה מדויק – בדרך כלל 16+, עם צמידים שמבדילים בין נוער לבוגרים.',
+      },
+      {
+        question: 'יש שאטלים מהמלונות למסיבות?',
+        answer:
+          'רוב הריזורטים מציעים הסעות מאורגנות למסיבות גדולות. כדאי להתעדכן בדלפק הקבלה ולוודא מקום כמה שעות לפני תחילת האירוע כדי להימנע מהמתנה.',
+      },
+    ],
+    breadcrumbs: [
+      { label: 'בית', path: '/' },
+      { label: 'אילת' },
+    ],
+    ogImage: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80',
+    relatedPaths: [
+      { label: 'אילת EDM', path: '/אילת/EDM' },
+      { label: 'מסיבות חיילים באילת', path: '/אילת/מסיבות-חיילים' },
+      { label: 'מסיבות חגים באילת', path: '/אילת/חגים/סוכות' },
+    ],
+  },
+];
+
+export const genres: TaxonomyConfig[] = [
+  {
+    type: 'genre',
+    slug: 'טכנו',
+    path: '/טכנו',
+    label: 'טכנו',
+    title: 'מסיבות טכנו בישראל – רייבים מחתרתיים ועד מועדוני ענק',
+    description:
+      'כל מסיבות הטכנו בישראל: ליינים בלעדיים בתל אביב, רייבים בשטח פתוח, וסטים של דיג׳ייז מקומיים ובינלאומיים.',
+    intro:
+      'סצנת הטכנו הישראלית התפוצצה בשנים האחרונות עם הפקות עצמאיות בשדות ובמחסנים לצד מועדוני ענק שמביאים אמני על. אנו ממפים את הליינים החמים ביותר של תל אביב, חיפה והדרום, כולל אירועי לילה של הקולקטיבים הגדולים, מסיבות after-hours והפקות sunrise בחופים. כל אירוע כולל לינק לרכישת כרטיסים, מידע על הליין-אפ והמלצות על הציוד שכדאי להביא לרייב, כך שתוכלו לבחור את החוויה המדויקת שלכם.',
+    faq: [
+      {
+        question: 'מה ההבדל בין מסיבת טכנו במועדון לבין רייב שטח?',
+        answer:
+          'מועדון מציע סאונד מוקפד, תאורה וביטחון, בעוד שרייב שטח מביא חוויה חופשית עם נופים פתוחים וסטים ארוכים עד הזריחה. חשוב לבדוק אמצעי הגעה ויציאה בכל אירוע.',
+      },
+      {
+        question: 'כדאי לרכוש כרטיסים מראש למסיבות טכנו?',
+        answer:
+          'כן. ליינים מובילים כמו מג׳נטה או הבלוק נוטים להימכר מראש. חלקם מפעילים רשימות חברים או טפסי סינון – מומלץ להירשם מוקדם כדי להבטיח כניסה.',
+      },
+    ],
+    breadcrumbs: [
+      { label: 'בית', path: '/' },
+      { label: 'ז׳אנרים', path: '/זאנרים' },
+      { label: 'טכנו' },
+    ],
+    ogImage: 'https://images.unsplash.com/photo-1464375117522-1311d6a5b81e?auto=format&fit=crop&w=1200&q=80',
+    relatedPaths: [
+      { label: 'תל אביב טכנו', path: '/תל-אביב/טכנו' },
+      { label: 'חיפה טכנו', path: '/חיפה/טכנו' },
+    ],
+  },
+  {
+    type: 'genre',
+    slug: 'היפ-הופ',
+    path: '/היפ-הופ',
+    label: 'היפ הופ',
+    title: 'מסיבות היפ הופ ו-R&B ברחבי ישראל',
+    description: 'ערבי היפ הופ, R&B וראפ: מסיבות לילה בתל אביב, אירועי ביטים בירושלים והפקות רחוב בחיפה.',
+    intro:
+      'אם אתם בעניין של ביטים כבדים, מסיבות ההיפ הופ של ישראל מספקות חוויה מלאה – מסטים של DJ\'s מקומיים ועד הופעות חיות של ראפרים מהשורה הראשונה. בתל אביב תמצאו ליינים כמו Juicy וחמארה, בירושלים מסיבות שוק מחנה יהודה הופכות כל ערב לקרנבל, ובחיפה הסצנה מתרחבת עם אירועי ביטים בשוק תלפיות. אנו מדגישים איפה אפשר למצוא דאנס-הול, טראפ או R&B, ואילו מסיבות מציעות רחבות נפרדות או הופעות חיות מיוחדות.',
+    faq: [
+      {
+        question: 'יש מסיבות היפ הופ שמתאימות לבני נוער?',
+        answer:
+          'כן, חלק מהמועדונים פותחים ערבים מיוחדים לגילאי 16–18, במיוחד בחופשות. חשוב לוודא את הגיל המדויק והאם נדרש ליווי הורים או אישור חתום.',
+      },
+      {
+        question: 'אילו אמנים בינלאומיים מגיעים לז׳אנר?',
+        answer:
+          'תל אביב מארחת מדי קיץ אמנים אמריקאים ואירופאים בהופעות חיות, בעוד שירושלים מביאה די ג׳ייז אורחים דרך שיתופי פעולה עם הקהילה המקומית. אנו מעדכנים מיד כאשר נפתחים אירועי אורח מיוחדים.',
+      },
+    ],
+    breadcrumbs: [
+      { label: 'בית', path: '/' },
+      { label: 'ז׳אנרים', path: '/זאנרים' },
+      { label: 'היפ הופ' },
+    ],
+    ogImage: 'https://images.unsplash.com/photo-1518972559570-7cc1309f3229?auto=format&fit=crop&w=1200&q=80',
+    relatedPaths: [
+      { label: 'תל אביב היפ הופ', path: '/תל-אביב/היפ-הופ' },
+      { label: 'ירושלים היפ הופ', path: '/ירושלים/היפ-הופ' },
+    ],
+  },
+  {
+    type: 'genre',
+    slug: 'EDM',
+    path: '/EDM',
+    label: 'EDM',
+    title: 'מסיבות EDM ופסטיבלים אלקטרוניים בישראל',
+    description: 'EDM, ביג-רום ופסטיבלי חוץ – כל האירועים והמסיבות האלקטרוניות המובילות בישראל השנה.',
+    intro:
+      'עבור אוהבי EDM וביג-רום, ישראל מציעה שילוב של פסטיבלי ענק ומועדוני ריזורט. מאירועי ענק באמפי לייב פארק ועד מסיבות בריכה במלונות אילת – אנו אוספים עבורכם את כל האירועים המנצנצים. כל מסיבה מסומנת עם מידע על קוד לבוש, ליין-אפ מלא וקישורים לרכישת כרטיסים כדי שתוכלו לשריין מקום במסיבה המחשמלת הבאה שלכם.',
+    faq: [
+      {
+        question: 'האם יש מסיבות EDM שמתקיימות תחת כיפת השמיים?',
+        answer:
+          'בוודאי. בקיץ מרבית הפקות ה-EDM עוברות לחופי הים ולמתחמי הבריכה של המלונות הגדולים. כדאי להצטייד בביגוד נוח, קרם הגנה ובקבוק מים רב-פעמי.',
+      },
+      {
+        question: 'מהו טווח המחירים לכרטיסים?',
+        answer:
+          'כרטיס למסיבת מועדון מתחיל סביב 80–120 ש"ח, בעוד שפסטיבלים מלאים יכולים להגיע ל-350–450 ש"ח, במיוחד כשמגיעים אורחים מחו"ל.',
+      },
+    ],
+    breadcrumbs: [
+      { label: 'בית', path: '/' },
+      { label: 'ז׳אנרים', path: '/זאנרים' },
+      { label: 'EDM' },
+    ],
+    ogImage: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80',
+    relatedPaths: [
+      { label: 'אילת EDM', path: '/אילת/EDM' },
+      { label: 'מסיבות קיץ', path: '/חגים/סוכות' },
+    ],
+  },
+  {
+    type: 'genre',
+    slug: 'טראנס',
+    path: '/טראנס',
+    label: 'טראנס',
+    title: 'מסיבות טראנס ופסטיבלים במדבר ובחופים',
+    description: 'פסטיבלי טראנס, רייבים במדבר ומסיבות חוף עם ליינים של פסיכדליה ואמביינט ברחבי ישראל.',
+    intro:
+      'קהילת הטראנס בישראל ממשיכה להוביל עם הפקות מדבריות, מסיבות חוף באכזיב ומתחמי סופר-פול-מון בגליל. אנו מביאים את רשימת האירועים המעודכנת ביותר, כולל פסטיבלים ארוכים, מסיבות לילה קצרות בעיר והפקות אינטימיות ביערות. כל ליין מגיע עם פירוט על סגנון המוזיקה – פסייטראנס, פרוגרסיב, גואה או דאון-טמפו – כדי שתדעו בדיוק לאן להגיע.',
+    faq: [
+      {
+        question: 'אילו ציוד חובה להביא למסיבת טראנס?',
+        answer:
+          'אוהל קטן, מחצלת, ביגוד חם ללילה ובקבוק מים גדול. מרבית המסיבות מציעות מים נקיים אבל תמיד כדאי להיערך מראש ולהביא גם מזון קל.',
+      },
+      {
+        question: 'האם יש מסיבות טראנס קרובות למרכז?',
+        answer:
+          'כן, בחודשי הסתיו והחורף מתקיימות מסיבות טראנס סגורות במחסנים סביב גוש דן. הן נוטות להתפרסם ברגע האחרון, לכן כדאי לעקוב אחרינו ולבדוק זמינות כרטיסים מראש.',
+      },
+    ],
+    breadcrumbs: [
+      { label: 'בית', path: '/' },
+      { label: 'ז׳אנרים', path: '/זאנרים' },
+      { label: 'טראנס' },
+    ],
+    ogImage: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1200&q=80',
+    relatedPaths: [
+      { label: 'פסטיבלים במדבר', path: '/אילת/טראנס' },
+      { label: 'אירועי לילה בתל אביב', path: '/תל-אביב/טכנו' },
+    ],
+  },
+];
+
+export const audiences: TaxonomyConfig[] = [
+  {
+    type: 'audience',
+    slug: 'מסיבות-נוער',
+    path: '/מסיבות-נוער',
+    label: 'מסיבות נוער',
+    title: 'מסיבות נוער בישראל – חוויות בטוחות לגילאי 16+',
+    description: 'מסיבות נוער מפוקחות ברחבי ישראל: ליינים רשמיים בערים הגדולות, אירועי קיץ בטיילת ואירועי חגים לגילאי 16–18.',
+    intro:
+      'לנוער הישראלי מגיעות מסיבות ברמה גבוהה עם אבטחה, בידוק אלכוהול ותכנים שמתאימים לגיל. אנו מרכזים את המסיבות המורשות בתל אביב, חיפה, ירושלים ואילת – כולל אירועי קיץ, מסיבות פתיחת שנה ותכניות מיוחדות בחגים. בכל אירוע תמצאו פרטי גיל, שעות פעילות, הנחיות לכניסה ומה מותר להביא פנימה כדי שצעירים והורים יוכלו להרגיש בטוחים.',
+    faq: [
+      {
+        question: 'מהו גיל הכניסה למסיבות נוער?',
+        answer:
+          'רוב המסיבות מיועדות לגילאי 16–18 עם הפרדה בין גילאים צעירים לבוגרים יותר. יש אירועים שמאפשרים כניסה בגיל 15 בהסכמת ההורים – נעדכן עבור כל מסיבה.',
+      },
+      {
+        question: 'האם יש בקרה על אלכוהול במסיבות?',
+        answer:
+          'כן, מפעילים רשמיים עובדים עם מאבטחים מוסמכים, בודקים תעודות זהות ומשתמשים בצמידים לזיהוי גיל. חלק מהאירועים מספקים בר נטול אלכוהול בלבד.',
+      },
+    ],
+    breadcrumbs: [
+      { label: 'בית', path: '/' },
+      { label: 'קהל יעד', path: '/קהל' },
+      { label: 'מסיבות נוער' },
+    ],
+    ogImage: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80',
+    relatedPaths: [
+      { label: 'תל אביב לנוער', path: '/תל-אביב/מסיבות-נוער' },
+      { label: 'מסיבות נוער באילת', path: '/אילת/מסיבות-נוער' },
+    ],
+  },
+  {
+    type: 'audience',
+    slug: 'מסיבות-סטודנטים',
+    path: '/מסיבות-סטודנטים',
+    label: 'מסיבות סטודנטים',
+    title: 'מסיבות סטודנטים – קמפוסים ואירועי פתיחת שנה',
+    description: 'אירועי סטודנטים בכל הארץ: מסיבות פתיחת שנה, ליינים אקדמיים ומבצעי כרטיסים לסטודנטים בלבד.',
+    intro:
+      'מסיבות הסטודנטים בישראל משלבות בין מחירי כרטיס נוחים, מוזיקה עדכנית וליינים מאורגנים על ידי אגודות הסטודנטים. אנו מכסים את אירועי פתיחת השנה, מסיבות סוף סמסטר והפקות מיוחדות סביב בחינות. בכל עיר תמצאו הרחבות המועדפות על סטודנטים עם מיתוג ייחודי, הטבות שתייה ותחבורה מאורגנת מקמפוסים.',
+    faq: [
+      {
+        question: 'האם נדרש להציג תעודת סטודנט בכניסה?',
+        answer:
+          'בחלק גדול מהאירועים חובה להציג תעודת סטודנט עדכנית או כרטיס סטודנט דיגיטלי. יש הפקות שמאפשרות להכניס חברים בליווי סטודנט פעיל.',
+      },
+      {
+        question: 'יש הנחות מוקדמות לסטודנטים?',
+        answer:
+          'כן. ליינים רבים מפרסמים קוד קופון מוקדם בערוצי האגודות. אנו נעדכן בכל אירוע מה גובה ההנחה ולכמה זמן היא תקפה.',
+      },
+    ],
+    breadcrumbs: [
+      { label: 'בית', path: '/' },
+      { label: 'קהל יעד', path: '/קהל' },
+      { label: 'מסיבות סטודנטים' },
+    ],
+    ogImage: 'https://images.unsplash.com/photo-1532634896-26909d0d4b86?auto=format&fit=crop&w=1200&q=80',
+    relatedPaths: [
+      { label: 'סטודנטים בתל אביב', path: '/תל-אביב/מסיבות-סטודנטים' },
+      { label: 'סטודנטים בירושלים', path: '/ירושלים/מסיבות-סטודנטים' },
+    ],
+  },
+  {
+    type: 'audience',
+    slug: 'מסיבות-חיילים',
+    path: '/מסיבות-חיילים',
+    label: 'מסיבות חיילים',
+    title: 'מסיבות חיילים – ליינים עד לפנות בוקר אחרי הבסיס',
+    description: 'ליינים מיוחדים לחיילי צה"ל: מסיבות מוזלות, הנחות מיוחדות בכניסה ומתחמים פתוחים בסופי שבוע.',
+    intro:
+      'חיילים זוכים לליינים ייעודיים כמעט בכל עיר גדולה. אנחנו אוספים את המסיבות שמעניקות כניסה חינם או במחיר סמלי בהצגת חוגר, כולל אירועים בערבי חמישי ובמוצ״ש. תמצאו כאן גם מסיבות בוקר לחיילים סוגרים וסדנאות מוזיקה שנערכות על ידי ארגונים אזרחיים.',
+    faq: [
+      {
+        question: 'האם חיילים יכולים להזמין חברים שאינם במדים?',
+        answer:
+          'בדרך כלל כן, אך ייתכן שהחברים ישלמו מחיר מלא. כל אירוע מציין האם מותר להכניס חברים ומה מספר האורחים שמותר לכל חייל.',
+      },
+      {
+        question: 'יש שאטלים לבסיסים?',
+        answer:
+          'ליינים בתל אביב ובמרכז מציעים לעיתים שאטלים לבסיסים מרכזיים כמו צריפין ותל השומר. אנו מציינים בכל אירוע אם קיימת הסעה מתואמת.',
+      },
+    ],
+    breadcrumbs: [
+      { label: 'בית', path: '/' },
+      { label: 'קהל יעד', path: '/קהל' },
+      { label: 'מסיבות חיילים' },
+    ],
+    ogImage: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80',
+    relatedPaths: [
+      { label: 'חיילים באילת', path: '/אילת/מסיבות-חיילים' },
+      { label: 'חיילים במרכז', path: '/תל-אביב/מסיבות-חיילים' },
+    ],
+  },
+  {
+    type: 'audience',
+    slug: 'מסיבות-להטב',
+    path: '/מסיבות-להטב',
+    label: 'מסיבות להט"ב',
+    title: 'מסיבות להט״ב – ליינים קוויריים, דרג ושלל רחבות',
+    description: 'מסיבות להט"ב וקוויריות בכל הארץ: ערבי דרג, ליינים ייעודיים בתל אביב, חיפה וירושלים ומסיבות חגים מיוחדות.',
+    intro:
+      'קהילת הלהט״ב בישראל חוגגת באינספור ליינים: פאג, ביף, ליינים נשיים, מסיבות דראג ייחודיות ואירועי Pride ברחבי השנה. אנו מרכזים את הליינים הקבועים של תל אביב, ההפקות הקוויריות הירושלמיות והאירועים הגדולים בצפון. לכל מסיבה תמצאו טווח גילאים, מדיניות כניסה ולבוש ופרטים על המלצות הבטיחות של המארגנים.',
+    faq: [
+      {
+        question: 'האם יש מסיבות להט"ב גם מחוץ לתל אביב?',
+        answer:
+          'בהחלט. חיפה וירושלים מארחות ליינים קבועים, ובקיץ מתקיימים אירועים מיוחדים בבאר שבע ובאשדוד. אנו מעדכנים ברגע שליין חדש נפתח.',
+      },
+      {
+        question: 'מה קוד הלבוש בליינים קוויריים?',
+        answer:
+          'רוב האירועים מעודדים ביטוי עצמי חופשי. חלקם מפרסמים קוד לבוש נושא – נעדכן בכל עמוד אירוע כדי שתוכלו להגיע מוכנים.',
+      },
+    ],
+    breadcrumbs: [
+      { label: 'בית', path: '/' },
+      { label: 'קהל יעד', path: '/קהל' },
+      { label: 'מסיבות להט"ב' },
+    ],
+    ogImage: 'https://images.unsplash.com/photo-1529158062015-cad636e69505?auto=format&fit=crop&w=1200&q=80',
+    relatedPaths: [
+      { label: 'תל אביב להט"ב', path: '/תל-אביב/מסיבות-להטב' },
+      { label: 'ליינים נשיים', path: '/תל-אביב/מסיבות-להטב/עמוד/2' },
+    ],
+  },
+];
+
+export const timeIntents: TaxonomyConfig[] = [
+  {
+    type: 'time',
+    slug: 'היום',
+    path: '/היום',
+    label: 'מסיבות היום',
+    title: 'מסיבות היום בישראל – מה קורה הערב?',
+    description: 'גילוי מהיר של המסיבות שמתרחשות היום בכל רחבי ישראל – עדכונים חיים והזדמנות לאפס את ה FOMO.',
+    intro:
+      'חייבים מסיבה הערב? אוספים עבורכם את אירועי היום בכל הערים – החל ממסיבות צהריים על הגג בתל אביב ועד לרייבים ליליים בים המלח. הרשימה מתעדכנת כל שעה כדי שתוכלו לתפוס כרטיסים אחרונים, למצוא ליינים ספונטניים ולתכנן הסעה בזמן.',
+    faq: [
+      {
+        question: 'מתי אנחנו מעדכנים את רשימת המסיבות של היום?',
+        answer:
+          'אנו מסנכרנים עם מערכת ניהול האירועים שלנו כל שעה במשך היום, ומוסיפים אירועים חדשים שמתקבלים מהמנהלים ומהמועדונים.',
+      },
+      {
+        question: 'האם אפשר לקבל התראות על מסיבות של הרגע האחרון?',
+        answer:
+          'כן, הירשמו לניוזלטר או לקבוצת הווטסאפ שלנו ונשלח קישורים למסיבות שנפתחות ברגע האחרון עם כרטיסים מוזלים.',
+      },
+    ],
+    breadcrumbs: [
+      { label: 'בית', path: '/' },
+      { label: 'מתי', path: '/מתי' },
+      { label: 'היום' },
+    ],
+    ogImage: 'https://images.unsplash.com/photo-1449793077955-0c55b4f90291?auto=format&fit=crop&w=1200&q=80',
+    relatedPaths: [
+      { label: 'מחר', path: '/מחר' },
+      { label: 'סוף שבוע בתל אביב', path: '/תל-אביב/שישי' },
+    ],
+  },
+  {
+    type: 'time',
+    slug: 'מחר',
+    path: '/מחר',
+    label: 'מסיבות מחר',
+    title: 'מסיבות מחר – תכננו את הלילה הבא',
+    description: 'מסיבות שמתוכננות למחר ברחבי ישראל – חוויות גג, מסיבות חוף, ליינים סטודנטיאליים ועוד.',
+    intro:
+      'אם אתם מתכננים את הערב הבא מראש, בדקו כאן את אירועי המחר. נציג את המסיבות הבולטות בכל עיר, את זמני הפתיחה ואת טווחי המחירים. כך תוכלו לתאם עם חברים, להזמין שולחן VIP ולהבטיח הסעות חזרה.',
+    faq: [
+      {
+        question: 'מתי רשימת המסיבות של מחר נסגרת?',
+        answer:
+          'הרשימה מתעדכנת עד השעה 17:00 ביום האירוע עצמו כדי לכלול כל ביטול או תוספת של הרגע האחרון.',
+      },
+      {
+        question: 'האם יש כרטיסים מוקדמים למסיבות של מחר?',
+        answer:
+          'ברוב המקרים כן – במיוחד במועדונים הגדולים. נפרט בכל אירוע אם יש קוד הנחה או הטבה של חבר מביא חבר.',
+      },
+    ],
+    breadcrumbs: [
+      { label: 'בית', path: '/' },
+      { label: 'מתי', path: '/מתי' },
+      { label: 'מחר' },
+    ],
+    ogImage: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=1200&q=80',
+    relatedPaths: [
+      { label: 'היום', path: '/היום' },
+      { label: 'השבוע', path: '/השבוע' },
+    ],
+  },
+  {
+    type: 'time',
+    slug: 'השבוע',
+    path: '/השבוע',
+    label: 'מסיבות השבוע',
+    title: 'מסיבות השבוע – סקירה של כל האירועים החמים',
+    description: 'לוח מסיבות שבועי: חמישי עד שבת, מסיבות סטודנטים באמצע השבוע וליינים קבועים בעיר שלכם.',
+    intro:
+      'לוח המסיבות השבועי של Parties 24/7 מסדר את האירועים לפי ימים, סוגים וערים, כך שתוכלו לראות בקלות מה קורה בחמישי, שישי ושבת לצד אירועי אמצע שבוע. הדגש הוא על ליינים חוזרים, מסיבות קונספט חד-פעמיות ואירועים משפחתיים.',
+    faq: [
+      {
+        question: 'האם ניתן למיין את מסיבות השבוע לפי עיר?',
+        answer:
+          'כן, כל עמוד מציע פילטרים מהירים לפי עיר וסוג מוזיקה – בלחיצה אחת תוכלו לקפוץ ישירות למסיבות של תל אביב, חיפה או אילת.',
+      },
+      {
+        question: 'איך נשארים מעודכנים?',
+        answer:
+          'הירשמו לניוזלטר השבועי שלנו או הוסיפו את הסרגל לוח השנה (ICS) שאנו מצרפים לכל עמוד כדי לקבל תזכורות.',
+      },
+    ],
+    breadcrumbs: [
+      { label: 'בית', path: '/' },
+      { label: 'מתי', path: '/מתי' },
+      { label: 'השבוע' },
+    ],
+    ogImage: 'https://images.unsplash.com/photo-1475727993574-db0e2dd5683c?auto=format&fit=crop&w=1200&q=80',
+    relatedPaths: [
+      { label: 'שישי', path: '/שישי' },
+      { label: 'חגים', path: '/חגים/פורים' },
+    ],
+  },
+  {
+    type: 'time',
+    slug: 'שישי',
+    path: '/שישי',
+    label: 'מסיבות שישי',
+    title: 'מסיבות שישי – קבלו את הסופ״ש בקצב הנכון',
+    description: 'מסיבות שישי בכל הארץ: טכנו בשעות הקטנות, אירועי חוף בבוקר ומסיבות קונספט למשפחות.',
+    intro:
+      'שישי בישראל הוא יום של חוויות רבות: רייבים שנמשכים עד שבת בבוקר, מסיבות בוקר לנוער ומסיבות משפחתיות בסגנון בראנץ׳. אנו מדגישים את ההפקות המרכזיות בעיר שלכם וממליצים על דרכי הגעה ויציאה בטוחות.',
+    faq: [
+      {
+        question: 'האם יש מסיבות בוקר בשישי?',
+        answer:
+          'כן, במיוחד בתל אביב ובחופי הצפון. מסיבות הבראנץ\' מתחילות סביב 10:00 ומציעות די-ג\'יי חי, אוכל וקוקטיילים קלים.',
+      },
+      {
+        question: 'מסיבות שבת בבוקר מופיעות כאן?',
+        answer:
+          'לרוב כן – אם הן מתחילות בשישי ונמשכות לשבת הן יופיעו בדף זה עם הסבר על שעות הפעילות המלאות.',
+      },
+    ],
+    breadcrumbs: [
+      { label: 'בית', path: '/' },
+      { label: 'מתי', path: '/מתי' },
+      { label: 'שישי' },
+    ],
+    ogImage: 'https://images.unsplash.com/photo-1464374277361-22192c8e5125?auto=format&fit=crop&w=1200&q=80',
+    relatedPaths: [
+      { label: 'שבת', path: '/השבוע' },
+      { label: 'חמישי', path: '/חמישי' },
+    ],
+  },
+];
+
+export const holidayIntents: TaxonomyConfig[] = [
+  {
+    type: 'time',
+    slug: 'חגים/סוכות',
+    path: '/חגים/סוכות',
+    label: 'חג סוכות',
+    title: 'מסיבות חג סוכות – אירועים תחת כיפת השמיים',
+    description: 'אירועי חג סוכות: מסיבות פתוחות בחופים, רייבים במדבר ומפגשי קהילה בסוכות עירוניות.',
+    intro:
+      'בחג סוכות כולנו יוצאים החוצה – מסיבות חוף מרעננות, פסטיבלים עם ליינאפ אלקטרוני עשיר והופעות חיות במרחבים ציבוריים. אנו מרכזים אירועים עם סוכות פתוחות לקהילה, מסיבות משפחתיות ואירועי לילה מאוחרים במדבר יהודה.',
+    faq: [
+      {
+        question: 'האם יש מסיבות סוכות שמתאימות למשפחות?',
+        answer:
+          'כן, ברחבי הארץ מתקיימות סוכות מוזיקה עם הופעות לילדים, דוכני אוכל ומתחמי יצירה. נציין בכל אירוע אם הוא מתאים לכל הגילאים.',
+      },
+      {
+        question: 'מה להביא לרייב סוכות במדבר?',
+        answer:
+          'בגדים קלים ליום וחמים ללילה, אוהל מאוורר, מים ואורגן תאורה קטן לשעות החשוכות. המארגנים בדרך כלל מספקים עמודי טעינה ותחנות מים.',
+      },
+    ],
+    breadcrumbs: [
+      { label: 'בית', path: '/' },
+      { label: 'חגים', path: '/חגים' },
+      { label: 'סוכות' },
+    ],
+    ogImage: 'https://images.unsplash.com/photo-1521335629791-ce4aec67dd47?auto=format&fit=crop&w=1200&q=80',
+    relatedPaths: [
+      { label: 'חג פורים', path: '/חגים/פורים' },
+      { label: 'מסיבות משפחתיות', path: '/מסיבות-נוער' },
+    ],
+  },
+  {
+    type: 'time',
+    slug: 'חגים/פורים',
+    path: '/חגים/פורים',
+    label: 'חג פורים',
+    title: 'מסיבות פורים – קרנבל תחפושות ללא הפסקה',
+    description: 'כל המסיבות לפורים: קרנבלים, אירועים משפחתיים, רייבים עד הבוקר ומסיבות להט"ב נוצצות.',
+    intro:
+      'פורים הוא חג המסיבות הרשמי של ישראל. מהקרנבלים של תל אביב וחיפה ועד מסיבות קונספט במועדונים – אנחנו מכסים את אירועי הבגדים הכי צבעוניים. תמצאו כאן מסיבות לילדים, אירועי לילה למבוגרים ומסיבות רחוב שמתפרשות על פני סוף שבוע שלם.',
+    faq: [
+      {
+        question: 'מתי הכי כדאי להזמין כרטיסים למסיבות פורים?',
+        answer:
+          'האירועים הגדולים נמכרים כשבועיים מראש. אנו ממליצים להירשם לרשימות תפוצה של הליינים כדי לקבל גישה מוקדמת ומחירים מוזלים.',
+      },
+      {
+        question: 'מהן מסיבות פורים המומלצות למשפחות?',
+        answer:
+          'ערים רבות מפעילות קרנבלים פתוחים בשעות הבוקר עם מתקנים לילדים. נציין בכל אירוע אם הוא משפחתי או למבוגרים בלבד כדי שתוכלו לבחור נכון.',
+      },
+    ],
+    breadcrumbs: [
+      { label: 'בית', path: '/' },
+      { label: 'חגים', path: '/חגים' },
+      { label: 'פורים' },
+    ],
+    ogImage: 'https://images.unsplash.com/photo-1521579971123-1192931a1452?auto=format&fit=crop&w=1200&q=80',
+    relatedPaths: [
+      { label: 'מסיבות נוער', path: '/מסיבות-נוער' },
+      { label: 'מסיבות להט"ב', path: '/מסיבות-להטב' },
+    ],
+  },
+];
+
+export const topArticles: TaxonomyConfig[] = [
+  {
+    type: 'articles',
+    slug: 'כתבות/מדריך-מועדוני-טכנו-בתל-אביב',
+    path: '/כתבות/מדריך-מועדוני-טכנו-בתל-אביב',
+    label: 'מדריך מועדוני טכנו בתל אביב',
+    title: 'מדריך מועדוני טכנו בתל אביב – הבלוק, פנגיה ועוד',
+    description:
+      'המדריך המלא למועדוני הטכנו של תל אביב: הבלוק, פנגיה, דיסקו טוקיו ועוד ליינים מחתרתיים בדרום העיר.',
+    intro:
+      'מדריך זה מרכז את מועדוני הטכנו המשפיעים של תל אביב, כולל טיפים על שעות פתיחה, שיאי תורים ומתי כדאי להגיע. תוכלו להבין איזה קהל מגיע לכל ליין, מה מביאים לכניסה וכיצד להתלבש כדי לעבור את הסלקציה. אנו מצרפים מפות קצרות, טיפים על חנייה ושירותים רלוונטיים.',
+    faq: [],
+    breadcrumbs: [
+      { label: 'בית', path: '/' },
+      { label: 'כתבות', path: '/כתבות' },
+      { label: 'מדריך מועדוני טכנו בתל אביב' },
+    ],
+    ogImage: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=1200&q=80',
+  },
+  {
+    type: 'articles',
+    slug: 'כתבות/מסיבות-נוער-המדריך-להורים',
+    path: '/כתבות/מסיבות-נוער-המדריך-להורים',
+    label: 'מסיבות נוער – המדריך להורים',
+    title: 'מסיבות נוער בישראל – המדריך להורים ולמלווים',
+    description:
+      'איך לבחור מסיבת נוער בטוחה? מה לבדוק לפני שמאפשרים לילד לצאת? מדריך מפורט להורים מתלבטים.',
+    intro:
+      'הורים רבים מתלבטים האם לאפשר לבני הנוער לצאת למסיבה. המדריך שלנו מסביר על אבטחה, רישוי, בדיקות אלכוהול, עלויות נסיעה ושירותי הסעות. נעזור לכם לשאול את השאלות הנכונות מול המארגנים וליצור תקשורת ברורה עם הילדים לפני היציאה.',
+    faq: [],
+    breadcrumbs: [
+      { label: 'בית', path: '/' },
+      { label: 'כתבות', path: '/כתבות' },
+      { label: 'מסיבות נוער – המדריך להורים' },
+    ],
+    ogImage: 'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=1200&q=80',
+  },
+];
+
+export const allTaxonomyConfigs: TaxonomyConfig[] = [
+  ...cities,
+  ...genres,
+  ...audiences,
+  ...timeIntents,
+  ...holidayIntents,
+  ...topArticles,
+];
+
+export const cityGenreCombos: TaxonomyConfig[] = (() => {
+  const combos: TaxonomyConfig[] = [];
+  const targetGenres = genres.filter((genre) => ['טכנו', 'היפ-הופ', 'EDM'].includes(genre.slug));
+  cities.forEach((city) => {
+    targetGenres.forEach((genre) => {
+      combos.push({
+        type: 'combo',
+        slug: `${city.slug}/${genre.slug}`,
+        path: `/${city.slug}/${genre.slug}`,
+        label: `${city.label} ${genre.label}`,
+        title: `מסיבות ${genre.label} ב${city.label}`,
+        description: `גילוי מסיבות ${genre.label} ב${city.label} – המועדונים, הליינים והאירועים החמים בעיר.`,
+        intro: `בדף זה תמצאו את מסיבות ה${genre.label} הבולטות בעיר ${city.label}, כולל אירועי אנדרגראונד, מועדונים מוכרים והפקות קונספט מיוחדות. הרשימה מתעדכנת מדי יום כדי שלא תפספסו אף לילה.`,
+        faq: [
+          {
+            question: `אילו שכונות ב${city.label} מארחות מסיבות ${genre.label}?`,
+            answer: `${city.label} מפורסמת בזכות הליינים המיוחדים שלה. תוכלו למצוא מסיבות ${genre.label} בשכונות מרכזיות ובאולמות זמניים – נעדכן בכל אירוע את הכתובת המדויקת והוראות ההגעה.`,
+          },
+          {
+            question: 'איך שומרים מקום באירוע מבוקש?',
+            answer: 'רוב האירועים מציעים מכירה מוקדמת. לחצו על האירוע המתאים כדי לרכוש כרטיסים או להצטרף לרשימת המתנה.',
+          },
+        ],
+        breadcrumbs: [
+          { label: 'בית', path: '/' },
+          { label: city.label, path: city.path },
+          { label: genre.label },
+        ],
+        ogImage: genre.ogImage,
+      });
+    });
+  });
+  return combos;
+})();
+
+export const cityAudienceCombos: TaxonomyConfig[] = (() => {
+  const combos: TaxonomyConfig[] = [];
+  cities.forEach((city) => {
+    audiences.forEach((audience) => {
+      combos.push({
+        type: 'combo',
+        slug: `${city.slug}/${audience.slug}`,
+        path: `/${city.slug}/${audience.slug}`,
+        label: `${audience.label} ב${city.label}`,
+        title: `${audience.label} ב${city.label}`,
+        description: `${audience.label} ב${city.label}: כל הליינים וההפקות שמיועדות לקהל הזה בעיר.`,
+        intro: `אספנו את כל ${audience.label.toLowerCase()} שמתרחשות בעיר ${city.label}. כאן תגלו אילו ליינים מתאימים לגיל ולסגנון שלכם, איך להזמין כרטיסים, ומה המדיניות בכניסה לכל אירוע.`,
+        faq: [
+          {
+            question: 'יש הסעות מאורגנות?',
+            answer: 'עבור חלק מהאירועים יש שאטלים מהמרכז העירוני. בדקו בכל אירוע תחת פרטי ההפקה.',
+          },
+          {
+            question: 'האם האירועים פתוחים גם למבקרים מחוץ לעיר?',
+            answer: 'ברוב המקרים כן, אך ייתכן ותידרש הרשמה מראש או הצגת תעודה מתאימה כמו חוגר או תעודת סטודנט.',
+          },
+        ],
+        breadcrumbs: [
+          { label: 'בית', path: '/' },
+          { label: city.label, path: city.path },
+          { label: audience.label },
+        ],
+        ogImage: audience.ogImage,
+      });
+    });
+  });
+  return combos;
+})();
+
+export const cityTimeCombos: TaxonomyConfig[] = (() => {
+  const combos: TaxonomyConfig[] = [];
+  const timeTargets = [...timeIntents.slice(0, 4), ...holidayIntents];
+  cities.forEach((city) => {
+    timeTargets.forEach((timeIntent) => {
+      combos.push({
+        type: 'combo',
+        slug: `${city.slug}/${timeIntent.slug}`,
+        path: `/${city.slug}/${timeIntent.slug}`,
+        label: `${timeIntent.label} ב${city.label}`,
+        title: `${timeIntent.label} ב${city.label}`,
+        description: `${timeIntent.label} ב${city.label}: כל האירועים החמים שמתאימים ללוח הזמנים שלכם בעיר.`,
+        intro: `בדף זה תמצאו את האירועים של ${city.label} שמתאימים לתזמון ${timeIntent.label.toLowerCase()}. אנו מדרגים לפי פופולריות ומעדכנים שעות פתיחה, כך שתוכלו לתכנן לילה שלם ללא הפתעות.`,
+        faq: [
+          {
+            question: 'איך יודעים אם האירוע עדיין פעיל?',
+            answer: 'אנחנו מסנכרנים עם מערכת האירועים שלנו ומסירים אירועים שבוטלו. תמיד מומלץ לבדוק שעה לפני היציאה אם יש עדכון חדש.',
+          },
+        ],
+        breadcrumbs: [
+          { label: 'בית', path: '/' },
+          { label: city.label, path: city.path },
+          { label: timeIntent.label },
+        ],
+        ogImage: timeIntent.ogImage,
+      });
+    });
+  });
+  return combos;
+})();
+
+export const paginatedCombos = (baseConfigs: TaxonomyConfig[], maxPages = 5) => {
+  const result: TaxonomyConfig[] = [];
+  baseConfigs.forEach((config) => {
+    for (let page = 2; page <= maxPages; page++) {
+      result.push({
+        ...config,
+        path: `${config.path}/עמוד/${page}`,
+        slug: `${config.slug}/עמוד/${page}`,
+        label: `${config.label} – עמוד ${page}`,
+        title: `${config.title} (עמוד ${page})`,
+        description: `${config.description} – דף ${page} בתוצאות.`,
+        breadcrumbs: [
+          ...config.breadcrumbs,
+          { label: `עמוד ${page}` },
+        ],
+      });
+    }
+  });
+  return result;
+};
+
+export const comboConfigs = [
+  ...cityGenreCombos,
+  ...cityAudienceCombos,
+  ...cityTimeCombos,
+];
+
+export const paginatedCityGenre = paginatedCombos(cityGenreCombos);
+export const paginatedCityAudience = paginatedCombos(cityAudienceCombos);
+export const paginatedCityTime = paginatedCombos(cityTimeCombos);
+export const paginatedTopArticles = paginatedCombos(topArticles, 1);
+
+export const taxonomyConfigs: TaxonomyConfig[] = [
+  ...allTaxonomyConfigs,
+  ...comboConfigs,
+  ...paginatedCityGenre,
+  ...paginatedCityAudience,
+  ...paginatedCityTime,
+  ...paginatedTopArticles,
+];
+
+export const findTaxonomyConfig = (path: string): TaxonomyConfig | undefined =>
+  taxonomyConfigs.find((config) => config.path === path);
+
+export const filterPartiesByTaxonomy = (parties: Party[], config: TaxonomyConfig): Party[] => {
+  const now = new Date();
+  const slugParts = config.slug.split('/');
+
+  switch (config.type) {
+    case 'city':
+      return filterByCity(parties, slugParts[0]);
+    case 'genre':
+      return filterByGenre(parties, slugParts[0]);
+    case 'audience':
+      return filterByAudience(parties, slugParts[0]);
+    case 'time':
+      return filterByTime(parties, slugParts.join('/'));
+    case 'combo': {
+      const [primary, secondary] = slugParts;
+      let filtered = parties;
+      if (cities.some((city) => city.slug === primary)) {
+        filtered = filterByCity(filtered, primary);
+      }
+      if (genres.some((genre) => genre.slug === secondary)) {
+        filtered = filterByGenre(filtered, secondary);
+      } else if (audiences.some((audience) => audience.slug === secondary)) {
+        filtered = filterByAudience(filtered, secondary);
+      } else {
+        filtered = filterByTime(filtered, `${secondary}${slugParts[2] ? `/${slugParts[2]}` : ''}`);
+      }
+      return filtered;
+    }
+    default:
+      return parties;
+  }
+};
+
+const normalizeHebrew = (value: string) => value.replace(/[-\s]/g, '').trim();
+
+const cityMappings: Record<string, string[]> = {
+  'תל-אביב': ['תלאביב', 'תל אביב', 'ת"א', 'Tel Aviv', 'Tel-Aviv'],
+  'ירושלים': ['ירושלים', 'Jerusalem'],
+  'חיפה': ['חיפה', 'Haifa'],
+  'אילת': ['אילת', 'Eilat'],
+};
+
+const filterByCity = (parties: Party[], slug: string) => {
+  const normalizedSlug = normalizeHebrew(slug);
+  const aliases = cityMappings[slug]?.map(normalizeHebrew) || [normalizedSlug];
+  return parties.filter((party) => {
+    const locationName = normalizeHebrew(party.location?.name || '');
+    return aliases.some((alias) => locationName.includes(alias));
+  });
+};
+
+const genreMappings: Record<string, string[]> = {
+  'טכנו': ['טכנו', 'Techno'],
+  'היפ-הופ': ['היפהופ', 'Hip Hop', 'Hip-Hop', 'R&B', 'ראפ'],
+  'EDM': ['EDM', 'אלקטרוני', 'Dance'],
+  'טראנס': ['טראנס', 'Trance', 'Psy'],
+};
+
+const filterByGenre = (parties: Party[], slug: string) => {
+  const aliases = genreMappings[slug] || [slug];
+  return parties.filter((party) => {
+    const musicType = party.musicType || '';
+    const tags = party.tags || [];
+    return aliases.some((alias) =>
+      musicType.includes(alias) || tags.some((tag) => tag.includes(alias))
+    );
+  });
+};
+
+const filterByAudience = (parties: Party[], slug: string) => {
+  switch (slug) {
+    case 'מסיבות-נוער':
+      return parties.filter((party) => party.age === 'נוער' || party.tags.includes('נוער'));
+    case 'מסיבות-סטודנטים':
+      return parties.filter((party) => party.tags.includes('סטודנטים'));
+    case 'מסיבות-חיילים':
+      return parties.filter((party) => party.tags.includes('חיילים'));
+    case 'מסיבות-להטב':
+      return parties.filter((party) => party.tags.some((tag) => tag.includes('להט"ב') || tag.toLowerCase().includes('lgbt')));
+    default:
+      return parties;
+  }
+};
+
+const filterByTime = (parties: Party[], slug: string) => {
+  const now = new Date();
+  const startOfDay = new Date(now);
+  startOfDay.setHours(0, 0, 0, 0);
+  const endOfDay = new Date(now);
+  endOfDay.setHours(23, 59, 59, 999);
+
+  const [primary, secondary] = slug.split('/');
+
+  switch (primary) {
+    case 'היום':
+      return parties.filter((party) => {
+        const eventDate = new Date(party.date);
+        return eventDate >= startOfDay && eventDate <= endOfDay;
+      });
+    case 'מחר': {
+      const tomorrowStart = new Date(startOfDay);
+      tomorrowStart.setDate(tomorrowStart.getDate() + 1);
+      const tomorrowEnd = new Date(endOfDay);
+      tomorrowEnd.setDate(tomorrowEnd.getDate() + 1);
+      return parties.filter((party) => {
+        const eventDate = new Date(party.date);
+        return eventDate >= tomorrowStart && eventDate <= tomorrowEnd;
+      });
+    }
+    case 'השבוע': {
+      const weekEnd = new Date(startOfDay);
+      weekEnd.setDate(weekEnd.getDate() + 7);
+      return parties.filter((party) => {
+        const eventDate = new Date(party.date);
+        return eventDate >= startOfDay && eventDate <= weekEnd;
+      });
+    }
+    case 'חמישי':
+    case 'שישי':
+    case 'שבת': {
+      const targetDay = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'].indexOf(primary);
+      return parties.filter((party) => {
+        const eventDate = new Date(party.date);
+        return eventDate.getDay() === ((targetDay + 1) % 7);
+      });
+    }
+    case 'חגים': {
+      if (secondary === 'סוכות') {
+        return parties.filter((party) => party.tags.some((tag) => tag.includes('סוכות')));
+      }
+      if (secondary === 'פורים') {
+        return parties.filter((party) => party.tags.some((tag) => tag.includes('פורים')));
+      }
+      return parties;
+    }
+    default:
+      return parties;
+  }
+};
+

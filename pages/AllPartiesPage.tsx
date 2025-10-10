@@ -1,20 +1,42 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useParties } from '../hooks/useParties';
 import PartyGrid from '../components/PartyGrid';
-import SEO from '../components/SeoManager';
+import SeoManager from '../components/SeoManager';
 import LoadingSpinner from '../components/LoadingSpinner';
 import AdvancedFilter from '../components/AdvancedFilter';
 import { FilterState } from '../types';
 import { SearchIcon } from '../components/Icons';
 import { BASE_URL } from '../constants';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 
 const PARTIES_PER_PAGE = 20;
 
 const AllPartiesPage: React.FC = () => {
   const { parties, isLoading, error, loadingMessage } = useParties();
+  const { pageNumber } = useParams<{ pageNumber?: string }>();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const initialPage = pageNumber ? Math.max(parseInt(pageNumber, 10) || 1, 1) : 1;
   const [filters, setFilters] = useState<FilterState>({ tags: [] });
   const [searchTerm, setSearchTerm] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(initialPage);
+
+  useEffect(() => {
+    if (pageNumber) {
+      const nextPage = Math.max(parseInt(pageNumber, 10) || 1, 1);
+      if (nextPage !== currentPage) {
+        setCurrentPage(nextPage);
+      }
+    } else if (currentPage !== 1) {
+      setCurrentPage(1);
+    }
+  }, [pageNumber, currentPage]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const queryParam = params.get('query') || '';
+    setSearchTerm(queryParam);
+  }, [location.search]);
 
   const filteredParties = useMemo(() => {
     const lowercasedTerm = searchTerm.toLowerCase();
@@ -52,9 +74,15 @@ const AllPartiesPage: React.FC = () => {
   const handlePageChange = (newPage: number) => {
     if (newPage > 0 && newPage <= totalPages) {
       setCurrentPage(newPage);
-      window.scrollTo(0, 0);
+      const querySuffix = searchTerm ? `?query=${encodeURIComponent(searchTerm)}` : '';
+      if (newPage === 1) {
+        navigate(`/all-parties${querySuffix}`, { replace: false });
+      } else {
+        navigate(`/all-parties/עמוד/${newPage}${querySuffix}`, { replace: false });
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }
+  };
 
   const pageTitle = `כל המסיבות - עמוד ${currentPage} | Parties 24/7`;
   const pageDescription = 'חיפוש וסינון בכל המסיבות, הרייבים והאירועים בישראל. מצאו את המסיבה המושלמת עבורכם לפי אזור, סגנון מוזיקה, תאריך ועוד.';
@@ -75,9 +103,17 @@ const AllPartiesPage: React.FC = () => {
       }]
   };
   
-  const canonicalPath = `/all-parties${currentPage > 1 ? `/page/${currentPage}` : ''}`;
-  const prevPagePath = currentPage > 1 ? `/all-parties?page=${currentPage - 1}` : null;
-  const nextPagePath = currentPage < totalPages ? `/all-parties?page=${currentPage + 1}` : null;
+  const canonicalPath = `/all-parties${currentPage > 1 ? `/עמוד/${currentPage}` : ''}`;
+  const itemListJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    'itemListElement': paginatedParties.map((party, index) => ({
+      '@type': 'ListItem',
+      'position': (currentPage - 1) * PARTIES_PER_PAGE + index + 1,
+      'name': party.name,
+      'url': `${BASE_URL}/event/${party.slug}`,
+    })),
+  };
 
   if (isLoading) {
     return (
@@ -99,13 +135,11 @@ const AllPartiesPage: React.FC = () => {
 
   return (
     <>
-      <SEO 
-        title={pageTitle} 
-        description={pageDescription} 
+      <SeoManager
+        title={pageTitle}
+        description={pageDescription}
         canonicalPath={canonicalPath}
-        prevPagePath={prevPagePath}
-        nextPagePath={nextPagePath}
-        jsonLd={breadcrumbJsonLd}
+        jsonLd={[breadcrumbJsonLd, itemListJsonLd]}
       />
 
       <div id="all-parties" className="container mx-auto px-4">

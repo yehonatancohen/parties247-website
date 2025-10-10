@@ -10,9 +10,12 @@ const JWT_TOKEN_STORAGE = 'jwtAuthToken';
  * @returns An object containing the Authorization header, or an empty object.
  */
 const getAuthHeader = (): { [key: string]: string } => {
+  if (typeof sessionStorage === 'undefined') {
+    return {};
+  }
   const token = sessionStorage.getItem(JWT_TOKEN_STORAGE);
   if (token) {
-    return { 'Authorization': `Bearer ${token}` };
+    return { Authorization: `Bearer ${token}` };
   }
   return {};
 };
@@ -265,7 +268,9 @@ export const login = async (password: string): Promise<void> => {
     throw new Error(data.message || 'Login failed');
   }
   if (data.token) {
-    sessionStorage.setItem(JWT_TOKEN_STORAGE, data.token);
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.setItem(JWT_TOKEN_STORAGE, data.token);
+    }
   } else {
     throw new Error('Login response did not include a token.');
   }

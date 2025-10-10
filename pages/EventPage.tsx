@@ -1,9 +1,9 @@
 // FIX: Corrected a typo in the React import statement (removed an extra 'a,') which was causing compilation errors.
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Party } from '../types';
 import { getPartyBySlug } from '../services/api';
-import SEO from '../components/SeoManager';
+import SeoManager from '../components/SeoManager';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useParties } from '../hooks/useParties';
 import { CalendarIcon, LocationIcon, LeafIcon, PartyPopperIcon, FireIcon } from '../components/Icons';
@@ -13,10 +13,21 @@ import RelatedPartyCard from '../components/RelatedPartyCard';
 
 const EventPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
-  const [party, setParty] = useState<Party | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { parties: allParties, defaultReferral, isLoading: partiesLoading } = useParties();
+  const initialParty = useMemo(
+    () => (slug ? allParties.find((p) => p.slug === slug) ?? null : null),
+    [allParties, slug],
+  );
+  const [party, setParty] = useState<Party | null>(initialParty);
+  const [isLoading, setIsLoading] = useState(!initialParty);
+
+  useEffect(() => {
+    if (initialParty && (!party || party.id !== initialParty.id)) {
+      setParty(initialParty);
+      setIsLoading(false);
+    }
+  }, [initialParty, party]);
 
   useEffect(() => {
     const fetchAndMergeParty = async () => {
@@ -32,7 +43,9 @@ const EventPage: React.FC = () => {
         return;
       }
       
-      setIsLoading(true);
+      if (!initialParty) {
+        setIsLoading(true);
+      }
       setError(null);
 
       try {
@@ -63,7 +76,7 @@ const EventPage: React.FC = () => {
     };
 
     fetchAndMergeParty();
-  }, [slug, allParties, partiesLoading]);
+  }, [slug, allParties, partiesLoading, initialParty]);
 
   const getReferralUrl = (originalUrl: string, partyReferral?: string): string => {
     try {
@@ -157,11 +170,16 @@ const EventPage: React.FC = () => {
       'itemListElement': [{
         '@type': 'ListItem',
         'position': 1,
+        'name': 'בית',
+        'item': `${BASE_URL}/`
+      },{
+        '@type': 'ListItem',
+        'position': 2,
         'name': 'כל המסיבות',
         'item': `${BASE_URL}/all-parties`
       },{
         '@type': 'ListItem',
-        'position': 2,
+        'position': 3,
         'name': party.name,
       }]
   };
@@ -169,14 +187,13 @@ const EventPage: React.FC = () => {
 
   return (
     <>
-      <SEO
+      <SeoManager
         title={`${party.name} | Parties 24/7`}
         description={party.description.substring(0, 160)}
         canonicalPath={`/event/${party.slug}`}
         ogImage={party.imageUrl}
         ogType="article"
         jsonLd={[eventJsonLd, breadcrumbJsonLd]}
-        icsLink={`/ics/event/${party.slug}.ics`}
       />
       <div className="container mx-auto px-4">
         <div className="max-w-5xl mx-auto bg-jungle-surface rounded-xl overflow-hidden shadow-lg border border-wood-brown/50">
