@@ -61,19 +61,19 @@ const HomePage: React.FC = () => {
   
   const resolveCarouselLink = (title: string) => {
     const normalized = title.replace(/\s+/g, '').toLowerCase();
-    if (normalized.includes('תלאביב') && normalized.includes('טכנו')) return '/תל-אביב/טכנו';
-    if (normalized.includes('תלאביב') && normalized.includes('נוער')) return '/תל-אביב/מסיבות-נוער';
-    if (normalized.includes('תלאביב')) return '/תל-אביב/היום';
-    if (normalized.includes('ירושלים')) return '/ירושלים';
-    if (normalized.includes('חיפה')) return '/חיפה';
-    if (normalized.includes('אילת')) return '/אילת';
-    if (normalized.includes('טכנו')) return '/טכנו';
-    if (normalized.includes('טראנס')) return '/טראנס';
-    if (normalized.includes('edm')) return '/EDM';
-    if (normalized.includes('נוער')) return '/מסיבות-נוער';
-    if (normalized.includes('סטודנט')) return '/מסיבות-סטודנטים';
-    if (normalized.includes('חייל')) return '/מסיבות-חיילים';
-    if (normalized.includes('שישי')) return '/שישי';
+    if (normalized.includes('תלאביב') && normalized.includes('טכנו')) return '/ערים/תל-אביב/טכנו';
+    if (normalized.includes('תלאביב') && normalized.includes('נוער')) return '/ערים/תל-אביב/מסיבות-נוער';
+    if (normalized.includes('תלאביב')) return '/ערים/תל-אביב/היום';
+    if (normalized.includes('ירושלים')) return '/ערים/ירושלים';
+    if (normalized.includes('חיפה')) return '/ערים/חיפה';
+    if (normalized.includes('אילת')) return '/ערים/אילת';
+    if (normalized.includes('טכנו')) return '/זאנרים/טכנו';
+    if (normalized.includes('טראנס')) return '/זאנרים/טראנס';
+    if (normalized.includes('edm')) return '/זאנרים/EDM';
+    if (normalized.includes('נוער')) return '/קהל/מסיבות-נוער';
+    if (normalized.includes('סטודנט')) return '/קהל/מסיבות-סטודנטים';
+    if (normalized.includes('חייל')) return '/קהל/מסיבות-חיילים';
+    if (normalized.includes('שישי')) return '/מתי/שישי';
     return '/all-parties';
   };
 

@@ -57,22 +57,22 @@ const Header: React.FC = () => {
         </NavLink>
       </li>
       <li>
-        <NavLink to="/תל-אביב" onClick={onLinkClick} className={({ isActive }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
+        <NavLink to="/ערים/תל-אביב" onClick={onLinkClick} className={({ isActive }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
           ערים
         </NavLink>
       </li>
       <li>
-        <NavLink to="/טכנו" onClick={onLinkClick} className={({ isActive }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
+        <NavLink to="/זאנרים/טכנו" onClick={onLinkClick} className={({ isActive }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
           ז׳אנרים
         </NavLink>
       </li>
       <li>
-        <NavLink to="/מסיבות-נוער" onClick={onLinkClick} className={({ isActive }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
+        <NavLink to="/קהל/מסיבות-נוער" onClick={onLinkClick} className={({ isActive }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
           קהל יעד
         </NavLink>
       </li>
       <li>
-        <NavLink to="/היום" onClick={onLinkClick} className={({ isActive }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
+        <NavLink to="/מתי/היום" onClick={onLinkClick} className={({ isActive }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
           מתי
         </NavLink>
       </li>

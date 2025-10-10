@@ -11,9 +11,9 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="font-display text-xl text-white mb-4">קיצורי דרך</h3>
             <ul className="space-y-2">
-              <li><Link to="/תל-אביב/היום" className="hover:text-jungle-accent transition-colors">מסיבות בתל אביב היום</Link></li>
-              <li><Link to="/תל-אביב/טכנו" className="hover:text-jungle-accent transition-colors">טכנו בתל אביב</Link></li>
-              <li><Link to="/מסיבות-נוער" className="hover:text-jungle-accent transition-colors">מסיבות נוער</Link></li>
+              <li><Link to="/ערים/תל-אביב/היום" className="hover:text-jungle-accent transition-colors">מסיבות בתל אביב היום</Link></li>
+              <li><Link to="/ערים/תל-אביב/טכנו" className="hover:text-jungle-accent transition-colors">טכנו בתל אביב</Link></li>
+              <li><Link to="/קהל/מסיבות-נוער" className="hover:text-jungle-accent transition-colors">מסיבות נוער</Link></li>
             </ul>
           </div>
           <div>

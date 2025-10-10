@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://www.parties247.co.il/תל-אביב</loc>
+    <loc>https://www.parties247.co.il/ערים/תל-אביב</loc>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://www.parties247.co.il/ירושלים</loc>
+    <loc>https://www.parties247.co.il/ערים/ירושלים</loc>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://www.parties247.co.il/חיפה</loc>
+    <loc>https://www.parties247.co.il/ערים/חיפה</loc>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://www.parties247.co.il/אילת</loc>
+    <loc>https://www.parties247.co.il/ערים/אילת</loc>
     <changefreq>daily</changefreq>
   </url>
 </urlset>
