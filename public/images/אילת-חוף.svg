@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 360">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2b1055" />
+      <stop offset="100%" stop-color="#7597de" />
+    </linearGradient>
+  </defs>
+  <rect width="600" height="360" fill="url(#grad)" rx="28" />
+  <text
+    x="50%"
+    y="50%"
+    dominant-baseline="middle"
+    text-anchor="middle"
+    font-family="'Assistant', 'Rubik', sans-serif"
+    font-size="42"
+    fill="#ffe9a7"
+  >$name</text>
+</svg>

@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
-Sitemap: https://parties247.co.il/sitemap.xml
+Disallow: /*?page=
+Sitemap: https://www.parties247.co.il/sitemap.xml
