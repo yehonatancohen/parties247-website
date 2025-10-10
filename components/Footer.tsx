@@ -13,7 +13,7 @@ const Footer: React.FC = () => {
             <ul className="space-y-2">
               <li><Link to="/תל-אביב/היום" className="hover:text-jungle-accent transition-colors">מסיבות בתל אביב היום</Link></li>
               <li><Link to="/תל-אביב/טכנו" className="hover:text-jungle-accent transition-colors">טכנו בתל אביב</Link></li>
-              <li><Link to="/מסיבות-נוער" className="hover:text-jungle-accent transition-colors">מסיבות נוער</Link></li>
+              <li><Link to="/קהל" className="hover:text-jungle-accent transition-colors">מסיבות לפי קהל יעד</Link></li>
             </ul>
           </div>
           <div>

@@ -1,4 +1,5 @@
 import { Party, Carousel } from '../types';
+import { DEFAULT_PARTY_IMAGE } from '../constants';
 
 const API_URL = 'https://parties247-backend.onrender.com/api';
 const JWT_TOKEN_STORAGE = 'jwtAuthToken';
@@ -79,6 +80,10 @@ const mapPartyToFrontend = (backendParty: any): Party => {
   } else if (finalImageUrl) {
       // Handle full URLs, but still try to upgrade to cover image for consistency
       finalImageUrl = finalImageUrl.replace('_whatsappImage.jpg', '_coverImage.jpg');
+  }
+
+  if (!finalImageUrl) {
+    finalImageUrl = DEFAULT_PARTY_IMAGE;
   }
 
   let eventStatus: Party['eventStatus'] = backendParty.eventStatus;

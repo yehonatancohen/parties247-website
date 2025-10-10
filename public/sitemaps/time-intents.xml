@@ -24,4 +24,8 @@
     <loc>https://www.parties247.co.il/חגים/פורים</loc>
     <changefreq>yearly</changefreq>
   </url>
+  <url>
+    <loc>https://www.parties247.co.il/מתי</loc>
+    <changefreq>daily</changefreq>
+  </url>
 </urlset>

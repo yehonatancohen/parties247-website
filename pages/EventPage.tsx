@@ -7,7 +7,7 @@ import SeoManager from '../components/SeoManager';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useParties } from '../hooks/useParties';
 import { CalendarIcon, LocationIcon, LeafIcon, PartyPopperIcon, FireIcon } from '../components/Icons';
-import { BASE_URL } from '../constants';
+import { BASE_URL, DEFAULT_PARTY_IMAGE } from '../constants';
 import ShareButtons from '../components/ShareButtons';
 import RelatedPartyCard from '../components/RelatedPartyCard';
 
@@ -59,7 +59,7 @@ const EventPage: React.FC = () => {
         // list's image URL if the API response is missing one.
         const finalParty = {
           ...partyFromApi,
-          imageUrl: partyFromApi.imageUrl || partyFromList?.imageUrl || '',
+          imageUrl: partyFromApi.imageUrl || partyFromList?.imageUrl || DEFAULT_PARTY_IMAGE,
         };
 
         if (!finalParty.imageUrl) {
@@ -105,7 +105,7 @@ const EventPage: React.FC = () => {
   if (error || !party) {
     return <div className="text-center text-white text-2xl py-16">{error || 'Party could not be loaded.'}</div>;
   }
-  
+
   const relatedParties = allParties.filter(p => {
       if (p.id === party.id) return false;
       if (new Date(p.date) < new Date()) return false;
@@ -119,6 +119,8 @@ const EventPage: React.FC = () => {
   const formattedTime = new Intl.DateTimeFormat('he-IL', { timeStyle: 'short', timeZone: 'Asia/Jerusalem' }).format(partyDate);
   
   const referralUrl = getReferralUrl(party.originalUrl, party.referralCode);
+
+  const imageUrl = party.imageUrl || DEFAULT_PARTY_IMAGE;
 
   const eventJsonLd = {
     '@context': 'https://schema.org',
@@ -139,7 +141,7 @@ const EventPage: React.FC = () => {
         },
       }),
     },
-    'image': [party.imageUrl],
+    'image': [imageUrl],
     'description': party.description,
     'offers': {
       '@type': 'Offer',
@@ -191,7 +193,7 @@ const EventPage: React.FC = () => {
         title={`${party.name} | Parties 24/7`}
         description={party.description.substring(0, 160)}
         canonicalPath={`/event/${party.slug}`}
-        ogImage={party.imageUrl}
+        ogImage={imageUrl}
         ogType="article"
         jsonLd={[eventJsonLd, breadcrumbJsonLd]}
       />
@@ -199,7 +201,15 @@ const EventPage: React.FC = () => {
         <div className="max-w-5xl mx-auto bg-jungle-surface rounded-xl overflow-hidden shadow-lg border border-wood-brown/50">
             <div className="md:grid md:grid-cols-5 md:gap-8">
                 <div className="md:col-span-2">
-                    <img src={party.imageUrl} alt={party.name} className="w-full h-64 md:h-full object-cover" />
+                    <img
+                      src={imageUrl}
+                      alt={party.name}
+                      className="w-full h-64 md:h-full object-cover"
+                      loading="lazy"
+                      onError={(event) => {
+                        event.currentTarget.src = DEFAULT_PARTY_IMAGE;
+                      }}
+                    />
                 </div>
                 <div className="md:col-span-3 p-6 md:p-8">
                     <div className="flex flex-wrap gap-2 mb-4">

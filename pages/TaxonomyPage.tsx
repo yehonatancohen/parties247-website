@@ -7,7 +7,7 @@ import FaqBlock from '../components/FaqBlock';
 import PartyGrid from '../components/PartyGrid';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { filterPartiesByTaxonomy, TaxonomyConfig } from '../data/taxonomy';
-import { BASE_URL } from '../constants';
+import { BASE_URL, DEFAULT_TAXONOMY_IMAGE } from '../constants';
 
 const PAGE_SIZE = 20;
 
@@ -77,6 +77,10 @@ const TaxonomyPage: React.FC<TaxonomyPageProps> = ({ config }) => {
     ? [breadcrumbsJsonLd, itemListJsonLd, faqJsonLd]
     : [breadcrumbsJsonLd, itemListJsonLd];
 
+  const handleImageError = (event: React.SyntheticEvent<HTMLImageElement>) => {
+    event.currentTarget.src = DEFAULT_TAXONOMY_IMAGE;
+  };
+
   return (
     <div className="container mx-auto px-4">
       <SeoManager
@@ -90,9 +94,20 @@ const TaxonomyPage: React.FC<TaxonomyPageProps> = ({ config }) => {
 
       <Breadcrumbs items={config.breadcrumbs} />
 
-      <header className="space-y-4 mb-8">
-        <h1 className="font-display text-4xl md:text-5xl text-white">{config.title}</h1>
-        <p className="text-lg leading-7 text-jungle-text/90 max-w-3xl">{config.intro}</p>
+      <header className="grid md:grid-cols-[3fr_2fr] gap-8 items-center mb-8">
+        <div className="space-y-4">
+          <h1 className="font-display text-4xl md:text-5xl text-white">{config.title}</h1>
+          <p className="text-lg leading-7 text-jungle-text/90 max-w-3xl">{config.intro}</p>
+        </div>
+        <div className="rounded-3xl overflow-hidden border border-wood-brown/40 shadow-xl">
+          <img
+            src={config.ogImage || DEFAULT_TAXONOMY_IMAGE}
+            alt={config.label}
+            className="w-full h-full object-cover"
+            loading="lazy"
+            onError={handleImageError}
+          />
+        </div>
       </header>
 
       {config.type === 'city' && (

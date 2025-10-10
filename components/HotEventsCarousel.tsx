@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Party } from '../types';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
 import { useParties } from '../hooks/useParties';
+import { DEFAULT_PARTY_IMAGE } from '../constants';
 
 // --- SVG Arrow Icons ---
 const ArrowLeft: FC<{ className?: string }> = ({ className }) => (
@@ -38,6 +39,7 @@ const CarouselPartyCard: FC<{ party: Party; directUrl: string }> = React.memo(({
   const formattedDate = new Intl.DateTimeFormat('he-IL', {
     weekday: 'long', day: '2-digit', month: '2-digit',
   }).format(partyDate);
+  const imageSrc = party.imageUrl || DEFAULT_PARTY_IMAGE;
 
   return (
     <a
@@ -49,10 +51,13 @@ const CarouselPartyCard: FC<{ party: Party; directUrl: string }> = React.memo(({
     >
       <div className="relative rounded-xl overflow-hidden shadow-lg transition-all duration-500 ease-in-out border border-wood-brown/50">
         <img
-          src={party.imageUrl}
+          src={imageSrc}
           alt={party.name}
           loading="lazy"
           className="w-full aspect-[2/3] object-cover"
+          onError={(event) => {
+            event.currentTarget.src = DEFAULT_PARTY_IMAGE;
+          }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
         <div className="absolute top-3 right-3 flex flex-col gap-2 z-10">
