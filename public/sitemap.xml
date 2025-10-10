@@ -1,52 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
    <url>
-      <loc>https://parties247.co.il/</loc>
+      <loc>https://parties247.co.il/ssg/</loc>
       <priority>1.0</priority>
       <changefreq>daily</changefreq>
    </url>
    <url>
-      <loc>https://parties247.co.il/all-parties</loc>
+      <loc>https://parties247.co.il/ssg/all-parties</loc>
       <priority>0.9</priority>
       <changefreq>daily</changefreq>
    </url>
    <url>
-      <loc>https://parties247.co.il/כתבות</loc>
+      <loc>https://parties247.co.il/ssg/כתבות</loc>
       <priority>0.8</priority>
       <changefreq>weekly</changefreq>
    </url>
    <url>
-      <loc>https://parties247.co.il/about</loc>
+      <loc>https://parties247.co.il/ssg/about</loc>
       <priority>0.5</priority>
       <changefreq>monthly</changefreq>
    </url>
    <url>
-      <loc>https://parties247.co.il/terms</loc>
+      <loc>https://parties247.co.il/ssg/terms</loc>
       <priority>0.3</priority>
       <changefreq>yearly</changefreq>
    </url>
    <url>
-      <loc>https://parties247.co.il/privacy</loc>
+      <loc>https://parties247.co.il/ssg/privacy</loc>
       <priority>0.3</priority>
       <changefreq>yearly</changefreq>
    </url>
    <url>
-      <loc>https://parties247.co.il/accessibility</loc>
+      <loc>https://parties247.co.il/ssg/accessibility</loc>
       <priority>0.3</priority>
       <changefreq>yearly</changefreq>
    </url>
    <url>
-      <loc>https://parties247.co.il/כתבות/top-5-underground-techno-clubs-tel-aviv</loc>
+      <loc>https://parties247.co.il/ssg/כתבות/top-5-underground-techno-clubs-tel-aviv</loc>
       <priority>0.7</priority>
       <changefreq>monthly</changefreq>
    </url>
    <url>
-      <loc>https://parties247.co.il/כתבות/psytrance-nature-party-beginners-guide</loc>
+      <loc>https://parties247.co.il/ssg/כתבות/psytrance-nature-party-beginners-guide</loc>
       <priority>0.7</priority>
       <changefreq>monthly</changefreq>
    </url>
    <url>
-      <loc>https://parties247.co.il/כתבות/rise-of-mainstream-israeli-pop</loc>
+      <loc>https://parties247.co.il/ssg/כתבות/rise-of-mainstream-israeli-pop</loc>
       <priority>0.7</priority>
       <changefreq>monthly</changefreq>
    </url>

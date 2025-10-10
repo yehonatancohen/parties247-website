@@ -158,7 +158,7 @@ const EventPage: React.FC = () => {
         '@type': 'ListItem',
         'position': 1,
         'name': 'כל המסיבות',
-        'item': `${BASE_URL}/#/all-parties`
+        'item': `${BASE_URL}/all-parties`
       },{
         '@type': 'ListItem',
         'position': 2,

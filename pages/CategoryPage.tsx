@@ -52,7 +52,7 @@ const CategoryPage: React.FC = () => {
       '@type': 'ListItem',
       'position': 1,
       'name': 'עמוד הבית',
-      'item': `${BASE_URL}/#/`
+      'item': `${BASE_URL}/`
     },{
       '@type': 'ListItem',
       'position': 2,

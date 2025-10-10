@@ -66,12 +66,12 @@ const AllPartiesPage: React.FC = () => {
         '@type': 'ListItem',
         'position': 1,
         'name': 'עמוד הבית',
-        'item': `${BASE_URL}/#/`
+        'item': `${BASE_URL}/`
       },{
         '@type': 'ListItem',
         'position': 2,
         'name': 'כל המסיבות',
-        'item': `${BASE_URL}/#/all-parties`
+        'item': `${BASE_URL}/all-parties`
       }]
   };
   

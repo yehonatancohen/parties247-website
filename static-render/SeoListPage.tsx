@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Party } from '../types';
 
@@ -14,7 +15,7 @@ const SeoListPage: React.FC<SeoListPageProps> = ({ title, description, canonical
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     'itemListElement': [
-        { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://parties247-website.vercel.app/ssg/'},
+        { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://parties247.co.il/ssg/'},
         { '@type': 'ListItem', 'position': 2, 'name': title }
     ]
   };
@@ -26,7 +27,7 @@ const SeoListPage: React.FC<SeoListPageProps> = ({ title, description, canonical
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>{`${title} | Parties 24/7`}</title>
         <meta name="description" content={description} />
-        <link rel="canonical" href={`https://parties247-website.vercel.app/ssg${canonicalPath}`} />
+        <link rel="canonical" href={`https://parties247.co.il/ssg${canonicalPath}`} />
         <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd)}</script>
         <style>{`
           body { font-family: sans-serif; line-height: 1.6; padding: 1rem; background: #0a1a1a; color: #e0f0e3; }
@@ -48,7 +49,7 @@ const SeoListPage: React.FC<SeoListPageProps> = ({ title, description, canonical
             <ul>
               {parties.map(party => (
                 <li key={party.id}>
-                  <a href={`https://parties247-website.vercel.app/ssg/event/${party.slug}`}>
+                  <a href={`https://parties247.co.il/ssg/event/${party.slug}`}>
                     <h3>{party.name}</h3>
                   </a>
                   <p>{party.location.name} - {new Date(party.date).toLocaleDateString('he-IL')}</p>
@@ -58,7 +59,7 @@ const SeoListPage: React.FC<SeoListPageProps> = ({ title, description, canonical
           </main>
            <footer>
             <p>
-              זוהי גרסה סטטית של העמוד. <a href={`https://parties247-website.vercel.app/#${canonicalPath.replace('/city', '/all-parties?city=')}`}>לחוויה המלאה, בקרו באתר שלנו</a>.
+              זוהי גרסה סטטית של העמוד. <a href={`https://parties247.co.il${canonicalPath}`}>לחוויה המלאה, בקרו באתר שלנו</a>.
             </p>
           </footer>
         </div>

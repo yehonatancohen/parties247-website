@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Party } from '../types';
 
@@ -33,7 +34,7 @@ const SeoEventPage: React.FC<SeoEventPageProps> = ({ party }) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>{`${party.name} | Parties 24/7`}</title>
         <meta name="description" content={party.description.substring(0, 160)} />
-        <link rel="canonical" href={`https://parties247-website.vercel.app/ssg/event/${party.slug}`} />
+        <link rel="canonical" href={`https://parties247.co.il/ssg/event/${party.slug}`} />
         <script type="application/ld+json">{JSON.stringify(eventJsonLd)}</script>
         <style>{`
           body { font-family: sans-serif; line-height: 1.6; padding: 1rem; background: #0a1a1a; color: #e0f0e3; }
@@ -58,7 +59,7 @@ const SeoEventPage: React.FC<SeoEventPageProps> = ({ party }) => {
           </main>
           <footer>
             <p>
-              זוהי גרסה סטטית של העמוד. <a href={`https://parties247-website.vercel.app/#/event/${party.slug}`}>לחוויה המלאה, בקרו באתר שלנו</a>.
+              זוהי גרסה סטטית של העמוד. <a href={`https://parties247.co.il/event/${party.slug}`}>לחוויה המלאה, בקרו באתר שלנו</a>.
             </p>
           </footer>
         </div>

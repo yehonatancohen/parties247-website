@@ -25,7 +25,7 @@ const ArticlePage: React.FC = () => {
       '@type': 'ListItem',
       'position': 1,
       'name': 'מגזין',
-      'item': `${BASE_URL}/#/כתבות`
+      'item': `${BASE_URL}/כתבות`
     },{
       '@type': 'ListItem',
       'position': 2,

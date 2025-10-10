@@ -83,8 +83,8 @@ const SEO: React.FC<SEOProps> = ({
     setLink('alternate', `${STATIC_MIRROR_URL}/he${canonicalPath.startsWith('/') ? '' : '/'}${canonicalPath}`, 'hreflang', 'x-default');
 
     // Pagination Links
-    if(prevPagePath) setLink('prev', `${BASE_URL}/#${prevPagePath}`);
-    if(nextPagePath) setLink('next', `${BASE_URL}/#${nextPagePath}`);
+    if(prevPagePath) setLink('prev', `${BASE_URL}${prevPagePath}`);
+    if(nextPagePath) setLink('next', `${BASE_URL}${nextPagePath}`);
 
     // Feed Links
     if (feedLinks) {
