@@ -27,6 +27,16 @@ const TaxonomyPage: React.FC<TaxonomyPageProps> = ({ config }) => {
 
   const filteredParties = useMemo(() => filterPartiesByTaxonomy(parties, config), [parties, config]);
 
+  const backLink = useMemo(() => {
+    const crumbsWithPath = config.breadcrumbs.filter(
+      (crumb): crumb is { label: string; path: string } => Boolean(crumb.path),
+    );
+    if (!crumbsWithPath.length) {
+      return null;
+    }
+    return crumbsWithPath[crumbsWithPath.length - 1];
+  }, [config.breadcrumbs]);
+
   const paginatedParties = useMemo(() => {
     const start = (pageNumber - 1) * PAGE_SIZE;
     return filteredParties.slice(start, start + PAGE_SIZE);
@@ -91,6 +101,16 @@ const TaxonomyPage: React.FC<TaxonomyPageProps> = ({ config }) => {
       <Breadcrumbs items={config.breadcrumbs} />
 
       <header className="space-y-4 mb-8">
+        {backLink ? (
+          <Link
+            to={backLink.path}
+            className="inline-flex items-center gap-2 text-jungle-accent hover:text-white transition"
+            aria-label={`חזרה ל${backLink.label}`}
+          >
+            <span aria-hidden="true">&larr;</span>
+            <span>חזרה ל{backLink.label}</span>
+          </Link>
+        ) : null}
         <h1 className="font-display text-4xl md:text-5xl text-white">{config.title}</h1>
         <p className="text-lg leading-7 text-jungle-text/90 max-w-3xl">{config.intro}</p>
       </header>

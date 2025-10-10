@@ -66,7 +66,7 @@ export const cities: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'ערים' },
+      { label: 'ערים', path: '/ערים' },
       { label: 'תל אביב' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=1200&q=80',
@@ -100,7 +100,7 @@ export const cities: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'ערים' },
+      { label: 'ערים', path: '/ערים' },
       { label: 'ירושלים' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1544984243-ec57ea16fe25?auto=format&fit=crop&w=1200&q=80',
@@ -133,7 +133,7 @@ export const cities: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'ערים' },
+      { label: 'ערים', path: '/ערים' },
       { label: 'חיפה' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80',
@@ -166,7 +166,7 @@ export const cities: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'ערים' },
+      { label: 'ערים', path: '/ערים' },
       { label: 'אילת' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&w=1200&q=80',
@@ -203,7 +203,7 @@ export const genres: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'ז׳אנרים' },
+      { label: 'ז׳אנרים', path: '/זאנרים' },
       { label: 'טכנו' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1464375117522-1311d6a5b81e?auto=format&fit=crop&w=1200&q=80',
@@ -235,7 +235,7 @@ export const genres: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'ז׳אנרים' },
+      { label: 'ז׳אנרים', path: '/זאנרים' },
       { label: 'היפ הופ' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1518972559570-7cc1309f3229?auto=format&fit=crop&w=1200&q=80',
@@ -267,7 +267,7 @@ export const genres: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'ז׳אנרים' },
+      { label: 'ז׳אנרים', path: '/זאנרים' },
       { label: 'EDM' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80',
@@ -299,7 +299,7 @@ export const genres: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'ז׳אנרים' },
+      { label: 'ז׳אנרים', path: '/זאנרים' },
       { label: 'טראנס' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1200&q=80',
@@ -334,7 +334,7 @@ export const audiences: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'קהל יעד' },
+      { label: 'קהל יעד', path: '/קהל' },
       { label: 'מסיבות נוער' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80',
@@ -366,7 +366,7 @@ export const audiences: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'קהל יעד' },
+      { label: 'קהל יעד', path: '/קהל' },
       { label: 'מסיבות סטודנטים' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1532634896-26909d0d4b86?auto=format&fit=crop&w=1200&q=80',
@@ -398,7 +398,7 @@ export const audiences: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'קהל יעד' },
+      { label: 'קהל יעד', path: '/קהל' },
       { label: 'מסיבות חיילים' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80',
@@ -430,7 +430,7 @@ export const audiences: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'קהל יעד' },
+      { label: 'קהל יעד', path: '/קהל' },
       { label: 'מסיבות להט"ב' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1529158062015-cad636e69505?auto=format&fit=crop&w=1200&q=80',
@@ -465,7 +465,7 @@ export const timeIntents: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'מתי' },
+      { label: 'מתי', path: '/מתי' },
       { label: 'היום' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1449793077955-0c55b4f90291?auto=format&fit=crop&w=1200&q=80',
@@ -497,7 +497,7 @@ export const timeIntents: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'מתי' },
+      { label: 'מתי', path: '/מתי' },
       { label: 'מחר' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=1200&q=80',
@@ -529,7 +529,7 @@ export const timeIntents: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'מתי' },
+      { label: 'מתי', path: '/מתי' },
       { label: 'השבוע' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1475727993574-db0e2dd5683c?auto=format&fit=crop&w=1200&q=80',
@@ -561,7 +561,7 @@ export const timeIntents: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'מתי' },
+      { label: 'מתי', path: '/מתי' },
       { label: 'שישי' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1464374277361-22192c8e5125?auto=format&fit=crop&w=1200&q=80',
@@ -596,7 +596,7 @@ export const holidayIntents: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'מתי' },
+      { label: 'מתי', path: '/מתי' },
       { label: 'חגים' },
       { label: 'סוכות' },
     ],
@@ -629,7 +629,7 @@ export const holidayIntents: TaxonomyConfig[] = [
     ],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'מתי' },
+      { label: 'מתי', path: '/מתי' },
       { label: 'חגים' },
       { label: 'פורים' },
     ],
@@ -689,7 +689,7 @@ export const taxonomyListingConfigs: TaxonomyListingConfig[] = [
       'בחרו את העיר שמעניינת אתכם כדי לראות את הליינים הקבועים, אירועי סוף השבוע וההפקות המיוחדות שמתעדכנות מדי יום.',
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'ערים' },
+      { label: 'ערים', path: '/ערים' },
     ],
     sections: [
       {
@@ -707,7 +707,7 @@ export const taxonomyListingConfigs: TaxonomyListingConfig[] = [
       'סננו את המסיבות על פי סגנון המוזיקה שאתם אוהבים וגלו את הליינים הקבועים, הפסטיבלים והמסיבות החד-פעמיות של כל ז׳אנר.',
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'ז׳אנרים' },
+      { label: 'ז׳אנרים', path: '/זאנרים' },
     ],
     sections: [
       {
@@ -725,7 +725,7 @@ export const taxonomyListingConfigs: TaxonomyListingConfig[] = [
       'כל קהל מחפש חוויה אחרת – ריכזנו עבורכם מסיבות לפי גיל, תחומי עניין ואווירה כדי שתמצאו את מה שמתאים בדיוק לכם.',
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'קהל יעד' },
+      { label: 'קהל יעד', path: '/קהל' },
     ],
     sections: [
       {
@@ -743,7 +743,7 @@ export const taxonomyListingConfigs: TaxonomyListingConfig[] = [
       'מתכננים יציאה ספונטנית או רוצים לדעת מה מחכה לכם בסופ״ש ובחגים? כאן תמצאו את כל המסיבות לפי חלונות זמן שונים.',
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'מתי' },
+      { label: 'מתי', path: '/מתי' },
     ],
     sections: [
       {
@@ -794,7 +794,7 @@ export const cityGenreCombos: TaxonomyConfig[] = (() => {
         ],
         breadcrumbs: [
           { label: 'בית', path: '/' },
-          { label: 'ערים' },
+          { label: 'ערים', path: '/ערים' },
           { label: city.label, path: city.path },
           { label: genre.label },
         ],
@@ -829,7 +829,7 @@ export const cityAudienceCombos: TaxonomyConfig[] = (() => {
         ],
         breadcrumbs: [
           { label: 'בית', path: '/' },
-          { label: 'ערים' },
+          { label: 'ערים', path: '/ערים' },
           { label: city.label, path: city.path },
           { label: audience.label },
         ],
@@ -861,7 +861,7 @@ export const cityTimeCombos: TaxonomyConfig[] = (() => {
         ],
         breadcrumbs: [
           { label: 'בית', path: '/' },
-          { label: 'ערים' },
+          { label: 'ערים', path: '/ערים' },
           { label: city.label, path: city.path },
           { label: timeIntent.label },
         ],
