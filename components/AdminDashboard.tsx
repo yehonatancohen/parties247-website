@@ -4,7 +4,7 @@ import { useParties } from '../hooks/useParties';
 import { Party, Carousel } from '../types';
 import LoadingSpinner from './LoadingSpinner';
 import { BASE_URL } from '../constants';
-import { SearchIcon, EditIcon, ChevronDownIcon, ArrowUpIcon, ArrowDownIcon, MegaphoneIcon } from './Icons';
+import { SearchIcon, EditIcon, ChevronDownIcon, ArrowUpIcon, ArrowDownIcon, MegaphoneIcon, ShareIcon } from './Icons';
 
 const TagInput: React.FC<{ tags: string[]; onTagsChange: (tags: string[]) => void }> = ({ tags, onTagsChange }) => {
   const [inputValue, setInputValue] = useState('');
@@ -128,7 +128,7 @@ const EditPartyModal: React.FC<{ party: Party; onClose: () => void; onSave: (upd
 
 type PromotionMessage = {
   type: 'success' | 'error' | 'info';
-  message: string;
+  message: React.ReactNode;
 };
 
 const AdminDashboard: React.FC = () => {
@@ -155,7 +155,6 @@ const AdminDashboard: React.FC = () => {
   const [partySort, setPartySort] = useState<{key: 'date' | 'name', direction: 'asc' | 'desc'}>({ key: 'date', direction: 'asc' });
 
   const [promotionMessages, setPromotionMessages] = useState<Record<string, PromotionMessage>>({});
-  const [promotingParties, setPromotingParties] = useState<Record<string, boolean>>({});
 
   const [editingCarouselId, setEditingCarouselId] = useState<string | null>(null);
   const [editingCarouselTitle, setEditingCarouselTitle] = useState('');
@@ -406,104 +405,64 @@ const AdminDashboard: React.FC = () => {
     }
   }, []);
 
-  const handlePromoteParty = useCallback(async (party: Party) => {
-    if (typeof window === 'undefined' || typeof document === 'undefined') {
-      setPromotionMessages(prev => ({
-        ...prev,
-        [party.id]: {
-          type: 'error',
-          message: 'ניתן לקדם אירועים רק מתוך הדפדפן.',
-        },
-      }));
-      return;
-    }
-
-    setPromotingParties(prev => ({ ...prev, [party.id]: true }));
-    setPromotionMessages(prev => ({
-      ...prev,
-      [party.id]: {
-        type: 'info',
-        message: 'מכינים את קבצי הפרסום...',
-      },
-    }));
-
+  const handlePromoteParty = useCallback((party: Party) => {
     try {
-      const partyUrl = `${BASE_URL}/event/${party.slug}`;
-      const copied = await copyToClipboard(partyUrl);
-
-      if (!copied) {
-        throw new Error('לא הצלחנו להעתיק את קישור האירוע ללוח.');
-      }
-
       const highQualityUrl = getHighQualityImageUrl(party.imageUrl);
-
-      try {
-        const response = await fetch(highQualityUrl, { mode: 'cors' });
-        if (!response.ok) {
-          throw new Error(`Failed to fetch image: ${response.status}`);
-        }
-
-        const blob = await response.blob();
-        const objectUrl = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-
-        const contentType = response.headers.get('content-type') ?? '';
-        const extensionFromType = contentType.split('/')[1]?.split(';')[0];
-        const urlExtensionMatch = highQualityUrl.split('.').pop();
-        let extension = 'jpg';
-
-        if (extensionFromType) {
-          extension = extensionFromType;
-        } else if (urlExtensionMatch && urlExtensionMatch.length <= 5) {
-          extension = urlExtensionMatch;
-        }
-
-        link.href = objectUrl;
-        link.download = `${party.slug || party.id}-promo.${extension.replace(/[^a-z0-9]/gi, '') || 'jpg'}`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(objectUrl);
-      } catch (downloadError) {
-        console.error('Failed to automatically download image, opening fallback tab.', downloadError);
-        const fallbackLink = document.createElement('a');
-        fallbackLink.href = highQualityUrl;
-        fallbackLink.target = '_blank';
-        fallbackLink.rel = 'noopener';
-        document.body.appendChild(fallbackLink);
-        fallbackLink.click();
-        document.body.removeChild(fallbackLink);
-        setPromotionMessages(prev => ({
-          ...prev,
-          [party.id]: {
-            type: 'info',
-            message: 'הקישור הועתק. פתחנו את התמונה בלשונית חדשה לשמירה ידנית.',
-          },
-        }));
-        return;
-      }
 
       setPromotionMessages(prev => ({
         ...prev,
         [party.id]: {
           type: 'success',
-          message: 'הקישור הועתק והתמונה נשמרה בהצלחה! 🎉',
+          message: (
+            <span>
+              התמונה מוכנה:&nbsp;
+              <a
+                href={highQualityUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline text-jungle-accent hover:text-jungle-accent/80"
+              >
+                לפתיחת התמונה בלשונית חדשה
+              </a>
+            </span>
+          ),
         },
       }));
     } catch (error) {
-      console.error('Error promoting party', error);
-      const errorMessage = error instanceof Error ? error.message : 'אירעה תקלה לא צפויה.';
+      console.error('Error preparing promo image link', error);
       setPromotionMessages(prev => ({
         ...prev,
         [party.id]: {
           type: 'error',
-          message: errorMessage,
+          message: 'לא הצלחנו להכין את קישור התמונה.',
         },
       }));
-    } finally {
-      setPromotingParties(prev => ({ ...prev, [party.id]: false }));
     }
-  }, [copyToClipboard, getHighQualityImageUrl]);
+  }, [getHighQualityImageUrl]);
+
+  const handleCopyPartyLink = useCallback(async (party: Party) => {
+    const partyUrl = `${BASE_URL}/event/${party.slug}`;
+
+    const copied = await copyToClipboard(partyUrl);
+
+    if (copied) {
+      setPromotionMessages(prev => ({
+        ...prev,
+        [party.id]: {
+          type: 'success',
+          message: 'קישור האירוע הועתק ללוח! 📋',
+        },
+      }));
+    } else {
+      setPromotionMessages(prev => ({
+        ...prev,
+        [party.id]: {
+          type: 'error',
+          message: 'לא הצלחנו להעתיק את קישור האירוע.',
+        },
+      }));
+    }
+  }, [copyToClipboard]);
 
   // FIX: Explicitly type PartyListItem as React.FC to correctly handle props like 'key' and resolve assignment errors.
   const PartyListItem: React.FC<{ party: Party }> = ({ party }) => (
@@ -527,10 +486,15 @@ const AdminDashboard: React.FC = () => {
         <div className="flex flex-col sm:flex-row gap-1.5 flex-shrink-0">
             <button
               onClick={() => handlePromoteParty(party)}
-              className="bg-jungle-accent text-jungle-deep px-3 py-1 rounded-md hover:bg-opacity-80 transition-colors text-sm flex items-center gap-1.5 disabled:bg-gray-600 disabled:text-gray-300"
-              disabled={!!promotingParties[party.id]}
+              className="bg-jungle-accent text-jungle-deep px-3 py-1 rounded-md hover:bg-opacity-80 transition-colors text-sm flex items-center gap-1.5"
             >
-              {promotingParties[party.id] ? 'מכינים...' : (<><MegaphoneIcon className="w-4 h-4" /> קדם</>)}
+              <MegaphoneIcon className="w-4 h-4" /> פתיחת תמונה
+            </button>
+            <button
+              onClick={() => handleCopyPartyLink(party)}
+              className="bg-jungle-surface text-jungle-accent border border-jungle-accent px-3 py-1 rounded-md hover:bg-jungle-accent/10 transition-colors text-sm flex items-center gap-1.5"
+            >
+              <ShareIcon className="w-4 h-4" /> העתק קישור
             </button>
             <button onClick={() => setEditingParty(party)} className="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700 transition-colors text-sm flex items-center gap-1.5">
               <EditIcon className="w-4 h-4"/> Edit
