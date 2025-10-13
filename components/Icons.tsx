@@ -96,6 +96,12 @@ export const EditIcon: React.FC<IconProps> = ({ className }) => (
     </svg>
 );
 
+export const MegaphoneIcon: React.FC<IconProps> = ({ className }) => (
+  <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 15.75v1.5a2.25 2.25 0 11-4.5 0v-1.372m4.5-.128l8.954 3.522a1.125 1.125 0 001.546-1.039V6.467a1.125 1.125 0 00-1.546-1.039L8.25 9m0 6V9m0 6h-.008a2.25 2.25 0 01-2.242-2.244L6 9.032A2.25 2.25 0 018.25 6.75H9" />
+  </svg>
+);
+
 export const ChevronDownIcon: React.FC<IconProps> = ({ className }) => (
   <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
