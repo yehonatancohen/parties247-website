@@ -406,6 +406,55 @@ const AdminDashboard: React.FC = () => {
     }
   }, []);
 
+  const saveImageToDevice = useCallback(
+    async (blob: Blob, filename: string, shareTitle: string) => {
+      if (typeof window === 'undefined' || typeof document === 'undefined') {
+        return { success: false as const };
+      }
+
+      const mimeType = blob.type || 'image/jpeg';
+      const safeFilename = filename.replace(/[^a-z0-9_.-]/gi, '') || `party247-promo-${Date.now()}.jpg`;
+
+      if (typeof navigator !== 'undefined') {
+        try {
+          const enhancedNavigator = navigator as Navigator & {
+            canShare?: (data?: ShareData) => boolean;
+            share?: (data?: ShareData) => Promise<void>;
+          };
+          const fileToShare = new File([blob], safeFilename, { type: mimeType });
+          if (typeof enhancedNavigator.canShare === 'function' && enhancedNavigator.canShare({ files: [fileToShare] }) && typeof enhancedNavigator.share === 'function') {
+            await enhancedNavigator.share({ files: [fileToShare], title: shareTitle });
+            return { success: true as const, method: 'share' as const };
+          }
+        } catch (shareError) {
+          if (shareError instanceof DOMException && shareError.name === 'AbortError') {
+            return { success: false as const, cancelled: true as const };
+          }
+          console.warn('Sharing image failed, falling back to download.', shareError);
+        }
+      }
+
+      try {
+        const objectUrl = URL.createObjectURL(blob);
+        try {
+          const link = document.createElement('a');
+          link.href = objectUrl;
+          link.download = safeFilename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        } finally {
+          URL.revokeObjectURL(objectUrl);
+        }
+        return { success: true as const, method: 'download' as const };
+      } catch (downloadError) {
+        console.error('Saving image via download failed.', downloadError);
+        return { success: false as const };
+      }
+    },
+    [],
+  );
+
   const handlePromoteParty = useCallback(async (party: Party) => {
     if (typeof window === 'undefined' || typeof document === 'undefined') {
       setPromotionMessages(prev => ({
@@ -437,50 +486,48 @@ const AdminDashboard: React.FC = () => {
 
       const highQualityUrl = getHighQualityImageUrl(party.imageUrl);
 
-      try {
-        const response = await fetch(highQualityUrl, { mode: 'cors' });
-        if (!response.ok) {
-          throw new Error(`Failed to fetch image: ${response.status}`);
-        }
+      const response = await fetch(highQualityUrl, { mode: 'cors' });
+      if (!response.ok) {
+        throw new Error(`Failed to fetch image: ${response.status}`);
+      }
 
-        const blob = await response.blob();
-        const objectUrl = URL.createObjectURL(blob);
-        const link = document.createElement('a');
+      const blob = await response.blob();
 
-        const contentType = response.headers.get('content-type') ?? '';
-        const extensionFromType = contentType.split('/')[1]?.split(';')[0];
-        const urlExtensionMatch = highQualityUrl.split('.').pop();
-        let extension = 'jpg';
+      const contentType = response.headers.get('content-type') ?? '';
+      const extensionFromType = contentType.split('/')[1]?.split(';')[0];
+      const urlExtensionMatch = highQualityUrl.split('.').pop();
+      let extension = 'jpg';
 
-        if (extensionFromType) {
-          extension = extensionFromType;
-        } else if (urlExtensionMatch && urlExtensionMatch.length <= 5) {
-          extension = urlExtensionMatch;
-        }
+      if (extensionFromType) {
+        extension = extensionFromType;
+      } else if (urlExtensionMatch && urlExtensionMatch.length <= 5) {
+        extension = urlExtensionMatch;
+      }
 
-        link.href = objectUrl;
-        link.download = `${party.slug || party.id}-promo.${extension.replace(/[^a-z0-9]/gi, '') || 'jpg'}`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(objectUrl);
-      } catch (downloadError) {
-        console.error('Failed to automatically download image, opening fallback tab.', downloadError);
-        const fallbackLink = document.createElement('a');
-        fallbackLink.href = highQualityUrl;
-        fallbackLink.target = '_blank';
-        fallbackLink.rel = 'noopener';
-        document.body.appendChild(fallbackLink);
-        fallbackLink.click();
-        document.body.removeChild(fallbackLink);
+      const sanitizedExtension = extension
+        .toLowerCase()
+        .split(/[?#]/)[0]
+        .replace(/[^a-z0-9]/g, '') || 'jpg';
+
+      const saveResult = await saveImageToDevice(
+        blob,
+        `${party.slug || party.id}-promo.${sanitizedExtension}`,
+        party.name,
+      );
+
+      if ('cancelled' in saveResult && saveResult.cancelled) {
         setPromotionMessages(prev => ({
           ...prev,
           [party.id]: {
             type: 'info',
-            message: 'הקישור הועתק. פתחנו את התמונה בלשונית חדשה לשמירה ידנית.',
+            message: 'שמירת התמונה בוטלה. אפשר לנסות שוב בכל רגע.',
           },
         }));
         return;
+      }
+
+      if (!saveResult.success) {
+        throw new Error('לא הצלחנו לשמור את התמונה באופן אוטומטי. אפשר לנסות שוב.');
       }
 
       setPromotionMessages(prev => ({
@@ -503,7 +550,7 @@ const AdminDashboard: React.FC = () => {
     } finally {
       setPromotingParties(prev => ({ ...prev, [party.id]: false }));
     }
-  }, [copyToClipboard, getHighQualityImageUrl]);
+  }, [copyToClipboard, getHighQualityImageUrl, saveImageToDevice]);
 
   // FIX: Explicitly type PartyListItem as React.FC to correctly handle props like 'key' and resolve assignment errors.
   const PartyListItem: React.FC<{ party: Party }> = ({ party }) => (
