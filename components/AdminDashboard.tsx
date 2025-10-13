@@ -406,6 +406,36 @@ const AdminDashboard: React.FC = () => {
     }
   }, []);
 
+  const fetchPromotionImage = useCallback(async (imageUrl: string): Promise<Blob> => {
+    const attemptFetch = async (targetUrl: string) => {
+      const response = await fetch(targetUrl, { mode: 'cors' });
+      if (!response.ok) {
+        throw new Error(`Image responded with status ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      if (!blob || blob.size === 0) {
+        throw new Error('Image response was empty');
+      }
+
+      return blob;
+    };
+
+    try {
+      return await attemptFetch(imageUrl);
+    } catch (directError) {
+      console.warn('Direct image fetch failed, trying proxy.', directError);
+      const proxiedUrl = `https://corsproxy.io/?${encodeURIComponent(imageUrl)}`;
+
+      try {
+        return await attemptFetch(proxiedUrl);
+      } catch (proxyError) {
+        console.error('Proxy image fetch failed.', proxyError);
+        throw new Error('לא הצלחנו להוריד את התמונה מהשרת. ניתן לנסות שוב בעוד מספר דקות.');
+      }
+    }
+  }, []);
+
   const saveImageToDevice = useCallback(
     async (blob: Blob, filename: string, shareTitle: string) => {
       if (typeof window === 'undefined' || typeof document === 'undefined') {
@@ -559,12 +589,7 @@ const AdminDashboard: React.FC = () => {
 
       const highQualityUrl = getHighQualityImageUrl(party.imageUrl);
 
-      const response = await fetch(highQualityUrl, { mode: 'cors' });
-      if (!response.ok) {
-        throw new Error(`Failed to fetch image: ${response.status}`);
-      }
-
-      const blob = await response.blob();
+      const blob = await fetchPromotionImage(highQualityUrl);
 
       const saveResult = await saveImageToDevice(
         blob,
@@ -607,7 +632,7 @@ const AdminDashboard: React.FC = () => {
     } finally {
       setPromotingParties(prev => ({ ...prev, [party.id]: false }));
     }
-  }, [copyToClipboard, getHighQualityImageUrl, saveImageToDevice]);
+  }, [copyToClipboard, fetchPromotionImage, getHighQualityImageUrl, saveImageToDevice]);
 
   // FIX: Explicitly type PartyListItem as React.FC to correctly handle props like 'key' and resolve assignment errors.
   const PartyListItem: React.FC<{ party: Party }> = ({ party }) => (
