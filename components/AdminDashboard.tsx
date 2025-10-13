@@ -412,8 +412,81 @@ const AdminDashboard: React.FC = () => {
         return { success: false as const };
       }
 
-      const mimeType = blob.type || 'image/jpeg';
-      const safeFilename = filename.replace(/[^a-z0-9_.-]/gi, '') || `party247-promo-${Date.now()}.jpg`;
+      const sanitizeBaseName = (name: string) => {
+        const baseWithoutExtension = name.replace(/\.[^/.]+$/, '');
+        const sanitizedBase = baseWithoutExtension.replace(/[^a-z0-9_-]/gi, '');
+        return sanitizedBase || `party247-promo-${Date.now()}`;
+      };
+
+      type ConversionResult = { blob: Blob; mimeType: string; extension: string; converted: boolean };
+
+      const ensureShareableFormat = async (sourceBlob: Blob): Promise<ConversionResult> => {
+        const originalType = sourceBlob.type?.toLowerCase() || '';
+        const needsConversion = !originalType || /image\/(webp|avif|heic|heif|gif|svg\+xml)/.test(originalType);
+
+        if (!needsConversion) {
+          const extension = originalType.split('/')[1]?.split(';')[0]?.replace(/[^a-z0-9]/gi, '') || 'jpg';
+          return { blob: sourceBlob, mimeType: originalType, extension, converted: false };
+        }
+
+        const objectUrl = URL.createObjectURL(sourceBlob);
+        try {
+          const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = () => reject(new Error('Failed to load image for conversion'));
+            img.src = objectUrl;
+          });
+
+          const canvas = document.createElement('canvas');
+          canvas.width = image.naturalWidth || image.width;
+          canvas.height = image.naturalHeight || image.height;
+          const context = canvas.getContext('2d');
+
+          if (!context) {
+            throw new Error('Canvas 2D context not available');
+          }
+
+          context.drawImage(image, 0, 0);
+
+          const jpegBlob = await new Promise<Blob>((resolve, reject) => {
+            if (!canvas.toBlob) {
+              try {
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+                const byteString = atob(dataUrl.split(',')[1]);
+                const arrayBuffer = new Uint8Array(byteString.length);
+                for (let i = 0; i < byteString.length; i += 1) {
+                  arrayBuffer[i] = byteString.charCodeAt(i);
+                }
+                resolve(new Blob([arrayBuffer], { type: 'image/jpeg' }));
+              } catch (error) {
+                reject(error);
+              }
+              return;
+            }
+
+            canvas.toBlob((result) => {
+              if (result) {
+                resolve(result);
+              } else {
+                reject(new Error('Canvas conversion to blob failed'));
+              }
+            }, 'image/jpeg', 0.95);
+          });
+
+          return { blob: jpegBlob, mimeType: 'image/jpeg', extension: 'jpg', converted: true };
+        } catch (conversionError) {
+          console.warn('Unable to convert image to JPEG, continuing with original format.', conversionError);
+          const fallbackExtension = originalType.split('/')[1]?.split(';')[0]?.replace(/[^a-z0-9]/gi, '') || 'img';
+          return { blob: sourceBlob, mimeType: originalType || 'application/octet-stream', extension: fallbackExtension, converted: false };
+        } finally {
+          URL.revokeObjectURL(objectUrl);
+        }
+      };
+
+      const { blob: shareableBlob, mimeType, extension } = await ensureShareableFormat(blob);
+      const baseName = sanitizeBaseName(filename);
+      const finalFilename = `${baseName}.${extension || 'jpg'}`;
 
       if (typeof navigator !== 'undefined') {
         try {
@@ -421,7 +494,7 @@ const AdminDashboard: React.FC = () => {
             canShare?: (data?: ShareData) => boolean;
             share?: (data?: ShareData) => Promise<void>;
           };
-          const fileToShare = new File([blob], safeFilename, { type: mimeType });
+          const fileToShare = new File([shareableBlob], finalFilename, { type: mimeType || 'image/jpeg' });
           if (typeof enhancedNavigator.canShare === 'function' && enhancedNavigator.canShare({ files: [fileToShare] }) && typeof enhancedNavigator.share === 'function') {
             await enhancedNavigator.share({ files: [fileToShare], title: shareTitle });
             return { success: true as const, method: 'share' as const };
@@ -435,11 +508,11 @@ const AdminDashboard: React.FC = () => {
       }
 
       try {
-        const objectUrl = URL.createObjectURL(blob);
+        const objectUrl = URL.createObjectURL(shareableBlob);
         try {
           const link = document.createElement('a');
           link.href = objectUrl;
-          link.download = safeFilename;
+          link.download = finalFilename;
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
@@ -493,25 +566,9 @@ const AdminDashboard: React.FC = () => {
 
       const blob = await response.blob();
 
-      const contentType = response.headers.get('content-type') ?? '';
-      const extensionFromType = contentType.split('/')[1]?.split(';')[0];
-      const urlExtensionMatch = highQualityUrl.split('.').pop();
-      let extension = 'jpg';
-
-      if (extensionFromType) {
-        extension = extensionFromType;
-      } else if (urlExtensionMatch && urlExtensionMatch.length <= 5) {
-        extension = urlExtensionMatch;
-      }
-
-      const sanitizedExtension = extension
-        .toLowerCase()
-        .split(/[?#]/)[0]
-        .replace(/[^a-z0-9]/g, '') || 'jpg';
-
       const saveResult = await saveImageToDevice(
         blob,
-        `${party.slug || party.id}-promo.${sanitizedExtension}`,
+        `${party.slug || party.id}-promo`,
         party.name,
       );
 
