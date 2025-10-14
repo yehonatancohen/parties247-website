@@ -6,6 +6,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import PartyCarousel from '../components/HotEventsCarousel';
 import SocialsCta from '../components/SocialsCta';
 import { BASE_URL, SOCIAL_LINKS } from '../constants';
+import { createCarouselSlug } from '../lib/carousels';
 
 const HomePage: React.FC = () => {
   const { parties, carousels, isLoading, error, loadingMessage } = useParties();
@@ -59,27 +60,13 @@ const HomePage: React.FC = () => {
     );
   }
   
-  const resolveCarouselLink = (title: string) => {
-    const normalized = title.replace(/\s+/g, '').toLowerCase();
-    if (normalized.includes('תלאביב') && normalized.includes('טכנו')) return '/ערים/תל-אביב/טכנו';
-    if (normalized.includes('תלאביב') && normalized.includes('נוער')) return '/ערים/תל-אביב/מסיבות-נוער';
-    if (normalized.includes('תלאביב')) return '/ערים/תל-אביב/היום';
-    if (normalized.includes('ירושלים')) return '/ערים/ירושלים';
-    if (normalized.includes('חיפה')) return '/ערים/חיפה';
-    if (normalized.includes('אילת')) return '/ערים/אילת';
-    if (normalized.includes('טכנו')) return '/זאנרים/טכנו';
-    if (normalized.includes('טראנס')) return '/זאנרים/טראנס';
-    if (normalized.includes('edm')) return '/זאנרים/EDM';
-    if (normalized.includes('נוער')) return '/קהל/מסיבות-נוער';
-    if (normalized.includes('סטודנט')) return '/קהל/מסיבות-סטודנטים';
-    if (normalized.includes('חייל')) return '/קהל/מסיבות-חיילים';
-    if (normalized.includes('שישי')) return '/מתי/שישי';
-    return '/all-parties';
-  };
-
   const carouselsWithParties = carousels.map(carousel => {
     const carouselParties = parties.filter(p => carousel.partyIds.includes(p.id));
-    return { ...carousel, parties: carouselParties, viewAllLink: resolveCarouselLink(carousel.title) };
+    return {
+      ...carousel,
+      parties: carouselParties,
+      viewAllLink: `/carousels/${createCarouselSlug(carousel.title)}`,
+    };
   }).filter(c => c.parties.length > 0);
 
   return (

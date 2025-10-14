@@ -19,6 +19,7 @@ import ArticlePage from './pages/ArticlePage';
 import TaxonomyPage from './pages/TaxonomyPage';
 import TaxonomyListingPage from './pages/TaxonomyListingPage';
 import { taxonomyConfigs, taxonomyListingConfigs } from './data/taxonomy';
+import CarouselPage from './pages/CarouselPage';
 
 interface AppProps {
   initialState?: PartyProviderInitialState;
@@ -42,6 +43,7 @@ function App({ initialState }: AppProps) {
               <Route path="/כתבות/:slug" element={<ArticlePage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/admin" element={<AdminPage />} />
+              <Route path="/carousels/:carouselSlug" element={<CarouselPage />} />
               <Route path="/terms" element={<LegalPage pageType="terms" />} />
               <Route path="/privacy" element={<LegalPage pageType="privacy" />} />
               <Route path="/accessibility" element={<LegalPage pageType="accessibility" />} />
