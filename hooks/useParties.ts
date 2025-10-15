@@ -1,6 +1,6 @@
 
 import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback } from 'react';
-import { Party, Carousel, PartyContextType, PartyProviderInitialState } from '../types';
+import { Party, Carousel, PartyContextType, PartyProviderInitialState, CarouselImportResult } from '../types';
 import * as api from '../services/api';
 
 const PartyContext = createContext<PartyContextType | undefined>(undefined);
@@ -251,7 +251,7 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
       ]);
       setParties(fetchedParties);
       setCarousels(fetchedCarousels);
-      
+
       return { message: result.message, partyCount: result.partyCount, warnings: result.warnings };
     } catch (error) {
       console.error("Failed to add parties from section:", error);
@@ -259,6 +259,33 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
       throw error;
     }
   }, []);
+
+  const handleImport = useCallback(async (
+    importer: () => Promise<CarouselImportResult>,
+    errorFallback: string,
+  ): Promise<CarouselImportResult> => {
+    try {
+      const result = await importer();
+
+      const [fetchedParties, fetchedCarousels] = await Promise.all([
+        api.getParties(),
+        api.getCarousels(),
+      ]);
+      setParties(fetchedParties);
+      setCarousels(fetchedCarousels);
+
+      return result;
+    } catch (error) {
+      const errMessage = error instanceof Error ? error.message : errorFallback;
+      console.error(errorFallback, error);
+      alert(`Error: ${errMessage}`);
+      throw (error instanceof Error ? error : new Error(errMessage));
+    }
+  }, []);
+
+  const importNightlife = useCallback(() => handleImport(api.importNightlife, 'Could not update nightlife carousel.'), [handleImport]);
+
+  const importWeekend = useCallback(() => handleImport(api.importWeekend, 'Could not update weekend carousel.'), [handleImport]);
 
   const contextValue: PartyContextType = {
     parties,
@@ -272,6 +299,8 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
     addPartyToCarousel,
     removePartyFromCarousel,
     addPartiesFromSection,
+    importNightlife,
+    importWeekend,
     isLoading,
     defaultReferral,
     setDefaultReferral,
