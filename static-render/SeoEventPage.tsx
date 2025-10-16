@@ -30,6 +30,14 @@ const SeoEventPage: React.FC<SeoEventPageProps> = ({ party }) => {
   return (
     <html lang="he" dir="rtl">
       <head>
+        {/* Google Tag Manager */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-K6CHZLLX');",
+          }}
+        />
+        {/* End Google Tag Manager */}
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>{`${party.name} | Parties 24/7`}</title>
@@ -45,6 +53,16 @@ const SeoEventPage: React.FC<SeoEventPageProps> = ({ party }) => {
         `}</style>
       </head>
       <body>
+        {/* Google Tag Manager (noscript) */}
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-K6CHZLLX"
+            height="0"
+            width="0"
+            style={{ display: 'none', visibility: 'hidden' }}
+          />
+        </noscript>
+        {/* End Google Tag Manager (noscript) */}
         <div className="container">
           <header>
             <h1>{party.name}</h1>
