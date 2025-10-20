@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { PartyProvider, PartyProviderInitialState } from './hooks/useParties';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -20,12 +20,34 @@ import TaxonomyPage from './pages/TaxonomyPage';
 import TaxonomyListingPage from './pages/TaxonomyListingPage';
 import { taxonomyConfigs, taxonomyListingConfigs } from './data/taxonomy';
 import CarouselPage from './pages/CarouselPage';
+import { ANALYTICS_CONSENT_EVENT, initializeAnalytics, trackPageView } from './lib/analytics';
 
 interface AppProps {
   initialState?: PartyProviderInitialState;
 }
 
 function App({ initialState }: AppProps) {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (initializeAnalytics()) {
+      trackPageView(location.pathname, document.title);
+    }
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const handleConsent = () => {
+      if (initializeAnalytics()) {
+        trackPageView(window.location.pathname, document.title);
+      }
+    };
+
+    window.addEventListener(ANALYTICS_CONSENT_EVENT, handleConsent);
+    return () => {
+      window.removeEventListener(ANALYTICS_CONSENT_EVENT, handleConsent);
+    };
+  }, []);
+
   return (
     <PartyProvider initialState={initialState}>
       <ScrollToTop />
@@ -42,7 +64,7 @@ function App({ initialState }: AppProps) {
               <Route path="/כתבות" element={<BlogPage />} />
               <Route path="/כתבות/:slug" element={<ArticlePage />} />
               <Route path="/about" element={<AboutPage />} />
-              <Route path="/admin" element={<AdminPage />} />
+              <Route path="/admin/*" element={<AdminPage />} />
               <Route path="/carousels/:carouselSlug" element={<CarouselPage />} />
               <Route path="/terms" element={<LegalPage pageType="terms" />} />
               <Route path="/privacy" element={<LegalPage pageType="privacy" />} />

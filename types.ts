@@ -92,3 +92,39 @@ export interface PartyContextType {
   error: string | null;
   loadingMessage: string | null;
 }
+
+export interface AnalyticsEventRequest {
+  category: string;
+  action: string;
+  label?: string;
+  value?: number;
+  path?: string;
+  context?: Record<string, unknown>;
+  sessionId?: string;
+  userId?: string;
+}
+
+export interface AnalyticsActionBreakdown {
+  category: string;
+  action: string;
+  count: number;
+}
+
+export interface AnalyticsTopEntry {
+  label: string;
+  count: number;
+}
+
+export interface AnalyticsTopPath {
+  path: string;
+  count: number;
+}
+
+export interface AnalyticsSummary {
+  windowDays: number;
+  totalEvents: number;
+  recentEvents: number;
+  actions: AnalyticsActionBreakdown[];
+  topLabels: AnalyticsTopEntry[];
+  topPaths: AnalyticsTopPath[];
+}
