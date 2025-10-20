@@ -21,6 +21,7 @@ const RelatedPartyCard: React.FC<RelatedPartyCardProps> = ({ party }) => {
       category: 'party',
       action: 'open-related',
       label: party.slug,
+      path: `/event/${party.slug}`,
       context: {
         partyId: party.id,
         source: 'related-card',

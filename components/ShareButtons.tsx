@@ -17,12 +17,14 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ partyName, shareUrl }) => {
   ]), [shareUrl, title]);
 
   const supportsNativeShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
+  const currentPath = typeof window !== 'undefined' ? window.location.pathname : undefined;
 
   const handlePlatformShare = (platformName: string) => {
     trackEvent({
       category: 'share',
       action: 'click',
       label: platformName,
+      path: currentPath,
       context: {
         partyName,
         url: shareUrl,
@@ -38,6 +40,7 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ partyName, shareUrl }) => {
     trackEvent({
       category: 'share',
       action: 'native-attempt',
+      path: currentPath,
       context: {
         partyName,
         url: shareUrl,
@@ -53,6 +56,7 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ partyName, shareUrl }) => {
       trackEvent({
         category: 'share',
         action: 'native-success',
+        path: currentPath,
         context: {
           partyName,
           url: shareUrl,
@@ -63,6 +67,7 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ partyName, shareUrl }) => {
         category: 'share',
         action: 'native-error',
         label: error instanceof Error ? error.name : 'unknown',
+        path: currentPath,
         context: {
           partyName,
           url: shareUrl,

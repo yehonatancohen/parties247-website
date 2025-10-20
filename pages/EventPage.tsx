@@ -86,6 +86,7 @@ const EventPage: React.FC = () => {
         category: 'party',
         action: 'view',
         label: party.slug,
+        path: `/event/${party.slug}`,
         context: {
           partyId: party.id,
         },
@@ -141,6 +142,7 @@ const EventPage: React.FC = () => {
       category: 'outbound',
       action: 'purchase-click',
       label: party.slug,
+      path: `/event/${party.slug}`,
       context: {
         partyId: party.id,
         url: referralUrl,

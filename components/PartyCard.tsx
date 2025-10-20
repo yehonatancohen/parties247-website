@@ -39,6 +39,7 @@ const PartyCard: React.FC<PartyCardProps> = ({ party }) => {
       category: 'party',
       action: 'open',
       label: party.slug,
+      path: `/event/${party.slug}`,
       context: {
         partyId: party.id,
         source: 'party-card',

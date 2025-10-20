@@ -18,6 +18,7 @@ const CookieBanner: React.FC = () => {
       category: 'consent',
       action: 'accept',
       label: 'cookie-banner',
+      path: typeof window !== 'undefined' ? window.location.pathname : undefined,
       context: { version: 2 },
     });
   };
