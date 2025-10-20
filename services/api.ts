@@ -1,4 +1,4 @@
-import { Party, Carousel, CarouselImportResult } from '../types';
+import { Party, Carousel, CarouselImportResult, AnalyticsEventRequest, AnalyticsSummary, AnalyticsActionBreakdown, AnalyticsTopEntry, AnalyticsTopPath } from '../types';
 
 const API_URL = 'https://parties247-backend.onrender.com/api';
 const JWT_TOKEN_STORAGE = 'jwtAuthToken';
@@ -480,4 +480,58 @@ export const importWeekend = async (): Promise<CarouselImportResult> => {
   }
 
   return transformImportResponse(data);
+};
+
+const normalizeCount = (value: unknown): number => {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : 0;
+};
+
+const mapActionBreakdown = (item: any): AnalyticsActionBreakdown => ({
+  category: typeof item?.category === 'string' ? item.category : 'unknown',
+  action: typeof item?.action === 'string' ? item.action : 'unknown',
+  count: normalizeCount(item?.count),
+});
+
+const mapTopEntry = (item: any): AnalyticsTopEntry => ({
+  label: typeof item?.label === 'string' ? item.label : 'unknown',
+  count: normalizeCount(item?.count),
+});
+
+const mapTopPath = (item: any): AnalyticsTopPath => ({
+  path: typeof item?.path === 'string' ? item.path : 'unknown',
+  count: normalizeCount(item?.count),
+});
+
+export const sendAnalyticsEvent = async (event: AnalyticsEventRequest): Promise<void> => {
+  const response = await fetch(`${API_URL}/analytics/events`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(event),
+    keepalive: true,
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.message || 'Failed to record analytics event');
+  }
+};
+
+export const getAnalyticsSummary = async (): Promise<AnalyticsSummary> => {
+  const response = await fetch(`${API_URL}/analytics/summary`);
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Failed to fetch analytics summary');
+  }
+
+  return {
+    windowDays: typeof data.windowDays === 'number' ? data.windowDays : 30,
+    totalEvents: normalizeCount(data.totalEvents),
+    recentEvents: normalizeCount(data.recentEvents),
+    actions: Array.isArray(data.actions) ? data.actions.map(mapActionBreakdown) : [],
+    topLabels: Array.isArray(data.topLabels) ? data.topLabels.map(mapTopEntry) : [],
+    topPaths: Array.isArray(data.topPaths) ? data.topPaths.map(mapTopPath) : [],
+  };
 };

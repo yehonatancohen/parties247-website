@@ -1,22 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-
-const COOKIE_CONSENT_KEY = 'cookieConsent_v2';
+import { grantAnalyticsConsent, hasAnalyticsConsent, trackEvent } from '../lib/analytics';
 
 const CookieBanner: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
-    if (!consent) {
+    if (!hasAnalyticsConsent()) {
       setIsVisible(true);
     }
   }, []);
 
   const handleAccept = () => {
     setIsVisible(false);
-    localStorage.setItem(COOKIE_CONSENT_KEY, 'true');
-    // Here you would initialize your analytics tools
+    grantAnalyticsConsent();
+    trackEvent({
+      category: 'consent',
+      action: 'accept',
+      label: 'cookie-banner',
+      context: { version: 2 },
+    });
   };
 
   if (!isVisible) {
