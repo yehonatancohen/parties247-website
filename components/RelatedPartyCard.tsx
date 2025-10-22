@@ -19,7 +19,7 @@ const RelatedPartyCard: React.FC<RelatedPartyCardProps> = ({ party }) => {
   const handleOpenRelated = () => {
     trackEvent({
       category: 'party',
-      action: 'open-related',
+      action: 'click',
       label: party.slug,
       path: `/event/${party.slug}`,
       context: {

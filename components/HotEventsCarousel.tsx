@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Party } from '../types';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
 import { useParties } from '../hooks/useParties';
+import { trackEvent } from '../lib/analytics';
 
 // --- SVG Arrow Icons ---
 const ArrowLeft: FC<{ className?: string }> = ({ className }) => (
@@ -33,7 +34,13 @@ const renderTagContent = (tag: string) => {
   return tag;
 };
 
-const CarouselPartyCard: FC<{ party: Party; directUrl: string }> = React.memo(({ party, directUrl }) => {
+type CarouselPartyCardProps = {
+  party: Party;
+  directUrl: string;
+  onOpen: (party: Party) => void;
+};
+
+const CarouselPartyCard: FC<CarouselPartyCardProps> = React.memo(({ party, directUrl, onOpen }) => {
   const partyDate = new Date(party.date);
   const formattedDate = new Intl.DateTimeFormat('he-IL', {
     weekday: 'long', day: '2-digit', month: '2-digit',
@@ -46,6 +53,7 @@ const CarouselPartyCard: FC<{ party: Party; directUrl: string }> = React.memo(({
       rel="noopener noreferrer"
       className="group block outline-none"
       aria-label={`Buy tickets for ${party.name}`}
+      onClick={() => onOpen(party)}
     >
       <div className="relative rounded-xl overflow-hidden shadow-lg transition-all duration-500 ease-in-out border border-wood-brown/50">
         <img
@@ -110,6 +118,20 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({ title, parties, viewAllLi
       console.error(`Could not create referral URL for: ${originalUrl}`, e);
       return originalUrl || '#';
     }
+  };
+
+  const handlePartyOpen = (openedParty: Party) => {
+    trackEvent({
+      category: 'party',
+      action: 'click',
+      label: openedParty.slug,
+      path: `/event/${openedParty.slug}`,
+      context: {
+        partyId: openedParty.id,
+        source: variant === 'coverflow' ? 'homepage-carousel-coverflow' : 'homepage-carousel',
+        targetUrl: getReferralUrl(openedParty.originalUrl, openedParty.referralCode),
+      },
+    });
   };
 
   const upcomingParties = useMemo(
@@ -238,7 +260,11 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({ title, parties, viewAllLi
             React.createElement(
               'swiper-slide',
               { key: `${party.id}-${index}` },
-              <CarouselPartyCard party={party} directUrl={getReferralUrl(party.originalUrl, party.referralCode)} />
+              <CarouselPartyCard
+                party={party}
+                directUrl={getReferralUrl(party.originalUrl, party.referralCode)}
+                onOpen={handlePartyOpen}
+              />
             )
           )
         )}

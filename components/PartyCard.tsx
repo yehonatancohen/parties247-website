@@ -37,7 +37,7 @@ const PartyCard: React.FC<PartyCardProps> = ({ party }) => {
   const handleOpenParty = () => {
     trackEvent({
       category: 'party',
-      action: 'open',
+      action: 'click',
       label: party.slug,
       path: `/event/${party.slug}`,
       context: {
