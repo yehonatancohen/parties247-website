@@ -6,6 +6,28 @@ import LoadingSpinner from './LoadingSpinner';
 import { BASE_URL } from '../constants';
 import { SearchIcon, EditIcon, ChevronDownIcon, ArrowUpIcon, ArrowDownIcon, MegaphoneIcon, ShareIcon } from './Icons';
 
+const sanitizeGoOutUrl = (input: string): string => {
+  if (!input) {
+    throw new Error('Please enter a go-out.co party URL.');
+  }
+
+  const trimmedInput = input.trim();
+  const urlMatches = trimmedInput.match(/https?:\/\/[^\s"'<>]+/gi) || [];
+  const goOutMatch = urlMatches.find(match => match.toLowerCase().includes('go-out.co'));
+  const candidate = goOutMatch || '';
+
+  if (!candidate) {
+    throw new Error('Unable to find a go-out.co URL in the provided input.');
+  }
+
+  try {
+    const parsed = new URL(candidate);
+    return parsed.href;
+  } catch (error) {
+    throw new Error('The provided input does not contain a valid go-out.co URL.');
+  }
+};
+
 const TagInput: React.FC<{ tags: string[]; onTagsChange: (tags: string[]) => void }> = ({ tags, onTagsChange }) => {
   const [inputValue, setInputValue] = useState('');
 
@@ -138,7 +160,7 @@ const AdminDashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  const [singleAddCarouselId, setSingleAddCarouselId] = useState<string>('');
+  const [singleAddCarouselIds, setSingleAddCarouselIds] = useState<string[]>([]);
   const [addMode, setAddMode] = useState<'single' | 'section'>('single');
   const [sectionUrl, setSectionUrl] = useState('');
   const [selectedCarouselId, setSelectedCarouselId] = useState<string>('');
@@ -283,13 +305,17 @@ const AdminDashboard: React.FC = () => {
   };
 
   const handleAddParty = useCallback(async () => {
-    const trimmedUrl = url.trim();
-    if (!trimmedUrl || !trimmedUrl.includes('go-out.co')) {
-      setError('Please enter a valid go-out.co URL.');
+    setError(null);
+
+    let sanitizedUrl: string;
+    try {
+      sanitizedUrl = sanitizeGoOutUrl(url);
+    } catch (validationError) {
+      setError(validationError instanceof Error ? validationError.message : 'Please enter a valid go-out.co URL.');
       return;
     }
-    
-    const slugMatch = trimmedUrl.match(/\/event\/([^/?#]+)/);
+
+    const slugMatch = sanitizedUrl.match(/\/event\/([^/?#]+)/);
     const slug = slugMatch ? slugMatch[1] : null;
 
     if (slug && parties.some(party => party.slug === slug)) {
@@ -300,22 +326,27 @@ const AdminDashboard: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const newParty = await addParty(trimmedUrl);
+      const newParty = await addParty(sanitizedUrl);
       if (defaultReferral) {
         await updateParty({ ...newParty, referralCode: defaultReferral });
       }
-      if (singleAddCarouselId) {
-        await addPartyToCarousel(singleAddCarouselId, newParty.id);
+      if (singleAddCarouselIds.length > 0) {
+        await Promise.all(singleAddCarouselIds.map(carouselId => addPartyToCarousel(carouselId, newParty.id)));
       }
       setUrl('');
-      setSingleAddCarouselId('');
+      setSingleAddCarouselIds([]);
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : 'Failed to add party.');
     } finally {
       setIsLoading(false);
     }
-  }, [url, addParty, parties, updateParty, defaultReferral, singleAddCarouselId, addPartyToCarousel]);
+  }, [url, addParty, parties, updateParty, defaultReferral, singleAddCarouselIds, addPartyToCarousel]);
+
+  const handleSingleAddCarouselChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selected = Array.from(event.target.selectedOptions).map(option => option.value);
+    setSingleAddCarouselIds(selected);
+  };
 
   const handleScrapeSection = async () => {
     const selectedCarousel = carousels.find(c => c.id === selectedCarouselId);
@@ -682,10 +713,26 @@ const AdminDashboard: React.FC = () => {
                 {isLoading ? <LoadingSpinner /> : 'Add Party'}
               </button>
             </div>
-            <select value={singleAddCarouselId} onChange={e => setSingleAddCarouselId(e.target.value)} className="w-full bg-jungle-deep text-white p-2 rounded-md border border-wood-brown text-sm" disabled={isLoading || carousels.length === 0}>
-                <option value="">Add to Carousel (Optional)</option>
-                {sortedCarousels.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}
-            </select>
+            <div>
+              <label className="block text-xs text-jungle-text/70 mb-1">Add to Carousels (Optional)</label>
+              <select
+                multiple
+                value={singleAddCarouselIds}
+                onChange={handleSingleAddCarouselChange}
+                className="w-full bg-jungle-deep text-white p-2 rounded-md border border-wood-brown text-sm"
+                disabled={isLoading || sortedCarousels.length === 0}
+                size={Math.min(5, Math.max(1, sortedCarousels.length))}
+              >
+                {sortedCarousels.map(c => (
+                  <option key={c.id} value={c.id}>{c.title}</option>
+                ))}
+              </select>
+              {sortedCarousels.length === 0 ? (
+                <p className="text-xs text-jungle-text/60 mt-1">Create a carousel first to add parties automatically.</p>
+              ) : (
+                <p className="text-xs text-jungle-text/60 mt-1">Hold Ctrl (Windows) or Command (Mac) to select multiple carousels.</p>
+              )}
+            </div>
             {error && <p className="text-red-500 mt-2 text-sm">{error}</p>}
           </div>
         )}
