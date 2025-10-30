@@ -183,6 +183,49 @@ const AdminAnalytics: React.FC = () => {
           </div>
 
           <div className="bg-black/20 border border-white/5 rounded-xl p-5">
+            <h3 className="text-xl font-display mb-4">מסיבות עם הכי הרבה הקלקות</h3>
+            {summary.topPartyEntries.length === 0 ? (
+              <p className="text-sm text-jungle-text/60">אין עדיין הקלקות על מסיבות להצגה.</p>
+            ) : (
+              <div className="space-y-4">
+                {summary.topPartyEntries.map((entry, index) => {
+                  const displayLabel = entry.label || entry.partySlug || entry.partyId || 'לא ידוע';
+                  const targetPath = entry.path || (entry.partySlug ? `/event/${entry.partySlug}` : undefined);
+                  const key = entry.partyId || entry.partySlug || entry.path || entry.label || `party-${index}`;
+                  return (
+                    <div key={key} className="border border-white/5 rounded-lg p-3 bg-white/5">
+                      <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                          <p className="text-base font-semibold text-white">{displayLabel}</p>
+                          <div className="text-xs text-jungle-text/60 space-x-reverse space-x-2">
+                            {entry.partySlug && <span>slug: {entry.partySlug}</span>}
+                            {entry.partyId && <span>ID: {entry.partyId}</span>}
+                            {entry.path && <span>נתיב: {entry.path}</span>}
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-start sm:items-end gap-2">
+                          <span className="font-mono text-jungle-accent text-lg">{entry.count.toLocaleString()}</span>
+                          <span className="text-xs text-jungle-text/60">הפניות</span>
+                          {targetPath && (
+                            <a
+                              href={targetPath}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs text-jungle-accent hover:underline"
+                            >
+                              מעבר למסיבה
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          <div className="bg-black/20 border border-white/5 rounded-xl p-5">
             <h3 className="text-xl font-display mb-4">תוויות מובילות</h3>
             {summary.topLabels.length === 0 ? (
               <p className="text-sm text-jungle-text/60">לא נמצאו תוויות מובילות.</p>

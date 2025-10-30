@@ -120,6 +120,14 @@ export interface AnalyticsTopPath {
   count: number;
 }
 
+export interface AnalyticsTopPartyEntry {
+  count: number;
+  label?: string;
+  partyId?: string;
+  partySlug?: string;
+  path?: string;
+}
+
 export interface AnalyticsSummary {
   windowDays: number;
   totalEvents: number;
@@ -127,4 +135,5 @@ export interface AnalyticsSummary {
   actions: AnalyticsActionBreakdown[];
   topLabels: AnalyticsTopEntry[];
   topPaths: AnalyticsTopPath[];
+  topPartyEntries: AnalyticsTopPartyEntry[];
 }

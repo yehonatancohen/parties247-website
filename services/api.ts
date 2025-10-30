@@ -1,4 +1,4 @@
-import { Party, Carousel, CarouselImportResult, AnalyticsEventRequest, AnalyticsSummary, AnalyticsActionBreakdown, AnalyticsTopEntry, AnalyticsTopPath } from '../types';
+import { Party, Carousel, CarouselImportResult, AnalyticsEventRequest, AnalyticsSummary, AnalyticsActionBreakdown, AnalyticsTopEntry, AnalyticsTopPath, AnalyticsTopPartyEntry } from '../types';
 
 const API_URL = 'https://parties247-backend.onrender.com/api';
 const JWT_TOKEN_STORAGE = 'jwtAuthToken';
@@ -502,6 +502,14 @@ const mapTopPath = (item: any): AnalyticsTopPath => ({
   count: normalizeCount(item?.count),
 });
 
+const mapTopPartyEntry = (item: any): AnalyticsTopPartyEntry => ({
+  count: normalizeCount(item?.count),
+  label: typeof item?.label === 'string' ? item.label : undefined,
+  partyId: typeof item?.partyId === 'string' ? item.partyId : undefined,
+  partySlug: typeof item?.partySlug === 'string' ? item.partySlug : undefined,
+  path: typeof item?.path === 'string' ? item.path : undefined,
+});
+
 export const sendAnalyticsEvent = async (event: AnalyticsEventRequest): Promise<void> => {
   const response = await fetch(`${API_URL}/analytics/events`, {
     method: 'POST',
@@ -533,5 +541,6 @@ export const getAnalyticsSummary = async (): Promise<AnalyticsSummary> => {
     actions: Array.isArray(data.actions) ? data.actions.map(mapActionBreakdown) : [],
     topLabels: Array.isArray(data.topLabels) ? data.topLabels.map(mapTopEntry) : [],
     topPaths: Array.isArray(data.topPaths) ? data.topPaths.map(mapTopPath) : [],
+    topPartyEntries: Array.isArray(data.topPartyEntries) ? data.topPartyEntries.map(mapTopPartyEntry) : [],
   };
 };
