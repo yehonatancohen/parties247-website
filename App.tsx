@@ -9,6 +9,9 @@ import AdminPage from './pages/AdminPage';
 import AllPartiesPage from './pages/AllPartiesPage';
 import AboutPage from './pages/AboutPage';
 import LegalPage from './pages/LegalPage';
+import ThursdayPartiesPage from './pages/ThursdayPartiesPage';
+import FridayPartiesPage from './pages/FridayPartiesPage';
+import SaturdayPartiesPage from './pages/SaturdayPartiesPage';
 import CommunityPopup from './components/CommunityPopup';
 import CookieBanner from './components/CookieBanner';
 import JungleDecorations from './components/JungleDecorations';
@@ -60,6 +63,9 @@ function App({ initialState }: AppProps) {
               <Route path="/" element={<HomePage />} />
               <Route path="/all-parties" element={<AllPartiesPage />} />
               <Route path="/all-parties/עמוד/:pageNumber" element={<AllPartiesPage />} />
+              <Route path="/thursday-parties" element={<ThursdayPartiesPage />} />
+              <Route path="/friday-parties" element={<FridayPartiesPage />} />
+              <Route path="/saturday-parties" element={<SaturdayPartiesPage />} />
               <Route path="/event/:slug" element={<EventPage />} />
               <Route path="/כתבות" element={<BlogPage />} />
               <Route path="/כתבות/:slug" element={<ArticlePage />} />
