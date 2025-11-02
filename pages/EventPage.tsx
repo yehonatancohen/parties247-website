@@ -89,6 +89,8 @@ const EventPage: React.FC = () => {
         path: `/event/${party.slug}`,
         context: {
           partyId: party.id,
+          partySlug: party.slug,
+          partyName: party.name,
         },
       });
       trackedPartyRef.current = party.id;
@@ -140,12 +142,15 @@ const EventPage: React.FC = () => {
   const handlePurchaseClick = () => {
     trackEvent({
       category: 'outbound',
-      action: 'purchase-click',
+      action: 'redirect',
       label: party.slug,
       path: `/event/${party.slug}`,
       context: {
         partyId: party.id,
-        url: referralUrl,
+        partySlug: party.slug,
+        partyName: party.name,
+        source: 'event-page',
+        targetUrl: referralUrl,
       },
     });
   };

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Party } from '../types';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
 import { useParties } from '../hooks/useParties';
+import { trackEvent } from '../lib/analytics';
 
 // --- SVG Arrow Icons ---
 const ArrowLeft: FC<{ className?: string }> = ({ className }) => (
@@ -33,11 +34,28 @@ const renderTagContent = (tag: string) => {
   return tag;
 };
 
-const CarouselPartyCard: FC<{ party: Party; directUrl: string }> = React.memo(({ party, directUrl }) => {
+const CarouselPartyCard: FC<{ party: Party; directUrl: string; carouselTitle: string }> = React.memo(({ party, directUrl, carouselTitle }) => {
   const partyDate = new Date(party.date);
   const formattedDate = new Intl.DateTimeFormat('he-IL', {
     weekday: 'long', day: '2-digit', month: '2-digit',
   }).format(partyDate);
+
+  const handleRedirect = () => {
+    trackEvent({
+      category: 'outbound',
+      action: 'redirect',
+      label: party.slug,
+      context: {
+        partyId: party.id,
+        partySlug: party.slug,
+        partyName: party.name,
+        carouselTitle,
+        source: 'party-carousel',
+        targetUrl: directUrl,
+      },
+      path: typeof window !== 'undefined' ? window.location.pathname : undefined,
+    });
+  };
 
   return (
     <a
@@ -46,6 +64,7 @@ const CarouselPartyCard: FC<{ party: Party; directUrl: string }> = React.memo(({
       rel="noopener noreferrer"
       className="group block outline-none"
       aria-label={`Buy tickets for ${party.name}`}
+      onClick={handleRedirect}
     >
       <div className="relative rounded-xl overflow-hidden shadow-lg transition-all duration-500 ease-in-out border border-wood-brown/50">
         <img
@@ -238,7 +257,11 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({ title, parties, viewAllLi
             React.createElement(
               'swiper-slide',
               { key: `${party.id}-${index}` },
-              <CarouselPartyCard party={party} directUrl={getReferralUrl(party.originalUrl, party.referralCode)} />
+              <CarouselPartyCard
+                party={party}
+                directUrl={getReferralUrl(party.originalUrl, party.referralCode)}
+                carouselTitle={title}
+              />
             )
           )
         )}
