@@ -7,6 +7,8 @@ const SESSION_STORAGE_KEY = 'parties247.analytics.sessionId';
 const USER_STORAGE_KEY = 'parties247.analytics.userId';
 const VISITOR_RECORDED_KEY = 'parties247.analytics.visitorRecorded';
 
+let fallbackConsentGranted = false;
+
 let analyticsReady = false;
 let fallbackSessionId: string | null = null;
 let fallbackUserId: string | null = null;
@@ -98,13 +100,17 @@ const ensureUserId = (): string => {
 
 export const hasAnalyticsConsent = (): boolean => {
   if (typeof window === 'undefined') {
-    return false;
+    return fallbackConsentGranted;
   }
   try {
-    return window.localStorage.getItem(COOKIE_CONSENT_KEY) === 'true';
+    const granted = window.localStorage.getItem(COOKIE_CONSENT_KEY) === 'true';
+    if (granted) {
+      fallbackConsentGranted = true;
+    }
+    return granted;
   } catch (error) {
     console.warn('Failed to read analytics consent', error);
-    return false;
+    return fallbackConsentGranted;
   }
 };
 
@@ -137,32 +143,34 @@ export const initializeAnalytics = (): boolean => {
   return true;
 };
 
-export const trackPartyView = (partyId: string, partySlug: string): void => {
+export const trackPartyView = (partyId: string, partySlug: string): boolean => {
   if (!partyId || !partySlug) {
-    return;
+    return false;
   }
 
   if (!initializeAnalytics()) {
-    return;
+    return false;
   }
 
   void recordPartyView({ partyId, partySlug }).catch((error) => {
     console.debug('Failed to record party view', error);
   });
+  return true;
 };
 
-export const trackPartyRedirect = (partyId: string, partySlug: string): void => {
+export const trackPartyRedirect = (partyId: string, partySlug: string): boolean => {
   if (!partyId || !partySlug) {
-    return;
+    return false;
   }
 
   if (!initializeAnalytics()) {
-    return;
+    return false;
   }
 
   void recordPartyRedirect({ partyId, partySlug }).catch((error) => {
     console.debug('Failed to record party redirect', error);
   });
+  return true;
 };
 
 export const grantAnalyticsConsent = (): void => {
@@ -171,6 +179,7 @@ export const grantAnalyticsConsent = (): void => {
   }
 
   try {
+    fallbackConsentGranted = true;
     window.localStorage.setItem(COOKIE_CONSENT_KEY, 'true');
   } catch (error) {
     console.warn('Failed to persist analytics consent', error);
