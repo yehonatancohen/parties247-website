@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Party } from '../types';
 import { CalendarIcon, LocationIcon } from './Icons';
-import { trackEvent } from '../lib/analytics';
+import { trackPartyView } from '../lib/analytics';
 
 interface RelatedPartyCardProps {
   party: Party;
@@ -17,16 +17,7 @@ const RelatedPartyCard: React.FC<RelatedPartyCardProps> = ({ party }) => {
   }).format(partyDate);
 
   const handleOpenRelated = () => {
-    trackEvent({
-      category: 'party',
-      action: 'open-related',
-      label: party.slug,
-      path: `/event/${party.slug}`,
-      context: {
-        partyId: party.id,
-        source: 'related-card',
-      },
-    });
+    trackPartyView(party.id, party.slug);
   };
 
   return (

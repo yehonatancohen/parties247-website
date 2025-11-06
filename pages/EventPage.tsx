@@ -10,7 +10,7 @@ import { CalendarIcon, LocationIcon, LeafIcon, PartyPopperIcon, FireIcon } from 
 import { BASE_URL } from '../constants';
 import ShareButtons from '../components/ShareButtons';
 import RelatedPartyCard from '../components/RelatedPartyCard';
-import { trackEvent } from '../lib/analytics';
+import { trackPartyRedirect, trackPartyView } from '../lib/analytics';
 
 const EventPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -82,15 +82,7 @@ const EventPage: React.FC = () => {
 
   useEffect(() => {
     if (party && trackedPartyRef.current !== party.id) {
-      trackEvent({
-        category: 'party',
-        action: 'view',
-        label: party.slug,
-        path: `/event/${party.slug}`,
-        context: {
-          partyId: party.id,
-        },
-      });
+      trackPartyView(party.id, party.slug);
       trackedPartyRef.current = party.id;
     }
   }, [party]);
@@ -138,16 +130,7 @@ const EventPage: React.FC = () => {
   const referralUrl = getReferralUrl(party.originalUrl, party.referralCode);
 
   const handlePurchaseClick = () => {
-    trackEvent({
-      category: 'outbound',
-      action: 'purchase-click',
-      label: party.slug,
-      path: `/event/${party.slug}`,
-      context: {
-        partyId: party.id,
-        url: referralUrl,
-      },
-    });
+    trackPartyRedirect(party.id, party.slug);
   };
 
   const eventJsonLd = {

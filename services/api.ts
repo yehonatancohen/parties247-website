@@ -1,4 +1,4 @@
-import { Party, Carousel, CarouselImportResult, AnalyticsEventRequest, AnalyticsSummary, AnalyticsActionBreakdown, AnalyticsTopEntry, AnalyticsTopPath } from '../types';
+import { Party, Carousel, CarouselImportResult, AnalyticsSummary, AnalyticsSummaryParty } from '../types';
 
 const API_URL = 'https://parties247-backend.onrender.com/api';
 const JWT_TOKEN_STORAGE = 'jwtAuthToken';
@@ -486,35 +486,80 @@ const normalizeCount = (value: unknown): number => {
   return typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : 0;
 };
 
-const mapActionBreakdown = (item: any): AnalyticsActionBreakdown => ({
-  category: typeof item?.category === 'string' ? item.category : 'unknown',
-  action: typeof item?.action === 'string' ? item.action : 'unknown',
-  count: normalizeCount(item?.count),
-});
+const mapSummaryParty = (item: any): AnalyticsSummaryParty => {
+  const partyId = typeof item?.partyId === 'string' ? item.partyId : '';
+  const slug = typeof item?.slug === 'string' ? item.slug : '';
+  const name = typeof item?.name === 'string' ? item.name : 'אירוע ללא שם';
+  const date = typeof item?.date === 'string' ? item.date : '';
+  const metadata: Record<string, unknown> | undefined = (() => {
+    if (!item || typeof item !== 'object') {
+      return undefined;
+    }
+    const { partyId: _pid, slug: _slug, name: _name, date: _date, views: _views, redirects: _redirects, ...rest } = item as Record<string, unknown>;
+    return Object.keys(rest).length > 0 ? rest : undefined;
+  })();
 
-const mapTopEntry = (item: any): AnalyticsTopEntry => ({
-  label: typeof item?.label === 'string' ? item.label : 'unknown',
-  count: normalizeCount(item?.count),
-});
+  return {
+    partyId,
+    slug,
+    name,
+    date,
+    views: normalizeCount(item?.views),
+    redirects: normalizeCount(item?.redirects),
+    metadata,
+  };
+};
 
-const mapTopPath = (item: any): AnalyticsTopPath => ({
-  path: typeof item?.path === 'string' ? item.path : 'unknown',
-  count: normalizeCount(item?.count),
-});
-
-export const sendAnalyticsEvent = async (event: AnalyticsEventRequest): Promise<void> => {
-  const response = await fetch(`${API_URL}/analytics/events`, {
+export const recordVisitor = async (sessionId: string): Promise<void> => {
+  const response = await fetch(`${API_URL}/analytics/visitor`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(event),
+    body: JSON.stringify({ sessionId }),
     keepalive: true,
   });
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
-    throw new Error(error.message || 'Failed to record analytics event');
+    throw new Error(error.message || 'Failed to record visitor');
+  }
+};
+
+type PartyAnalyticsPayload = {
+  partyId: string;
+  partySlug: string;
+};
+
+export const recordPartyView = async (payload: PartyAnalyticsPayload): Promise<void> => {
+  const response = await fetch(`${API_URL}/analytics/party-view`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+    keepalive: true,
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.message || 'Failed to record party view');
+  }
+};
+
+export const recordPartyRedirect = async (payload: PartyAnalyticsPayload): Promise<void> => {
+  const response = await fetch(`${API_URL}/analytics/party-redirect`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+    keepalive: true,
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.message || 'Failed to record party redirect');
   }
 };
 
@@ -527,11 +572,8 @@ export const getAnalyticsSummary = async (): Promise<AnalyticsSummary> => {
   }
 
   return {
-    windowDays: typeof data.windowDays === 'number' ? data.windowDays : 30,
-    totalEvents: normalizeCount(data.totalEvents),
-    recentEvents: normalizeCount(data.recentEvents),
-    actions: Array.isArray(data.actions) ? data.actions.map(mapActionBreakdown) : [],
-    topLabels: Array.isArray(data.topLabels) ? data.topLabels.map(mapTopEntry) : [],
-    topPaths: Array.isArray(data.topPaths) ? data.topPaths.map(mapTopPath) : [],
+    generatedAt: typeof data.generatedAt === 'string' ? data.generatedAt : new Date().toISOString(),
+    uniqueVisitors24h: normalizeCount(data.uniqueVisitors24h),
+    parties: Array.isArray(data.parties) ? data.parties.map(mapSummaryParty) : [],
   };
 };

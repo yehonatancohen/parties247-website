@@ -1,15 +1,16 @@
-import { AnalyticsEventRequest } from '../types';
-import { sendAnalyticsEvent } from '../services/api';
+import { recordPartyRedirect, recordPartyView, recordVisitor } from '../services/api';
 
 export const COOKIE_CONSENT_KEY = 'cookieConsent_v2';
 export const ANALYTICS_CONSENT_EVENT = 'analytics:consentGranted';
 
 const SESSION_STORAGE_KEY = 'parties247.analytics.sessionId';
 const USER_STORAGE_KEY = 'parties247.analytics.userId';
+const VISITOR_RECORDED_KEY = 'parties247.analytics.visitorRecorded';
 
 let analyticsReady = false;
 let fallbackSessionId: string | null = null;
 let fallbackUserId: string | null = null;
+let fallbackVisitorRecorded = false;
 
 const generateId = (): string => {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
@@ -32,6 +33,32 @@ const writeToStorage = (storage: Storage, key: string, value: string): void => {
     storage.setItem(key, value);
   } catch (error) {
     console.warn('Failed to write to storage', error);
+  }
+};
+
+const hasVisitorBeenRecorded = (): boolean => {
+  if (typeof window === 'undefined') {
+    return fallbackVisitorRecorded;
+  }
+
+  try {
+    return window.sessionStorage.getItem(VISITOR_RECORDED_KEY) === 'true';
+  } catch (error) {
+    console.warn('Failed to read visitor flag from storage', error);
+    return fallbackVisitorRecorded;
+  }
+};
+
+const markVisitorRecorded = (): void => {
+  fallbackVisitorRecorded = true;
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  try {
+    window.sessionStorage.setItem(VISITOR_RECORDED_KEY, 'true');
+  } catch (error) {
+    console.warn('Failed to persist visitor flag', error);
   }
 };
 
@@ -91,69 +118,50 @@ export const initializeAnalytics = (): boolean => {
     ensureUserId();
     ensureSessionId();
     analyticsReady = true;
-  } else {
-    // Always refresh the session identifier to keep it alive for long-lived tabs.
-    ensureSessionId();
+  }
+
+  // Always refresh the session identifier to keep it alive for long-lived tabs.
+  ensureSessionId();
+
+  if (!hasVisitorBeenRecorded()) {
+    const sessionId = ensureSessionId();
+    void recordVisitor(sessionId)
+      .then(() => {
+        markVisitorRecorded();
+      })
+      .catch((error) => {
+        console.debug('Failed to record visitor event', error);
+      });
   }
 
   return true;
 };
 
-type TrackEventPayload = {
-  category: string;
-  action: string;
-  label?: string;
-  value?: number;
-  path?: string;
-  context?: Record<string, unknown>;
-};
+export const trackPartyView = (partyId: string, partySlug: string): void => {
+  if (!partyId || !partySlug) {
+    return;
+  }
 
-export const trackEvent = (event: TrackEventPayload): void => {
   if (!initializeAnalytics()) {
     return;
   }
 
-  const sessionId = ensureSessionId();
-  const userId = ensureUserId();
-  const resolvedPath = event.path ?? (typeof window !== 'undefined' ? window.location.pathname : undefined);
-
-  const payload: AnalyticsEventRequest = {
-    category: event.category,
-    action: event.action,
-    sessionId,
-    userId,
-  };
-
-  if (event.label) {
-    payload.label = event.label;
-  }
-  if (typeof event.value === 'number') {
-    payload.value = event.value;
-  }
-  if (resolvedPath) {
-    payload.path = resolvedPath;
-  }
-  if (event.context && Object.keys(event.context).length > 0) {
-    payload.context = event.context;
-  }
-
-  void sendAnalyticsEvent(payload).catch((error) => {
-    console.debug('Failed to send analytics event', error);
+  void recordPartyView({ partyId, partySlug }).catch((error) => {
+    console.debug('Failed to record party view', error);
   });
 };
 
-export const trackPageView = (path?: string, title?: string): void => {
-  const context: Record<string, unknown> = {};
-  if (typeof document !== 'undefined' && document.referrer) {
-    context.referrer = document.referrer;
+export const trackPartyRedirect = (partyId: string, partySlug: string): void => {
+  if (!partyId || !partySlug) {
+    return;
   }
 
-  trackEvent({
-    category: 'page',
-    action: 'view',
-    path,
-    label: title ?? (typeof document !== 'undefined' ? document.title : undefined),
-    context: Object.keys(context).length > 0 ? context : undefined,
+  if (!initializeAnalytics()) {
+    return;
+  }
+
+  void recordPartyRedirect({ partyId, partySlug }).catch((error) => {
+    console.debug('Failed to record party redirect', error);
   });
 };
 
