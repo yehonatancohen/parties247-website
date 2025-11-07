@@ -35,6 +35,7 @@ const PartyCard: React.FC<PartyCardProps> = ({ party }) => {
   };
 
   const handleOpenParty = () => {
+    console.log(`Opening party: id=${party.id}, slug=${party.slug}, name=${party.name}`);
     trackPartyView(party.id, party.slug);
   };
 

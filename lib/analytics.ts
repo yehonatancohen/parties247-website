@@ -199,6 +199,7 @@ export const initializeAnalytics = (): boolean => {
 };
 
 export const trackPartyView = (partyId: string, partySlug: string): boolean => {
+  console.log(`trackPartyView called with partyId=${partyId}, partySlug=${partySlug}`);
   if (!partyId || !partySlug) {
     return false;
   }
