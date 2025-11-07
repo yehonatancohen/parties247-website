@@ -536,22 +536,6 @@ type PartyAnalyticsPayload = {
   partySlug: string;
 };
 
-export const recordPartyView = async (payload: PartyAnalyticsPayload): Promise<void> => {
-  const response = await fetch(`${ANALYTICS_API_BASE}/party-view`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload),
-    keepalive: true,
-  });
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.message || 'Failed to record party view');
-  }
-};
-
 export const recordPartyRedirect = async (payload: PartyAnalyticsPayload): Promise<void> => {
   const response = await fetch(`${ANALYTICS_API_BASE}/party-redirect`, {
     method: 'POST',

@@ -1,5 +1,5 @@
 // FIX: Corrected a typo in the React import statement (removed an extra 'a,') which was causing compilation errors.
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Party } from '../types';
 import { getPartyBySlug } from '../services/api';
@@ -10,7 +10,7 @@ import { CalendarIcon, LocationIcon, LeafIcon, PartyPopperIcon, FireIcon } from 
 import { BASE_URL } from '../constants';
 import ShareButtons from '../components/ShareButtons';
 import RelatedPartyCard from '../components/RelatedPartyCard';
-import { trackPartyRedirect, trackPartyView } from '../lib/analytics';
+import { trackPartyRedirect } from '../lib/analytics';
 
 const EventPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -22,7 +22,6 @@ const EventPage: React.FC = () => {
   );
   const [party, setParty] = useState<Party | null>(initialParty);
   const [isLoading, setIsLoading] = useState(!initialParty);
-  const trackedPartyRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (initialParty && (!party || party.id !== initialParty.id)) {
@@ -86,20 +85,6 @@ const EventPage: React.FC = () => {
 
     fetchAndMergeParty();
   }, [slug, allParties, partiesLoading, initialParty]);
-
-  useEffect(() => {
-    if (!party) {
-      return;
-    }
-
-    if (trackedPartyRef.current === party.id) {
-      return;
-    }
-
-    if (trackPartyView(party.id, party.slug)) {
-      trackedPartyRef.current = party.id;
-    }
-  }, [party]);
 
   const getReferralUrl = (originalUrl: string, partyReferral?: string): string => {
     try {
