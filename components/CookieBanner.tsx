@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { grantAnalyticsConsent, hasAnalyticsConsent, trackEvent } from '../lib/analytics';
+import { grantAnalyticsConsent, hasAnalyticsConsent, initializeAnalytics } from '../lib/analytics';
 
 const CookieBanner: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -14,13 +14,7 @@ const CookieBanner: React.FC = () => {
   const handleAccept = () => {
     setIsVisible(false);
     grantAnalyticsConsent();
-    trackEvent({
-      category: 'consent',
-      action: 'accept',
-      label: 'cookie-banner',
-      path: typeof window !== 'undefined' ? window.location.pathname : undefined,
-      context: { version: 2 },
-    });
+    initializeAnalytics();
   };
 
   if (!isVisible) {
