@@ -14,6 +14,58 @@ let fallbackSessionId: string | null = null;
 let fallbackUserId: string | null = null;
 let fallbackVisitorRecorded = false;
 
+type PartyAnalyticsEventType = 'party-view' | 'party-redirect';
+
+type PendingPartyEvent = {
+  type: PartyAnalyticsEventType;
+  partyId: string;
+  partySlug: string;
+};
+
+let pendingPartyEvents: PendingPartyEvent[] = [];
+
+const dispatchPartyEvent = ({ type, partyId, partySlug }: PendingPartyEvent): void => {
+  const payload = { partyId, partySlug };
+  if (type === 'party-view') {
+    void recordPartyView(payload).catch((error) => {
+      console.debug('Failed to record party view', error);
+    });
+    return;
+  }
+
+  void recordPartyRedirect(payload).catch((error) => {
+    console.debug('Failed to record party redirect', error);
+  });
+};
+
+const flushPendingPartyEvents = (): void => {
+  if (!analyticsReady || pendingPartyEvents.length === 0) {
+    return;
+  }
+
+  const eventsToSend = pendingPartyEvents;
+  pendingPartyEvents = [];
+
+  eventsToSend.forEach((event) => {
+    dispatchPartyEvent(event);
+  });
+};
+
+const enqueuePartyEvent = (event: PendingPartyEvent): void => {
+  const alreadyQueued = pendingPartyEvents.some(
+    (existing) =>
+      existing.type === event.type &&
+      existing.partyId === event.partyId &&
+      existing.partySlug === event.partySlug,
+  );
+
+  if (alreadyQueued) {
+    return;
+  }
+
+  pendingPartyEvents = [...pendingPartyEvents, event];
+};
+
 const generateId = (): string => {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
     return crypto.randomUUID();
@@ -124,6 +176,7 @@ export const initializeAnalytics = (): boolean => {
     ensureUserId();
     ensureSessionId();
     analyticsReady = true;
+    flushPendingPartyEvents();
   }
 
   // Always refresh the session identifier to keep it alive for long-lived tabs.
@@ -140,6 +193,8 @@ export const initializeAnalytics = (): boolean => {
       });
   }
 
+  flushPendingPartyEvents();
+
   return true;
 };
 
@@ -149,12 +204,11 @@ export const trackPartyView = (partyId: string, partySlug: string): boolean => {
   }
 
   if (!initializeAnalytics()) {
-    return false;
+    enqueuePartyEvent({ type: 'party-view', partyId, partySlug });
+    return true;
   }
 
-  void recordPartyView({ partyId, partySlug }).catch((error) => {
-    console.debug('Failed to record party view', error);
-  });
+  dispatchPartyEvent({ type: 'party-view', partyId, partySlug });
   return true;
 };
 
@@ -164,12 +218,11 @@ export const trackPartyRedirect = (partyId: string, partySlug: string): boolean 
   }
 
   if (!initializeAnalytics()) {
-    return false;
+    enqueuePartyEvent({ type: 'party-redirect', partyId, partySlug });
+    return true;
   }
 
-  void recordPartyRedirect({ partyId, partySlug }).catch((error) => {
-    console.debug('Failed to record party redirect', error);
-  });
+  dispatchPartyEvent({ type: 'party-redirect', partyId, partySlug });
   return true;
 };
 

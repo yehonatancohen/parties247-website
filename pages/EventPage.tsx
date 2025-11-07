@@ -10,7 +10,7 @@ import { CalendarIcon, LocationIcon, LeafIcon, PartyPopperIcon, FireIcon } from 
 import { BASE_URL } from '../constants';
 import ShareButtons from '../components/ShareButtons';
 import RelatedPartyCard from '../components/RelatedPartyCard';
-import { ANALYTICS_CONSENT_EVENT, trackPartyRedirect, trackPartyView } from '../lib/analytics';
+import { trackPartyRedirect, trackPartyView } from '../lib/analytics';
 
 const EventPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -89,36 +89,9 @@ const EventPage: React.FC = () => {
       return;
     }
 
-    const attemptTrack = () => {
-      const recorded = trackPartyView(party.id, party.slug);
-      if (recorded) {
-        trackedPartyRef.current = party.id;
-      }
-      return recorded;
-    };
-
-    if (attemptTrack()) {
-      return;
+    if (trackPartyView(party.id, party.slug)) {
+      trackedPartyRef.current = party.id;
     }
-
-    if (typeof window === 'undefined') {
-      return;
-    }
-
-    const handleConsent = () => {
-      if (trackedPartyRef.current === party.id) {
-        return;
-      }
-
-      if (attemptTrack()) {
-        window.removeEventListener(ANALYTICS_CONSENT_EVENT, handleConsent);
-      }
-    };
-
-    window.addEventListener(ANALYTICS_CONSENT_EVENT, handleConsent);
-    return () => {
-      window.removeEventListener(ANALYTICS_CONSENT_EVENT, handleConsent);
-    };
   }, [party]);
 
   const getReferralUrl = (originalUrl: string, partyReferral?: string): string => {
