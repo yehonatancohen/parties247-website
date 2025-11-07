@@ -4,14 +4,12 @@ export const COOKIE_CONSENT_KEY = 'cookieConsent_v2';
 export const ANALYTICS_CONSENT_EVENT = 'analytics:consentGranted';
 
 const SESSION_STORAGE_KEY = 'parties247.analytics.sessionId';
-const USER_STORAGE_KEY = 'parties247.analytics.userId';
 const VISITOR_RECORDED_KEY = 'parties247.analytics.visitorRecorded';
 
 let fallbackConsentGranted = false;
 
 let analyticsReady = false;
 let fallbackSessionId: string | null = null;
-let fallbackUserId: string | null = null;
 let fallbackVisitorRecorded = false;
 
 type PartyAnalyticsEventType = 'party-view' | 'party-redirect';
@@ -133,23 +131,6 @@ const ensureSessionId = (): string => {
   return sessionId;
 };
 
-const ensureUserId = (): string => {
-  if (typeof window === 'undefined') {
-    if (!fallbackUserId) {
-      fallbackUserId = generateId();
-    }
-    return fallbackUserId;
-  }
-
-  let userId = readFromStorage(window.localStorage, USER_STORAGE_KEY);
-  if (!userId) {
-    userId = generateId();
-    writeToStorage(window.localStorage, USER_STORAGE_KEY, userId);
-  }
-  fallbackUserId = userId;
-  return userId;
-};
-
 export const hasAnalyticsConsent = (): boolean => {
   if (typeof window === 'undefined') {
     return fallbackConsentGranted;
@@ -167,13 +148,7 @@ export const hasAnalyticsConsent = (): boolean => {
 };
 
 export const initializeAnalytics = (): boolean => {
-  if (!hasAnalyticsConsent()) {
-    analyticsReady = false;
-    return false;
-  }
-
   if (!analyticsReady) {
-    ensureUserId();
     ensureSessionId();
     analyticsReady = true;
     flushPendingPartyEvents();
