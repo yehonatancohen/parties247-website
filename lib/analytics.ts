@@ -24,20 +24,20 @@ type PendingPartyEvent = {
 
 let pendingPartyEvents: PendingPartyEvent[] = [];
 const dispatchPartyEvent = ({ type, partyId, partySlug }: PendingPartyEvent): void => {
-  console.debug(`Dispatching ${type} event for party ${partyId} (${partySlug})`);
+  console.log(`Dispatching ${type} event for party ${partyId} (${partySlug})`);
   const payload = { partyId, partySlug };
   
   if (type === 'party-view') {
-    console.debug('Recording party view with payload:', payload);
+    console.log('Recording party view with payload:', payload);
     void recordPartyView(payload).catch((error) => {
-      console.debug('Failed to record party view', error);
+      console.log('Failed to record party view', error);
     });
     return;
   }
 
-  console.debug('Recording party redirect with payload:', payload);
+  console.log('Recording party redirect with payload:', payload);
   void recordPartyRedirect(payload).catch((error) => {
-    console.debug('Failed to record party redirect', error);
+    console.log('Failed to record party redirect', error);
   });
 };
 
@@ -202,19 +202,19 @@ export const initializeAnalytics = (): boolean => {
 };
 
 export const trackPartyView = (partyId: string, partySlug: string): boolean => {
-  console.debug(`trackPartyView called with partyId=${partyId}, partySlug=${partySlug}`);
+  console.log(`trackPartyView called with partyId=${partyId}, partySlug=${partySlug}`);
   if (!partyId || !partySlug) {
-    console.debug('trackPartyView aborted: missing partyId or partySlug');
+    console.log('trackPartyView aborted: missing partyId or partySlug');
     return false;
   }
 
   if (!initializeAnalytics()) {
-    console.debug('Analytics not initialized — queuing party-view event');
+    console.log('Analytics not initialized — queuing party-view event');
     enqueuePartyEvent({ type: 'party-view', partyId, partySlug });
     return true;
   }
 
-  console.debug('Analytics initialized — dispatching party-view event immediately');
+  console.log('Analytics initialized — dispatching party-view event immediately');
   dispatchPartyEvent({ type: 'party-view', partyId, partySlug });
   return true;
 };
