@@ -1,6 +1,11 @@
 import { Party, Carousel, CarouselImportResult, AnalyticsSummary, AnalyticsSummaryParty } from '../types';
 
 const API_URL = 'https://parties247-backend.onrender.com/api';
+// Encode the "analytics" path segment to dodge aggressive browser extensions that
+// block any request whose URL contains that keyword. The backend still matches the
+// decoded route, so the API continues to function while the request URL becomes
+// invisible to common filter lists.
+const ANALYTICS_API_BASE = `${API_URL}/%61nalytics`;
 const JWT_TOKEN_STORAGE = 'jwtAuthToken';
 
 // --- Helper Functions ---
@@ -511,7 +516,7 @@ const mapSummaryParty = (item: any): AnalyticsSummaryParty => {
 };
 
 export const recordVisitor = async (sessionId: string): Promise<void> => {
-  const response = await fetch(`${API_URL}/analytics/visitor`, {
+  const response = await fetch(`${ANALYTICS_API_BASE}/visitor`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -532,7 +537,7 @@ type PartyAnalyticsPayload = {
 };
 
 export const recordPartyView = async (payload: PartyAnalyticsPayload): Promise<void> => {
-  const response = await fetch(`${API_URL}/analytics/party-view`, {
+  const response = await fetch(`${ANALYTICS_API_BASE}/party-view`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -548,7 +553,7 @@ export const recordPartyView = async (payload: PartyAnalyticsPayload): Promise<v
 };
 
 export const recordPartyRedirect = async (payload: PartyAnalyticsPayload): Promise<void> => {
-  const response = await fetch(`${API_URL}/analytics/party-redirect`, {
+  const response = await fetch(`${ANALYTICS_API_BASE}/party-redirect`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -564,7 +569,7 @@ export const recordPartyRedirect = async (payload: PartyAnalyticsPayload): Promi
 };
 
 export const getAnalyticsSummary = async (): Promise<AnalyticsSummary> => {
-  const response = await fetch(`${API_URL}/analytics/summary`);
+  const response = await fetch(`${ANALYTICS_API_BASE}/summary`);
   const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
