@@ -23,7 +23,7 @@ import TaxonomyPage from './pages/TaxonomyPage';
 import TaxonomyListingPage from './pages/TaxonomyListingPage';
 import { taxonomyConfigs, taxonomyListingConfigs } from './data/taxonomy';
 import CarouselPage from './pages/CarouselPage';
-import { ANALYTICS_CONSENT_EVENT, initializeAnalytics, trackPageView } from './lib/analytics';
+import { ANALYTICS_CONSENT_EVENT, initializeAnalytics } from './lib/analytics';
 
 interface AppProps {
   initialState?: PartyProviderInitialState;
@@ -33,16 +33,12 @@ function App({ initialState }: AppProps) {
   const location = useLocation();
 
   useEffect(() => {
-    if (initializeAnalytics()) {
-      trackPageView(location.pathname, document.title);
-    }
+    initializeAnalytics();
   }, [location.pathname]);
 
   useEffect(() => {
     const handleConsent = () => {
-      if (initializeAnalytics()) {
-        trackPageView(window.location.pathname, document.title);
-      }
+      initializeAnalytics();
     };
 
     window.addEventListener(ANALYTICS_CONSENT_EVENT, handleConsent);

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Party } from '../types';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
 import { useParties } from '../hooks/useParties';
+import { trackPartyRedirect } from '../lib/analytics';
 
 // --- SVG Arrow Icons ---
 const ArrowLeft: FC<{ className?: string }> = ({ className }) => (
@@ -39,6 +40,10 @@ const CarouselPartyCard: FC<{ party: Party; directUrl: string }> = React.memo(({
     weekday: 'long', day: '2-digit', month: '2-digit',
   }).format(partyDate);
 
+  const handleRedirect = () => {
+    trackPartyRedirect(party.id, party.slug);
+  };
+
   return (
     <a
       href={directUrl}
@@ -46,6 +51,7 @@ const CarouselPartyCard: FC<{ party: Party; directUrl: string }> = React.memo(({
       rel="noopener noreferrer"
       className="group block outline-none"
       aria-label={`Buy tickets for ${party.name}`}
+      onClick={handleRedirect}
     >
       <div className="relative rounded-xl overflow-hidden shadow-lg transition-all duration-500 ease-in-out border border-wood-brown/50">
         <img

@@ -1,15 +1,70 @@
-import { AnalyticsEventRequest } from '../types';
-import { sendAnalyticsEvent } from '../services/api';
+import { recordPartyRedirect, recordPartyView, recordVisitor } from '../services/api';
 
 export const COOKIE_CONSENT_KEY = 'cookieConsent_v2';
 export const ANALYTICS_CONSENT_EVENT = 'analytics:consentGranted';
 
 const SESSION_STORAGE_KEY = 'parties247.analytics.sessionId';
 const USER_STORAGE_KEY = 'parties247.analytics.userId';
+const VISITOR_RECORDED_KEY = 'parties247.analytics.visitorRecorded';
+
+let fallbackConsentGranted = false;
 
 let analyticsReady = false;
 let fallbackSessionId: string | null = null;
 let fallbackUserId: string | null = null;
+let fallbackVisitorRecorded = false;
+
+type PartyAnalyticsEventType = 'party-view' | 'party-redirect';
+
+type PendingPartyEvent = {
+  type: PartyAnalyticsEventType;
+  partyId: string;
+  partySlug: string;
+};
+
+let pendingPartyEvents: PendingPartyEvent[] = [];
+
+const dispatchPartyEvent = ({ type, partyId, partySlug }: PendingPartyEvent): void => {
+  const payload = { partyId, partySlug };
+  if (type === 'party-view') {
+    void recordPartyView(payload).catch((error) => {
+      console.debug('Failed to record party view', error);
+    });
+    return;
+  }
+
+  void recordPartyRedirect(payload).catch((error) => {
+    console.debug('Failed to record party redirect', error);
+  });
+};
+
+const flushPendingPartyEvents = (): void => {
+  if (!analyticsReady || pendingPartyEvents.length === 0) {
+    return;
+  }
+
+  const eventsToSend = pendingPartyEvents;
+  pendingPartyEvents = [];
+
+  eventsToSend.forEach((event) => {
+    dispatchPartyEvent(event);
+  });
+};
+
+const enqueuePartyEvent = (event: PendingPartyEvent): void => {
+  const alreadyQueued = pendingPartyEvents.some(
+    (existing) =>
+      existing.type === event.type &&
+      existing.partyId === event.partyId &&
+      existing.partySlug === event.partySlug,
+  );
+
+  if (alreadyQueued) {
+    return;
+  }
+
+  pendingPartyEvents = [...pendingPartyEvents, event];
+};
 
 const generateId = (): string => {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
@@ -32,6 +87,32 @@ const writeToStorage = (storage: Storage, key: string, value: string): void => {
     storage.setItem(key, value);
   } catch (error) {
     console.warn('Failed to write to storage', error);
+  }
+};
+
+const hasVisitorBeenRecorded = (): boolean => {
+  if (typeof window === 'undefined') {
+    return fallbackVisitorRecorded;
+  }
+
+  try {
+    return window.sessionStorage.getItem(VISITOR_RECORDED_KEY) === 'true';
+  } catch (error) {
+    console.warn('Failed to read visitor flag from storage', error);
+    return fallbackVisitorRecorded;
+  }
+};
+
+const markVisitorRecorded = (): void => {
+  fallbackVisitorRecorded = true;
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  try {
+    window.sessionStorage.setItem(VISITOR_RECORDED_KEY, 'true');
+  } catch (error) {
+    console.warn('Failed to persist visitor flag', error);
   }
 };
 
@@ -71,13 +152,17 @@ const ensureUserId = (): string => {
 
 export const hasAnalyticsConsent = (): boolean => {
   if (typeof window === 'undefined') {
-    return false;
+    return fallbackConsentGranted;
   }
   try {
-    return window.localStorage.getItem(COOKIE_CONSENT_KEY) === 'true';
+    const granted = window.localStorage.getItem(COOKIE_CONSENT_KEY) === 'true';
+    if (granted) {
+      fallbackConsentGranted = true;
+    }
+    return granted;
   } catch (error) {
     console.warn('Failed to read analytics consent', error);
-    return false;
+    return fallbackConsentGranted;
   }
 };
 
@@ -91,70 +176,54 @@ export const initializeAnalytics = (): boolean => {
     ensureUserId();
     ensureSessionId();
     analyticsReady = true;
-  } else {
-    // Always refresh the session identifier to keep it alive for long-lived tabs.
-    ensureSessionId();
+    flushPendingPartyEvents();
   }
+
+  // Always refresh the session identifier to keep it alive for long-lived tabs.
+  ensureSessionId();
+
+  if (!hasVisitorBeenRecorded()) {
+    const sessionId = ensureSessionId();
+    void recordVisitor(sessionId)
+      .then(() => {
+        markVisitorRecorded();
+      })
+      .catch((error) => {
+        console.debug('Failed to record visitor event', error);
+      });
+  }
+
+  flushPendingPartyEvents();
 
   return true;
 };
 
-type TrackEventPayload = {
-  category: string;
-  action: string;
-  label?: string;
-  value?: number;
-  path?: string;
-  context?: Record<string, unknown>;
-};
+export const trackPartyView = (partyId: string, partySlug: string): boolean => {
+  if (!partyId || !partySlug) {
+    return false;
+  }
 
-export const trackEvent = (event: TrackEventPayload): void => {
   if (!initializeAnalytics()) {
-    return;
+    enqueuePartyEvent({ type: 'party-view', partyId, partySlug });
+    return true;
   }
 
-  const sessionId = ensureSessionId();
-  const userId = ensureUserId();
-  const resolvedPath = event.path ?? (typeof window !== 'undefined' ? window.location.pathname : undefined);
-
-  const payload: AnalyticsEventRequest = {
-    category: event.category,
-    action: event.action,
-    sessionId,
-    userId,
-  };
-
-  if (event.label) {
-    payload.label = event.label;
-  }
-  if (typeof event.value === 'number') {
-    payload.value = event.value;
-  }
-  if (resolvedPath) {
-    payload.path = resolvedPath;
-  }
-  if (event.context && Object.keys(event.context).length > 0) {
-    payload.context = event.context;
-  }
-
-  void sendAnalyticsEvent(payload).catch((error) => {
-    console.debug('Failed to send analytics event', error);
-  });
+  dispatchPartyEvent({ type: 'party-view', partyId, partySlug });
+  return true;
 };
 
-export const trackPageView = (path?: string, title?: string): void => {
-  const context: Record<string, unknown> = {};
-  if (typeof document !== 'undefined' && document.referrer) {
-    context.referrer = document.referrer;
+export const trackPartyRedirect = (partyId: string, partySlug: string): boolean => {
+  if (!partyId || !partySlug) {
+    return false;
   }
 
-  trackEvent({
-    category: 'page',
-    action: 'view',
-    path,
-    label: title ?? (typeof document !== 'undefined' ? document.title : undefined),
-    context: Object.keys(context).length > 0 ? context : undefined,
-  });
+  if (!initializeAnalytics()) {
+    enqueuePartyEvent({ type: 'party-redirect', partyId, partySlug });
+    return true;
+  }
+
+  dispatchPartyEvent({ type: 'party-redirect', partyId, partySlug });
+  return true;
 };
 
 export const grantAnalyticsConsent = (): void => {
@@ -163,6 +232,7 @@ export const grantAnalyticsConsent = (): void => {
   }
 
   try {
+    fallbackConsentGranted = true;
     window.localStorage.setItem(COOKIE_CONSENT_KEY, 'true');
   } catch (error) {
     console.warn('Failed to persist analytics consent', error);

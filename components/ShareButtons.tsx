@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { FacebookIcon, ShareIcon, TwitterIcon, WhatsAppIcon } from './Icons';
-import { trackEvent } from '../lib/analytics';
 
 interface ShareButtonsProps {
   partyName: string;
@@ -17,35 +16,11 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ partyName, shareUrl }) => {
   ]), [shareUrl, title]);
 
   const supportsNativeShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
-  const currentPath = typeof window !== 'undefined' ? window.location.pathname : undefined;
-
-  const handlePlatformShare = (platformName: string) => {
-    trackEvent({
-      category: 'share',
-      action: 'click',
-      label: platformName,
-      path: currentPath,
-      context: {
-        partyName,
-        url: shareUrl,
-      },
-    });
-  };
 
   const handleNativeShare = async () => {
     if (!supportsNativeShare) {
       return;
     }
-
-    trackEvent({
-      category: 'share',
-      action: 'native-attempt',
-      path: currentPath,
-      context: {
-        partyName,
-        url: shareUrl,
-      },
-    });
 
     try {
       await navigator.share({
@@ -53,26 +28,7 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ partyName, shareUrl }) => {
         text: `Check out this party: ${partyName}`,
         url: shareUrl,
       });
-      trackEvent({
-        category: 'share',
-        action: 'native-success',
-        path: currentPath,
-        context: {
-          partyName,
-          url: shareUrl,
-        },
-      });
     } catch (error) {
-      trackEvent({
-        category: 'share',
-        action: 'native-error',
-        label: error instanceof Error ? error.name : 'unknown',
-        path: currentPath,
-        context: {
-          partyName,
-          url: shareUrl,
-        },
-      });
       console.error('Error sharing natively:', error);
     }
   };
@@ -88,7 +44,6 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ partyName, shareUrl }) => {
           rel="noopener noreferrer"
           aria-label={`Share on ${platform.name}`}
           className="bg-jungle-deep p-2 rounded-full hover:bg-jungle-accent hover:text-jungle-deep transition-colors text-white"
-          onClick={() => handlePlatformShare(platform.name)}
         >
           {platform.icon}
         </a>

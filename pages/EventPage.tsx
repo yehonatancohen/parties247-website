@@ -10,7 +10,7 @@ import { CalendarIcon, LocationIcon, LeafIcon, PartyPopperIcon, FireIcon } from 
 import { BASE_URL } from '../constants';
 import ShareButtons from '../components/ShareButtons';
 import RelatedPartyCard from '../components/RelatedPartyCard';
-import { trackEvent } from '../lib/analytics';
+import { trackPartyRedirect, trackPartyView } from '../lib/analytics';
 
 const EventPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -59,10 +59,17 @@ const EventPage: React.FC = () => {
         
         // Combine the data: use the detailed info from the API, but fall back to the
         // list's image URL if the API response is missing one.
-        const finalParty = {
+        const finalParty: Party = {
           ...partyFromApi,
           imageUrl: partyFromApi.imageUrl || partyFromList?.imageUrl || '',
+          // Preserve identifiers from the list because the detailed event
+          // endpoint currently omits the party id.
+          id: partyFromApi.id || partyFromList?.id || initialParty?.id || '',
         };
+
+        if (!finalParty.id) {
+          console.warn(`Could not determine a party id for slug: ${slug}`);
+        }
 
         if (!finalParty.imageUrl) {
             console.warn(`Could not find an image URL for party slug: ${slug}`);
@@ -81,16 +88,15 @@ const EventPage: React.FC = () => {
   }, [slug, allParties, partiesLoading, initialParty]);
 
   useEffect(() => {
-    if (party && trackedPartyRef.current !== party.id) {
-      trackEvent({
-        category: 'party',
-        action: 'view',
-        label: party.slug,
-        path: `/event/${party.slug}`,
-        context: {
-          partyId: party.id,
-        },
-      });
+    if (!party) {
+      return;
+    }
+
+    if (trackedPartyRef.current === party.id) {
+      return;
+    }
+
+    if (trackPartyView(party.id, party.slug)) {
       trackedPartyRef.current = party.id;
     }
   }, [party]);
@@ -138,16 +144,7 @@ const EventPage: React.FC = () => {
   const referralUrl = getReferralUrl(party.originalUrl, party.referralCode);
 
   const handlePurchaseClick = () => {
-    trackEvent({
-      category: 'outbound',
-      action: 'purchase-click',
-      label: party.slug,
-      path: `/event/${party.slug}`,
-      context: {
-        partyId: party.id,
-        url: referralUrl,
-      },
-    });
+    trackPartyRedirect(party.id, party.slug);
   };
 
   const eventJsonLd = {

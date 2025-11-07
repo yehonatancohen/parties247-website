@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Party } from '../types';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
-import { trackEvent } from '../lib/analytics';
+import { trackPartyView } from '../lib/analytics';
 
 interface PartyCardProps {
   party: Party;
@@ -35,16 +35,7 @@ const PartyCard: React.FC<PartyCardProps> = ({ party }) => {
   };
 
   const handleOpenParty = () => {
-    trackEvent({
-      category: 'party',
-      action: 'open',
-      label: party.slug,
-      path: `/event/${party.slug}`,
-      context: {
-        partyId: party.id,
-        source: 'party-card',
-      },
-    });
+    trackPartyView(party.id, party.slug);
   };
 
   return (

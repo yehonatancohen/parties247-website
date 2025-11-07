@@ -93,38 +93,18 @@ export interface PartyContextType {
   loadingMessage: string | null;
 }
 
-export interface AnalyticsEventRequest {
-  category: string;
-  action: string;
-  label?: string;
-  value?: number;
-  path?: string;
-  context?: Record<string, unknown>;
-  sessionId?: string;
-  userId?: string;
-}
-
-export interface AnalyticsActionBreakdown {
-  category: string;
-  action: string;
-  count: number;
-}
-
-export interface AnalyticsTopEntry {
-  label: string;
-  count: number;
-}
-
-export interface AnalyticsTopPath {
-  path: string;
-  count: number;
+export interface AnalyticsSummaryParty {
+  partyId: string;
+  slug: string;
+  name: string;
+  date: string;
+  views: number;
+  redirects: number;
+  metadata?: Record<string, unknown>;
 }
 
 export interface AnalyticsSummary {
-  windowDays: number;
-  totalEvents: number;
-  recentEvents: number;
-  actions: AnalyticsActionBreakdown[];
-  topLabels: AnalyticsTopEntry[];
-  topPaths: AnalyticsTopPath[];
+  generatedAt: string;
+  uniqueVisitors24h: number;
+  parties: AnalyticsSummaryParty[];
 }
