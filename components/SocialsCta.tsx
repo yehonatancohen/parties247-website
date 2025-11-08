@@ -1,6 +1,6 @@
 import React from 'react';
 import { SOCIAL_LINKS } from '../constants';
-import { InstagramIcon, TikTokIcon } from './Icons';
+import { InstagramIcon, TikTokIcon, WhatsAppIcon } from './Icons';
 
 const SocialsCta: React.FC = () => {
   return (
@@ -26,6 +26,15 @@ const SocialsCta: React.FC = () => {
           >
             <TikTokIcon className="h-6 w-6" />
             <span>טיקטוק</span>
+          </a>
+          <a
+            href={SOCIAL_LINKS.whatsapp}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 bg-emerald-500 text-white font-semibold px-6 py-3 rounded-lg shadow-lg hover:scale-105 transition-transform"
+          >
+            <WhatsAppIcon className="h-6 w-6" />
+            <span>וואטסאפ</span>
           </a>
         </div>
       </div>

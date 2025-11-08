@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { SOCIAL_LINKS } from '../constants';
-import { InstagramIcon, TikTokIcon } from './Icons';
+import { InstagramIcon, TikTokIcon, WhatsAppIcon } from './Icons';
 
 const Footer: React.FC = () => {
   return (
@@ -32,6 +32,9 @@ const Footer: React.FC = () => {
                 </a>
                 <a href={SOCIAL_LINKS.tiktok} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
                   <TikTokIcon className="h-6 w-6" />
+                </a>
+                <a href={SOCIAL_LINKS.whatsapp} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
+                  <WhatsAppIcon className="h-6 w-6" />
                 </a>
               </div>
           </div>

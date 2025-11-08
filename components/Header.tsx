@@ -57,23 +57,8 @@ const Header: React.FC = () => {
         </NavLink>
       </li>
       <li>
-        <NavLink to="/ערים" onClick={onLinkClick} className={({ isActive }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
-          ערים
-        </NavLink>
-      </li>
-      <li>
-        <NavLink to="/זאנרים" onClick={onLinkClick} className={({ isActive }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
-          ז׳אנרים
-        </NavLink>
-      </li>
-      <li>
-        <NavLink to="/קהל" onClick={onLinkClick} className={({ isActive }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
-          קהל יעד
-        </NavLink>
-      </li>
-      <li>
-        <NavLink to="/מתי" onClick={onLinkClick} className={({ isActive }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
-          מתי
+        <NavLink to="/party-discovery" onClick={onLinkClick} className={({ isActive }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
+          חיפוש מסיבות
         </NavLink>
       </li>
       <li>
@@ -125,12 +110,14 @@ const Header: React.FC = () => {
 
       {/* Mobile Menu Overlay */}
       {isMenuOpen && (
-        <div className="mobile-menu fixed inset-0 bg-jungle-deep/95 backdrop-blur-md z-40 flex flex-col items-center justify-center md:hidden">
-          <nav>
-            <ul className="flex flex-col items-center gap-6 font-display text-3xl">
-              <NavLinks onLinkClick={() => setIsMenuOpen(false)} />
-            </ul>
-          </nav>
+        <div className="mobile-menu fixed inset-0 bg-jungle-deep/95 backdrop-blur-md z-40 md:hidden">
+          <div className="h-full w-full max-w-sm mx-auto px-6">
+            <nav className="h-full overflow-y-auto py-16">
+              <ul className="min-h-full flex flex-col items-center justify-center gap-6 font-display text-3xl">
+                <NavLinks onLinkClick={() => setIsMenuOpen(false)} />
+              </ul>
+            </nav>
+          </div>
         </div>
       )}
     </>

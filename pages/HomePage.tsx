@@ -23,6 +23,7 @@ const HomePage: React.FC = () => {
     'sameAs': [
       SOCIAL_LINKS.instagram,
       SOCIAL_LINKS.tiktok,
+      SOCIAL_LINKS.whatsapp,
     ],
     'areaServed': {
       '@type': 'Country',
