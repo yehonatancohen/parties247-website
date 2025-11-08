@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SOCIAL_LINKS } from '../constants';
-import { InstagramIcon, TikTokIcon, CloseIcon } from './Icons';
+import { InstagramIcon, TikTokIcon, WhatsAppIcon, CloseIcon } from './Icons';
 
 const POPUP_STORAGE_KEY = 'communityPopupDismissed_v2';
 
@@ -38,6 +38,16 @@ const CommunityPopup: React.FC = () => {
         <p className="text-lg text-jungle-text/80 mb-6">אל תפספסו אף מסיבה, עדכון או הטבה מיוחדת.</p>
         
         <div className="flex flex-col gap-4">
+          <a
+            href={SOCIAL_LINKS.whatsapp}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={handleClose}
+            className="flex items-center justify-center gap-2 bg-emerald-500 text-white font-semibold px-6 py-4 rounded-lg shadow-lg hover:scale-105 transition-transform"
+          >
+            <WhatsAppIcon className="h-6 w-6" />
+            <span>הצטרפו לקהילת הוואטסאפ</span>
+          </a>
           <a
             href={SOCIAL_LINKS.instagram}
             target="_blank"
