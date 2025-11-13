@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Party } from '../types';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
+import DiscountCodeReveal from './DiscountCodeReveal';
 
 interface PartyCardProps {
   party: Party;
@@ -69,6 +70,7 @@ const PartyCard: React.FC<PartyCardProps> = ({ party }) => {
                 <span className="truncate">{party.location.name}</span>
             </div>
         </div>
+        <DiscountCodeReveal className="mb-4" />
         <Link
           to={`/event/${party.slug}`}
           className="mt-auto flex items-center justify-center gap-2 text-center bg-gradient-to-r from-jungle-lime to-jungle-accent hover:from-jungle-lime/80 hover:to-jungle-accent/80 text-jungle-deep font-display text-2xl py-3 px-4 rounded-lg transition-all w-full group-hover:scale-105 tracking-wider"

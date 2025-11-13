@@ -185,7 +185,7 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({ title, parties, viewAllLi
       centeredSlides: true,
       grabCursor: true,
       autoplay: {
-        delay: 3500,
+        delay: 6500,
         disableOnInteraction: false,
         pauseOnMouseEnter: true,
       },

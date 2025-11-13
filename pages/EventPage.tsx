@@ -11,19 +11,18 @@ import { BASE_URL } from '../constants';
 import ShareButtons from '../components/ShareButtons';
 import RelatedPartyCard from '../components/RelatedPartyCard';
 import { trackPartyRedirect } from '../lib/analytics';
+import DiscountCodeReveal from '../components/DiscountCodeReveal';
 
 const EventPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const [error, setError] = useState<string | null>(null);
-  const { parties: allParties, defaultReferral, isLoading: partiesLoading, carousels } = useParties();
+  const { parties: allParties, defaultReferral, isLoading: partiesLoading } = useParties();
   const initialParty = useMemo(
     () => (slug ? allParties.find((p) => p.slug === slug) ?? null : null),
     [allParties, slug],
   );
   const [party, setParty] = useState<Party | null>(initialParty);
   const [isLoading, setIsLoading] = useState(!initialParty);
-  const [couponRevealed, setCouponRevealed] = useState(false);
-  const [couponCopied, setCouponCopied] = useState(false);
 
   useEffect(() => {
     if (initialParty && (!party || party.id !== initialParty.id)) {
@@ -31,11 +30,6 @@ const EventPage: React.FC = () => {
       setIsLoading(false);
     }
   }, [initialParty, party]);
-
-  useEffect(() => {
-    setCouponRevealed(false);
-    setCouponCopied(false);
-  }, [party?.id]);
 
   useEffect(() => {
     const fetchAndMergeParty = async () => {
@@ -111,49 +105,6 @@ const EventPage: React.FC = () => {
     if (tag === 'לוהט') return 'bg-red-500/80 text-white';
     if (tag === 'ביקוש גבוה') return 'bg-yellow-500/80 text-jungle-deep';
     return 'bg-jungle-accent/80 text-jungle-deep';
-  };
-
-  const isHotParty = useMemo(() => {
-    if (!party) {
-      return false;
-    }
-
-    return carousels.some(carousel => {
-      const normalizedTitle = carousel.title.toLowerCase();
-      const isHotCarousel = normalizedTitle.includes('hot') || carousel.title.includes('לוהט');
-      return isHotCarousel && carousel.partyIds.includes(party.id);
-    });
-  }, [carousels, party]);
-
-  const couponCode = 'parties24.7';
-
-  const handleRevealCoupon = () => {
-    setCouponRevealed(true);
-  };
-
-  const handleCopyCoupon = async () => {
-    try {
-      if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(couponCode);
-      } else if (typeof document !== 'undefined') {
-        const textarea = document.createElement('textarea');
-        textarea.value = couponCode;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.focus();
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-      } else {
-        throw new Error('Clipboard API not available');
-      }
-      setCouponCopied(true);
-      setTimeout(() => setCouponCopied(false), 2000);
-    } catch (error) {
-      console.error('Failed to copy coupon code', error);
-      setCouponCopied(false);
-    }
   };
 
   if (isLoading) {
@@ -292,34 +243,8 @@ const EventPage: React.FC = () => {
                     </div>
 
                     <p className="text-jungle-text/90 whitespace-pre-line mb-6">{party.description}</p>
-                    
-                    {isHotParty && (
-                      <div className="mb-6">
-                        {!couponRevealed ? (
-                          <button
-                            type="button"
-                            onClick={handleRevealCoupon}
-                            className="w-full rounded-xl border border-jungle-accent/60 bg-gradient-to-r from-jungle-lime/80 to-jungle-accent/80 py-4 px-6 text-2xl font-display text-jungle-deep shadow-lg transition-transform hover:-translate-y-1"
-                          >
-                            🔥 חשפו קופון למסיבה
-                          </button>
-                        ) : (
-                          <div className="rounded-2xl border border-jungle-accent/60 bg-jungle-surface/80 p-5 text-center shadow-lg">
-                            <p className="mb-3 text-sm text-jungle-text/80">לחצו על הקופון כדי להעתיק ולהשתמש ברכישת הכרטיסים</p>
-                            <button
-                              type="button"
-                              onClick={handleCopyCoupon}
-                              className="w-full rounded-xl bg-gradient-to-r from-jungle-accent to-jungle-lime py-3 px-4 text-jungle-deep transition-transform hover:scale-[1.02]"
-                            >
-                              <div className="flex flex-col items-center gap-1">
-                                <span className="font-mono text-2xl tracking-[0.3em]">{couponCode}</span>
-                                <span className="text-sm font-semibold">{couponCopied ? 'הקופון הועתק!' : 'העתיקו בלחיצה'}</span>
-                              </div>
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    )}
+
+                    <DiscountCodeReveal variant="expanded" className="mb-6" />
 
                     <div className="flex items-center justify-between mb-6">
                       <ShareButtons partyName={party.name} shareUrl={referralUrl} />
