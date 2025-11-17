@@ -1,4 +1,4 @@
-import { Party, Carousel, CarouselImportResult, AnalyticsSummary, AnalyticsSummaryParty } from '../types';
+import { Party, Carousel, AnalyticsSummary, AnalyticsSummaryParty } from '../types';
 
 const API_URL = 'https://parties247-backend.onrender.com/api';
 // Encode the "analytics" path segment to dodge aggressive browser extensions that
@@ -435,56 +435,6 @@ export const addSection = async (payload: AddSectionPayload): Promise<{ carousel
       ...data,
       carousel: mapCarouselToFrontend(data.carousel),
   };
-};
-
-const transformImportResponse = (data: any): CarouselImportResult => {
-  if (!data || !data.carousel) {
-    throw new Error('Server did not return carousel data.');
-  }
-
-  return {
-    message: data.message ?? 'Carousel updated.',
-    carousel: mapCarouselToFrontend(data.carousel),
-    addedCount: typeof data.addedCount === 'number' ? data.addedCount : 0,
-    sourceEventCount: typeof data.sourceEventCount === 'number' ? data.sourceEventCount : 0,
-    warnings: Array.isArray(data.warnings) ? data.warnings : [],
-  };
-};
-
-export const importNightlife = async (): Promise<CarouselImportResult> => {
-  const response = await fetch(`${API_URL}/admin/import/nightlife`, {
-    method: 'POST',
-    headers: { ...getAuthHeader() },
-  });
-
-  const data = await response.json().catch(async () => {
-    const text = await response.text();
-    throw new Error(text || 'Failed to update nightlife carousel');
-  });
-
-  if (!response.ok) {
-    throw new Error(data.message || 'Failed to update nightlife carousel');
-  }
-
-  return transformImportResponse(data);
-};
-
-export const importWeekend = async (): Promise<CarouselImportResult> => {
-  const response = await fetch(`${API_URL}/admin/import/weekend`, {
-    method: 'POST',
-    headers: { ...getAuthHeader() },
-  });
-
-  const data = await response.json().catch(async () => {
-    const text = await response.text();
-    throw new Error(text || 'Failed to update weekend carousel');
-  });
-
-  if (!response.ok) {
-    throw new Error(data.message || 'Failed to update weekend carousel');
-  }
-
-  return transformImportResponse(data);
 };
 
 const normalizeCount = (value: unknown): number => {

@@ -154,7 +154,7 @@ type PromotionMessage = {
 };
 
 const AdminDashboard: React.FC = () => {
-  const { parties, addParty, deleteParty, updateParty, carousels, addCarousel, deleteCarousel, updateCarousel, addPartyToCarousel, removePartyFromCarousel, defaultReferral, setDefaultReferral, addPartiesFromSection, importNightlife, importWeekend } = useParties();
+  const { parties, addParty, deleteParty, updateParty, carousels, addCarousel, deleteCarousel, updateCarousel, addPartyToCarousel, removePartyFromCarousel, defaultReferral, setDefaultReferral, addPartiesFromSection } = useParties();
   
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -180,16 +180,6 @@ const AdminDashboard: React.FC = () => {
 
   const [editingCarouselId, setEditingCarouselId] = useState<string | null>(null);
   const [editingCarouselTitle, setEditingCarouselTitle] = useState('');
-
-  const [nightlifeLoading, setNightlifeLoading] = useState(false);
-  const [nightlifeMessage, setNightlifeMessage] = useState<string | null>(null);
-  const [nightlifeWarnings, setNightlifeWarnings] = useState<string | null>(null);
-  const [nightlifeError, setNightlifeError] = useState<string | null>(null);
-
-  const [weekendLoading, setWeekendLoading] = useState(false);
-  const [weekendMessage, setWeekendMessage] = useState<string | null>(null);
-  const [weekendWarnings, setWeekendWarnings] = useState<string | null>(null);
-  const [weekendError, setWeekendError] = useState<string | null>(null);
 
   useEffect(() => {
     setLocalDefaultReferral(defaultReferral);
@@ -386,67 +376,6 @@ const AdminDashboard: React.FC = () => {
         setSectionIsLoading(false);
     }
   };
-
-  const formatImportWarnings = useCallback((warnings: any[] | undefined) => {
-    if (!warnings || warnings.length === 0) {
-      return null;
-    }
-
-    return warnings
-      .map((warning) => {
-        if (warning && typeof warning === 'object') {
-          const url = 'url' in warning ? warning.url : undefined;
-          const error = 'error' in warning ? warning.error : undefined;
-          if (url || error) {
-            const parts = [url, error].filter(Boolean);
-            return `• ${parts.join(' - ')}`;
-          }
-          return `• ${JSON.stringify(warning)}`;
-        }
-        return `• ${String(warning)}`;
-      })
-      .join('\n');
-  }, []);
-
-  const handleImportNightlife = useCallback(async () => {
-    setNightlifeLoading(true);
-    setNightlifeError(null);
-    setNightlifeWarnings(null);
-    setNightlifeMessage(null);
-    try {
-      const result = await importNightlife();
-      setNightlifeMessage(
-        `Updated "${result.carousel.title}" with ${result.addedCount} new parties (source events: ${result.sourceEventCount}).`
-      );
-      const warningsText = formatImportWarnings(result.warnings);
-      setNightlifeWarnings(warningsText);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update nightlife carousel.';
-      setNightlifeError(errorMessage);
-    } finally {
-      setNightlifeLoading(false);
-    }
-  }, [formatImportWarnings, importNightlife]);
-
-  const handleImportWeekend = useCallback(async () => {
-    setWeekendLoading(true);
-    setWeekendError(null);
-    setWeekendWarnings(null);
-    setWeekendMessage(null);
-    try {
-      const result = await importWeekend();
-      setWeekendMessage(
-        `Updated "${result.carousel.title}" with ${result.addedCount} new parties (source events: ${result.sourceEventCount}).`
-      );
-      const warningsText = formatImportWarnings(result.warnings);
-      setWeekendWarnings(warningsText);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update weekend carousel.';
-      setWeekendError(errorMessage);
-    } finally {
-      setWeekendLoading(false);
-    }
-  }, [formatImportWarnings, importWeekend]);
 
   const getHighQualityImageUrl = useCallback((imageUrl: string) => {
     try {
@@ -650,51 +579,6 @@ const AdminDashboard: React.FC = () => {
               className="flex-grow bg-jungle-surface text-white p-2 rounded-md border border-wood-brown focus:ring-2 focus:ring-jungle-lime focus:outline-none"
             />
             <button onClick={handleSaveDefaultReferral} className="bg-jungle-accent text-jungle-deep font-bold py-2 px-4 rounded-md hover:bg-opacity-80">Save</button>
-        </div>
-        <div className="mt-4 border-t border-wood-brown/40 pt-4 space-y-4">
-          <h4 className="text-md font-semibold text-jungle-accent">Sync Curated Carousels</h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-jungle-surface/40 p-3 rounded-md border border-wood-brown/40">
-              <h5 className="text-sm font-semibold text-white mb-1">Nightlife Feed</h5>
-              <p className="text-xs text-jungle-text/70 mb-3">Fetches the latest nightlife events from Go-Out and updates the nightly carousel.</p>
-              <button
-                onClick={handleImportNightlife}
-                disabled={nightlifeLoading}
-                className="w-full bg-jungle-accent text-jungle-deep font-bold py-2 px-4 rounded-md hover:bg-opacity-80 disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-              >
-                {nightlifeLoading ? <LoadingSpinner /> : 'Sync Nightlife'}
-              </button>
-              {nightlifeMessage && (
-                <p className="text-xs text-green-400 mt-2 whitespace-pre-line">{nightlifeMessage}</p>
-              )}
-              {nightlifeWarnings && (
-                <p className="text-xs text-amber-300 mt-1 whitespace-pre-line">{nightlifeWarnings}</p>
-              )}
-              {nightlifeError && (
-                <p className="text-xs text-red-400 mt-1">{nightlifeError}</p>
-              )}
-            </div>
-            <div className="bg-jungle-surface/40 p-3 rounded-md border border-wood-brown/40">
-              <h5 className="text-sm font-semibold text-white mb-1">Weekend Feed</h5>
-              <p className="text-xs text-jungle-text/70 mb-3">Updates the weekend carousel using the curated Go-Out weekend section.</p>
-              <button
-                onClick={handleImportWeekend}
-                disabled={weekendLoading}
-                className="w-full bg-jungle-accent text-jungle-deep font-bold py-2 px-4 rounded-md hover:bg-opacity-80 disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-              >
-                {weekendLoading ? <LoadingSpinner /> : 'Sync Weekend'}
-              </button>
-              {weekendMessage && (
-                <p className="text-xs text-green-400 mt-2 whitespace-pre-line">{weekendMessage}</p>
-              )}
-              {weekendWarnings && (
-                <p className="text-xs text-amber-300 mt-1 whitespace-pre-line">{weekendWarnings}</p>
-              )}
-              {weekendError && (
-                <p className="text-xs text-red-400 mt-1">{weekendError}</p>
-              )}
-            </div>
-          </div>
         </div>
       </div>
 

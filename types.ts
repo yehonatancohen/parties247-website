@@ -48,14 +48,6 @@ export interface Carousel {
   order: number;
 }
 
-export interface CarouselImportResult {
-  message: string;
-  carousel: Carousel;
-  addedCount: number;
-  sourceEventCount: number;
-  warnings: any[];
-}
-
 export interface PartyProviderInitialState {
   parties?: Party[];
   carousels?: Carousel[];
@@ -84,8 +76,6 @@ export interface PartyContextType {
   addPartyToCarousel: (carouselId: string, partyId: string) => Promise<void>;
   removePartyFromCarousel: (carouselId: string, partyId: string) => Promise<void>;
   addPartiesFromSection: (payload: { carouselId: string; carouselTitle: string; url: string; }) => Promise<{ message: string; partyCount: number; warnings: any[] }>;
-  importNightlife: () => Promise<CarouselImportResult>;
-  importWeekend: () => Promise<CarouselImportResult>;
   isLoading: boolean;
   defaultReferral: string;
   setDefaultReferral: (code: string) => Promise<void>;
