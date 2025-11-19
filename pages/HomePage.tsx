@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useParties } from '../hooks/useParties';
 import SeoManager from '../components/SeoManager';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -43,6 +43,8 @@ const HomePage: React.FC = () => {
     },
   };
 
+  const [videoFailed, setVideoFailed] = useState(false);
+
   if (isLoading) {
     return (
       <div className="flex flex-col justify-center items-center h-64 text-center">
@@ -80,16 +82,26 @@ const HomePage: React.FC = () => {
       />
 
       <div className="relative text-center mb-12 -mt-8 h-[70vh] sm:h-[60vh] flex items-center justify-center overflow-hidden">
-        <video
-          src="https://vjkiztnx7gionfos.public.blob.vercel-storage.com/party_video.mp4"
-          className="absolute z-0 w-full h-full object-cover brightness-[0.6]"
-          preload="metadata"
-          autoPlay
-          loop
-          muted
-          playsInline
-        >
-        </video>
+        {videoFailed ? (
+          <img
+            src="https://images.unsplash.com/photo-1509223197845-458d87318791?auto=format&fit=crop&w=1920&q=80"
+            alt="Tropical party"
+            className="absolute z-0 w-full h-full object-cover brightness-[0.6]"
+            loading="lazy"
+          />
+        ) : (
+          <video
+            src="https://vjkiztnx7gionfos.public.blob.vercel-storage.com/party_video.mp4"
+            className="absolute z-0 w-full h-full object-cover brightness-[0.6]"
+            preload="metadata"
+            autoPlay
+            loop
+            muted
+            playsInline
+            onError={() => setVideoFailed(true)}
+          >
+          </video>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-jungle-deep via-transparent to-jungle-deep/50"></div>
         <div className="relative z-10 p-4">
             <h1 
