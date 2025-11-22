@@ -22,6 +22,7 @@ const Footer: React.FC = () => {
               <li><Link to="/terms" className="hover:text-jungle-accent transition-colors">תנאי שימוש</Link></li>
               <li><Link to="/privacy" className="hover:text-jungle-accent transition-colors">מדיניות פרטיות</Link></li>
               <li><Link to="/accessibility" className="hover:text-jungle-accent transition-colors">הצהרת נגישות</Link></li>
+              <li><Link to="/promoter-disclaimer" className="hover:text-jungle-accent transition-colors">הבהרה: האתר כמקדמי אירועים</Link></li>
             </ul>
           </div>
           <div className="text-center md:text-right">
