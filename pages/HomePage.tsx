@@ -8,6 +8,9 @@ import SocialsCta from '../components/SocialsCta';
 import { BASE_URL, SOCIAL_LINKS } from '../constants';
 import { createCarouselSlug } from '../lib/carousels';
 
+const HERO_POSTER_DATA_URL = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////2wBDAf//////////////////////////////////////////////////////////////////////wAARCAABAAEDAREAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEB
+AQAAAAAAAAAAAAAAAAAAAgP/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCf/9k=';
+
 const HomePage: React.FC = () => {
   const { parties, carousels, isLoading, error, loadingMessage } = useParties();
 
@@ -96,24 +99,27 @@ const HomePage: React.FC = () => {
       <div className="relative text-center mb-12 -mt-8 h-[70vh] sm:h-[60vh] flex items-center justify-center overflow-hidden">
         {videoFailed ? (
           <img
-            src="https://images.unsplash.com/photo-1509223197845-458d87318791?auto=format&fit=crop&w=1920&q=80"
+            src={HERO_POSTER_DATA_URL}
             alt="Tropical party"
             className="absolute z-0 w-full h-full object-cover brightness-[0.6]"
             loading="lazy"
           />
         ) : (
           <video
+            id="hero-video"
             ref={videoRef}
-            src="https://vjkiztnx7gionfos.public.blob.vercel-storage.com/party_video.mp4"
             className="absolute z-0 w-full h-full object-cover brightness-[0.6]"
-            preload="metadata"
             autoPlay
             loop
             muted
             playsInline
+            preload="auto"
+            poster={HERO_POSTER_DATA_URL}
             onError={() => setVideoFailed(true)}
             onLoadedData={() => setVideoLoaded(true)}
           >
+            <source src="https://vjkiztnx7gionfos.public.blob.vercel-storage.com/party_video.mp4" type="video/mp4" />
+            <source src="https://vjkiztnx7gionfos.public.blob.vercel-storage.com/party_video.webm" type="video/webm" />
           </video>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-jungle-deep via-transparent to-jungle-deep/50"></div>
