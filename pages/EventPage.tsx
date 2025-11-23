@@ -12,11 +12,12 @@ import ShareButtons from '../components/ShareButtons';
 import RelatedPartyCard from '../components/RelatedPartyCard';
 import { trackPartyRedirect } from '../lib/analytics';
 import DiscountCodeReveal from '../components/DiscountCodeReveal';
+import { createCarouselSlug } from '../lib/carousels';
 
 const EventPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const [error, setError] = useState<string | null>(null);
-  const { parties: allParties, defaultReferral, isLoading: partiesLoading } = useParties();
+  const { parties: allParties, carousels, defaultReferral, isLoading: partiesLoading } = useParties();
   const initialParty = useMemo(
     () => (slug ? allParties.find((p) => p.slug === slug) ?? null : null),
     [allParties, slug],
@@ -87,6 +88,15 @@ const EventPage: React.FC = () => {
     fetchAndMergeParty();
   }, [slug, allParties, partiesLoading, initialParty]);
 
+  const hotNowPartyIds = useMemo(() => {
+    const hotNowCarousel = carousels.find(carousel => {
+      const slug = createCarouselSlug(carousel.title);
+      return slug === 'hot-now' || slug === 'חם-עכשיו' || (slug.includes('hot') && slug.includes('now')) || slug.includes('חם-עכשיו');
+    });
+
+    return new Set(hotNowCarousel?.partyIds ?? []);
+  }, [carousels]);
+
   const getReferralUrl = (originalUrl: string, partyReferral?: string): string => {
     try {
       const referralCode = partyReferral || defaultReferral;
@@ -128,6 +138,7 @@ const EventPage: React.FC = () => {
   const formattedTime = new Intl.DateTimeFormat('he-IL', { timeStyle: 'short', timeZone: 'Asia/Jerusalem' }).format(partyDate);
   
   const referralUrl = getReferralUrl(party.originalUrl, party.referralCode);
+  const showDiscountCode = party.id ? hotNowPartyIds.has(party.id) : false;
 
   const handlePurchaseClick = () => {
     trackPartyRedirect(party.id, party.slug);
@@ -244,7 +255,7 @@ const EventPage: React.FC = () => {
 
                     <p className="text-jungle-text/90 whitespace-pre-line mb-6">{party.description}</p>
 
-                    <DiscountCodeReveal variant="expanded" className="mb-6" />
+                    {showDiscountCode && <DiscountCodeReveal variant="expanded" className="mb-6" />}
 
                     <div className="flex items-center justify-between mb-6">
                       <ShareButtons partyName={party.name} shareUrl={referralUrl} />

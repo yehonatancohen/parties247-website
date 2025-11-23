@@ -8,11 +8,12 @@ import { FilterState } from '../types';
 import { SearchIcon } from '../components/Icons';
 import { BASE_URL } from '../constants';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { createCarouselSlug } from '../lib/carousels';
 
 const PARTIES_PER_PAGE = 20;
 
 const AllPartiesPage: React.FC = () => {
-  const { parties, isLoading, error, loadingMessage } = useParties();
+  const { parties, carousels, isLoading, error, loadingMessage } = useParties();
   const { pageNumber } = useParams<{ pageNumber?: string }>();
   const navigate = useNavigate();
   const location = useLocation();
@@ -70,6 +71,15 @@ const AllPartiesPage: React.FC = () => {
   // Pagination logic
   const totalPages = Math.ceil(filteredParties.length / PARTIES_PER_PAGE);
   const paginatedParties = filteredParties.slice((currentPage - 1) * PARTIES_PER_PAGE, currentPage * PARTIES_PER_PAGE);
+
+  const hotNowPartyIds = useMemo(() => {
+    const hotNowCarousel = carousels.find(carousel => {
+      const slug = createCarouselSlug(carousel.title);
+      return slug === 'hot-now' || slug === 'חם-עכשיו' || (slug.includes('hot') && slug.includes('now')) || slug.includes('חם-עכשיו');
+    });
+
+    return new Set(hotNowCarousel?.partyIds ?? []);
+  }, [carousels]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage > 0 && newPage <= totalPages) {
@@ -163,7 +173,7 @@ const AllPartiesPage: React.FC = () => {
         </div>
 
         <AdvancedFilter onFilterChange={setFilters} />
-        <PartyGrid parties={paginatedParties} />
+        <PartyGrid parties={paginatedParties} hotPartyIds={hotNowPartyIds} />
         
         {totalPages > 1 && (
             <div className="flex justify-center items-center gap-4 mt-8">

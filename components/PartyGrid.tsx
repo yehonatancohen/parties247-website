@@ -5,9 +5,10 @@ import PartyCard from './PartyCard';
 
 interface PartyGridProps {
   parties: Party[];
+  hotPartyIds?: Set<string>;
 }
 
-const PartyGrid: React.FC<PartyGridProps> = ({ parties }) => {
+const PartyGrid: React.FC<PartyGridProps> = ({ parties, hotPartyIds }) => {
   const now = new Date();
 
   const upcomingParties = parties
@@ -26,7 +27,7 @@ const PartyGrid: React.FC<PartyGridProps> = ({ parties }) => {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
       {upcomingParties.map(party => (
-        <PartyCard key={party.id} party={party} />
+        <PartyCard key={party.id} party={party} showDiscountCode={hotPartyIds?.has(party.id)} />
       ))}
     </div>
   );

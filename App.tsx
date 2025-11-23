@@ -25,6 +25,7 @@ import TaxonomyListingPage from './pages/TaxonomyListingPage';
 import { taxonomyConfigs, taxonomyListingConfigs } from './data/taxonomy';
 import CarouselPage from './pages/CarouselPage';
 import { ANALYTICS_CONSENT_EVENT, initializeAnalytics } from './lib/analytics';
+import PromoterDisclaimerPage from './pages/PromoterDisclaimerPage';
 
 interface AppProps {
   initialState?: PartyProviderInitialState;
@@ -73,6 +74,7 @@ function App({ initialState }: AppProps) {
               <Route path="/terms" element={<LegalPage pageType="terms" />} />
               <Route path="/privacy" element={<LegalPage pageType="privacy" />} />
               <Route path="/accessibility" element={<LegalPage pageType="accessibility" />} />
+              <Route path="/promoter-disclaimer" element={<PromoterDisclaimerPage />} />
               {taxonomyListingConfigs.map((config) => (
                 <Route
                   key={config.path}

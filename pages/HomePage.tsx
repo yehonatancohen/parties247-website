@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useParties } from '../hooks/useParties';
 import SeoManager from '../components/SeoManager';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -44,6 +44,18 @@ const HomePage: React.FC = () => {
   };
 
   const [videoFailed, setVideoFailed] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    const fallbackTimeout = window.setTimeout(() => {
+      if (!videoLoaded) {
+        setVideoFailed(true);
+      }
+    }, 3500);
+
+    return () => window.clearTimeout(fallbackTimeout);
+  }, [videoLoaded]);
 
   if (isLoading) {
     return (
@@ -91,6 +103,7 @@ const HomePage: React.FC = () => {
           />
         ) : (
           <video
+            ref={videoRef}
             src="https://vjkiztnx7gionfos.public.blob.vercel-storage.com/party_video.mp4"
             className="absolute z-0 w-full h-full object-cover brightness-[0.6]"
             preload="metadata"
@@ -99,6 +112,7 @@ const HomePage: React.FC = () => {
             muted
             playsInline
             onError={() => setVideoFailed(true)}
+            onLoadedData={() => setVideoLoaded(true)}
           >
           </video>
         )}
