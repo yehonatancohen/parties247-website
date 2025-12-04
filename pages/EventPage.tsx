@@ -223,7 +223,13 @@ const EventPage: React.FC = () => {
         <div className="max-w-5xl mx-auto bg-jungle-surface rounded-xl overflow-hidden shadow-lg border border-wood-brown/50">
             <div className="md:grid md:grid-cols-5 md:gap-8">
                 <div className="md:col-span-2">
-                    <img src={party.imageUrl} alt={party.name} className="w-full h-64 md:h-full object-cover" />
+                    <img
+                      src={party.imageUrl}
+                      alt={party.name}
+                      className="w-full h-64 md:h-full object-cover"
+                      loading="lazy"
+                      decoding="async"
+                    />
                 </div>
                 <div className="md:col-span-3 p-6 md:p-8">
                     <div className="flex flex-wrap gap-2 mb-4">

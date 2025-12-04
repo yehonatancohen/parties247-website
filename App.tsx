@@ -28,6 +28,7 @@ import { ANALYTICS_CONSENT_EVENT, initializeAnalytics } from './lib/analytics';
 import PromoterDisclaimerPage from './pages/PromoterDisclaimerPage';
 import SeoLandingPage from './pages/SeoLandingPage';
 import { seoLandingPages } from './data/seoLandingPages';
+import PrefetchLinks from './components/PrefetchLinks';
 
 interface AppProps {
   initialState?: PartyProviderInitialState;
@@ -53,6 +54,7 @@ function App({ initialState }: AppProps) {
 
   return (
     <PartyProvider initialState={initialState}>
+      <PrefetchLinks />
       <ScrollToTop />
       <JungleDecorations />
       <div className="min-h-screen flex flex-col relative z-10">

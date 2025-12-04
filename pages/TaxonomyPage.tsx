@@ -115,6 +115,16 @@ const TaxonomyPage: React.FC<TaxonomyPageProps> = ({ config }) => {
         <p className="text-lg leading-7 text-jungle-text/90 max-w-3xl">{config.intro}</p>
       </header>
 
+      {config.body && (
+        <section className="mb-10 bg-jungle-surface/70 border border-wood-brown/40 rounded-2xl p-6 shadow-lg space-y-3">
+          {config.body.split('\n\n').map((paragraph, index) => (
+            <p key={`body-${index}`} className="text-jungle-text/85 leading-7">
+              {paragraph}
+            </p>
+          ))}
+        </section>
+      )}
+
       {config.type === 'city' && (
         <div className="mb-10 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-jungle-surface/70 border border-wood-brown/40 rounded-2xl p-6 shadow-lg">
