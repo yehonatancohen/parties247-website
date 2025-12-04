@@ -19,6 +19,12 @@
     <loc>https://www.parties247.co.il/sitemaps/articles.xml</loc>
   </sitemap>
   <sitemap>
+    <loc>https://www.parties247.co.il/sitemaps/seo-landings.xml</loc>
+  </sitemap>
+  <sitemap>
     <loc>https://www.parties247.co.il/sitemaps/events-2025-02-14.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://www.parties247.co.il/sitemaps/seasonal-events.xml</loc>
   </sitemap>
 </sitemapindex>
