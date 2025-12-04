@@ -26,6 +26,8 @@ import { taxonomyConfigs, taxonomyListingConfigs } from './data/taxonomy';
 import CarouselPage from './pages/CarouselPage';
 import { ANALYTICS_CONSENT_EVENT, initializeAnalytics } from './lib/analytics';
 import PromoterDisclaimerPage from './pages/PromoterDisclaimerPage';
+import SeoLandingPage from './pages/SeoLandingPage';
+import { seoLandingPages } from './data/seoLandingPages';
 
 interface AppProps {
   initialState?: PartyProviderInitialState;
@@ -75,6 +77,13 @@ function App({ initialState }: AppProps) {
               <Route path="/privacy" element={<LegalPage pageType="privacy" />} />
               <Route path="/accessibility" element={<LegalPage pageType="accessibility" />} />
               <Route path="/promoter-disclaimer" element={<PromoterDisclaimerPage />} />
+              {seoLandingPages.map((config) => (
+                <Route
+                  key={config.path}
+                  path={config.path.replace(/^\//, '')}
+                  element={<SeoLandingPage config={config} />}
+                />
+              ))}
               {taxonomyListingConfigs.map((config) => (
                 <Route
                   key={config.path}
