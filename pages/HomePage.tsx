@@ -49,7 +49,51 @@ const HomePage: React.FC = () => {
 
   const [videoFailed, setVideoFailed] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
+  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const heroRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    let idleHandle: number | null = null;
+    let observer: IntersectionObserver | null = null;
+
+    const markReady = () => setShouldLoadVideo(true);
+
+    if (typeof window !== 'undefined') {
+      if ('IntersectionObserver' in window && heroRef.current) {
+        observer = new IntersectionObserver(
+          (entries) => {
+            if (entries.some(entry => entry.isIntersecting)) {
+              markReady();
+            }
+          },
+          { threshold: 0.25 },
+        );
+        observer.observe(heroRef.current);
+      } else {
+        markReady();
+      }
+
+      if ('requestIdleCallback' in window) {
+        idleHandle = (window as Window & { requestIdleCallback?: typeof requestIdleCallback }).requestIdleCallback(markReady, {
+          timeout: 1500,
+        }) as unknown as number;
+      } else {
+        idleHandle = window.setTimeout(markReady, 1200);
+      }
+    }
+
+    return () => {
+      if (observer && heroRef.current) {
+        observer.unobserve(heroRef.current);
+      }
+      if (idleHandle) {
+        ('cancelIdleCallback' in window)
+          ? (window as Window & { cancelIdleCallback?: (handle: number) => void }).cancelIdleCallback?.(idleHandle)
+          : window.clearTimeout(idleHandle);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const fallbackTimeout = window.setTimeout(() => {
@@ -97,15 +141,14 @@ const HomePage: React.FC = () => {
         jsonLd={[organizationJsonLd, websiteJsonLd]}
       />
 
-      <div className="relative text-center mb-12 -mt-8 h-[70vh] sm:h-[60vh] flex items-center justify-center overflow-hidden">
-        {videoFailed ? (
-          <img
-            src={HERO_POSTER_DATA_URL}
-            alt="Tropical party"
-            className="absolute z-0 w-full h-full object-cover brightness-[0.6]"
-            loading="lazy"
-          />
-        ) : (
+      <div
+        ref={heroRef}
+        className="relative text-center mb-12 -mt-8 h-[70vh] sm:h-[60vh] flex items-center justify-center overflow-hidden bg-jungle-deep"
+        style={{
+          backgroundImage: 'radial-gradient(circle at 30% 20%, rgba(47, 197, 165, 0.18), transparent 40%), radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.08), transparent 45%)',
+        }}
+      >
+        {shouldLoadVideo && !videoFailed ? (
           <video
             id="hero-video"
             ref={videoRef}
@@ -114,7 +157,7 @@ const HomePage: React.FC = () => {
             loop
             muted
             playsInline
-            preload="auto"
+            preload="none"
             poster={HERO_POSTER_DATA_URL}
             onError={() => setVideoFailed(true)}
             onLoadedData={() => setVideoLoaded(true)}
@@ -122,6 +165,11 @@ const HomePage: React.FC = () => {
             <source src="https://vjkiztnx7gionfos.public.blob.vercel-storage.com/party_video.mp4" type="video/mp4" />
             <source src="https://vjkiztnx7gionfos.public.blob.vercel-storage.com/party_video.webm" type="video/webm" />
           </video>
+        ) : (
+          <div
+            className="absolute z-0 w-full h-full bg-gradient-to-b from-black/60 via-transparent to-black/70"
+            aria-hidden="true"
+          />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-jungle-deep via-transparent to-jungle-deep/50"></div>
         <div className="relative z-10 p-4">
