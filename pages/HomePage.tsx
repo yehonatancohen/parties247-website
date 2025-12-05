@@ -1,16 +1,38 @@
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { Suspense, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useParties } from '../hooks/useParties';
 import SeoManager from '../components/SeoManager';
 import LoadingSpinner from '../components/LoadingSpinner';
-import PartyCarousel from '../components/HotEventsCarousel';
 import SocialsCta from '../components/SocialsCta';
 import { BASE_URL, SOCIAL_LINKS } from '../constants';
 import { createCarouselSlug } from '../lib/carousels';
 
-const HERO_POSTER_DATA_URL =
-  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAAWgmWQ0AAAAASUVORK5CYII=';
+const PartyCarousel = React.lazy(() => import('../components/HotEventsCarousel'));
+
+const HERO_IMAGE_URL =
+  'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1600&q=70';
+
+const CarouselSkeleton: React.FC<{ title: string }> = ({ title }) => (
+  <div className="py-4 animate-pulse">
+    <div className="container mx-auto px-4">
+      <div className="flex justify-between items-center mb-4">
+        <div className="h-8 w-40 bg-jungle-surface/60 rounded-lg" aria-hidden="true" />
+        <div className="flex gap-2">
+          <div className="h-10 w-10 bg-jungle-surface/60 rounded-full" aria-hidden="true" />
+          <div className="h-10 w-10 bg-jungle-surface/60 rounded-full" aria-hidden="true" />
+        </div>
+      </div>
+    </div>
+    <div className="container mx-auto px-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        {Array.from({ length: 6 }).map((_, idx) => (
+          <div key={`${title}-skeleton-${idx}`} className="aspect-[2/3] bg-jungle-surface/50 rounded-xl" aria-hidden="true" />
+        ))}
+      </div>
+    </div>
+  </div>
+);
 
 const HomePage: React.FC = () => {
   const { parties, carousels, isLoading, error, loadingMessage } = useParties();
@@ -47,90 +69,14 @@ const HomePage: React.FC = () => {
     },
   };
 
-  const [videoFailed, setVideoFailed] = useState(false);
-  const [videoLoaded, setVideoLoaded] = useState(false);
-  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const heroRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    let idleHandle: number | null = null;
-    let observer: IntersectionObserver | null = null;
-
-    const markReady = () => setShouldLoadVideo(true);
-
-    if (typeof window !== 'undefined') {
-      if ('IntersectionObserver' in window && heroRef.current) {
-        observer = new IntersectionObserver(
-          (entries) => {
-            if (entries.some(entry => entry.isIntersecting)) {
-              markReady();
-            }
-          },
-          { threshold: 0.25 },
-        );
-        observer.observe(heroRef.current);
-      } else {
-        markReady();
-      }
-
-      if ('requestIdleCallback' in window) {
-        idleHandle = (window as Window & { requestIdleCallback?: typeof requestIdleCallback }).requestIdleCallback(markReady, {
-          timeout: 1500,
-        }) as unknown as number;
-      } else {
-        idleHandle = window.setTimeout(markReady, 1200);
-      }
-    }
-
-    return () => {
-      if (observer && heroRef.current) {
-        observer.unobserve(heroRef.current);
-      }
-      if (idleHandle) {
-        ('cancelIdleCallback' in window)
-          ? (window as Window & { cancelIdleCallback?: (handle: number) => void }).cancelIdleCallback?.(idleHandle)
-          : window.clearTimeout(idleHandle);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    const fallbackTimeout = window.setTimeout(() => {
-      if (!videoLoaded) {
-        setVideoFailed(true);
-      }
-    }, 3500);
-
-    return () => window.clearTimeout(fallbackTimeout);
-  }, [videoLoaded]);
-
-  if (isLoading) {
-    return (
-      <div className="flex flex-col justify-center items-center h-64 text-center">
-        <LoadingSpinner />
-        {loadingMessage && <p className="text-jungle-accent mt-4 animate-pulse">{loadingMessage}</p>}
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="container mx-auto px-4 text-center py-16">
-        <h2 className="text-2xl font-bold text-red-400">Something went wrong</h2>
-        <p className="text-red-300/80 mt-2">{error}</p>
-      </div>
-    );
-  }
-  
-  const carouselsWithParties = carousels.map(carousel => {
+  const carouselsWithParties = useMemo(() => carousels.map(carousel => {
     const carouselParties = parties.filter(p => carousel.partyIds.includes(p.id));
     return {
       ...carousel,
       parties: carouselParties,
       viewAllLink: `/carousels/${createCarouselSlug(carousel.title)}`,
     };
-  }).filter(c => c.parties.length > 0);
+  }).filter(c => c.parties.length > 0), [carousels, parties]);
 
   return (
     <>
@@ -141,58 +87,74 @@ const HomePage: React.FC = () => {
         jsonLd={[organizationJsonLd, websiteJsonLd]}
       />
 
-      <div
-        ref={heroRef}
+      <section
         className="relative text-center mb-12 -mt-8 h-[70vh] sm:h-[60vh] flex items-center justify-center overflow-hidden bg-jungle-deep"
         style={{
           backgroundImage: 'radial-gradient(circle at 30% 20%, rgba(47, 197, 165, 0.18), transparent 40%), radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.08), transparent 45%)',
         }}
       >
-        {shouldLoadVideo && !videoFailed ? (
-          <video
-            id="hero-video"
-            ref={videoRef}
-            className="absolute z-0 w-full h-full object-cover brightness-[0.6]"
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="none"
-            poster={HERO_POSTER_DATA_URL}
-            onError={() => setVideoFailed(true)}
-            onLoadedData={() => setVideoLoaded(true)}
-          >
-            <source src="https://vjkiztnx7gionfos.public.blob.vercel-storage.com/party_video.mp4" type="video/mp4" />
-            <source src="https://vjkiztnx7gionfos.public.blob.vercel-storage.com/party_video.webm" type="video/webm" />
-          </video>
-        ) : (
-          <div
-            className="absolute z-0 w-full h-full bg-gradient-to-b from-black/60 via-transparent to-black/70"
-            aria-hidden="true"
+        <picture className="absolute inset-0">
+          <source srcSet={`${HERO_IMAGE_URL}&fm=avif`} type="image/avif" />
+          <img
+            src={HERO_IMAGE_URL}
+            alt="קהל חוגג במסיבה לילית"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+            width={1600}
+            height={900}
+            className="w-full h-full object-cover brightness-[0.6]"
           />
-        )}
+        </picture>
         <div className="absolute inset-0 bg-gradient-to-t from-jungle-deep via-transparent to-jungle-deep/50"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-transparent to-black/60" aria-hidden="true" />
         <div className="relative z-10 p-4">
-            <h1 
-                className="font-display text-5xl sm:text-6xl md:text-8xl mb-4 text-white"
-                style={{ textShadow: '3px 3px 8px rgba(0,0,0,0.7)' }}
-            >
-                איפה תהיה המסיבה הבאה שלך?
-            </h1>
-            <p className="text-lg sm:text-xl text-jungle-text">אתר המסיבות של ישראל</p>
+          <h1
+            className="font-display text-5xl sm:text-6xl md:text-8xl mb-4 text-white"
+            style={{ textShadow: '3px 3px 8px rgba(0,0,0,0.7)' }}
+          >
+            איפה תהיה המסיבה הבאה שלך?
+          </h1>
+          <p className="text-lg sm:text-xl text-jungle-text">אתר המסיבות של ישראל</p>
         </div>
-      </div>
+      </section>
       
       <div className="space-y-16">
-        {carouselsWithParties.map((carousel, index) => (
-            <PartyCarousel
-                key={carousel.id}
-                title={carousel.title}
-                parties={carousel.parties}
-                viewAllLink={carousel.viewAllLink}
-                variant={index === 0 ? 'coverflow' : 'standard'}
-            />
-        ))}
+        {error ? (
+          <div className="container mx-auto px-4 text-center py-8">
+            <h2 className="text-2xl font-bold text-red-400">משהו השתבש</h2>
+            <p className="text-red-300/80 mt-2">{error}</p>
+          </div>
+        ) : (
+          <>
+            {isLoading && (
+              <>
+                <CarouselSkeleton title="אירועים חמים" />
+                <div className="flex flex-col items-center gap-3 text-jungle-text/80">
+                  <LoadingSpinner />
+                  {loadingMessage && <p className="animate-pulse">{loadingMessage}</p>}
+                </div>
+              </>
+            )}
+
+            {!isLoading && carouselsWithParties.length === 0 && (
+              <div className="container mx-auto px-4 text-center py-8 text-jungle-text/80">
+                אין כרגע קרוסלות להציג, חזרו בקרוב!
+              </div>
+            )}
+
+            {carouselsWithParties.map((carousel, index) => (
+              <Suspense key={carousel.id} fallback={<CarouselSkeleton title={carousel.title} />}>
+                <PartyCarousel
+                  title={carousel.title}
+                  parties={carousel.parties}
+                  viewAllLink={carousel.viewAllLink}
+                  variant={index === 0 ? 'coverflow' : 'standard'}
+                />
+              </Suspense>
+            ))}
+          </>
+        )}
       </div>
 
       <div className="container mx-auto px-4 mt-16">
