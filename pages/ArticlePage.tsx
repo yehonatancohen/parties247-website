@@ -82,7 +82,13 @@ const ArticlePage: React.FC = () => {
             <h1 className="text-4xl md:text-5xl font-display text-center text-white">{article.title}</h1>
           </header>
           
-          <img src={article.imageUrl} alt={article.title} className="w-full aspect-video object-cover rounded-lg mb-8" />
+          <img
+            src={article.imageUrl}
+            alt={article.title}
+            className="w-full aspect-video object-cover rounded-lg mb-8"
+            loading="lazy"
+            decoding="async"
+          />
           
           <div className="prose prose-invert prose-lg max-w-none bg-jungle-surface p-8 rounded-lg border border-wood-brown/50">
             {article.content.split('\n\n').map((paragraph, index) => {

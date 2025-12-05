@@ -1,5 +1,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useParties } from '../hooks/useParties';
 import SeoManager from '../components/SeoManager';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -144,6 +145,18 @@ const HomePage: React.FC = () => {
                 variant={index === 0 ? 'coverflow' : 'standard'}
             />
         ))}
+      </div>
+
+      <div className="container mx-auto px-4 mt-16">
+        <section className="max-w-5xl mx-auto bg-jungle-surface/80 border border-wood-brown/50 rounded-2xl p-8 shadow-xl space-y-4">
+          <h2 className="text-3xl font-display text-white">למה לבחור ב- Parties 24/7?</h2>
+          <p className="text-jungle-text/85 leading-relaxed">
+            אנחנו בונים את חוויית חיפוש המסיבות כך שתהיה מהירה ואמינה: כל דף קטגוריה מקבל כותרת H1 ברורה, 300–500 מילים של הסבר על הוייב, וקישורים פנימיים שמחברים בין ערים, ז׳אנרים וקהלים. הדפים מתעדכנים אוטומטית כך שתמיד תראו את האירועים הבאים – מטכנו בדרום תל אביב דרך האוס רגוע בחיפה ועד מסיבות סטודנטים או 25 פלוס. בדקו את <Link to="/techno-parties" className="text-jungle-accent hover:text-white">דף הטכנו</Link>, את <Link to="/tel-aviv-parties" className="text-jungle-accent hover:text-white">מדריך תל אביב</Link> או את <Link to="/student-parties" className="text-jungle-accent hover:text-white">מסיבות הסטודנטים</Link> כדי לתכנן את הלילה הבא שלכם.
+          </p>
+          <p className="text-jungle-text/80 leading-relaxed">
+            כדי שהאתר ייטען מהר, אנחנו משתמשים בטעינת Lazy לכל התמונות, קבצי WebP קלים ו-prefetch למסלולים הפופולריים. קיצורי הדרך בראש העמוד מחברים אתכם למסיבות היום, חמישי ושישי, בעוד עמוד החיפוש המצומצם מציג את כל הקטגוריות החדשות – כולל דפי מועדון ל-<Link to="/echo-club" className="text-jungle-accent hover:text-white">ECHO</Link> ול-<Link to="/jimmy-who-club" className="text-jungle-accent hover:text-white">Jimmy Who</Link>. שמרו את העמוד במועדפים וחזרו מדי שבוע כדי לא לפספס שום רייב.
+          </p>
+        </section>
       </div>
       <SocialsCta />
     </>

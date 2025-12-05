@@ -9,6 +9,8 @@ const JungleDecorations: React.FC = () => {
         alt=""
         aria-hidden="true"
         className="block fixed top-0 left-0 w-1/3 sm:w-1/4 max-w-[180px] sm:max-w-xs -translate-x-1/4 -translate-y-1/3 pointer-events-none z-0 opacity-50"
+        loading="lazy"
+        decoding="async"
       />
       {/* Bottom-right Tiger */}
       <img
@@ -16,6 +18,8 @@ const JungleDecorations: React.FC = () => {
         alt=""
         aria-hidden="true"
         className="block fixed bottom-6 sm:bottom-10 right-[-30%] sm:right-[-15%] w-2/3 sm:w-1/2 max-w-[320px] sm:max-w-[500px] pointer-events-none z-0 opacity-70"
+        loading="lazy"
+        decoding="async"
       />
     </>
   );

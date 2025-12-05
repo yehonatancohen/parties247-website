@@ -1,98 +1,234 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import SeoManager from '../components/SeoManager';
-
-const discoverySections = [
-  {
-    title: 'מסיבות לפי ערים',
-    description: 'גלו אילו מסיבות מחכות לכם בתל אביב, ירושלים, חיפה, אילת ועוד. כל עיר עם הליינים הקבועים וההפקות המיוחדות שלה.',
-    to: '/ערים',
-    cta: 'מסיבות בכל הארץ',
-  },
-  {
-    title: 'מסיבות לפי סגנון מוזיקלי',
-    description: 'טכנו, האוס, היפ-הופ או טראנס? כנסו לכל ז׳אנר כדי למצוא את האירועים שמתאימים לטעם שלכם.',
-    to: '/זאנרים',
-    cta: 'בחרו סאונד שמדליק אתכם',
-  },
-  {
-    title: 'מסיבות לפי קהל יעד',
-    description: 'נוער, סטודנטים, קהילה גאה או 21+ – בחרו את הקהל שלכם וקבלו המלצות ממוקדות.',
-    to: '/קהל',
-    cta: 'מצאו את החבר׳ה שלכם',
-  },
-  {
-    title: 'מסיבות לפי זמן',
-    description: 'מסיבות שקורות היום, בסופ״ש הקרוב או בחגים. תכננו את היציאה המושלמת לפי התאריך שנוח לכם.',
-    to: '/מתי',
-    cta: 'תכננו לפי לוח הזמנים',
-  },
-];
+import { useParties } from '../hooks/useParties';
+import { createCarouselSlug } from '../lib/carousels';
 
 const quickLinks = [
   {
-    label: 'מסיבות חמישי הקרוב',
-    description: 'המסיבות הכי טריות ליום חמישי הקרוב',
+    label: 'כל המסיבות הקרובות',
+    description: 'רשימה מתעדכנת עם אפשרות חיפוש מתקדם',
+    to: '/all-parties',
+  },
+  {
+    label: 'מסיבות חמישי',
+    description: 'קפיצה מהירה ללילה הפותח את הסופ״ש',
     to: '/thursday-parties',
   },
   {
-    label: 'מסיבות שישי הקרוב',
-    description: 'קפצו ישר למסיבות של שישי הקרוב',
+    label: 'מסיבות שישי',
+    description: 'רחבות הסופ״ש הכי מבוקשות',
     to: '/friday-parties',
+  },
+  {
+    label: 'מסיבות סוף השבוע',
+    description: 'כל האירועים של שישי ושבת במקום אחד',
+    to: '/weekend-parties',
   },
 ];
 
+const audienceLinks = [
+  { title: 'מסיבות נוער', to: '/teen-parties', blurb: 'אירועים מפוקחים עם פירוט אבטחה וגיל כניסה.' },
+  { title: 'מסיבות סטודנטים', to: '/student-parties', blurb: 'ליינים אקדמיים, הנחות ושאטלים מקמפוסים.' },
+  { title: 'מסיבות חיילים', to: '/soldier-parties', blurb: 'הטבות חיילים, שעות מאוחרות ושמירת ציוד.' },
+  { title: 'מסיבות 25+', to: '/25plus-parties', blurb: 'וייב בוגר, שירות מוקפד וקוקטיילים איכותיים.' },
+];
+
+const cityLinks = [
+  { title: 'מסיבות תל אביב', to: '/tel-aviv-parties', blurb: 'טכנו בדרום, גגות במרכז והכל בעדכון יומיומי.' },
+  { title: 'מסיבות חיפה', to: '/haifa-parties', blurb: 'חוף, כרמל ושוק תלפיות – כל הוייבים בדף אחד.' },
+];
+
+const styleLinks = [
+  { title: 'טכנו', to: '/techno-parties', blurb: 'רייבי מחסן, חופים ומועדוני ענק.' },
+  { title: 'האוס וגרוב', to: '/house-parties', blurb: 'גגות שקיעה, ברים אינטימיים וסאונד נעים.' },
+  { title: 'מיינסטרים ופופ', to: '/mainstream-parties', blurb: 'להיטים, רגאטון וקריוקי עד הבוקר.' },
+];
+
+const clubLinks = [
+  { title: 'ECHO Club', to: '/echo-club', blurb: 'רחבה דרומית עם טכנו, האוס והופעות לייב.' },
+  { title: 'Jimmy Who', to: '/jimmy-who-club', blurb: 'בר-מועדון תל אביבי עם להיטים ורחבה שמחה.' },
+];
+
+const helperLinks = [
+  { title: 'בלוג וטיפים', to: '/כתבות', blurb: 'מדריכים, ראיונות ותחקירי ליינים.' },
+  { title: 'הצהרת מקדמי אירועים', to: '/promoter-disclaimer', blurb: 'שקיפות מלאה מול מפיקים ושותפים.' },
+];
+
 const PartyDiscoveryPage: React.FC = () => {
+  const { carousels } = useParties();
+
+  const carouselLinks = React.useMemo(
+    () =>
+      [...carousels]
+        .sort((a, b) => a.order - b.order)
+        .map((carousel) => ({
+          title: carousel.title,
+          to: `/carousels/${createCarouselSlug(carousel.title)}`,
+        })),
+    [carousels]
+  );
+
   return (
     <>
       <SeoManager
         title="חיפוש מסיבות בישראל | Parties 24/7"
-        description="בחרו איך אתם רוצים למצוא את המסיבה הבאה שלכם – לפי עיר, ז׳אנר, קהל או תאריך – וקבלו קישורים מהירים למסיבות חמישי ושישי הקרובים."
+        description="חפשו מסיבות לפי קהל יעד, עיר, סגנון מוזיקלי או מועדון ספציפי. עמוד הניווט המהיר שלנו מציג קישורים פנימיים מסודרים לכל העמודים החמים והמתעדכנים בזמן אמת."
         canonicalPath="/party-discovery"
       />
       <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-display text-white mb-4">איך תרצו לבחור את המסיבה הבאה?</h1>
-          <p className="text-lg text-jungle-text/80">
-            ריכזנו את כל הדרכים למצוא מסיבות חמות בישראל בעמוד אחד נוח. התחילו עם קישורי הבזק לסופ״ש הקרוב או צללו לעמודי העומק שלנו.
+        <div className="max-w-5xl mx-auto text-center mb-12 space-y-4">
+          <p className="text-sm uppercase tracking-wide text-jungle-accent/80">ניווט ממוקד</p>
+          <h1 className="text-4xl md:text-5xl font-display text-white">איך תרצו לבחור את המסיבה הבאה?</h1>
+          <p className="text-lg text-jungle-text/80 leading-relaxed">
+            ריכזנו את כל הדרכים לגלות מסיבות בעמוד אחד ברור: קהל יעד, ערים, סגנונות ומועדונים ספציפיים. השתמשו בתפריט הקפיצה כדי להגיע מיד לחלק הרלוונטי, או התחילו עם קיצורי הדרך לסוף השבוע הקרוב.
           </p>
+          <div className="flex flex-wrap justify-center gap-3 text-sm text-jungle-accent">
+            <a href="#audiences" className="hover:text-white">קהל יעד</a>
+            <span className="text-jungle-text/40">•</span>
+            <a href="#cities" className="hover:text-white">ערים</a>
+            <span className="text-jungle-text/40">•</span>
+            <a href="#styles" className="hover:text-white">סגנונות</a>
+            <span className="text-jungle-text/40">•</span>
+            <a href="#clubs" className="hover:text-white">מועדונים</a>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-12">
           {quickLinks.map((item) => (
             <Link
               key={item.to}
               to={item.to}
-              className="group relative overflow-hidden rounded-2xl border border-wood-brown/50 bg-gradient-to-r from-jungle-accent/20 to-jungle-lime/20 p-6 text-right transition-transform hover:-translate-y-1 hover:shadow-xl"
+              className="group rounded-2xl border border-wood-brown/50 bg-gradient-to-br from-jungle-surface/90 to-jungle-bg/80 p-5 text-right hover:border-jungle-accent/70 hover:-translate-y-1 transition"
             >
-              <div className="flex flex-col gap-2">
-                <span className="text-sm font-semibold text-jungle-accent/90">קיצור דרך</span>
-                <h2 className="text-2xl font-display text-white group-hover:text-jungle-accent transition-colors">{item.label}</h2>
-                <p className="text-jungle-text/80">{item.description}</p>
-                <span className="mt-2 inline-flex items-center justify-end gap-2 text-sm text-jungle-accent">
-                  גלו את הרשימה העדכנית ביותר
-                  <span aria-hidden="true">→</span>
-                </span>
-              </div>
+              <span className="text-sm font-semibold text-jungle-accent/80">קיצור דרך</span>
+              <h2 className="text-2xl font-display text-white group-hover:text-jungle-accent transition-colors">{item.label}</h2>
+              <p className="text-jungle-text/75 text-sm leading-relaxed">{item.description}</p>
+              <span className="inline-flex items-center gap-2 text-xs text-jungle-accent mt-3">פתחו את הרשימה <span aria-hidden="true">&rarr;</span></span>
             </Link>
           ))}
         </div>
 
-        <div className="space-y-8">
-          {discoverySections.map((section) => (
-            <Link
-              key={section.to}
-              to={section.to}
-              className="block rounded-2xl border border-wood-brown/50 bg-jungle-surface/80 p-6 text-right transition-transform hover:-translate-y-1 hover:border-jungle-accent/60 hover:shadow-2xl"
-            >
-              <div className="flex flex-col gap-3">
-                <h3 className="text-2xl font-display text-white">{section.title}</h3>
-                <p className="text-jungle-text/80 leading-relaxed">{section.description}</p>
-                <span className="text-sm font-semibold text-jungle-accent/90">{section.cta}</span>
+        <section id="audiences" className="mb-12">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-3xl font-display text-white">לפי קהל יעד</h2>
+            </div>
+            <Link to="/קהל" className="text-jungle-accent hover:text-white text-sm">ראו את כל קהלי היעד</Link>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {audienceLinks.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                className="rounded-2xl border border-wood-brown/40 bg-jungle-surface/80 p-5 hover:border-jungle-accent/60 transition"
+              >
+                <h3 className="text-2xl font-display text-white mb-2">{item.title}</h3>
+                <p className="text-jungle-text/75 leading-relaxed">{item.blurb}</p>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section id="cities" className="mb-12">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-3xl font-display text-white">לפי עיר</h2>
+            </div>
+            <Link to="/ערים" className="text-jungle-accent hover:text-white text-sm">כל הערים</Link>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {cityLinks.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                className="rounded-2xl border border-wood-brown/40 bg-jungle-surface/80 p-5 hover:border-jungle-accent/60 transition"
+              >
+                <h3 className="text-2xl font-display text-white mb-2">{item.title}</h3>
+                <p className="text-jungle-text/75 leading-relaxed">{item.blurb}</p>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section id="styles" className="mb-12">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-3xl font-display text-white">לפי סגנון</h2>
+            </div>
+            <Link to="/זאנרים" className="text-jungle-accent hover:text-white text-sm">כל הסגנונות</Link>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {styleLinks.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                className="rounded-2xl border border-wood-brown/40 bg-jungle-surface/80 p-5 hover:border-jungle-accent/60 transition"
+              >
+                <h3 className="text-2xl font-display text-white mb-2">{item.title}</h3>
+                <p className="text-jungle-text/75 leading-relaxed">{item.blurb}</p>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section id="clubs" className="mb-12">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-3xl font-display text-white">מועדונים</h2>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {clubLinks.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                className="rounded-2xl border border-wood-brown/40 bg-jungle-surface/80 p-5 hover:border-jungle-accent/60 transition"
+              >
+                <h3 className="text-2xl font-display text-white mb-2">{item.title}</h3>
+                <p className="text-jungle-text/75 leading-relaxed">{item.blurb}</p>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {carouselLinks.length > 0 && (
+          <section id="carousels" className="mb-12">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-3xl font-display text-white">קרוסלות נבחרות</h2>
               </div>
-            </Link>
-          ))}
-        </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {carouselLinks.map((item) => (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className="rounded-2xl border border-wood-brown/40 bg-jungle-surface/80 p-5 hover:border-jungle-accent/60 transition"
+                >
+                  <h3 className="text-2xl font-display text-white mb-2">{item.title}</h3>
+                  <p className="text-jungle-text/75 leading-relaxed">כל הליינים החמים בקרוסלה אחת.</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <section className="mb-16">
+          <h2 className="text-2xl font-display text-white mb-3">עוד משאבים</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {helperLinks.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                className="rounded-2xl border border-wood-brown/40 bg-jungle-surface/80 p-5 hover:border-jungle-accent/60 transition"
+              >
+                <h3 className="text-xl font-display text-white">{item.title}</h3>
+                <p className="text-jungle-text/75 leading-relaxed">{item.blurb}</p>
+              </Link>
+            ))}
+          </div>
+        </section>
       </div>
     </>
   );

@@ -13,6 +13,7 @@ import ThursdayPartiesPage from './pages/ThursdayPartiesPage';
 import FridayPartiesPage from './pages/FridayPartiesPage';
 import SaturdayPartiesPage from './pages/SaturdayPartiesPage';
 import PartyDiscoveryPage from './pages/PartyDiscoveryPage';
+import WeekendPartiesPage from './pages/WeekendPartiesPage';
 import CommunityPopup from './components/CommunityPopup';
 import CookieBanner from './components/CookieBanner';
 import JungleDecorations from './components/JungleDecorations';
@@ -28,6 +29,7 @@ import { ANALYTICS_CONSENT_EVENT, initializeAnalytics } from './lib/analytics';
 import PromoterDisclaimerPage from './pages/PromoterDisclaimerPage';
 import SeoLandingPage from './pages/SeoLandingPage';
 import { seoLandingPages } from './data/seoLandingPages';
+import PrefetchLinks from './components/PrefetchLinks';
 
 interface AppProps {
   initialState?: PartyProviderInitialState;
@@ -53,6 +55,7 @@ function App({ initialState }: AppProps) {
 
   return (
     <PartyProvider initialState={initialState}>
+      <PrefetchLinks />
       <ScrollToTop />
       <JungleDecorations />
       <div className="min-h-screen flex flex-col relative z-10">
@@ -67,6 +70,7 @@ function App({ initialState }: AppProps) {
               <Route path="/thursday-parties" element={<ThursdayPartiesPage />} />
               <Route path="/friday-parties" element={<FridayPartiesPage />} />
               <Route path="/saturday-parties" element={<SaturdayPartiesPage />} />
+              <Route path="/weekend-parties" element={<WeekendPartiesPage />} />
               <Route path="/event/:slug" element={<EventPage />} />
               <Route path="/כתבות" element={<BlogPage />} />
               <Route path="/כתבות/:slug" element={<ArticlePage />} />
