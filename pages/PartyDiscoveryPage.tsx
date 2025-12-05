@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import SeoManager from '../components/SeoManager';
+import { useParties } from '../hooks/useParties';
+import { createCarouselSlug } from '../lib/carousels';
 
 const quickLinks = [
   {
@@ -19,9 +21,9 @@ const quickLinks = [
     to: '/friday-parties',
   },
   {
-    label: 'מסיבות היום',
-    description: 'אירועים שקורים ממש עכשיו או בערב',
-    to: '/מתי/היום',
+    label: 'מסיבות סוף השבוע',
+    description: 'כל האירועים של שישי ושבת במקום אחד',
+    to: '/weekend-parties',
   },
 ];
 
@@ -54,6 +56,19 @@ const helperLinks = [
 ];
 
 const PartyDiscoveryPage: React.FC = () => {
+  const { carousels } = useParties();
+
+  const carouselLinks = React.useMemo(
+    () =>
+      [...carousels]
+        .sort((a, b) => a.order - b.order)
+        .map((carousel) => ({
+          title: carousel.title,
+          to: `/carousels/${createCarouselSlug(carousel.title)}`,
+        })),
+    [carousels]
+  );
+
   return (
     <>
       <SeoManager
@@ -98,7 +113,6 @@ const PartyDiscoveryPage: React.FC = () => {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-3xl font-display text-white">לפי קהל יעד</h2>
-              <p className="text-jungle-text/75">ניווט מהיר לעמודים עם תוכן ארוך, קישורים פנימיים ואירועים שמתעדכנים אוטומטית.</p>
             </div>
             <Link to="/קהל" className="text-jungle-accent hover:text-white text-sm">ראו את כל קהלי היעד</Link>
           </div>
@@ -120,7 +134,6 @@ const PartyDiscoveryPage: React.FC = () => {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-3xl font-display text-white">לפי עיר</h2>
-              <p className="text-jungle-text/75">דפי עיר עם H1 ברור, מאות מילים של הסבר, והפניה לז׳אנרים וקהלים רלוונטיים.</p>
             </div>
             <Link to="/ערים" className="text-jungle-accent hover:text-white text-sm">כל הערים</Link>
           </div>
@@ -142,7 +155,6 @@ const PartyDiscoveryPage: React.FC = () => {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-3xl font-display text-white">לפי סגנון</h2>
-              <p className="text-jungle-text/75">דפי ז׳אנר שמפרטים 300+ מילים על הוייב, עם קישורים בין טכנו, האוס ומיינסטרים.</p>
             </div>
             <Link to="/זאנרים" className="text-jungle-accent hover:text-white text-sm">כל הסגנונות</Link>
           </div>
@@ -164,7 +176,6 @@ const PartyDiscoveryPage: React.FC = () => {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-3xl font-display text-white">מועדונים</h2>
-              <p className="text-jungle-text/75">דפי מועדון עם טקסט עשיר, לינקים לעמודי סגנון וקישורים לכרטיסים.</p>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -180,6 +191,28 @@ const PartyDiscoveryPage: React.FC = () => {
             ))}
           </div>
         </section>
+
+        {carouselLinks.length > 0 && (
+          <section id="carousels" className="mb-12">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-3xl font-display text-white">קרוסלות נבחרות</h2>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {carouselLinks.map((item) => (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className="rounded-2xl border border-wood-brown/40 bg-jungle-surface/80 p-5 hover:border-jungle-accent/60 transition"
+                >
+                  <h3 className="text-2xl font-display text-white mb-2">{item.title}</h3>
+                  <p className="text-jungle-text/75 leading-relaxed">כל הליינים החמים בקרוסלה אחת.</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         <section className="mb-16">
           <h2 className="text-2xl font-display text-white mb-3">עוד משאבים</h2>
