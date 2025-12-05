@@ -1,0 +1,36 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    './index.html',
+    './index.tsx',
+    './App.tsx',
+    './components/**/*.{ts,tsx}',
+    './pages/**/*.{ts,tsx}',
+    './hooks/**/*.{ts,tsx}',
+    './lib/**/*.{ts,tsx}',
+    './data/**/*.{ts,tsx}',
+    './services/**/*.{ts,tsx}',
+    './static-render/**/*.{ts,tsx}',
+  ],
+  theme: {
+    extend: {
+      colors: {
+        'jungle-deep': '#0a1a1a',
+        'jungle-surface': '#162b2b',
+        'jungle-accent': '#76c893',
+        'jungle-lime': '#a7ff83',
+        'jungle-text': '#e0f0e3',
+        'wood-brown': '#4d3b2a',
+      },
+      fontFamily: {
+        sans: ['"Assistant"', 'sans-serif'],
+        display: ['"Secular One"', 'sans-serif'],
+      },
+      boxShadow: {
+        'jungle-glow':
+          '0 0 15px theme("colors.jungle-lime"), 0 0 25px theme("colors.jungle-lime/60")',
+      },
+    },
+  },
+  plugins: [],
+};

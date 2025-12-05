@@ -18,3 +18,5 @@ View your app in AI Studio: https://ai.studio/apps/drive/1lxsvxFEmCNEaojqdnmGnFi
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
 3. Run the app:
    `npm run dev`
+
+Tailwind CSS is compiled locally via `npm run build:css` (automatically executed before `npm run dev` and `npm run build`). The output stylesheet is written to `public/assets/app.css` and linked from `index.html`.
