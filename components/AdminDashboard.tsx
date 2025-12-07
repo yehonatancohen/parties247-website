@@ -154,19 +154,13 @@ type PromotionMessage = {
 };
 
 const AdminDashboard: React.FC = () => {
-  const { parties, addParty, deleteParty, updateParty, carousels, addCarousel, deleteCarousel, updateCarousel, addPartyToCarousel, removePartyFromCarousel, defaultReferral, setDefaultReferral, addPartiesFromSection } = useParties();
+  const { parties, addParty, deleteParty, updateParty, carousels, addCarousel, deleteCarousel, updateCarousel, reorderCarousels, addPartyToCarousel, removePartyFromCarousel, defaultReferral, setDefaultReferral } = useParties();
   
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
   const [singleAddCarouselIds, setSingleAddCarouselIds] = useState<string[]>([]);
-  const [addMode, setAddMode] = useState<'single' | 'section'>('single');
-  const [sectionUrl, setSectionUrl] = useState('');
-  const [selectedCarouselId, setSelectedCarouselId] = useState<string>('');
-  const [sectionIsLoading, setSectionIsLoading] = useState(false);
-  const [sectionError, setSectionError] = useState<string | null>(null);
-  const [sectionProgress, setSectionProgress] = useState('');
   
   const [localDefaultReferral, setLocalDefaultReferral] = useState('');
   const [newCarouselTitle, setNewCarouselTitle] = useState('');
@@ -185,12 +179,6 @@ const AdminDashboard: React.FC = () => {
     setLocalDefaultReferral(defaultReferral);
   }, [defaultReferral]);
   
-  useEffect(() => {
-    if (carousels.length > 0 && !selectedCarouselId) {
-      setSelectedCarouselId(carousels[0].id);
-    }
-  }, [carousels, selectedCarouselId]);
-
   const { activeParties, archivedParties } = useMemo(() => {
     const now = new Date();
     now.setHours(0, 0, 0, 0); // Start of today
@@ -281,16 +269,14 @@ const AdminDashboard: React.FC = () => {
     const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
     if (targetIndex < 0 || targetIndex >= sortedCarousels.length) return;
 
-    const carouselA = sortedCarousels[currentIndex];
-    const carouselB = sortedCarousels[targetIndex];
-    
-    // Swap order properties serially to prevent race conditions.
+    const newOrder = [...sortedCarousels];
+    const [movedCarousel] = newOrder.splice(currentIndex, 1);
+    newOrder.splice(targetIndex, 0, movedCarousel);
+
     try {
-      await updateCarousel(carouselA.id, { order: carouselB.order });
-      await updateCarousel(carouselB.id, { order: carouselA.order });
+      await reorderCarousels(newOrder.map(c => c.id));
     } catch (e) {
-      // Error is handled by the hook, but we can log it here if needed.
-      console.error('An error occurred during the swap operation:', e);
+      console.error('An error occurred during the reorder operation:', e);
     }
   };
 
@@ -336,45 +322,6 @@ const AdminDashboard: React.FC = () => {
   const handleSingleAddCarouselChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = Array.from(event.target.selectedOptions).map(option => option.value);
     setSingleAddCarouselIds(selected);
-  };
-
-  const handleScrapeSection = async () => {
-    const selectedCarousel = carousels.find(c => c.id === selectedCarouselId);
-    if (!sectionUrl.trim() || !selectedCarousel) {
-      setSectionError('Please provide a section URL and select a category.');
-      return;
-    }
-    
-    setSectionIsLoading(true);
-    setSectionError(null);
-    setSectionProgress('Scraping section via backend...');
-
-    try {
-        const result = await addPartiesFromSection({
-            carouselId: selectedCarousel.id,
-            carouselTitle: selectedCarousel.title,
-            url: sectionUrl.trim(),
-        });
-
-        let progressMessage = `${result.message}. Parties processed: ${result.partyCount}.`;
-        setSectionProgress(progressMessage);
-
-        if (result.warnings && result.warnings.length > 0) {
-            const warningText = result.warnings.map(w => `URL: ${w.url} - Error: ${w.error}`).join('\n');
-            setSectionError(`Process completed with warnings:\n${warningText}`);
-        } else {
-            setSectionError(null);
-        }
-        setSectionUrl('');
-
-    } catch (err) {
-        console.error(err);
-        const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
-        setSectionError(errorMessage);
-        setSectionProgress('');
-    } finally {
-        setSectionIsLoading(false);
-    }
   };
 
   const getHighQualityImageUrl = useCallback((imageUrl: string) => {
@@ -583,58 +530,34 @@ const AdminDashboard: React.FC = () => {
       </div>
 
       {/* Add Party Section */}
-      <div>
-        <div className="flex border-b border-wood-brown mb-4">
-          <button onClick={() => setAddMode('single')} className={`py-2 px-4 ${addMode === 'single' ? 'text-jungle-lime border-b-2 border-jungle-lime' : 'text-jungle-text/70'}`}>Add Single Party</button>
-          <button onClick={() => setAddMode('section')} className={`py-2 px-4 ${addMode === 'section' ? 'text-jungle-lime border-b-2 border-jungle-lime' : 'text-jungle-text/70'}`}>Add from Section</button>
+      <div className="space-y-3">
+        <div className="flex flex-col sm:flex-row gap-2">
+          <input type="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="Paste go-out.co party URL" className="flex-grow bg-jungle-deep text-white p-2 rounded-md border border-wood-brown focus:ring-2 focus:ring-jungle-lime focus:outline-none" disabled={isLoading} />
+          <button onClick={handleAddParty} disabled={isLoading} className="bg-jungle-lime text-jungle-deep font-bold py-2 px-6 rounded-md hover:bg-opacity-80 transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed flex justify-center items-center">
+            {isLoading ? <LoadingSpinner /> : 'Add Party'}
+          </button>
         </div>
-
-        {addMode === 'single' && (
-          <div className="space-y-3">
-            <div className="flex flex-col sm:flex-row gap-2">
-              <input type="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="Paste go-out.co party URL" className="flex-grow bg-jungle-deep text-white p-2 rounded-md border border-wood-brown focus:ring-2 focus:ring-jungle-lime focus:outline-none" disabled={isLoading} />
-              <button onClick={handleAddParty} disabled={isLoading} className="bg-jungle-lime text-jungle-deep font-bold py-2 px-6 rounded-md hover:bg-opacity-80 transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed flex justify-center items-center">
-                {isLoading ? <LoadingSpinner /> : 'Add Party'}
-              </button>
-            </div>
-            <div>
-              <label className="block text-xs text-jungle-text/70 mb-1">Add to Carousels (Optional)</label>
-              <select
-                multiple
-                value={singleAddCarouselIds}
-                onChange={handleSingleAddCarouselChange}
-                className="w-full bg-jungle-deep text-white p-2 rounded-md border border-wood-brown text-sm"
-                disabled={isLoading || sortedCarousels.length === 0}
-                size={Math.min(5, Math.max(1, sortedCarousels.length))}
-              >
-                {sortedCarousels.map(c => (
-                  <option key={c.id} value={c.id}>{c.title}</option>
-                ))}
-              </select>
-              {sortedCarousels.length === 0 ? (
-                <p className="text-xs text-jungle-text/60 mt-1">Create a carousel first to add parties automatically.</p>
-              ) : (
-                <p className="text-xs text-jungle-text/60 mt-1">Hold Ctrl (Windows) or Command (Mac) to select multiple carousels.</p>
-              )}
-            </div>
-            {error && <p className="text-red-500 mt-2 text-sm">{error}</p>}
-          </div>
-        )}
-
-        {addMode === 'section' && (
-          <div className="space-y-3">
-            <input type="url" value={sectionUrl} onChange={(e) => setSectionUrl(e.target.value)} placeholder="Paste go-out.co section URL" className="w-full bg-jungle-deep text-white p-2 rounded-md border border-wood-brown" disabled={sectionIsLoading} />
-             <select value={selectedCarouselId} onChange={e => setSelectedCarouselId(e.target.value)} className="w-full bg-jungle-deep text-white p-2 rounded-md border border-wood-brown" disabled={sectionIsLoading || carousels.length === 0}>
-                {carousels.length === 0 && <option>Create a category first</option>}
-                {carousels.map(c => <option key={c.id} value={c.id}>Add to: {c.title}</option>)}
-            </select>
-            <button onClick={handleScrapeSection} disabled={sectionIsLoading || !selectedCarouselId} className="w-full bg-jungle-lime text-jungle-deep font-bold py-2 px-6 rounded-md disabled:bg-gray-600 flex justify-center items-center">
-              {sectionIsLoading ? <LoadingSpinner /> : 'Scrape & Add Parties'}
-            </button>
-            {sectionProgress && <p className="text-jungle-accent mt-2 text-sm text-center">{sectionProgress}</p>}
-            {sectionError && <p className="text-red-500 mt-2 text-sm text-center whitespace-pre-line">{sectionError}</p>}
-          </div>
-        )}
+        <div>
+          <label className="block text-xs text-jungle-text/70 mb-1">Add to Carousels (Optional)</label>
+          <select
+            multiple
+            value={singleAddCarouselIds}
+            onChange={handleSingleAddCarouselChange}
+            className="w-full bg-jungle-deep text-white p-2 rounded-md border border-wood-brown text-sm"
+            disabled={isLoading || sortedCarousels.length === 0}
+            size={Math.min(5, Math.max(1, sortedCarousels.length))}
+          >
+            {sortedCarousels.map(c => (
+              <option key={c.id} value={c.id}>{c.title}</option>
+            ))}
+          </select>
+          {sortedCarousels.length === 0 ? (
+            <p className="text-xs text-jungle-text/60 mt-1">Create a carousel first to add parties automatically.</p>
+          ) : (
+            <p className="text-xs text-jungle-text/60 mt-1">Hold Ctrl (Windows) or Command (Mac) to select multiple carousels.</p>
+          )}
+        </div>
+        {error && <p className="text-red-500 mt-2 text-sm">{error}</p>}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
