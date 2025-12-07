@@ -4,6 +4,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import PartyGrid from '../components/PartyGrid';
 import { useParties } from '../hooks/useParties';
 import { BASE_URL } from '../constants';
+import { getCurrentWeekendWindow } from '../lib/weekend';
 
 interface WeekdayPartiesPageProps {
   weekday: number;
@@ -23,16 +24,24 @@ const WeekdayPartiesPage: React.FC<WeekdayPartiesPageProps> = ({
   intro,
 }) => {
   const { parties, isLoading, error, loadingMessage } = useParties();
+  const weekendWindow = useMemo(() => getCurrentWeekendWindow(), []);
+  const isWeekendDay = useMemo(() => [4, 5, 6].includes(weekday), [weekday]);
 
   const filteredParties = useMemo(() => {
+    const now = Date.now();
     return parties.filter((party) => {
       const partyDate = new Date(party.date);
       if (Number.isNaN(partyDate.getTime())) {
         return false;
       }
-      return partyDate.getDay() === weekday;
+      return (
+        partyDate.getDay() === weekday &&
+        (!isWeekendDay || partyDate.getTime() >= weekendWindow.start.getTime()) &&
+        (!isWeekendDay || partyDate.getTime() <= weekendWindow.end.getTime()) &&
+        partyDate.getTime() >= now
+      );
     });
-  }, [parties, weekday]);
+  }, [isWeekendDay, parties, weekday, weekendWindow.end, weekendWindow.start]);
 
   const upcomingParties = useMemo(() => {
     const now = Date.now();
