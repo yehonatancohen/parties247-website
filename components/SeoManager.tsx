@@ -1,6 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { BASE_URL } from '../constants';
+import { BASE_URL, BRAND_LOGO_URL, SOCIAL_LINKS } from '../constants';
 import JsonLd from './JsonLd';
 
 interface SeoManagerProps {
@@ -31,6 +31,31 @@ const SeoManager: React.FC<SeoManagerProps> = ({
     { hrefLang: 'en', href: `${canonicalUrl}?lang=en` },
   ];
 
+  const organizationJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': `${BASE_URL}#organization`,
+    'name': 'Parties 24/7',
+    'url': BASE_URL,
+    'logo': {
+      '@type': 'ImageObject',
+      'url': BRAND_LOGO_URL,
+    },
+    'sameAs': [
+      SOCIAL_LINKS.instagram,
+      SOCIAL_LINKS.tiktok,
+      SOCIAL_LINKS.whatsapp,
+    ],
+  };
+
+  const pageJsonLd = jsonLd
+    ? Array.isArray(jsonLd)
+      ? jsonLd
+      : [jsonLd]
+    : [];
+
+  const combinedJsonLd = [organizationJsonLd, ...pageJsonLd];
+
   return (
     <>
       <Helmet htmlAttributes={{ lang: 'he', dir: 'rtl' }}>
@@ -55,7 +80,7 @@ const SeoManager: React.FC<SeoManagerProps> = ({
           <link key={locale.hrefLang} rel="alternate" hrefLang={locale.hrefLang} href={locale.href} />
         ))}
       </Helmet>
-      {jsonLd && <JsonLd data={jsonLd} />}
+      {combinedJsonLd.length > 0 && <JsonLd data={combinedJsonLd} />}
     </>
   );
 };

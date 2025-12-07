@@ -5,7 +5,7 @@ import { useParties } from '../hooks/useParties';
 import SeoManager from '../components/SeoManager';
 import LoadingSpinner from '../components/LoadingSpinner';
 import SocialsCta from '../components/SocialsCta';
-import { BASE_URL, SOCIAL_LINKS } from '../constants';
+import { BASE_URL } from '../constants';
 import { createCarouselSlug } from '../lib/carousels';
 
 const PartyCarousel = React.lazy(() => import('../components/HotEventsCarousel'));
@@ -40,23 +40,6 @@ const HomePage: React.FC = () => {
   const pageTitle = 'מסיבות בתל אביב | Parties247';
   const pageDescription = 'כל המסיבות הכי חמות בישראל – תל אביב, חיפה, אילת ועוד. Parties247 היא פלטפורמת המסיבות של ישראל.';
 
-  const organizationJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Organization',
-    'name': 'Parties 24/7',
-    'url': BASE_URL,
-    'logo': 'https://vjkiztnx7gionfos.public.blob.vercel-storage.com/Partieslogo.PNG',
-    'sameAs': [
-      SOCIAL_LINKS.instagram,
-      SOCIAL_LINKS.tiktok,
-      SOCIAL_LINKS.whatsapp,
-    ],
-    'areaServed': {
-      '@type': 'Country',
-      'name': 'IL',
-    },
-  };
-
   const websiteJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
@@ -84,7 +67,7 @@ const HomePage: React.FC = () => {
         title={pageTitle}
         description={pageDescription}
         canonicalPath="/"
-        jsonLd={[organizationJsonLd, websiteJsonLd]}
+        jsonLd={websiteJsonLd}
       />
 
       <section
