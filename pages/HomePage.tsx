@@ -119,25 +119,6 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      <section className="bg-gradient-to-r from-jungle-surface/80 via-jungle-deep/85 to-jungle-surface/80 border-y border-wood-brown/50 shadow-[0_10px_40px_rgba(0,0,0,0.35)]">
-        <div className="container mx-auto px-4 py-6 flex flex-col md:flex-row items-center md:items-start justify-between gap-4">
-          <div className="text-center md:text-right space-y-2">
-            <p className="text-xs uppercase tracking-[0.2em] text-jungle-accent/80">חיפוש מהיר</p>
-            <h2 className="text-2xl md:text-3xl font-display text-white">מצאו את המסיבה המושלמת בשבילכם</h2>
-            <p className="text-jungle-text/80 max-w-3xl md:ml-auto md:pl-6">
-              מסננים לפי עיר, וייב, מועדון או תאריך ומקבלים רשימה מתעדכנת של כל האירועים הקרובים. לחצו והתחילו לחפש ברגע.
-            </p>
-          </div>
-          <Link
-            to="/party-discovery"
-            className="inline-flex items-center gap-3 rounded-full bg-jungle-accent text-black font-semibold px-6 py-3 shadow-lg shadow-jungle-accent/40 hover:-translate-y-0.5 hover:shadow-xl hover:bg-white transition"
-          >
-            <span>לעמוד החיפוש</span>
-            <span aria-hidden="true" className="text-xl">↗</span>
-          </Link>
-        </div>
-      </section>
-
       <div className="space-y-16">
         {error ? (
           <div className="container mx-auto px-4 text-center py-8">
@@ -163,14 +144,37 @@ const HomePage: React.FC = () => {
             )}
 
             {carouselsWithParties.map((carousel, index) => (
-              <Suspense key={carousel.id} fallback={<CarouselSkeleton title={carousel.title} />}>
-                <PartyCarousel
-                  title={carousel.title}
-                  parties={carousel.parties}
-                  viewAllLink={carousel.viewAllLink}
-                  variant={index === 0 ? 'coverflow' : 'standard'}
-                />
-              </Suspense>
+              <React.Fragment key={carousel.id}>
+                <Suspense fallback={<CarouselSkeleton title={carousel.title} />}>
+                  <PartyCarousel
+                    title={carousel.title}
+                    parties={carousel.parties}
+                    viewAllLink={carousel.viewAllLink}
+                    variant={index === 0 ? 'coverflow' : 'standard'}
+                  />
+                </Suspense>
+
+                {index === 0 && (
+                  <section className="bg-gradient-to-r from-jungle-surface/80 via-jungle-deep/85 to-jungle-surface/80 border-y border-wood-brown/50 shadow-[0_10px_40px_rgba(0,0,0,0.35)]">
+                    <div className="container mx-auto px-4 py-6 flex flex-col md:flex-row items-center md:items-start justify-between gap-4">
+                      <div className="text-center md:text-right space-y-2">
+                        <p className="text-xs uppercase tracking-[0.2em] text-jungle-accent/80">חיפוש מהיר</p>
+                        <h2 className="text-2xl md:text-3xl font-display text-white">מצאו את המסיבה המושלמת בשבילכם</h2>
+                        <p className="text-jungle-text/80 max-w-3xl md:ml-auto md:pl-6">
+                          מסננים לפי עיר, וייב, מועדון או תאריך ומקבלים רשימה מתעדכנת של כל האירועים הקרובים. לחצו והתחילו לחפש ברגע.
+                        </p>
+                      </div>
+                      <Link
+                        to="/party-discovery"
+                        className="inline-flex items-center gap-3 rounded-full bg-jungle-accent text-black font-semibold px-6 py-3 shadow-lg shadow-jungle-accent/40 hover:-translate-y-0.5 hover:shadow-xl hover:bg-white transition"
+                      >
+                        <span>לעמוד החיפוש</span>
+                        <span aria-hidden="true" className="text-xl">↗</span>
+                      </Link>
+                    </div>
+                  </section>
+                )}
+              </React.Fragment>
             ))}
           </>
         )}
