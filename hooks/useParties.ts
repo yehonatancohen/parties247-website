@@ -172,6 +172,36 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
     }
   }, [carousels]);
 
+  const reorderCarousels = useCallback(async (orderedIds: string[]) => {
+    const originalCarousels = carousels;
+    const idToCarousel = new Map(originalCarousels.map(c => [c.id, c]));
+
+    const reordered: Carousel[] = [];
+    orderedIds.forEach((id, index) => {
+      const carousel = idToCarousel.get(id);
+      if (carousel) {
+        reordered.push({ ...carousel, order: index });
+        idToCarousel.delete(id);
+      }
+    });
+
+    const remaining = Array.from(idToCarousel.values())
+      .sort((a, b) => a.order - b.order)
+      .map((carousel, index) => ({ ...carousel, order: reordered.length + index }));
+
+    const newCarousels = [...reordered, ...remaining];
+    setCarousels(newCarousels);
+
+    try {
+      await api.reorderCarousels(orderedIds);
+    } catch (error) {
+      console.error("Failed to reorder carousels, rolling back.", error);
+      alert("Error: " + (error as Error).message);
+      setCarousels(originalCarousels);
+      throw error;
+    }
+  }, [carousels]);
+
 
   const addPartyToCarousel = useCallback(async (carouselId: string, partyId: string) => {
     const originalCarousels = carousels;
@@ -237,28 +267,6 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
       throw error;
     }
   }, []);
-  
-  const addPartiesFromSection = useCallback(async (payload: { carouselId: string; carouselTitle: string; url: string; }) => {
-    try {
-      const { carouselTitle, url } = payload;
-      // The backend uses carouselName and title. We'll send the same value for both.
-      const result = await api.addSection({ carouselName: carouselTitle, title: carouselTitle, url });
-
-      // After a bulk operation, re-sync the entire state to ensure consistency
-      const [fetchedParties, fetchedCarousels] = await Promise.all([
-        api.getParties(),
-        api.getCarousels(),
-      ]);
-      setParties(fetchedParties);
-      setCarousels(fetchedCarousels);
-
-      return { message: result.message, partyCount: result.partyCount, warnings: result.warnings };
-    } catch (error) {
-      console.error("Failed to add parties from section:", error);
-      alert("Error: " + (error as Error).message);
-      throw error;
-    }
-  }, []);
 
   const contextValue: PartyContextType = {
     parties,
@@ -269,9 +277,9 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
     addCarousel,
     deleteCarousel,
     updateCarousel,
+    reorderCarousels,
     addPartyToCarousel,
     removePartyFromCarousel,
-    addPartiesFromSection,
     isLoading,
     defaultReferral,
     setDefaultReferral,

@@ -413,6 +413,23 @@ export const deleteCarousel = async (carouselId: string): Promise<void> => {
 };
 
 /**
+ * Reorders carousels on the backend using the provided ordered list of IDs.
+ * @param orderedIds - Carousel IDs in the desired order (top to bottom).
+ */
+export const reorderCarousels = async (orderedIds: string[]): Promise<void> => {
+  const response = await fetch(`${API_URL}/admin/carousels/reorder`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    body: JSON.stringify({ orderedIds }),
+  });
+
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({ message: 'Failed to reorder carousels' }));
+    throw new Error(data.message || 'Failed to reorder carousels');
+  }
+};
+
+/**
  * Scrapes a section URL via the backend and adds parties to a carousel.
  * @param payload - The data for the section scraping request.
  */
