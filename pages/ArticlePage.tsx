@@ -49,19 +49,13 @@ const ArticlePage: React.FC = () => {
     'image': article.imageUrl,
     'description': article.summary,
     'author': {
-        '@type': 'Organization',
-        'name': 'Parties 24/7'
+      '@id': `${BASE_URL}#organization`,
     },
     'publisher': {
-        '@type': 'Organization',
-        'name': 'Parties 24/7',
-        'logo': {
-            '@type': 'ImageObject',
-            'url': 'https://vjkiztnx7gionfos.public.blob.vercel-storage.com/Partieslogo.PNG'
-        }
+      '@id': `${BASE_URL}#organization`,
     },
     'datePublished': new Date().toISOString(), // Placeholder
-  }
+  };
 
   return (
     <>

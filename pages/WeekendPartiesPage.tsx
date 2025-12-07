@@ -4,22 +4,31 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import PartyGrid from '../components/PartyGrid';
 import { useParties } from '../hooks/useParties';
 import { BASE_URL } from '../constants';
+import { getCurrentWeekendWindow } from '../lib/weekend';
 
 const WEEKEND_DAYS = [5, 6];
 
 const WeekendPartiesPage: React.FC = () => {
   const { parties, isLoading, error, loadingMessage } = useParties();
 
+  const weekendWindow = useMemo(() => getCurrentWeekendWindow(), []);
+
   const weekendParties = useMemo(() => {
     const now = Date.now();
+
     return parties
       .filter((party) => {
         const partyDate = new Date(party.date);
         if (Number.isNaN(partyDate.getTime())) return false;
-        return WEEKEND_DAYS.includes(partyDate.getDay()) && partyDate.getTime() >= now;
+        return (
+          WEEKEND_DAYS.includes(partyDate.getDay()) &&
+          partyDate.getTime() >= now &&
+          partyDate.getTime() >= weekendWindow.start.getTime() &&
+          partyDate.getTime() <= weekendWindow.end.getTime()
+        );
       })
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  }, [parties]);
+  }, [parties, weekendWindow.end, weekendWindow.start]);
 
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
