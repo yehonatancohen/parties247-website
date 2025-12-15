@@ -30,6 +30,7 @@ import PromoterDisclaimerPage from './pages/PromoterDisclaimerPage';
 import SeoLandingPage from './pages/SeoLandingPage';
 import { seoLandingPages } from './data/seoLandingPages';
 import PrefetchLinks from './components/PrefetchLinks';
+import PageCrossLinks from './components/PageCrossLinks';
 
 interface AppProps {
   initialState?: PartyProviderInitialState;
@@ -115,6 +116,7 @@ function App({ initialState }: AppProps) {
               ))}
             </Routes>
           </div>
+          <PageCrossLinks />
         </main>
         <Footer />
       </div>

@@ -5,6 +5,7 @@ import { Party, Carousel } from '../types';
 import LoadingSpinner from './LoadingSpinner';
 import { BASE_URL } from '../constants';
 import { SearchIcon, EditIcon, ChevronDownIcon, ArrowUpIcon, ArrowDownIcon, MegaphoneIcon, ShareIcon } from './Icons';
+import { pageLinkOptions } from '../data/pageLinks';
 
 const sanitizeGoOutUrl = (input: string): string => {
   if (!input) {
@@ -66,6 +67,10 @@ const TagInput: React.FC<{ tags: string[]; onTagsChange: (tags: string[]) => voi
     </div>
   );
 };
+
+const pageTagOptions = pageLinkOptions
+  .filter((option): option is typeof option & { tag: string } => Boolean(option.tag))
+  .map((option) => ({ label: option.label, tag: option.tag }));
 
 const EditPartyModal: React.FC<{ party: Party; onClose: () => void; onSave: (updatedParty: Party) => Promise<void>; }> = ({ party, onClose, onSave }) => {
   const [formData, setFormData] = useState<Party>(party);
@@ -159,8 +164,9 @@ const AdminDashboard: React.FC = () => {
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const [singleAddCarouselIds, setSingleAddCarouselIds] = useState<string[]>([]);
+  const [selectedPageTags, setSelectedPageTags] = useState<string[]>([]);
   
   const [localDefaultReferral, setLocalDefaultReferral] = useState('');
   const [newCarouselTitle, setNewCarouselTitle] = useState('');
@@ -303,25 +309,41 @@ const AdminDashboard: React.FC = () => {
     setError(null);
     try {
       const newParty = await addParty(sanitizedUrl);
-      if (defaultReferral) {
-        await updateParty({ ...newParty, referralCode: defaultReferral });
+      const mergedTags = Array.from(new Set([...(newParty.tags || []), ...selectedPageTags]));
+      const shouldUpdateParty =
+        mergedTags.length !== (newParty.tags || []).length ||
+        (defaultReferral && defaultReferral !== newParty.referralCode);
+
+      if (shouldUpdateParty) {
+        await updateParty({
+          ...newParty,
+          referralCode: defaultReferral || newParty.referralCode,
+          tags: mergedTags,
+        });
       }
       if (singleAddCarouselIds.length > 0) {
         await Promise.all(singleAddCarouselIds.map(carouselId => addPartyToCarousel(carouselId, newParty.id)));
       }
       setUrl('');
       setSingleAddCarouselIds([]);
+      setSelectedPageTags([]);
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : 'Failed to add party.');
     } finally {
       setIsLoading(false);
     }
-  }, [url, addParty, parties, updateParty, defaultReferral, singleAddCarouselIds, addPartyToCarousel]);
+  }, [url, addParty, parties, updateParty, defaultReferral, singleAddCarouselIds, addPartyToCarousel, selectedPageTags]);
 
   const handleSingleAddCarouselChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = Array.from(event.target.selectedOptions).map(option => option.value);
     setSingleAddCarouselIds(selected);
+  };
+
+  const toggleSelectedPageTag = (tag: string) => {
+    setSelectedPageTags((prev) =>
+      prev.includes(tag) ? prev.filter((item) => item !== tag) : [...prev, tag]
+    );
   };
 
   const getHighQualityImageUrl = useCallback((imageUrl: string) => {
@@ -442,6 +464,12 @@ const AdminDashboard: React.FC = () => {
     }
   }, [copyToClipboard]);
 
+  const handleTogglePartyPageTag = useCallback((party: Party, tag: string) => {
+    const hasTag = party.tags.includes(tag);
+    const updatedTags = hasTag ? party.tags.filter((existingTag) => existingTag !== tag) : [...party.tags, tag];
+    updateParty({ ...party, tags: updatedTags });
+  }, [updateParty]);
+
   // FIX: Explicitly type PartyListItem as React.FC to correctly handle props like 'key' and resolve assignment errors.
   const PartyListItem: React.FC<{ party: Party }> = ({ party }) => (
     <div className="bg-jungle-deep p-3 rounded-md">
@@ -484,6 +512,24 @@ const AdminDashboard: React.FC = () => {
       </div>
       <div className="mt-2 pt-2 border-t border-wood-brown">
         <TagInput tags={party.tags} onTagsChange={(newTags) => updateParty({ ...party, tags: newTags })} />
+        <div className="flex flex-wrap gap-2 mt-2">
+          {pageTagOptions.map((option) => {
+            const isActive = party.tags.includes(option.tag);
+            return (
+              <button
+                key={option.tag}
+                onClick={() => handleTogglePartyPageTag(party, option.tag)}
+                className={`px-3 py-1 rounded-full text-xs border transition-colors ${
+                  isActive
+                    ? 'bg-jungle-accent text-jungle-deep border-jungle-accent'
+                    : 'bg-jungle-surface text-jungle-text/80 border-wood-brown hover:border-jungle-accent hover:text-white'
+                }`}
+              >
+                {option.label}
+              </button>
+            );
+          })}
+        </div>
       </div>
       {promotionMessages[party.id] && (
         <p
@@ -555,6 +601,34 @@ const AdminDashboard: React.FC = () => {
             <p className="text-xs text-jungle-text/60 mt-1">Create a carousel first to add parties automatically.</p>
           ) : (
             <p className="text-xs text-jungle-text/60 mt-1">Hold Ctrl (Windows) or Command (Mac) to select multiple carousels.</p>
+          )}
+        </div>
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-xs text-jungle-text/70">Website page tags</label>
+            <span className="text-[11px] text-jungle-text/50">נוסף לתגיות החכמות</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {pageTagOptions.map((option) => {
+              const isSelected = selectedPageTags.includes(option.tag);
+              return (
+                <button
+                  key={option.tag}
+                  type="button"
+                  onClick={() => toggleSelectedPageTag(option.tag)}
+                  className={`px-3 py-1 rounded-full text-xs border transition-colors ${
+                    isSelected
+                      ? 'bg-jungle-accent text-jungle-deep border-jungle-accent'
+                      : 'bg-jungle-deep text-jungle-text/80 border-wood-brown hover:border-jungle-accent hover:text-white'
+                  }`}
+                >
+                  {option.label}
+                </button>
+              );
+            })}
+          </div>
+          {selectedPageTags.length > 0 && (
+            <p className="text-[11px] text-jungle-text/60 mt-2">יוחלו גם על האירוע החדש בזמן הוספה.</p>
           )}
         </div>
         {error && <p className="text-red-500 mt-2 text-sm">{error}</p>}
