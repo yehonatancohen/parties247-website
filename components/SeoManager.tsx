@@ -26,6 +26,10 @@ const SeoManager: React.FC<SeoManagerProps> = ({
     ? canonicalPath
     : `${BASE_URL}${canonicalPath.startsWith('/') ? '' : '/'}${canonicalPath}`;
 
+  const resolvedOgImage = ogImage.startsWith('http')
+    ? ogImage
+    : `${BASE_URL}/${ogImage.replace(/^\//, '')}`;
+
   const locales = alternateLocales ?? [
     { hrefLang: 'he', href: canonicalUrl },
     { hrefLang: 'en', href: `${canonicalUrl}?lang=en` },
@@ -65,7 +69,7 @@ const SeoManager: React.FC<SeoManagerProps> = ({
 
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
-        <meta property="og:image" content={ogImage} />
+        <meta property="og:image" content={resolvedOgImage} />
         <meta property="og:type" content={ogType} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:locale" content="he_IL" />
@@ -74,7 +78,7 @@ const SeoManager: React.FC<SeoManagerProps> = ({
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
-        <meta name="twitter:image" content={ogImage} />
+        <meta name="twitter:image" content={resolvedOgImage} />
 
         {locales.map((locale) => (
           <link key={locale.hrefLang} rel="alternate" hrefLang={locale.hrefLang} href={locale.href} />
