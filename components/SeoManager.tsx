@@ -3,34 +3,36 @@ import { Helmet } from 'react-helmet-async';
 import { BASE_URL, BRAND_LOGO_URL, SOCIAL_LINKS } from '../constants';
 import JsonLd from './JsonLd';
 
-const DEFAULT_OG_IMAGE_DIMENSION = '256';
+const OG_IMAGE_WIDTH = '1200';
+const OG_IMAGE_HEIGHT = '630';
 const DEFAULT_OG_UPDATED_TIME = new Date().toISOString();
-const OG_IMAGE_TARGET_QUALITY = '80';
+const OG_IMAGE_TARGET_QUALITY = '85';
+const OG_IMAGE_ALT_FALLBACK = 'Event cover image';
 
-const buildOptimizedOgImage = (imageUrl: string) => {
+const buildOptimizedOgImage = (imageUrl: string, versionTag?: string) => {
   try {
     const url = new URL(imageUrl);
 
     if (url.searchParams.has('w')) {
-      url.searchParams.set('w', DEFAULT_OG_IMAGE_DIMENSION);
+      url.searchParams.set('w', OG_IMAGE_WIDTH);
     } else {
-      url.searchParams.append('w', DEFAULT_OG_IMAGE_DIMENSION);
+      url.searchParams.append('w', OG_IMAGE_WIDTH);
     }
     if (url.searchParams.has('width')) {
-      url.searchParams.set('width', DEFAULT_OG_IMAGE_DIMENSION);
+      url.searchParams.set('width', OG_IMAGE_WIDTH);
     } else if (!url.searchParams.has('w')) {
-      url.searchParams.append('width', DEFAULT_OG_IMAGE_DIMENSION);
+      url.searchParams.append('width', OG_IMAGE_WIDTH);
     }
 
     if (url.searchParams.has('h')) {
-      url.searchParams.set('h', DEFAULT_OG_IMAGE_DIMENSION);
+      url.searchParams.set('h', OG_IMAGE_HEIGHT);
     } else {
-      url.searchParams.append('h', DEFAULT_OG_IMAGE_DIMENSION);
+      url.searchParams.append('h', OG_IMAGE_HEIGHT);
     }
     if (url.searchParams.has('height')) {
-      url.searchParams.set('height', DEFAULT_OG_IMAGE_DIMENSION);
+      url.searchParams.set('height', OG_IMAGE_HEIGHT);
     } else if (!url.searchParams.has('h')) {
-      url.searchParams.append('height', DEFAULT_OG_IMAGE_DIMENSION);
+      url.searchParams.append('height', OG_IMAGE_HEIGHT);
     }
 
     if (url.searchParams.has('q')) {
@@ -39,6 +41,10 @@ const buildOptimizedOgImage = (imageUrl: string) => {
       url.searchParams.set('quality', OG_IMAGE_TARGET_QUALITY);
     } else {
       url.searchParams.append('q', OG_IMAGE_TARGET_QUALITY);
+    }
+
+    if (versionTag) {
+      url.searchParams.set('v', versionTag);
     }
 
     return url.toString();
@@ -76,7 +82,7 @@ const SeoManager: React.FC<SeoManagerProps> = ({
   const resolvedOgImage = ogImage.startsWith('http')
     ? ogImage
     : `${BASE_URL}/${ogImage.replace(/^\//, '')}`;
-  const optimizedOgImage = buildOptimizedOgImage(resolvedOgImage);
+  const optimizedOgImage = buildOptimizedOgImage(resolvedOgImage, ogUpdatedTime);
 
   const locales = alternateLocales ?? [
     { hrefLang: 'he', href: canonicalUrl },
@@ -118,8 +124,11 @@ const SeoManager: React.FC<SeoManagerProps> = ({
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <meta property="og:image" content={optimizedOgImage} itemProp="image" />
-        <meta property="og:image:width" content={DEFAULT_OG_IMAGE_DIMENSION} />
-        <meta property="og:image:height" content={DEFAULT_OG_IMAGE_DIMENSION} />
+        <meta property="og:image:secure_url" content={optimizedOgImage} />
+        <meta property="og:image:type" content="image/jpeg" />
+        <meta property="og:image:width" content={OG_IMAGE_WIDTH} />
+        <meta property="og:image:height" content={OG_IMAGE_HEIGHT} />
+        <meta property="og:image:alt" content={title || OG_IMAGE_ALT_FALLBACK} />
         <meta property="og:type" content={ogType} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:locale" content="he_IL" />
