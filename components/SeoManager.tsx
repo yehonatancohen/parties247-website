@@ -5,43 +5,23 @@ import JsonLd from './JsonLd';
 
 const OG_IMAGE_WIDTH = '1200';
 const OG_IMAGE_HEIGHT = '630';
+const OG_FILENAME_SUFFIX = `_og_${OG_IMAGE_WIDTH}x${OG_IMAGE_HEIGHT}`;
 const DEFAULT_OG_UPDATED_TIME = new Date().toISOString();
-const OG_IMAGE_TARGET_QUALITY = '85';
 const OG_IMAGE_ALT_FALLBACK = 'Event cover image';
 
-const buildOptimizedOgImage = (imageUrl: string, versionTag?: string) => {
+const buildOgAssetUrl = (imageUrl: string, versionTag?: string) => {
   try {
     const url = new URL(imageUrl);
 
-    if (url.searchParams.has('w')) {
-      url.searchParams.set('w', OG_IMAGE_WIDTH);
-    } else {
-      url.searchParams.append('w', OG_IMAGE_WIDTH);
-    }
-    if (url.searchParams.has('width')) {
-      url.searchParams.set('width', OG_IMAGE_WIDTH);
-    } else if (!url.searchParams.has('w')) {
-      url.searchParams.append('width', OG_IMAGE_WIDTH);
-    }
+    const lastSlashIndex = url.pathname.lastIndexOf('/') + 1;
+    const fileName = url.pathname.substring(lastSlashIndex);
+    const extIndex = fileName.lastIndexOf('.');
 
-    if (url.searchParams.has('h')) {
-      url.searchParams.set('h', OG_IMAGE_HEIGHT);
-    } else {
-      url.searchParams.append('h', OG_IMAGE_HEIGHT);
-    }
-    if (url.searchParams.has('height')) {
-      url.searchParams.set('height', OG_IMAGE_HEIGHT);
-    } else if (!url.searchParams.has('h')) {
-      url.searchParams.append('height', OG_IMAGE_HEIGHT);
-    }
+    const extension = extIndex > 0 ? fileName.substring(extIndex) : '.jpg';
+    const baseName = extIndex > 0 ? fileName.substring(0, extIndex) : fileName || 'coverImage';
 
-    if (url.searchParams.has('q')) {
-      url.searchParams.set('q', OG_IMAGE_TARGET_QUALITY);
-    } else if (url.searchParams.has('quality')) {
-      url.searchParams.set('quality', OG_IMAGE_TARGET_QUALITY);
-    } else {
-      url.searchParams.append('q', OG_IMAGE_TARGET_QUALITY);
-    }
+    url.pathname = `${url.pathname.substring(0, lastSlashIndex)}${baseName}${OG_FILENAME_SUFFIX}${extension}`;
+    url.search = '';
 
     if (versionTag) {
       url.searchParams.set('v', versionTag);
@@ -49,7 +29,7 @@ const buildOptimizedOgImage = (imageUrl: string, versionTag?: string) => {
 
     return url.toString();
   } catch (error) {
-    console.warn('Could not optimize og image URL, returning original.', error);
+    console.warn('Could not build OG asset URL, returning original.', error);
     return imageUrl;
   }
 };
@@ -82,7 +62,7 @@ const SeoManager: React.FC<SeoManagerProps> = ({
   const resolvedOgImage = ogImage.startsWith('http')
     ? ogImage
     : `${BASE_URL}/${ogImage.replace(/^\//, '')}`;
-  const optimizedOgImage = buildOptimizedOgImage(resolvedOgImage, ogUpdatedTime);
+  const ogAssetImage = buildOgAssetUrl(resolvedOgImage, ogUpdatedTime);
 
   const locales = alternateLocales ?? [
     { hrefLang: 'he', href: canonicalUrl },
@@ -123,8 +103,8 @@ const SeoManager: React.FC<SeoManagerProps> = ({
 
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
-        <meta property="og:image" content={optimizedOgImage} itemProp="image" />
-        <meta property="og:image:secure_url" content={optimizedOgImage} />
+        <meta property="og:image" content={ogAssetImage} itemProp="image" />
+        <meta property="og:image:secure_url" content={ogAssetImage} />
         <meta property="og:image:type" content="image/jpeg" />
         <meta property="og:image:width" content={OG_IMAGE_WIDTH} />
         <meta property="og:image:height" content={OG_IMAGE_HEIGHT} />
@@ -138,7 +118,7 @@ const SeoManager: React.FC<SeoManagerProps> = ({
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
-        <meta name="twitter:image" content={optimizedOgImage} />
+        <meta name="twitter:image" content={ogAssetImage} />
 
         {locales.map((locale) => (
           <link key={locale.hrefLang} rel="alternate" hrefLang={locale.hrefLang} href={locale.href} />
