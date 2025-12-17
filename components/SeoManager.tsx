@@ -3,12 +3,16 @@ import { Helmet } from 'react-helmet-async';
 import { BASE_URL, BRAND_LOGO_URL, SOCIAL_LINKS } from '../constants';
 import JsonLd from './JsonLd';
 
+const DEFAULT_OG_IMAGE_DIMENSION = '256';
+const DEFAULT_OG_UPDATED_TIME = new Date().toISOString();
+
 interface SeoManagerProps {
   title: string;
   description: string;
   canonicalPath: string;
   ogImage?: string;
   ogType?: string;
+  ogUpdatedTime?: string;
   jsonLd?: object | object[];
   alternateLocales?: { hrefLang: string; href: string }[];
 }
@@ -19,6 +23,7 @@ const SeoManager: React.FC<SeoManagerProps> = ({
   canonicalPath,
   ogImage = 'https://www.parties247.co.il/preview.jpg',
   ogType = 'website',
+  ogUpdatedTime = DEFAULT_OG_UPDATED_TIME,
   jsonLd,
   alternateLocales,
 }) => {
@@ -69,11 +74,14 @@ const SeoManager: React.FC<SeoManagerProps> = ({
 
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
-        <meta property="og:image" content={resolvedOgImage} />
+        <meta property="og:image" content={resolvedOgImage} itemProp="image" />
+        <meta property="og:image:width" content={DEFAULT_OG_IMAGE_DIMENSION} />
+        <meta property="og:image:height" content={DEFAULT_OG_IMAGE_DIMENSION} />
         <meta property="og:type" content={ogType} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:locale" content="he_IL" />
         <meta property="og:site_name" content="Parties 24/7" />
+        <meta property="og:updated_time" content={ogUpdatedTime} />
 
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={title} />
