@@ -5,6 +5,48 @@ import JsonLd from './JsonLd';
 
 const DEFAULT_OG_IMAGE_DIMENSION = '256';
 const DEFAULT_OG_UPDATED_TIME = new Date().toISOString();
+const OG_IMAGE_TARGET_QUALITY = '80';
+
+const buildOptimizedOgImage = (imageUrl: string) => {
+  try {
+    const url = new URL(imageUrl);
+
+    if (url.searchParams.has('w')) {
+      url.searchParams.set('w', DEFAULT_OG_IMAGE_DIMENSION);
+    } else {
+      url.searchParams.append('w', DEFAULT_OG_IMAGE_DIMENSION);
+    }
+    if (url.searchParams.has('width')) {
+      url.searchParams.set('width', DEFAULT_OG_IMAGE_DIMENSION);
+    } else if (!url.searchParams.has('w')) {
+      url.searchParams.append('width', DEFAULT_OG_IMAGE_DIMENSION);
+    }
+
+    if (url.searchParams.has('h')) {
+      url.searchParams.set('h', DEFAULT_OG_IMAGE_DIMENSION);
+    } else {
+      url.searchParams.append('h', DEFAULT_OG_IMAGE_DIMENSION);
+    }
+    if (url.searchParams.has('height')) {
+      url.searchParams.set('height', DEFAULT_OG_IMAGE_DIMENSION);
+    } else if (!url.searchParams.has('h')) {
+      url.searchParams.append('height', DEFAULT_OG_IMAGE_DIMENSION);
+    }
+
+    if (url.searchParams.has('q')) {
+      url.searchParams.set('q', OG_IMAGE_TARGET_QUALITY);
+    } else if (url.searchParams.has('quality')) {
+      url.searchParams.set('quality', OG_IMAGE_TARGET_QUALITY);
+    } else {
+      url.searchParams.append('q', OG_IMAGE_TARGET_QUALITY);
+    }
+
+    return url.toString();
+  } catch (error) {
+    console.warn('Could not optimize og image URL, returning original.', error);
+    return imageUrl;
+  }
+};
 
 interface SeoManagerProps {
   title: string;
@@ -34,6 +76,7 @@ const SeoManager: React.FC<SeoManagerProps> = ({
   const resolvedOgImage = ogImage.startsWith('http')
     ? ogImage
     : `${BASE_URL}/${ogImage.replace(/^\//, '')}`;
+  const optimizedOgImage = buildOptimizedOgImage(resolvedOgImage);
 
   const locales = alternateLocales ?? [
     { hrefLang: 'he', href: canonicalUrl },
@@ -74,7 +117,7 @@ const SeoManager: React.FC<SeoManagerProps> = ({
 
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
-        <meta property="og:image" content={resolvedOgImage} itemProp="image" />
+        <meta property="og:image" content={optimizedOgImage} itemProp="image" />
         <meta property="og:image:width" content={DEFAULT_OG_IMAGE_DIMENSION} />
         <meta property="og:image:height" content={DEFAULT_OG_IMAGE_DIMENSION} />
         <meta property="og:type" content={ogType} />
@@ -86,7 +129,7 @@ const SeoManager: React.FC<SeoManagerProps> = ({
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
-        <meta name="twitter:image" content={resolvedOgImage} />
+        <meta name="twitter:image" content={optimizedOgImage} />
 
         {locales.map((locale) => (
           <link key={locale.hrefLang} rel="alternate" hrefLang={locale.hrefLang} href={locale.href} />
