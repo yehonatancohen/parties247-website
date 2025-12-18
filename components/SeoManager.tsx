@@ -5,22 +5,16 @@ import JsonLd from './JsonLd';
 
 const OG_IMAGE_WIDTH = '1200';
 const OG_IMAGE_HEIGHT = '630';
-const OG_FILENAME_SUFFIX = `_og_${OG_IMAGE_WIDTH}x${OG_IMAGE_HEIGHT}`;
 const DEFAULT_OG_UPDATED_TIME = new Date().toISOString();
 const OG_IMAGE_ALT_FALLBACK = 'Event cover image';
 
-const buildOgAssetUrl = (imageUrl: string, versionTag?: string) => {
+const buildWhatsappOgImageUrl = (imageUrl: string, versionTag?: string) => {
   try {
     const url = new URL(imageUrl);
 
-    const lastSlashIndex = url.pathname.lastIndexOf('/') + 1;
-    const fileName = url.pathname.substring(lastSlashIndex);
-    const extIndex = fileName.lastIndexOf('.');
-
-    const extension = extIndex > 0 ? fileName.substring(extIndex) : '.jpg';
-    const baseName = extIndex > 0 ? fileName.substring(0, extIndex) : fileName || 'coverImage';
-
-    url.pathname = `${url.pathname.substring(0, lastSlashIndex)}${baseName}${OG_FILENAME_SUFFIX}${extension}`;
+    url.pathname = url.pathname
+      .replace('_coverImage', '_whatsappImage')
+      .replace('_coverimage', '_whatsappImage');
     url.search = '';
 
     if (versionTag) {
@@ -62,7 +56,7 @@ const SeoManager: React.FC<SeoManagerProps> = ({
   const resolvedOgImage = ogImage.startsWith('http')
     ? ogImage
     : `${BASE_URL}/${ogImage.replace(/^\//, '')}`;
-  const ogAssetImage = buildOgAssetUrl(resolvedOgImage, ogUpdatedTime);
+  const ogAssetImage = buildWhatsappOgImageUrl(resolvedOgImage, ogUpdatedTime);
 
   const locales = alternateLocales ?? [
     { hrefLang: 'he', href: canonicalUrl },
