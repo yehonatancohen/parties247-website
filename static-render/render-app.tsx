@@ -83,13 +83,13 @@ export const buildRouteList = (parties: Party[]): string[] => {
   taxonomyConfigs.forEach((config) => baseRoutes.add(config.path));
   articles.forEach((article) => baseRoutes.add(`/כתבות/${article.slug}`));
 
+  const allEvents = parties.filter((party) => Boolean(party.slug));
+  allEvents.forEach((party) => baseRoutes.add(`/event/${party.slug}`));
+
   const now = new Date();
   const upcomingParties = parties
     .filter((party) => new Date(party.date) >= now)
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
-  const eventsToRender = upcomingParties.slice(0, 24);
-  eventsToRender.forEach((party) => baseRoutes.add(`/event/${party.slug}`));
 
   const perPage = 20;
   const totalPages = Math.min(Math.ceil(upcomingParties.length / perPage), 3);
