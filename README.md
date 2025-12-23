@@ -1,22 +1,34 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Parties24/7 Website
 
-# Run and deploy your AI Studio app
+This repo contains the Parties24/7 marketing site rebuilt on **Next.js 14** with the App Router. Pages that list parties use ISR with hourly revalidation, and static informational pages (about/legal/etc.) are pre-rendered for maximum edge caching and SEO.
 
-This contains everything you need to run your app locally.
+## Prerequisites
+- Node.js 18+
+- npm
 
-View your app in AI Studio: https://ai.studio/apps/drive/1lxsvxFEmCNEaojqdnmGnFilL7Ziei5WO
+## Getting Started
+1. Install dependencies
+   ```bash
+   npm install
+   ```
+2. Run the development server
+   ```bash
+   npm run dev
+   ```
+   The app starts on http://localhost:3000.
 
-## Run Locally
+## Production Build
+Build and start the optimized production server:
+```bash
+npm run build
+npm start
+```
 
-**Prerequisites:**  Node.js
+## Project Structure
+- `app/` – Next.js App Router pages, layouts, and UI components
+- `lib/` – server-side API helpers
+- `data/` – static article and taxonomy data for ISR/SSG pages
+- `public/` – static assets served by Next.js
+- `constants.ts` – shared site metadata (base URL, social links, logo)
 
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
-
-Tailwind CSS is compiled locally via `npm run build:css` (automatically executed before `npm run dev` and `npm run build`). The output stylesheet is written to `public/assets/app.css` and linked from `index.html`.
+Legacy Vite/SPA files were removed in favor of the Next.js implementation.

@@ -1,7 +1,11 @@
 {
-  "name": "parties-24/7",
+  "name": "parties247-website",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Parties24/7 marketing site built with Next.js ISR/SSG",
+  "engines": {
+    "node": "^18.0.0 || >=20.0.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
