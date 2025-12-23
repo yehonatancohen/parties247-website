@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import App from '../App';
 import { HelmetProvider, HelmetServerContext } from '../lib/react-helmet-async';
 import { PartyProviderInitialState, Party } from '../types';
+import { PartyProvider } from '../hooks/useParties';
 import { taxonomyConfigs } from '../data/taxonomy';
 import { articles } from '../data/articles';
 import { getParties, getCarousels, getDefaultReferral } from '../services/api';
@@ -109,7 +110,9 @@ export const renderAppToHtml = (
   const markup = renderToString(
     <HelmetProvider context={helmetContext}>
       <MemoryRouter initialEntries={[route]}>
-        <App initialState={initialState} />
+        <PartyProvider initialState={initialState}>
+          <App initialState={initialState} />
+        </PartyProvider>
       </MemoryRouter>
     </HelmetProvider>,
   );
