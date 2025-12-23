@@ -149,7 +149,7 @@ export const getParties = async (): Promise<Party[]> => {
   }
   const data = await response.json();
   // Filter out parties that lack a slug to prevent generating broken links.
-  return data.map(mapPartyToFrontend).filter(party => {
+  return data.map(mapPartyToFrontend).filter((party: { slug: any; }) => {
     if (!party.slug) {
       console.warn('Party data from API is missing a slug, filtering it out:', party);
       return false;

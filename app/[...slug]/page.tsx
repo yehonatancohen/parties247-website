@@ -1,11 +1,11 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { fetchCarousels, fetchParties } from '../lib/api';
-import { createCarouselSlug } from '../lib/carousels';
-import PartyGrid from './ui/PartyGrid';
-import { taxonomyConfigs, cities, genres } from '../data/taxonomy';
-import { BASE_URL } from '../constants';
+import { fetchCarousels, fetchParties } from '../../lib/api';
+import { createCarouselSlug } from '../../lib/carousels';
+import PartyGrid from '../ui/PartyGrid';
+import { taxonomyConfigs, cities, genres } from '../../data/taxonomy';
+import { BASE_URL } from '../../constants';
 
 export const revalidate = 3600;
 
