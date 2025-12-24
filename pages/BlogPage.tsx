@@ -1,7 +1,7 @@
 import React from 'react';
-import SeoManager from '../components/SeoManager';
+import SeoManager from '../parties247-next/components/SeoManager';
 import { articles } from '../data/articles';
-import ArticleCard from '../components/ArticleCard';
+import ArticleCard from '../parties247-next/components/ArticleCard';
 import { BASE_URL } from '../constants';
 
 const BlogPage: React.FC = () => {

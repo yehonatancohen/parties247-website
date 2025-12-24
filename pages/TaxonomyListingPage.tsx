@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import SeoManager from '../components/SeoManager';
-import Breadcrumbs, { BreadcrumbItem } from '../components/Breadcrumbs';
+import SeoManager from '../parties247-next/components/SeoManager';
+import Breadcrumbs, { BreadcrumbItem } from '../parties247-next/components/Breadcrumbs';
 import { BASE_URL } from '../constants';
 import type { TaxonomyConfig } from '../data/taxonomy';
 

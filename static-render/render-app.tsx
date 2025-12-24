@@ -2,7 +2,7 @@ import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { MemoryRouter } from 'react-router-dom';
 import App from '../App';
-import { HelmetProvider, HelmetServerContext } from '../lib/react-helmet-async';
+import { HelmetProvider, HelmetServerContext } from '../parties247-next/lib/react-helmet-async';
 import { PartyProviderInitialState, Party } from '../types';
 import { taxonomyConfigs } from '../data/taxonomy';
 import { articles } from '../data/articles';

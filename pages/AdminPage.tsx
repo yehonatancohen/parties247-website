@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, Route, Routes, Navigate } from 'react-router-dom';
-import Auth from '../components/Auth';
-import AdminDashboard from '../components/AdminDashboard';
-import SeoManager from '../components/SeoManager';
+import Auth from '../parties247-next/components/Auth';
+import AdminDashboard from '../parties247-next/components/AdminDashboard';
+import SeoManager from '../parties247-next/components/SeoManager';
 import * as api from '../services/api';
-import LoadingSpinner from '../components/LoadingSpinner';
-import AdminAnalytics from '../components/AdminAnalytics';
+import LoadingSpinner from '../parties247-next/components/LoadingSpinner';
+import AdminAnalytics from '../parties247-next/components/AdminAnalytics';
 
 const JWT_TOKEN_STORAGE = 'jwtAuthToken';
 

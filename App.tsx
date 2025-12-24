@@ -1,9 +1,9 @@
 
 import React, { useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
-import { PartyProvider, PartyProviderInitialState } from './hooks/useParties';
-import Header from './components/Header';
-import Footer from './components/Footer';
+import { PartyProvider, PartyProviderInitialState } from './parties247-next/hooks/useParties';
+import Header from './parties247-next/components/Header';
+import Footer from './parties247-next/components/Footer';
 import HomePage from './pages/HomePage';
 import AdminPage from './pages/AdminPage';
 import AllPartiesPage from './pages/AllPartiesPage';
@@ -14,23 +14,23 @@ import FridayPartiesPage from './pages/FridayPartiesPage';
 import SaturdayPartiesPage from './pages/SaturdayPartiesPage';
 import PartyDiscoveryPage from './pages/PartyDiscoveryPage';
 import WeekendPartiesPage from './pages/WeekendPartiesPage';
-import CommunityPopup from './components/CommunityPopup';
-import CookieBanner from './components/CookieBanner';
-import JungleDecorations from './components/JungleDecorations';
+import CommunityPopup from './parties247-next/components/CommunityPopup';
+import CookieBanner from './parties247-next/components/CookieBanner';
+import JungleDecorations from './parties247-next/components/JungleDecorations';
 import BlogPage from './pages/BlogPage';
-import ScrollToTop from './components/ScrollToTop';
+import ScrollToTop from './parties247-next/components/ScrollToTop';
 import EventPage from './pages/EventPage';
 import ArticlePage from './pages/ArticlePage';
 import TaxonomyPage from './pages/TaxonomyPage';
 import TaxonomyListingPage from './pages/TaxonomyListingPage';
 import { taxonomyConfigs, taxonomyListingConfigs } from './data/taxonomy';
 import CarouselPage from './pages/CarouselPage';
-import { ANALYTICS_CONSENT_EVENT, initializeAnalytics } from './lib/analytics';
+import { ANALYTICS_CONSENT_EVENT, initializeAnalytics } from './parties247-next/lib/analytics';
 import PromoterDisclaimerPage from './pages/PromoterDisclaimerPage';
 import SeoLandingPage from './pages/SeoLandingPage';
 import { seoLandingPages } from './data/seoLandingPages';
-import PrefetchLinks from './components/PrefetchLinks';
-import PageCrossLinks from './components/PageCrossLinks';
+import PrefetchLinks from './parties247-next/components/PrefetchLinks';
+import PageCrossLinks from './parties247-next/components/PageCrossLinks';
 
 interface AppProps {
   initialState?: PartyProviderInitialState;

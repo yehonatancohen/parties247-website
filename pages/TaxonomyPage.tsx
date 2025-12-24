@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { useParties } from '../hooks/useParties';
-import SeoManager from '../components/SeoManager';
-import Breadcrumbs from '../components/Breadcrumbs';
-import FaqBlock from '../components/FaqBlock';
-import PartyGrid from '../components/PartyGrid';
-import LoadingSpinner from '../components/LoadingSpinner';
+import { useParties } from '../parties247-next/hooks/useParties';
+import SeoManager from '../parties247-next/components/SeoManager';
+import Breadcrumbs from '../parties247-next/components/Breadcrumbs';
+import FaqBlock from '../parties247-next/components/FaqBlock';
+import PartyGrid from '../parties247-next/components/PartyGrid';
+import LoadingSpinner from '../parties247-next/components/LoadingSpinner';
 import { filterPartiesByTaxonomy, TaxonomyConfig } from '../data/taxonomy';
 import { BASE_URL } from '../constants';
 

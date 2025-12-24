@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import SeoManager from '../components/SeoManager';
+import SeoManager from '../parties247-next/components/SeoManager';
 import { SeoLandingPageConfig } from '../data/seoLandingPages';
 
 interface SeoLandingPageProps {

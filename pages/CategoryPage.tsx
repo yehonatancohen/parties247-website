@@ -1,10 +1,10 @@
 
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { useParties } from '../hooks/useParties';
-import PartyGrid from '../components/PartyGrid';
-import SeoManager from '../components/SeoManager';
-import LoadingSpinner from '../components/LoadingSpinner';
+import { useParties } from '../parties247-next/hooks/useParties';
+import PartyGrid from '../parties247-next/components/PartyGrid';
+import SeoManager from '../parties247-next/components/SeoManager';
+import LoadingSpinner from '../parties247-next/components/LoadingSpinner';
 import { Party } from '../types';
 import { BASE_URL } from '../constants';
 

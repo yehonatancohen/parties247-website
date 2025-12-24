@@ -3,16 +3,16 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Party } from '../types';
 import { getPartyBySlug } from '../services/api';
-import SeoManager from '../components/SeoManager';
-import LoadingSpinner from '../components/LoadingSpinner';
-import { useParties } from '../hooks/useParties';
-import { CalendarIcon, LocationIcon, LeafIcon, PartyPopperIcon, FireIcon } from '../components/Icons';
+import SeoManager from '../parties247-next/components/SeoManager';
+import LoadingSpinner from '../parties247-next/components/LoadingSpinner';
+import { useParties } from '../parties247-next/hooks/useParties';
+import { CalendarIcon, LocationIcon, LeafIcon, PartyPopperIcon, FireIcon } from '../parties247-next/components/Icons';
 import { BASE_URL } from '../constants';
-import ShareButtons from '../components/ShareButtons';
-import RelatedPartyCard from '../components/RelatedPartyCard';
-import { trackPartyRedirect } from '../lib/analytics';
-import DiscountCodeReveal from '../components/DiscountCodeReveal';
-import { createCarouselSlug } from '../lib/carousels';
+import ShareButtons from '../parties247-next/components/ShareButtons';
+import RelatedPartyCard from '../parties247-next/components/RelatedPartyCard';
+import { trackPartyRedirect } from '../parties247-next/lib/analytics';
+import DiscountCodeReveal from '../parties247-next/components/DiscountCodeReveal';
+import { createCarouselSlug } from '../parties247-next/lib/carousels';
 
 const EventPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();

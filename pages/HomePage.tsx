@@ -1,14 +1,14 @@
 
 import React, { Suspense, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { useParties } from '../hooks/useParties';
-import SeoManager from '../components/SeoManager';
-import LoadingSpinner from '../components/LoadingSpinner';
-import SocialsCta from '../components/SocialsCta';
+import { useParties } from '../parties247-next/hooks/useParties';
+import SeoManager from '../parties247-next/components/SeoManager';
+import LoadingSpinner from '../parties247-next/components/LoadingSpinner';
+import SocialsCta from '../parties247-next/components/SocialsCta';
 import { BASE_URL } from '../constants';
-import { createCarouselSlug } from '../lib/carousels';
+import { createCarouselSlug } from '../parties247-next/lib/carousels';
 
-const PartyCarousel = React.lazy(() => import('../components/HotEventsCarousel'));
+const PartyCarousel = React.lazy(() => import('../parties247-next/components/HotEventsCarousel'));
 
 const HERO_IMAGE_URL =
   'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1600&q=70';

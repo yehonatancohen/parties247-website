@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import SeoManager from '../components/SeoManager';
+import SeoManager from '../parties247-next/components/SeoManager';
 import { articles } from '../data/articles';
 import { BASE_URL } from '../constants';
 

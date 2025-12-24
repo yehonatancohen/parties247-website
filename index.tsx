@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import { HelmetProvider } from 'react-helmet-async';
+import { HelmetProvider } from '@/parties247-next/lib/react-helmet-async';
 import App from './App';
 import { PartyProviderInitialState } from './types';
 

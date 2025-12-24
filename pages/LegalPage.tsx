@@ -1,5 +1,5 @@
 import React from 'react';
-import SeoManager from '../components/SeoManager';
+import SeoManager from '../parties247-next/components/SeoManager';
 
 interface LegalPageProps {
   pageType: 'terms' | 'privacy' | 'accessibility';

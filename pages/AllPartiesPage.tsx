@@ -1,14 +1,14 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { useParties } from '../hooks/useParties';
-import PartyGrid from '../components/PartyGrid';
-import SeoManager from '../components/SeoManager';
-import LoadingSpinner from '../components/LoadingSpinner';
-import AdvancedFilter from '../components/AdvancedFilter';
+import { useParties } from '../parties247-next/hooks/useParties';
+import PartyGrid from '../parties247-next/components/PartyGrid';
+import SeoManager from '../parties247-next/components/SeoManager';
+import LoadingSpinner from '../parties247-next/components/LoadingSpinner';
+import AdvancedFilter from '../parties247-next/components/AdvancedFilter';
 import { FilterState } from '../types';
-import { SearchIcon } from '../components/Icons';
+import { SearchIcon } from '../parties247-next/components/Icons';
 import { BASE_URL } from '../constants';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { createCarouselSlug } from '../lib/carousels';
+import { createCarouselSlug } from '../parties247-next/lib/carousels';
 
 const PARTIES_PER_PAGE = 20;
 

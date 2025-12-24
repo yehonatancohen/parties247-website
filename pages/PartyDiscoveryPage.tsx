@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import SeoManager from '../components/SeoManager';
-import { useParties } from '../hooks/useParties';
-import { createCarouselSlug } from '../lib/carousels';
+import SeoManager from '../parties247-next/components/SeoManager';
+import { useParties } from '../parties247-next/hooks/useParties';
+import { createCarouselSlug } from '../parties247-next/lib/carousels';
 
 const quickLinks = [
   {

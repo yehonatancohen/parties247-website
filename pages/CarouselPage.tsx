@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import SeoManager from '../components/SeoManager';
-import LoadingSpinner from '../components/LoadingSpinner';
-import PartyGrid from '../components/PartyGrid';
-import { useParties } from '../hooks/useParties';
+import SeoManager from '../parties247-next/components/SeoManager';
+import LoadingSpinner from '../parties247-next/components/LoadingSpinner';
+import PartyGrid from '../parties247-next/components/PartyGrid';
+import { useParties } from '../parties247-next/hooks/useParties';
 import { BASE_URL } from '../constants';
-import { createCarouselSlug, findCarouselBySlug } from '../lib/carousels';
+import { createCarouselSlug, findCarouselBySlug } from '../parties247-next/lib/carousels';
 
 const CarouselPage: React.FC = () => {
   const { carouselSlug } = useParams<{ carouselSlug: string }>();
