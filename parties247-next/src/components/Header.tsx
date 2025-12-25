@@ -1,5 +1,8 @@
+"use client";
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import NavLink from './NavLink';
 
 const HamburgerIcon = ({ className }: { className?: string }) => (
   <svg className={className} stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
@@ -16,7 +19,7 @@ const CloseIcon = ({ className }: { className?: string }) => (
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [logoClickCount, setLogoClickCount] = useState(0);
-  const navigate = useNavigate();
+  const router = useRouter();
   const clickTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleLogoClick = () => {
@@ -33,13 +36,13 @@ const Header: React.FC = () => {
 
   useEffect(() => {
     if (logoClickCount === 5) {
-      navigate('/admin');
+      router.push('/admin');
       setLogoClickCount(0);
       if (clickTimeoutRef.current) {
         clearTimeout(clickTimeoutRef.current);
       }
     }
-  }, [logoClickCount, navigate]);
+  }, [logoClickCount, router]);
 
   useEffect(() => {
     // Prevent body scroll when mobile menu is open
@@ -52,27 +55,27 @@ const Header: React.FC = () => {
   const NavLinks: React.FC<{ onLinkClick?: () => void }> = ({ onLinkClick }) => (
     <>
       <li>
-        <NavLink to="/" end onClick={onLinkClick} className={({ isActive }: { isActive: boolean }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
+        <NavLink href="/" end onClick={onLinkClick} className={({ isActive }: { isActive: boolean }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
           עמוד הבית
         </NavLink>
       </li>
       <li>
-        <NavLink to="/party-discovery" onClick={onLinkClick} className={({ isActive }: { isActive: boolean }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
+        <NavLink href="/party-discovery" onClick={onLinkClick} className={({ isActive }: { isActive: boolean }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
           חיפוש מסיבות
         </NavLink>
       </li>
       <li>
-        <NavLink to="/כתבות" onClick={onLinkClick} className={({ isActive }: { isActive: boolean }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
+        <NavLink href="/כתבות" onClick={onLinkClick} className={({ isActive }: { isActive: boolean }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
           כתבות
         </NavLink>
       </li>
       <li>
-        <NavLink to="/all-parties" onClick={onLinkClick} className={({ isActive }: { isActive: boolean }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
+        <NavLink href="/all-parties" onClick={onLinkClick} className={({ isActive }: { isActive: boolean }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
           כל המסיבות
         </NavLink>
       </li>
       <li>
-        <NavLink to="/about" onClick={onLinkClick} className={({ isActive }: { isActive: boolean }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
+        <NavLink href="/about" onClick={onLinkClick} className={({ isActive }: { isActive: boolean }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
           עלינו
         </NavLink>
       </li>
@@ -86,7 +89,7 @@ const Header: React.FC = () => {
           <div className="flex justify-between items-center h-20">
             {/* Brand Logo */}
             <div onClick={handleLogoClick} className="cursor-pointer flex-shrink-0 z-50">
-               <Link to="/" className="flex items-center">
+               <Link href="/" className="flex items-center">
                  <img
                    src="https://vjkiztnx7gionfos.public.blob.vercel-storage.com/Partieslogo.PNG"
                    alt="Parties 24/7 Logo"

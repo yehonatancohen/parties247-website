@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect } from 'react';
 import { SOCIAL_LINKS } from '../data/constants';
 import { InstagramIcon, TikTokIcon, WhatsAppIcon, CloseIcon } from './Icons';
