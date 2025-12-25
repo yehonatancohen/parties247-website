@@ -5,7 +5,7 @@ import { BASE_URL } from "../../data/constants";
 export const revalidate = 300;
 
 type PageProps = {
-  searchParams?: { query?: string };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
@@ -15,7 +15,8 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
     "חיפוש וסינון בכל המסיבות, הרייבים והאירועים בישראל. מצאו את המסיבה המושלמת עבורכם לפי אזור, סגנון מוזיקה, תאריך ועוד.";
 
   const canonicalPath = `/all-parties`;
-  const query = searchParams?.query ? `?query=${encodeURIComponent(searchParams.query)}` : "";
+  const resolvedSearchParams = await searchParams;
+  const query = resolvedSearchParams.query ? `?query=${encodeURIComponent(resolvedSearchParams.query as string)}` : "";
 
   return {
     title: pageTitle,
@@ -26,8 +27,9 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
   };
 }
 
-export default function AllPartiesPage({ searchParams }: PageProps) {
-  const query = searchParams?.query ?? "";
+export default async function AllPartiesPage({ searchParams }: PageProps) {
+  const resolvedSearchParams = await searchParams;
+  const query = resolvedSearchParams.query ? `?query=${encodeURIComponent(resolvedSearchParams.query as string)}` : "";
 
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",

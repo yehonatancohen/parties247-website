@@ -1,25 +1,34 @@
 "use client";
-import React, { useRef, useEffect, useMemo, FC } from 'react';
+
+import React, { useRef, useEffect, useMemo, FC, useId, useState } from 'react';
 import Link from "next/link";
+import Image from "next/image";
+// Import Swiper React components (The official way)
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Autoplay, EffectCoverflow } from 'swiper/modules';
+
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/effect-coverflow';
+
 import { Party } from '../data/types';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
 import { useParties } from '../hooks/useParties';
 import { trackPartyRedirect } from '../lib/analytics';
 
-// --- SVG Arrow Icons ---
+// --- Icons & Helpers ---
 const ArrowLeft: FC<{ className?: string }> = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
   </svg>
 );
-
 const ArrowRight: FC<{ className?: string }> = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
   </svg>
 );
 
-// --- Tag Helpers ---
 const getTagColor = (tag: string) => {
   if (tag === 'לוהט') return 'bg-jungle-lime/80 text-jungle-deep';
   if (tag === 'ביקוש גבוה') return 'bg-jungle-accent/80 text-jungle-deep';
@@ -34,33 +43,33 @@ const renderTagContent = (tag: string) => {
   return tag;
 };
 
-const CarouselPartyCard: FC<{ party: Party; directUrl: string }> = React.memo(({ party, directUrl }) => {
+// --- Party Card ---
+const CarouselPartyCard: FC<{ party: Party; directUrl: string; priority: boolean }> = React.memo(({ party, directUrl, priority }) => {
   const partyDate = new Date(party.date);
   const formattedDate = new Intl.DateTimeFormat('he-IL', {
     weekday: 'long', day: '2-digit', month: '2-digit',
   }).format(partyDate);
-
-  const handleRedirect = () => {
-    trackPartyRedirect(party.id, party.slug);
-  };
 
   return (
     <a
       href={directUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="group block outline-none"
-      aria-label={`Buy tickets for ${party.name}`}
-      onClick={handleRedirect}
+      className="group block outline-none h-full"
+      onClick={() => trackPartyRedirect(party.id, party.slug)}
     >
-      <div className="relative rounded-xl overflow-hidden shadow-lg transition-all duration-500 ease-in-out border border-wood-brown/50">
-        <img
-          src={party.imageUrl}
-          alt={party.name}
-          loading="lazy"
-          className="w-full aspect-[2/3] object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+      <div className="relative h-full rounded-xl overflow-hidden shadow-lg border border-wood-brown/50 bg-jungle-surface/50 group-hover:border-jungle-accent/50 transition-colors">
+        <div className="relative w-full aspect-[2/3] bg-jungle-deep/50">
+           <Image
+            src={party.imageUrl}
+            alt={party.name}
+            fill
+            sizes="(max-width: 640px) 70vw, (max-width: 1024px) 33vw, 20vw"
+            priority={priority}
+            className="object-cover"
+           />
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none"></div>
         <div className="absolute top-3 right-3 flex flex-col gap-2 z-10">
           {party.tags.slice(0, 2).map(tag => (
             <span key={tag} className={`${getTagColor(tag)} backdrop-blur-sm text-xs font-bold px-2 py-1 rounded-full shadow-lg flex items-center`}>
@@ -68,18 +77,18 @@ const CarouselPartyCard: FC<{ party: Party; directUrl: string }> = React.memo(({
             </span>
           ))}
         </div>
-        <div className="absolute bottom-0 left-0 p-4 w-full">
-          <div className="extra-info opacity-0 transition-opacity duration-500">
-            <div className="flex items-center text-xs text-jungle-text/80 mb-1">
+        <div className="absolute bottom-0 left-0 p-4 w-full z-20">
+          <div className="space-y-1 mb-2">
+            <div className="flex items-center text-xs text-jungle-text/90 font-medium">
               <CalendarIcon className="w-3.5 h-3.5 ml-1.5 text-jungle-accent" />
               <span>{formattedDate}</span>
             </div>
-            <div className="flex items-center text-xs text-jungle-text/80 mb-2">
+            <div className="flex items-center text-xs text-jungle-text/80">
               <LocationIcon className="w-3.5 h-3.5 ml-1.5 text-jungle-accent" />
-              <span className="truncate">{party.location.name}</span>
+              <span className="truncate max-w-[150px]">{party.location.name}</span>
             </div>
           </div>
-          <h3 className="font-display text-xl md:text-2xl text-white truncate" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.7)' }}>
+          <h3 className="font-display text-xl md:text-2xl text-white truncate leading-tight" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.7)' }}>
             {party.name}
           </h3>
         </div>
@@ -88,134 +97,62 @@ const CarouselPartyCard: FC<{ party: Party; directUrl: string }> = React.memo(({
   );
 });
 
+// --- Main Component ---
 interface PartyCarouselProps {
   title: string;
   parties: Party[];
   viewAllLink: string;
   variant?: 'coverflow' | 'standard';
+  priority?: boolean;
 }
 
-function getMaxSlidesPerView(breakpoints: Record<number, { slidesPerView: number } | undefined >) {
-  return Math.max(...Object.values(breakpoints).map(v => v?.slidesPerView || 0));
-}
-
-const PartyCarousel: React.FC<PartyCarouselProps> = ({ title, parties, viewAllLink, variant = 'coverflow' }) => {
-  const swiperElRef = useRef<any>(null);
-  const uniqueId = useMemo(() => `carousel-${Math.random().toString(36).substring(2, 11)}`, []);
+const PartyCarousel: React.FC<PartyCarouselProps> = ({ 
+    title, 
+    parties, 
+    viewAllLink, 
+    variant = 'coverflow',
+    priority = false 
+}) => {
   const { defaultReferral } = useParties();
+  const rawId = useId(); 
+  const uniqueId = `carousel-${rawId.replace(/:/g, '')}`; 
+  const [mounted, setMounted] = useState(false);
 
-  const getReferralUrl = (originalUrl: string, partyReferral?: string): string => {
-    try {
-      const referralCode = partyReferral || defaultReferral;
-      if (!referralCode || !originalUrl) return originalUrl || '#';
-      const url = new URL(originalUrl);
-      url.searchParams.delete('aff');
-      url.searchParams.delete('referrer');
-      url.searchParams.set('ref', referralCode);
-      return url.toString();
-    } catch (e) {
-      console.error(`Could not create referral URL for: ${originalUrl}`, e);
-      return originalUrl || '#';
-    }
-  };
+  // Prevent hydration mismatch by only rendering Swiper on client
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  const upcomingParties = useMemo(
-    () =>
+  const upcomingParties = useMemo(() => 
       parties
-        .filter(p => new Date(p.date) >= new Date())
-        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
-    [parties]
-  );
-
-  const BREAKPOINTS = useMemo(() => (
-    variant === 'coverflow'
-      ? {
-          0:    { slidesPerView: 1.6 },
-          360:  { slidesPerView: 1.9 },
-          420:  { slidesPerView: 2.2 },
-          640:  { slidesPerView: 2.8 },
-          768:  { slidesPerView: 3.0 },
-          1024: { slidesPerView: 3.4 },
-          1440: { slidesPerView: 3.8 },
-        }
-      : {
-          0:    { slidesPerView: 1.8 },
-          360:  { slidesPerView: 2.2 },
-          420:  { slidesPerView: 2.6 },
-          640:  { slidesPerView: 3.2 },
-          768:  { slidesPerView: 4.0 },
-          1024: { slidesPerView: 5.0 },
-          1280: { slidesPerView: 6.0 },
-        }
-  ), [variant]);
-
-  const maxSlidesPerView = useMemo(() => getMaxSlidesPerView(BREAKPOINTS), [BREAKPOINTS]);
-  const minSlidesForLoop = Math.ceil(maxSlidesPerView) * 2 + 2;
+      .filter(p => new Date(p.date) >= new Date())
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
+  [parties]);
 
   const slides = useMemo(() => {
-    if (upcomingParties.length === 0) return [];
-    if (upcomingParties.length < minSlidesForLoop) {
-      const repeated = [];
-      while (repeated.length < minSlidesForLoop) {
-        repeated.push(...upcomingParties);
-      }
-      return repeated;
-    }
-    return upcomingParties;
-  }, [upcomingParties, minSlidesForLoop]);
-
-  useEffect(() => {
-    const swiperEl = swiperElRef.current;
-    if (!swiperEl || slides.length === 0) return;
-    
-    const commonParams = {
-      breakpoints: BREAKPOINTS,
-      spaceBetween: 12,
-      loop: true,
-      observer: true,
-      observeParents: true,
-      navigation: {
-        nextEl: `#next-${uniqueId}`,
-        prevEl: `#prev-${uniqueId}`,
-      },
-      watchOverflow: true,
-    };
-    
-    const variantParams = variant === 'coverflow' ? {
-      effect: 'coverflow',
-      centeredSlides: true,
-      grabCursor: true,
-      autoplay: {
-        delay: 6500,
-        disableOnInteraction: false,
-        pauseOnMouseEnter: true,
-      },
-      coverflowEffect: {
-        rotate: 0,
-        stretch: 36,
-        depth: 90,
-        modifier: 1,
-        slideShadows: false,
-      },
-    } : {
-      centeredSlides: false,
-    };
-
-    const params = { ...commonParams, ...variantParams };
-    
-    Object.assign(swiperEl, params);
-    swiperEl.initialize();
-    
-    return () => {
-      if (swiperEl.swiper) {
-        swiperEl.swiper.destroy(true, true);
-      }
-    };
-  }, [slides, variant, uniqueId, BREAKPOINTS]);
+     if (upcomingParties.length === 0) return [];
+     if (upcomingParties.length < 6) {
+        return [...upcomingParties, ...upcomingParties, ...upcomingParties].slice(0, 10);
+     }
+     return upcomingParties;
+  }, [upcomingParties]);
 
   if (slides.length === 0) return null;
+  if (!mounted) return <div className="h-[400px] w-full bg-jungle-surface/10 animate-pulse rounded-xl" />; // Simple Skeleton
 
-  const carouselClasses = `relative party-carousel ${variant === 'coverflow' ? 'party-carousel-coverflow' : 'party-carousel-standard'}`;
+  const isCoverflow = variant === 'coverflow';
+  
+  const breakpoints = isCoverflow 
+    ? {
+        0:    { slidesPerView: 1.6, spaceBetween: 12 },
+        640:  { slidesPerView: 2.8, spaceBetween: 20 },
+        1024: { slidesPerView: 3.4, spaceBetween: 24 },
+      }
+    : {
+        0:    { slidesPerView: 1.8, spaceBetween: 12 },
+        640:  { slidesPerView: 3.2, spaceBetween: 20 },
+        1024: { slidesPerView: 5.0, spaceBetween: 24 },
+      };
 
   return (
     <div className="py-4">
@@ -225,31 +162,38 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({ title, parties, viewAllLi
           <div className="flex items-center gap-4">
             <Link href={viewAllLink} className="text-jungle-accent hover:text-white transition-colors">הצג הכל</Link>
             <div className="flex gap-2">
-              <button id={`prev-${uniqueId}`} className="swiper-button-prev !static !w-11 !h-11"><ArrowLeft className="w-6 h-6" /></button>
-              <button id={`next-${uniqueId}`} className="swiper-button-next !static !w-11 !h-11"><ArrowRight className="w-6 h-6" /></button>
+              <button id={`prev-${uniqueId}`} className="swiper-button-prev !static !w-11 !h-11 border border-wood-brown/30 rounded-full flex items-center justify-center bg-jungle-surface/80 hover:bg-jungle-accent hover:text-black transition-colors">
+                <ArrowRight className="w-5 h-5" /> 
+              </button>
+              <button id={`next-${uniqueId}`} className="swiper-button-next !static !w-11 !h-11 border border-wood-brown/30 rounded-full flex items-center justify-center bg-jungle-surface/80 hover:bg-jungle-accent hover:text-black transition-colors">
+                <ArrowLeft className="w-5 h-5" />
+              </button>
             </div>
           </div>
         </div>
       </div>
-      <div className={carouselClasses}>
-        {/* 
-          FIX: The TypeScript definitions for Swiper web components were not being recognized,
-          causing "Property does not exist on type 'JSX.IntrinsicElements'" errors.
-          Using React.createElement bypasses the JSX type-checking for these custom elements,
-          resolving the issue without resorting to `any` or altering global types.
-        */}
-        {React.createElement(
-          'swiper-container',
-          { ref: swiperElRef, init: 'false', className: 'py-4' },
-          ...slides.map((party, index) =>
-            React.createElement(
-              'swiper-slide',
-              { key: `${party.id}-${index}` },
-              <CarouselPartyCard party={party} directUrl={getReferralUrl(party.originalUrl, party.referralCode)} />
-            )
-          )
-        )}
-      </div>
+      
+      <Swiper
+        modules={[Navigation, Autoplay, EffectCoverflow]}
+        loop={true}
+        breakpoints={breakpoints}
+        navigation={{ nextEl: `#next-${uniqueId}`, prevEl: `#prev-${uniqueId}` }}
+        centeredSlides={isCoverflow}
+        effect={isCoverflow ? 'coverflow' : undefined}
+        coverflowEffect={isCoverflow ? { rotate: 0, stretch: 0, depth: 100, modifier: 1, slideShadows: false } : undefined}
+        autoplay={isCoverflow ? { delay: 5000, disableOnInteraction: false, pauseOnMouseEnter: true } : undefined}
+        className={`party-carousel w-full py-4 ${variant === 'coverflow' ? 'overflow-visible' : ''}`}
+      >
+        {slides.map((party, index) => (
+             <SwiperSlide key={`${party.id}-${index}`}>
+                 <CarouselPartyCard 
+                    party={party} 
+                    directUrl={party.originalUrl || '#'} 
+                    priority={priority && index < 2} 
+                  />
+             </SwiperSlide>
+        ))}
+      </Swiper>
     </div>
   );
 };

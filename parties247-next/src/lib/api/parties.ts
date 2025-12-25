@@ -118,7 +118,7 @@ export async function getCarouselsData(): Promise<Carousel[]> {
     // cache: 'no-store' ensures we always get the latest order/titles on refresh.
     // You can change to { next: { revalidate: 60 } } to cache for 60 seconds.
     const response = await fetch(`${API_URL}/carousels`, { cache: 'no-store' });
-    
+
     if (!response.ok) {
       console.error('Error fetching carousels:', response.statusText);
       return [];

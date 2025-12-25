@@ -2,19 +2,22 @@
 
 import React, { Suspense, useMemo } from "react";
 import Link from "next/link";
-import Head from "next/head";
-
-import { useParties } from "@/hooks/useParties";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import SocialsCta from "@/components/SocialsCta";
-import { BASE_URL } from "@/data/constants";
 import { createCarouselSlug } from "@/lib/carousels";
+import PartyCarouselHighPriority from "@/components/HotEventsCarousel";
 
-const PartyCarousel = React.lazy(() => import("@/components/HotEventsCarousel"));
+const PartyCarouselLazy = React.lazy(() => import("@/components/HotEventsCarousel"));
 
 const HERO_IMAGE_URL =
   "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1600&q=70";
 
+interface HomeClientProps {
+  initialParties: any[];
+  initialCarousels: any[];
+}
+
+// --- Components ---
 const CarouselSkeleton: React.FC<{ title: string }> = ({ title }) => (
   <div className="py-4 animate-pulse">
     <div className="container mx-auto px-4">
@@ -40,30 +43,17 @@ const CarouselSkeleton: React.FC<{ title: string }> = ({ title }) => (
   </div>
 );
 
-export default function HomeClient() {
-  const { parties, carousels, isLoading, error, loadingMessage } = useParties();
-
-  const pageTitle = "מסיבות בתל אביב | Parties247";
-  const pageDescription =
-    "כל המסיבות הכי חמות בישראל – תל אביב, חיפה, אילת ועוד. Parties247 היא פלטפורמת המסיבות של ישראל.";
-
-  const websiteJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: "Parties 24/7",
-    url: BASE_URL,
-    potentialAction: {
-      "@type": "SearchAction",
-      target: `${BASE_URL}/all-parties?query={search_term_string}`,
-      "query-input": "required name=search_term_string",
-    },
-  };
-
-  const carouselsWithParties = useMemo(
+// --- Main Component ---
+export default function HomeClient({ initialParties = [], initialCarousels = [] }: HomeClientProps) {  const carouselsWithParties = useMemo(
     () =>
-      carousels
+      initialCarousels
         .map((carousel) => {
-          const carouselParties = parties.filter((p) => carousel.partyIds.includes(p.id));
+          const targetIds = carousel.partyIds.map((_id: any) => String(_id));
+          
+          const carouselParties = initialParties.filter((p) => 
+            targetIds.includes(String(p.id))
+          );
+
           return {
             ...carousel,
             parties: carouselParties,
@@ -71,24 +61,12 @@ export default function HomeClient() {
           };
         })
         .filter((c) => c.parties.length > 0),
-    [carousels, parties]
+    [initialCarousels, initialParties]
   );
 
   return (
     <>
-      {/* Best-practice SEO in App Router: do this in src/app/page.tsx via generateMetadata.
-         This Head block is a compatibility fallback to preserve behavior during migration. */}
-      <Head>
-        <title>{pageTitle}</title>
-        <meta name="description" content={pageDescription} />
-        <link rel="canonical" href={`${BASE_URL}/`} />
-        <script
-          type="application/ld+json"
-          // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
-        />
-      </Head>
-
+      {/* Hero Section */}
       <section
         className="relative text-center mb-12 -mt-8 h-[70vh] sm:h-[60vh] flex items-center justify-center overflow-hidden bg-jungle-deep"
         style={{
@@ -122,69 +100,51 @@ export default function HomeClient() {
         </div>
       </section>
 
+      {/* Carousels Section */}
       <div className="space-y-16">
-        {error ? (
-          <div className="container mx-auto px-4 text-center py-8">
-            <h2 className="text-2xl font-bold text-red-400">משהו השתבש</h2>
-            <p className="text-red-300/80 mt-2">{error}</p>
-          </div>
-        ) : (
-          <>
-            {isLoading && (
-              <>
-                <CarouselSkeleton title="אירועים חמים" />
-                <div className="flex flex-col items-center gap-3 text-jungle-text/80">
-                  <LoadingSpinner />
-                  {loadingMessage && <p className="animate-pulse">{loadingMessage}</p>}
-                </div>
-              </>
-            )}
-
-            {!isLoading && carouselsWithParties.length === 0 && (
-              <div className="container mx-auto px-4 text-center py-8 text-jungle-text/80">
-                אין כרגע קרוסלות להציג, חזרו בקרוב!
-              </div>
-            )}
-
-            {carouselsWithParties.map((carousel, index) => (
+        
+        {carouselsWithParties.map((carousel, index) => {
+          // STRATEGY: 
+          // If it's the first carousel (index 0), render directly.
+          // If it's the others, render lazily.
+          
+          if (index === 0) {
+            return (
               <React.Fragment key={carousel.id}>
-                <Suspense fallback={<CarouselSkeleton title={carousel.title} />}>
-                  <PartyCarousel
-                    title={carousel.title}
-                    parties={carousel.parties}
-                    viewAllLink={carousel.viewAllLink}
-                    variant={index === 0 ? "coverflow" : "standard"}
-                  />
-                </Suspense>
-
-                {index === 0 && (
-                  <section className="bg-gradient-to-r from-jungle-surface/80 via-jungle-deep/85 to-jungle-surface/80 border-y border-wood-brown/50 shadow-[0_10px_40px_rgba(0,0,0,0.35)]">
-                    <div className="container mx-auto px-4 py-6 flex flex-col md:flex-row items-center md:items-start justify-between gap-4">
-                      <div className="text-center md:text-right space-y-2">
-                        <p className="text-xs uppercase tracking-[0.2em] text-jungle-accent/80">חיפוש מהיר</p>
-                        <h2 className="text-2xl md:text-3xl font-display text-white">מצאו את המסיבה המושלמת בשבילכם</h2>
-                        <p className="text-jungle-text/80 max-w-3xl md:ml-auto md:pl-6">
-                          מסננים לפי עיר, וייב, מועדון או תאריך ומקבלים רשימה מתעדכנת של כל האירועים הקרובים. לחצו והתחילו לחפש ברגע.
-                        </p>
-                      </div>
-                      <Link
-                        href="/party-discovery"
-                        className="inline-flex items-center gap-3 rounded-full bg-jungle-accent text-black font-semibold px-6 py-3 shadow-lg shadow-jungle-accent/40 hover:-translate-y-0.5 hover:shadow-xl hover:bg-white transition"
-                      >
-                        <span>לעמוד החיפוש</span>
-                        <span aria-hidden="true" className="text-xl">
-                          ↗
-                        </span>
-                      </Link>
-                    </div>
-                  </section>
-                )}
+                {/* HIGH PRIORITY: Renders HTML on server. Google loves this. */}
+                <PartyCarouselHighPriority
+                  title={carousel.title}
+                  parties={carousel.parties}
+                  viewAllLink={carousel.viewAllLink}
+                  variant="coverflow"
+                />
+                
+                {/* Your Quick Search Section */}
+                <section className="...">
+                   {/* ... content ... */}
+                </section>
               </React.Fragment>
-            ))}
-          </>
-        )}
+            );
+          }
+
+          // LOWER PRIORITY: Renders only when JS loads. Browsers love this.
+          return (
+            <React.Fragment key={carousel.id}>
+              <Suspense fallback={<CarouselSkeleton title={carousel.title} />}>
+                <PartyCarouselLazy
+                  title={carousel.title}
+                  parties={carousel.parties}
+                  viewAllLink={carousel.viewAllLink}
+                  variant="standard"
+                />
+              </Suspense>
+            </React.Fragment>
+          );
+        })}
+
       </div>
 
+      {/* SEO Text Section */}
       <div className="container mx-auto px-4 mt-16">
         <section className="max-w-5xl mx-auto bg-jungle-surface/80 border border-wood-brown/50 rounded-2xl p-8 shadow-xl space-y-4">
           <h2 className="text-3xl font-display text-white">למה לבחור ב- Parties 24/7?</h2>

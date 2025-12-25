@@ -2,7 +2,7 @@
 import type { Metadata } from "next";
 import "../styles/tailwind.css"; // Ensure this path is correct
 import Providers from "./providers";
-import SwiperRegister from "./_components/SwiperRegister";
+import SwiperRegister from "../components/SwiperRegister";
 
 // Component Imports
 import Header from '../components/Header';

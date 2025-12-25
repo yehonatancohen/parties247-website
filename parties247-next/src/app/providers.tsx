@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { PartyProvider } from '../hooks/useParties';
 import { ANALYTICS_CONSENT_EVENT, initializeAnalytics } from '../lib/analytics';

@@ -1,11 +1,11 @@
 import { notFound } from 'next/navigation';
 
 type Props = {
-  params: { path?: string[] };
+  params: Promise<{ path: string[] }>;
 };
 
 export async function generateMetadata({ params }: Props) {
-  const slug = (params.path ?? []).join('/');
+  const slug = ((await params).path ?? []).join('/');
 
   const res = await fetch(
     `${process.env.API_URL}/seo?path=${slug}`,
@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export default async function Page({ params }: Props) {
-  const slug = (params.path ?? []).join('/');
+  const slug = ((await params).path ?? []).join('/');
 
   const res = await fetch(
     `${process.env.API_URL}/page?path=${slug}`,

@@ -77,7 +77,7 @@ export default async function PartyDiscoveryPage() {
   try {
      // You need to expose the fetching logic from useParties as a standalone function
      // e.g., const data = await fetch('api/carousels', { cache: 'no-store' }).json();
-     carousels = await getCarouselsData(); 
+     carousels = await getCarouselsData();
   } catch (error) {
      console.error("Failed to fetch carousels for SSR", error);
   }
