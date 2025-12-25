@@ -1,4 +1,4 @@
-import { Party } from '../../../types';
+import { Party } from './types';
 
 export type TaxonomyType = 'city' | 'genre' | 'audience' | 'time' | 'combo' | 'articles' | 'club';
 

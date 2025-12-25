@@ -1,26 +1,47 @@
-import Link from "next/link";
-import { getParties } from "@/services/api";
+import type { Metadata } from "next";
+import AllPartiesClient from "./_components/AllPartiesClient";
+import { BASE_URL } from "../../data/constants";
 
 export const revalidate = 300;
 
-export default async function AllPartiesPage() {
-  const parties = await getParties();
+type PageProps = {
+  searchParams?: { query?: string };
+};
+
+export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
+  const currentPage = 1;
+  const pageTitle = `כל המסיבות - עמוד ${currentPage} | Parties 24/7`;
+  const pageDescription =
+    "חיפוש וסינון בכל המסיבות, הרייבים והאירועים בישראל. מצאו את המסיבה המושלמת עבורכם לפי אזור, סגנון מוזיקה, תאריך ועוד.";
+
+  const canonicalPath = `/all-parties`;
+  const query = searchParams?.query ? `?query=${encodeURIComponent(searchParams.query)}` : "";
+
+  return {
+    title: pageTitle,
+    description: pageDescription,
+    alternates: {
+      canonical: `${BASE_URL}${canonicalPath}${query}`,
+    },
+  };
+}
+
+export default function AllPartiesPage({ searchParams }: PageProps) {
+  const query = searchParams?.query ?? "";
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "עמוד הבית", item: `${BASE_URL}/` },
+      { "@type": "ListItem", position: 2, name: "כל המסיבות", item: `${BASE_URL}/all-parties` },
+    ],
+  };
 
   return (
-    <main className="space-y-6 p-6">
-      <h1 className="text-3xl font-bold text-white">כל המסיבות</h1>
-      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {parties.map(party => (
-          <li key={party.id} className="rounded-xl border border-white/10 bg-white/5 p-4 shadow">
-            <div className="text-sm text-gray-300">{new Date(party.date).toLocaleDateString("he-IL")}</div>
-            <h2 className="text-xl font-semibold text-white">{party.name}</h2>
-            <p className="text-sm text-gray-200 line-clamp-2">{party.description}</p>
-            <Link className="text-lime-300 hover:text-white" href={`/event/${party.slug}`}>
-              לעמוד האירוע
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </main>
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+      <AllPartiesClient currentPage={1} initialQuery={query} />
+    </>
   );
 }

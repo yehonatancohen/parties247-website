@@ -1,6 +1,6 @@
 import React, { useState, FormEvent } from 'react';
 import LoadingSpinner from './LoadingSpinner';
-import * as api from '../../services/api';
+import * as api from '../services/api';
 
 interface AuthProps {
   onAuthSuccess: () => void;

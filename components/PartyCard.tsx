@@ -1,15 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Party } from '../data/types';
+import { Party } from '../parties247-next/src/data/types';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
-import DiscountCodeReveal from './DiscountCodeReveal';
+import { trackPartyView } from '../lib/analytics';
 
 interface PartyCardProps {
   party: Party;
-  showDiscountCode?: boolean;
 }
 
-const PartyCard: React.FC<PartyCardProps> = ({ party, showDiscountCode = false }) => {
+const PartyCard: React.FC<PartyCardProps> = ({ party }) => {
   const partyDate = new Date(party.date);
   const formattedDate = new Intl.DateTimeFormat('he-IL', {
     weekday: 'long',
@@ -35,9 +34,13 @@ const PartyCard: React.FC<PartyCardProps> = ({ party, showDiscountCode = false }
     return tag;
   };
 
+  const handleOpenParty = () => {
+    trackPartyView(party.id, party.slug);
+  };
+
   return (
     <div className="bg-jungle-surface rounded-xl overflow-hidden shadow-lg hover:shadow-jungle-glow/60 transition-all duration-300 flex flex-col group transform hover:-translate-y-1 border border-wood-brown/50">
-      <Link to={`/event/${party.slug}`} className="block">
+      <Link to={`/event/${party.slug}`} className="block" onClick={handleOpenParty}>
         <div className="relative">
           <img 
             src={party.imageUrl} 
@@ -71,9 +74,9 @@ const PartyCard: React.FC<PartyCardProps> = ({ party, showDiscountCode = false }
                 <span className="truncate">{party.location.name}</span>
             </div>
         </div>
-        {showDiscountCode && <DiscountCodeReveal className="mb-4" />}
         <Link
           to={`/event/${party.slug}`}
+          onClick={handleOpenParty}
           className="mt-auto flex items-center justify-center gap-2 text-center bg-gradient-to-r from-jungle-lime to-jungle-accent hover:from-jungle-lime/80 hover:to-jungle-accent/80 text-jungle-deep font-display text-2xl py-3 px-4 rounded-lg transition-all w-full group-hover:scale-105 tracking-wider"
         >
           <span>פרטים וכרטיסים</span>

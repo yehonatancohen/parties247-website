@@ -1,3 +1,4 @@
+"use client";
 import React, { createContext, useContext, useEffect, useMemo } from 'react';
 
 type HelmetServerState = {

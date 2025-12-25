@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FilterState } from '../../types';
+import { FilterState } from '../data/types';
 import DatePicker from './DatePicker';
 import { CalendarIcon } from './Icons';
 

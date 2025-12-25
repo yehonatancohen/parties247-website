@@ -1,5 +1,5 @@
 
-import { Party } from '../../../types';
+import { Party } from '../data/types';
 
 // FIX: Align Omit with the actual Party type and remove non-existent properties.
 type ScrapedPartyDetails = Omit<Party, 'id' | 'originalUrl' | 'referralCode' | 'eventStatus' | 'eventAttendanceMode' | 'organizer' | 'performer'>;

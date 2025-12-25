@@ -1,4 +1,4 @@
-import { Party, Carousel, AnalyticsSummary, AnalyticsSummaryParty } from '../../../types';
+import { Party, Carousel, AnalyticsSummary, AnalyticsSummaryParty } from '../data/types';
 
 const API_URL = 'https://parties247-backend.onrender.com/api';
 // Encode the "analytics" path segment to dodge aggressive browser extensions that

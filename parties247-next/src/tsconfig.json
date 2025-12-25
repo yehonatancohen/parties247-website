@@ -21,9 +21,6 @@
     "paths": {
       "@/*": [
         "./*"
-      ],
-      "react-helmet-async": [
-        "parties247-next/lib/react-helmet-async"
       ]
     },
     "allowImportingTsExtensions": true,

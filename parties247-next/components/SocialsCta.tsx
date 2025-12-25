@@ -1,5 +1,5 @@
 import React from 'react';
-import { SOCIAL_LINKS } from '../../constants';
+import { SOCIAL_LINKS } from '../src/data/constants';
 import { InstagramIcon, TikTokIcon, WhatsAppIcon } from './Icons';
 
 const SocialsCta: React.FC = () => {

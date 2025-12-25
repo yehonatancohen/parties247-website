@@ -1,5 +1,5 @@
 import React from 'react';
-import type { TaxonomyFAQ } from '../../data/taxonomy';
+import type { TaxonomyFAQ } from '../data/taxonomy';
 
 interface FaqBlockProps {
   items: TaxonomyFAQ[];

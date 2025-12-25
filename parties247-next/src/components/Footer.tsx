@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { SOCIAL_LINKS } from '../../constants';
+import { SOCIAL_LINKS } from '../data/constants';
 import { InstagramIcon, TikTokIcon, WhatsAppIcon } from './Icons';
 
 const Footer: React.FC = () => {

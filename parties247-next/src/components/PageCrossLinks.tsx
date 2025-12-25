@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { pageLinkOptions } from '../../data/pageLinks';
+import { pageLinkOptions } from '../data/pageLinks';
 
 const PageCrossLinks: React.FC = () => {
   const { pathname } = useLocation();

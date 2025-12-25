@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import LoadingSpinner from './LoadingSpinner';
-import { getAnalyticsSummary } from '../../services/api';
-import { AnalyticsSummary } from '../../types';
+import { getAnalyticsSummary } from '../services/api';
+import { AnalyticsSummary } from '../data/types';
 
 const formatRelativeTime = (date: Date | null): string => {
   if (!date) {

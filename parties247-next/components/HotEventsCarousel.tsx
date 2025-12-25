@@ -1,7 +1,7 @@
 
 import React, { useRef, useEffect, useMemo, FC } from 'react';
 import { Link } from 'react-router-dom';
-import { Party } from '../../types';
+import { Party } from '../src/data/types';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
 import { useParties } from '../hooks/useParties';
 import { trackPartyRedirect } from '../lib/analytics';

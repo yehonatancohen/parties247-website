@@ -1,17 +1,19 @@
+"use client";
 
-import React, { Suspense, useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { useParties } from '../parties247-next/hooks/useParties';
-import SeoManager from '../parties247-next/components/SeoManager';
-import LoadingSpinner from '../parties247-next/components/LoadingSpinner';
-import SocialsCta from '../parties247-next/components/SocialsCta';
-import { BASE_URL } from '../constants';
-import { createCarouselSlug } from '../parties247-next/lib/carousels';
+import React, { Suspense, useMemo } from "react";
+import Link from "next/link";
+import Head from "next/head";
 
-const PartyCarousel = React.lazy(() => import('../parties247-next/components/HotEventsCarousel'));
+import { useParties } from "@/hooks/useParties";
+import LoadingSpinner from "@/components/LoadingSpinner";
+import SocialsCta from "@/components/SocialsCta";
+import { BASE_URL } from "@/data/constants";
+import { createCarouselSlug } from "@/lib/carousels";
+
+const PartyCarousel = React.lazy(() => import("@/components/HotEventsCarousel"));
 
 const HERO_IMAGE_URL =
-  'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1600&q=70';
+  "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1600&q=70";
 
 const CarouselSkeleton: React.FC<{ title: string }> = ({ title }) => (
   <div className="py-4 animate-pulse">
@@ -27,53 +29,71 @@ const CarouselSkeleton: React.FC<{ title: string }> = ({ title }) => (
     <div className="container mx-auto px-4">
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {Array.from({ length: 6 }).map((_, idx) => (
-          <div key={`${title}-skeleton-${idx}`} className="aspect-[2/3] bg-jungle-surface/50 rounded-xl" aria-hidden="true" />
+          <div
+            key={`${title}-skeleton-${idx}`}
+            className="aspect-[2/3] bg-jungle-surface/50 rounded-xl"
+            aria-hidden="true"
+          />
         ))}
       </div>
     </div>
   </div>
 );
 
-const HomePage: React.FC = () => {
+export default function HomeClient() {
   const { parties, carousels, isLoading, error, loadingMessage } = useParties();
 
-  const pageTitle = 'מסיבות בתל אביב | Parties247';
-  const pageDescription = 'כל המסיבות הכי חמות בישראל – תל אביב, חיפה, אילת ועוד. Parties247 היא פלטפורמת המסיבות של ישראל.';
+  const pageTitle = "מסיבות בתל אביב | Parties247";
+  const pageDescription =
+    "כל המסיבות הכי חמות בישראל – תל אביב, חיפה, אילת ועוד. Parties247 היא פלטפורמת המסיבות של ישראל.";
 
   const websiteJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'WebSite',
-    'name': 'Parties 24/7',
-    'url': BASE_URL,
-    'potentialAction': {
-      '@type': 'SearchAction',
-      'target': `${BASE_URL}/all-parties?query={search_term_string}`,
-      'query-input': 'required name=search_term_string',
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Parties 24/7",
+    url: BASE_URL,
+    potentialAction: {
+      "@type": "SearchAction",
+      target: `${BASE_URL}/all-parties?query={search_term_string}`,
+      "query-input": "required name=search_term_string",
     },
   };
 
-  const carouselsWithParties = useMemo(() => carousels.map(carousel => {
-    const carouselParties = parties.filter(p => carousel.partyIds.includes(p.id));
-    return {
-      ...carousel,
-      parties: carouselParties,
-      viewAllLink: `/carousels/${createCarouselSlug(carousel.title)}`,
-    };
-  }).filter(c => c.parties.length > 0), [carousels, parties]);
+  const carouselsWithParties = useMemo(
+    () =>
+      carousels
+        .map((carousel) => {
+          const carouselParties = parties.filter((p) => carousel.partyIds.includes(p.id));
+          return {
+            ...carousel,
+            parties: carouselParties,
+            viewAllLink: `/carousels/${createCarouselSlug(carousel.title)}`,
+          };
+        })
+        .filter((c) => c.parties.length > 0),
+    [carousels, parties]
+  );
 
   return (
     <>
-      <SeoManager
-        title={pageTitle}
-        description={pageDescription}
-        canonicalPath="/"
-        jsonLd={websiteJsonLd}
-      />
+      {/* Best-practice SEO in App Router: do this in src/app/page.tsx via generateMetadata.
+         This Head block is a compatibility fallback to preserve behavior during migration. */}
+      <Head>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <link rel="canonical" href={`${BASE_URL}/`} />
+        <script
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
+      </Head>
 
       <section
         className="relative text-center mb-12 -mt-8 h-[70vh] sm:h-[60vh] flex items-center justify-center overflow-hidden bg-jungle-deep"
         style={{
-          backgroundImage: 'radial-gradient(circle at 30% 20%, rgba(47, 197, 165, 0.18), transparent 40%), radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.08), transparent 45%)',
+          backgroundImage:
+            "radial-gradient(circle at 30% 20%, rgba(47, 197, 165, 0.18), transparent 40%), radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.08), transparent 45%)",
         }}
       >
         <picture className="absolute inset-0">
@@ -89,12 +109,12 @@ const HomePage: React.FC = () => {
             className="w-full h-full object-cover brightness-[0.6]"
           />
         </picture>
-        <div className="absolute inset-0 bg-gradient-to-t from-jungle-deep via-transparent to-jungle-deep/50"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-jungle-deep via-transparent to-jungle-deep/50" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-transparent to-black/60" aria-hidden="true" />
         <div className="relative z-10 p-4">
           <h1
             className="font-display text-5xl sm:text-6xl md:text-8xl mb-4 text-white"
-            style={{ textShadow: '3px 3px 8px rgba(0,0,0,0.7)' }}
+            style={{ textShadow: "3px 3px 8px rgba(0,0,0,0.7)" }}
           >
             איפה תהיה המסיבה הבאה שלך?
           </h1>
@@ -133,7 +153,7 @@ const HomePage: React.FC = () => {
                     title={carousel.title}
                     parties={carousel.parties}
                     viewAllLink={carousel.viewAllLink}
-                    variant={index === 0 ? 'coverflow' : 'standard'}
+                    variant={index === 0 ? "coverflow" : "standard"}
                   />
                 </Suspense>
 
@@ -148,11 +168,13 @@ const HomePage: React.FC = () => {
                         </p>
                       </div>
                       <Link
-                        to="/party-discovery"
+                        href="/party-discovery"
                         className="inline-flex items-center gap-3 rounded-full bg-jungle-accent text-black font-semibold px-6 py-3 shadow-lg shadow-jungle-accent/40 hover:-translate-y-0.5 hover:shadow-xl hover:bg-white transition"
                       >
                         <span>לעמוד החיפוש</span>
-                        <span aria-hidden="true" className="text-xl">↗</span>
+                        <span aria-hidden="true" className="text-xl">
+                          ↗
+                        </span>
                       </Link>
                     </div>
                   </section>
@@ -167,16 +189,35 @@ const HomePage: React.FC = () => {
         <section className="max-w-5xl mx-auto bg-jungle-surface/80 border border-wood-brown/50 rounded-2xl p-8 shadow-xl space-y-4">
           <h2 className="text-3xl font-display text-white">למה לבחור ב- Parties 24/7?</h2>
           <p className="text-jungle-text/85 leading-relaxed">
-            אנחנו בונים את חוויית חיפוש המסיבות כך שתהיה מהירה ואמינה: כל דף קטגוריה מקבל כותרת H1 ברורה, 300–500 מילים של הסבר על הוייב, וקישורים פנימיים שמחברים בין ערים, ז׳אנרים וקהלים. הדפים מתעדכנים אוטומטית כך שתמיד תראו את האירועים הבאים – מטכנו בדרום תל אביב דרך האוס רגוע בחיפה ועד מסיבות סטודנטים או 25 פלוס. בדקו את <Link to="/techno-parties" className="text-jungle-accent hover:text-white">דף הטכנו</Link>, את <Link to="/tel-aviv-parties" className="text-jungle-accent hover:text-white">מדריך תל אביב</Link> או את <Link to="/student-parties" className="text-jungle-accent hover:text-white">מסיבות הסטודנטים</Link> כדי לתכנן את הלילה הבא שלכם.
+            אנחנו בונים את חוויית חיפוש המסיבות כך שתהיה מהירה ואמינה: כל דף קטגוריה מקבל כותרת H1 ברורה, 300–500 מילים של הסבר על הוייב, וקישורים פנימיים שמחברים בין ערים, ז׳אנרים וקהלים. הדפים מתעדכנים אוטומטית כך שתמיד תראו את האירועים הבאים – מטכנו בדרום תל אביב דרך האוס רגוע בחיפה ועד מסיבות סטודנטים או 25 פלוס. בדקו את{" "}
+            <Link href="/techno-parties" className="text-jungle-accent hover:text-white">
+              דף הטכנו
+            </Link>
+            , את{" "}
+            <Link href="/tel-aviv-parties" className="text-jungle-accent hover:text-white">
+              מדריך תל אביב
+            </Link>{" "}
+            או את{" "}
+            <Link href="/student-parties" className="text-jungle-accent hover:text-white">
+              מסיבות הסטודנטים
+            </Link>{" "}
+            כדי לתכנן את הלילה הבא שלכם.
           </p>
           <p className="text-jungle-text/80 leading-relaxed">
-            כדי שהאתר ייטען מהר, אנחנו משתמשים בטעינת Lazy לכל התמונות, קבצי WebP קלים ו-prefetch למסלולים הפופולריים. קיצורי הדרך בראש העמוד מחברים אתכם למסיבות היום, חמישי ושישי, בעוד עמוד החיפוש המצומצם מציג את כל הקטגוריות החדשות – כולל דפי מועדון ל-<Link to="/echo-club" className="text-jungle-accent hover:text-white">ECHO</Link> ול-<Link to="/jimmy-who-club" className="text-jungle-accent hover:text-white">Jimmy Who</Link>. שמרו את העמוד במועדפים וחזרו מדי שבוע כדי לא לפספס שום רייב.
+            כדי שהאתר ייטען מהר, אנחנו משתמשים בטעינת Lazy לכל התמונות, קבצי WebP קלים ו-prefetch למסלולים הפופולריים. קיצורי הדרך בראש העמוד מחברים אתכם למסיבות היום, חמישי ושישי, בעוד עמוד החיפוש המצומצם מציג את כל הקטגוריות החדשות – כולל דפי מועדון ל-
+            <Link href="/echo-club" className="text-jungle-accent hover:text-white">
+              ECHO
+            </Link>{" "}
+            ול-
+            <Link href="/jimmy-who-club" className="text-jungle-accent hover:text-white">
+              Jimmy Who
+            </Link>
+            . שמרו את העמוד במועדפים וחזרו מדי שבוע כדי לא לפספס שום רייב.
           </p>
         </section>
       </div>
+
       <SocialsCta />
     </>
   );
-};
-
-export default HomePage;
+}

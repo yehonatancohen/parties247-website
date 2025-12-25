@@ -1,7 +1,7 @@
-
+"use client";
 import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback } from 'react';
-import { Party, Carousel, PartyContextType, PartyProviderInitialState } from '../../types';
-import * as api from '../../services/api';
+import { Party, Carousel, PartyContextType, PartyProviderInitialState } from '../data/types';
+import * as api from '..//services/api';
 
 const PartyContext = createContext<PartyContextType | undefined>(undefined);
 
