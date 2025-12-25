@@ -1,4 +1,4 @@
-import { recordPartyRedirect, recordVisitor } from '../../services/api';
+import { recordPartyRedirect, recordVisitor } from '../services/api';
 
 export const COOKIE_CONSENT_KEY = 'cookieConsent_v2';
 export const ANALYTICS_CONSENT_EVENT = 'analytics:consentGranted';

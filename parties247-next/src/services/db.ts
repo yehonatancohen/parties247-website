@@ -1,4 +1,4 @@
-import { Carousel } from '../../../types';
+import { Carousel } from '../data/types';
 
 const CAROUSELS_STORAGE_KEY = 'carousels_v1';
 const DB_SIMULATION_DELAY = 100; // ms to simulate local storage access

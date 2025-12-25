@@ -1,9 +1,9 @@
 // FIX: Corrected a typo in the React import statement (removed an extra 'a,') which was causing compilation errors.
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { useParties } from '../hooks/useParties';
-import { Party, Carousel } from '../../types';
+import { Party, Carousel } from '../src/data/types';
 import LoadingSpinner from './LoadingSpinner';
-import { BASE_URL } from '../../constants';
+import { BASE_URL } from '../src/data/constants';
 import { SearchIcon, EditIcon, ChevronDownIcon, ArrowUpIcon, ArrowDownIcon, MegaphoneIcon, ShareIcon } from './Icons';
 import { pageLinkOptions } from '../src/data/pageLinks';
 

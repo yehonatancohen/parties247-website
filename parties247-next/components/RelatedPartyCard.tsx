@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Party } from '../../types';
+import { Party } from '../src/data/types';
 import { CalendarIcon, LocationIcon } from './Icons';
 
 interface RelatedPartyCardProps {

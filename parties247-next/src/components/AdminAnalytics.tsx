@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import LoadingSpinner from './LoadingSpinner';
-import { getAnalyticsSummary } from '../../services/api';
-import { AnalyticsSummary } from '../../types';
+import { getAnalyticsSummary } from '../services/api';
+import { AnalyticsSummary } from '../data/types';
 
 const formatRelativeTime = (date: Date | null): string => {
   if (!date) {
@@ -75,24 +75,21 @@ const AdminAnalytics: React.FC = () => {
   }, [summary]);
 
   const partiesByViews = useMemo(() => {
-    if (!summary) {
-      return [] as typeof summary.parties;
-    }
-    return [...summary.parties].sort((a, b) => b.views - a.views);
-  }, [summary]);
+  const parties = summary?.parties || []; 
+
+  return [...parties].sort((a, b) => b.views - a.views);
+}, [summary]);
 
   const topRedirects = useMemo(() => {
-    if (!summary) {
-      return [] as typeof summary.parties;
-    }
-    return [...summary.parties].sort((a, b) => b.redirects - a.redirects).slice(0, 5);
+    const parties = summary?.parties || []; 
+
+    return [...parties].sort((a, b) => b.redirects - a.redirects).slice(0, 5);
   }, [summary]);
 
   const topConversions = useMemo(() => {
-    if (!summary) {
-      return [] as Array<AnalyticsSummary['parties'][number] & { conversion: number }>;
-    }
-    return summary.parties
+    const parties = summary?.parties || []; 
+
+    return parties
       .filter((party) => party.views > 0)
       .map((party) => ({ ...party, conversion: party.redirects / party.views }))
       .sort((a, b) => b.conversion - a.conversion)

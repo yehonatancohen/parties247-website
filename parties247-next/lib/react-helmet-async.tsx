@@ -162,7 +162,7 @@ export const Helmet: React.FC<HelmetProps> = ({ children, htmlAttributes }) => {
         const el = document.createElement('script');
         Object.entries(props).forEach(([key, value]) => {
           if (key === 'children') {
-            el.textContent = typeof value === 'string' ? value : React.Children.toArray(value).join('');
+            el.textContent = typeof value === 'string' ? value : React.Children.toArray(value as React.ReactNode).join('');
             return;
           }
           if (value != null) {

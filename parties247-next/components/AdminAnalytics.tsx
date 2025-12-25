@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import LoadingSpinner from './LoadingSpinner';
 import { getAnalyticsSummary } from '../src/services/api';
-import { AnalyticsSummary } from '../../types';
+import { AnalyticsSummary } from '../src/data/types';
 
 const formatRelativeTime = (date: Date | null): string => {
   if (!date) {
@@ -76,14 +76,14 @@ const AdminAnalytics: React.FC = () => {
 
   const partiesByViews = useMemo(() => {
     if (!summary) {
-      return [] as typeof summary.parties;
+      return [] as NonNullable<typeof summary>['parties'];
     }
     return [...summary.parties].sort((a, b) => b.views - a.views);
   }, [summary]);
 
   const topRedirects = useMemo(() => {
     if (!summary) {
-      return [] as typeof summary.parties;
+      return [] as NonNullable<typeof summary>['parties'];
     }
     return [...summary.parties].sort((a, b) => b.redirects - a.redirects).slice(0, 5);
   }, [summary]);

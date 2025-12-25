@@ -1,7 +1,7 @@
-
+"use client";
 import React, { useRef, useEffect, useMemo, FC } from 'react';
-import { Link } from 'react-router-dom';
-import { Party } from '../../types';
+import Link from "next/link";
+import { Party } from '../data/types';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
 import { useParties } from '../hooks/useParties';
 import { trackPartyRedirect } from '../lib/analytics';
@@ -95,8 +95,9 @@ interface PartyCarouselProps {
   variant?: 'coverflow' | 'standard';
 }
 
-const getMaxSlidesPerView = (bps: Record<number, { slidesPerView: number }>) =>
-  Math.max(...Object.values(bps).map(v => v.slidesPerView));
+function getMaxSlidesPerView(breakpoints: Record<number, { slidesPerView: number } | undefined >) {
+  return Math.max(...Object.values(breakpoints).map(v => v?.slidesPerView || 0));
+}
 
 const PartyCarousel: React.FC<PartyCarouselProps> = ({ title, parties, viewAllLink, variant = 'coverflow' }) => {
   const swiperElRef = useRef<any>(null);
@@ -222,7 +223,7 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({ title, parties, viewAllLi
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-3xl font-display text-white">{title}</h2>
           <div className="flex items-center gap-4">
-            <Link to={viewAllLink} className="text-jungle-accent hover:text-white transition-colors">הצג הכל</Link>
+            <Link href={viewAllLink} className="text-jungle-accent hover:text-white transition-colors">הצג הכל</Link>
             <div className="flex gap-2">
               <button id={`prev-${uniqueId}`} className="swiper-button-prev !static !w-11 !h-11"><ArrowLeft className="w-6 h-6" /></button>
               <button id={`next-${uniqueId}`} className="swiper-button-next !static !w-11 !h-11"><ArrowRight className="w-6 h-6" /></button>

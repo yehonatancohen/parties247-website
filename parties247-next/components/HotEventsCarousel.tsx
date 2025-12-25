@@ -1,7 +1,7 @@
 
 import React, { useRef, useEffect, useMemo, FC } from 'react';
 import { Link } from 'react-router-dom';
-import { Party } from '../../types';
+import { Party } from '../src/data/types';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
 import { useParties } from '../hooks/useParties';
 import { trackPartyRedirect } from '../lib/analytics';
@@ -95,8 +95,9 @@ interface PartyCarouselProps {
   variant?: 'coverflow' | 'standard';
 }
 
-const getMaxSlidesPerView = (bps: Record<number, { slidesPerView: number }>) =>
-  Math.max(...Object.values(bps).map(v => v.slidesPerView));
+function getMaxSlidesPerView(breakpoints: Record<number, { slidesPerView: number } | undefined >) {
+  return Math.max(...Object.values(breakpoints).map(v => v?.slidesPerView || 0));
+}
 
 const PartyCarousel: React.FC<PartyCarouselProps> = ({ title, parties, viewAllLink, variant = 'coverflow' }) => {
   const swiperElRef = useRef<any>(null);

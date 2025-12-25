@@ -1,4 +1,4 @@
-import { Party, Carousel, AnalyticsSummary, AnalyticsSummaryParty } from '../../../types';
+import { Party, Carousel, AnalyticsSummary, AnalyticsSummaryParty } from '../data/types';
 
 const API_URL = 'https://parties247-backend.onrender.com/api';
 // Encode the "analytics" path segment to dodge aggressive browser extensions that
@@ -149,7 +149,7 @@ export const getParties = async (): Promise<Party[]> => {
   }
   const data = await response.json();
   // Filter out parties that lack a slug to prevent generating broken links.
-  return data.map(mapPartyToFrontend).filter(party => {
+  return data.map(mapPartyToFrontend).filter((party: Party) => { // <--- Add type here
     if (!party.slug) {
       console.warn('Party data from API is missing a slug, filtering it out:', party);
       return false;

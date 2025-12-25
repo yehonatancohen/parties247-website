@@ -1,32 +1,27 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+// Keep your existing global styles from the Vite app.
+// If your project uses a different global stylesheet path, update this import.
+import "../styles/tailwind.css";
+import Providers from "./providers";
+import SwiperRegister from "./_components/SwiperRegister";
 
 export const metadata: Metadata = {
-  title: "Parties247",
-  description: "מסיבות חמות בכל הארץ – Parties247",
+  title: {
+    default: "Parties247",
+    template: "%s | Parties247",
+  },
+  description: "Find parties and nightlife events in Israel.",
+  metadataBase: new URL("https://www.parties247.co.il"),
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="he">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {children}
-      </body>
+    <html lang="he" dir="rtl">
+      <body suppressHydrationWarning>
+        <SwiperRegister />
+        <Providers>{children}</Providers>
+        </body>
     </html>
   );
 }

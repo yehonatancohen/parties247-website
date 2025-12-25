@@ -1,6 +1,6 @@
 
 import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback } from 'react';
-import { Party, Carousel, PartyContextType, PartyProviderInitialState } from '../../types';
+import { Party, Carousel, PartyContextType, PartyProviderInitialState } from '../src/data/types';
 import * as api from '../src/services/api';
 
 const PartyContext = createContext<PartyContextType | undefined>(undefined);

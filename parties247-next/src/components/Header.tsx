@@ -52,27 +52,27 @@ const Header: React.FC = () => {
   const NavLinks: React.FC<{ onLinkClick?: () => void }> = ({ onLinkClick }) => (
     <>
       <li>
-        <NavLink to="/" end onClick={onLinkClick} className={({ isActive }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
+        <NavLink to="/" end onClick={onLinkClick} className={({ isActive }: { isActive: boolean }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
           עמוד הבית
         </NavLink>
       </li>
       <li>
-        <NavLink to="/party-discovery" onClick={onLinkClick} className={({ isActive }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
+        <NavLink to="/party-discovery" onClick={onLinkClick} className={({ isActive }: { isActive: boolean }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
           חיפוש מסיבות
         </NavLink>
       </li>
       <li>
-        <NavLink to="/כתבות" onClick={onLinkClick} className={({ isActive }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
+        <NavLink to="/כתבות" onClick={onLinkClick} className={({ isActive }: { isActive: boolean }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
           כתבות
         </NavLink>
       </li>
       <li>
-        <NavLink to="/all-parties" onClick={onLinkClick} className={({ isActive }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
+        <NavLink to="/all-parties" onClick={onLinkClick} className={({ isActive }: { isActive: boolean }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
           כל המסיבות
         </NavLink>
       </li>
       <li>
-        <NavLink to="/about" onClick={onLinkClick} className={({ isActive }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
+        <NavLink to="/about" onClick={onLinkClick} className={({ isActive }: { isActive: boolean }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
           עלינו
         </NavLink>
       </li>
