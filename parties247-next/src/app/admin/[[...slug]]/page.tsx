@@ -1,12 +1,8 @@
-import RouteAppWrapper from "../../RouteAppWrapper";
-
-type AdminParams = {
-  slug?: string[];
-};
-
-export default function AdminCatchAllPage({ params }: { params: AdminParams }) {
-  const slugPath = params.slug?.join("/") ?? "";
-  const initialPath = slugPath ? `/admin/${slugPath}` : "/admin";
-
-  return <RouteAppWrapper initialPath={initialPath} />;
+export default function AdminPage() {
+  return (
+    <main className="prose prose-invert mx-auto p-6">
+      <h1>אזור מנהל</h1>
+      <p>ממשק הניהול יעבור התאמה ל-Next.js. כרגע אין פעולות זמינות.</p>
+    </main>
+  );
 }

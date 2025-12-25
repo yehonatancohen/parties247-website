@@ -1,5 +1,8 @@
-import ClientRouter from "../../ClientRouter";
-
-export default function ArticlePage() {
-  return <ClientRouter />;
+export default function ArticlePage({ params }: { params: { slug: string } }) {
+  return (
+    <main className="prose prose-invert mx-auto p-6">
+      <h1>כתבה: {decodeURIComponent(params.slug)}</h1>
+      <p>תוכן הכתבה יתעדכן בהמשך.</p>
+    </main>
+  );
 }
