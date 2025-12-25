@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Party } from '../../types';
+import { Party } from '../src/data/types';
 import PartyCard from './PartyCard';
 
 interface PartyGridProps {

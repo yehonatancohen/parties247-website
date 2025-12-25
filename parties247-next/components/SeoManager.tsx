@@ -1,5 +1,5 @@
 import React from 'react';
-import { Helmet } from '@/parties247-next/lib/react-helmet-async';
+import { Helmet } from '../lib/react-helmet-async';
 import { BASE_URL, BRAND_LOGO_URL, SOCIAL_LINKS } from '../src/data/constants';
 import JsonLd from './JsonLd';
 

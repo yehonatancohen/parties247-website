@@ -1,5 +1,5 @@
 import React from 'react';
-import { Helmet } from '@/parties247-next/lib/react-helmet-async';
+import { Helmet } from '../lib/react-helmet-async';
 
 const PrefetchLinks: React.FC = () => (
   <Helmet>

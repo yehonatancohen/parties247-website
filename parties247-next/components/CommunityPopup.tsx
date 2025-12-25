@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SOCIAL_LINKS } from '../../constants';
+import { SOCIAL_LINKS } from '../src/data/constants';
 import { InstagramIcon, TikTokIcon, WhatsAppIcon, CloseIcon } from './Icons';
 
 const POPUP_STORAGE_KEY = 'communityPopupDismissed_v2';

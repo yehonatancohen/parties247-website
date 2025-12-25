@@ -2,7 +2,7 @@ import { Metadata, ResolvingMetadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPartyBySlug } from "@/services/api";
-import { Party } from "../../../../types";
+import { Party } from "../../../data/types";
 
 export const revalidate = 60;
 

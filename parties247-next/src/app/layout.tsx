@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 // Keep your existing global styles from the Vite app.
 // If your project uses a different global stylesheet path, update this import.
 import "../styles/tailwind.css";
+import Providers from "./providers";
+import SwiperRegister from "./_components/SwiperRegister";
 
 export const metadata: Metadata = {
   title: {
@@ -16,7 +18,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="he" dir="rtl">
-      <body suppressHydrationWarning>{children}</body>
+      <body suppressHydrationWarning>
+        <SwiperRegister />
+        <Providers>{children}</Providers>
+        </body>
     </html>
   );
 }

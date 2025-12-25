@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Party } from '../../types';
+import { Party } from '../src/data/types';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
 import DiscountCodeReveal from './DiscountCodeReveal';
 
