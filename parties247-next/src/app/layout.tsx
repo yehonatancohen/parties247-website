@@ -1,10 +1,18 @@
+// app/layout.tsx
 import type { Metadata } from "next";
-
-// Keep your existing global styles from the Vite app.
-// If your project uses a different global stylesheet path, update this import.
-import "../styles/tailwind.css";
+import "../styles/tailwind.css"; // Ensure this path is correct
 import Providers from "./providers";
 import SwiperRegister from "./_components/SwiperRegister";
+
+// Component Imports
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import JungleDecorations from '../components/JungleDecorations';
+import CommunityPopup from '../components/CommunityPopup';
+import CookieBanner from '../components/CookieBanner';
+import ScrollToTop from '../components/ScrollToTop';
+import PrefetchLinks from '../components/PrefetchLinks';
+import PageCrossLinks from '../components/PageCrossLinks';
 
 export const metadata: Metadata = {
   title: {
@@ -20,8 +28,32 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="he" dir="rtl">
       <body suppressHydrationWarning>
         <SwiperRegister />
-        <Providers>{children}</Providers>
-        </body>
+        <Providers>
+          {/* Global Decorations/Logic */}
+          <PrefetchLinks />
+          <ScrollToTop />
+          <JungleDecorations />
+
+          {/* Main Layout Structure */}
+          <div className="min-h-screen flex flex-col relative z-10">
+            <Header />
+            
+            <main className="flex-grow py-8">
+              {/* Page Transition Wrapper */}
+              <div className="page-transition">
+                {children}
+              </div>
+              <PageCrossLinks />
+            </main>
+
+            <Footer />
+          </div>
+
+          {/* Global Modals/Overlays */}
+          <CommunityPopup />
+          <CookieBanner />
+        </Providers>
+      </body>
     </html>
   );
 }

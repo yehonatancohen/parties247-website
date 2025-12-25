@@ -1,12 +1,18 @@
+'use client'; // 1. Necessary because you use 'usePathname'
+
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
 import { pageLinkOptions } from '../data/pageLinks';
+import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 
 const PageCrossLinks: React.FC = () => {
-  const { pathname } = useLocation();
+  const pathname = usePathname();
+
+  // Safe check for pathname (it can technically be null during build time in some edge cases)
+  const currentPath = pathname || '';
 
   const suggestedLinks = pageLinkOptions
-    .filter((option) => !pathname.startsWith(option.path))
+    .filter((option) => !currentPath.startsWith(option.path))
     .slice(0, 4);
 
   if (suggestedLinks.length === 0) {
@@ -24,7 +30,7 @@ const PageCrossLinks: React.FC = () => {
           {suggestedLinks.map((option) => (
             <Link
               key={option.path}
-              to={option.path}
+              href={option.path} // 2. Changed 'to' to 'href'
               className="block bg-jungle-deep border border-wood-brown/60 rounded-xl p-4 hover:border-jungle-accent hover:shadow-jungle-glow transition group"
             >
               <p className="font-semibold text-white group-hover:text-jungle-accent transition-colors">{option.label}</p>
