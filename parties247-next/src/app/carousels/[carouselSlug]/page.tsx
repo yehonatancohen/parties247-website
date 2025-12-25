@@ -3,11 +3,16 @@ import { notFound } from "next/navigation";
 import { createCarouselSlug } from "@/lib/carousels";
 import { getCarousels, getParties } from "@/services/api";
 
+type Props = {
+  params: Promise<{ carouselSlug: string }>;
+};
+
 export const revalidate = 300;
 
-export default async function CarouselPage({ params }: { params: { carouselSlug: string } }) {
+export default async function CarouselPage({ params }: Props) {
+  const { carouselSlug } = await params;
   const [carousels, parties] = await Promise.all([getCarousels(), getParties()]);
-  const carousel = carousels.find(c => createCarouselSlug(c.title) === params.carouselSlug);
+  const carousel = carousels.find(c => createCarouselSlug(c.title) === carouselSlug);
 
   if (!carousel) {
     notFound();
