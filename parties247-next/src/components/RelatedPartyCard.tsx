@@ -1,6 +1,6 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Party } from '../data/types';
+import React from "react";
+import Link from "next/link";
+import { Party } from "../data/types";
 import { CalendarIcon, LocationIcon } from './Icons';
 
 interface RelatedPartyCardProps {
@@ -17,7 +17,7 @@ const RelatedPartyCard: React.FC<RelatedPartyCardProps> = ({ party }) => {
 
   return (
     <Link
-      to={`/event/${party.slug}`}
+      href={`/event/${party.slug}`}
       className="bg-jungle-deep rounded-lg overflow-hidden shadow-lg hover:shadow-jungle-glow/30 transition-all duration-300 flex flex-col group transform hover:-translate-y-1 border border-wood-brown/30"
     >
         <div className="relative">

@@ -1,7 +1,7 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { SOCIAL_LINKS } from '../src/data/constants';
-import { InstagramIcon, TikTokIcon, WhatsAppIcon } from './Icons';
+import React from "react";
+import Link from "next/link";
+import { SOCIAL_LINKS } from "../src/data/constants";
+import { InstagramIcon, TikTokIcon, WhatsAppIcon } from "./Icons";
 
 const Footer: React.FC = () => {
   return (
@@ -11,18 +11,18 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="font-display text-xl text-white mb-4">קיצורי דרך</h3>
             <ul className="space-y-2">
-              <li><Link to="/ערים/תל-אביב/היום" className="hover:text-jungle-accent transition-colors">מסיבות בתל אביב היום</Link></li>
-              <li><Link to="/ערים/תל-אביב/טכנו" className="hover:text-jungle-accent transition-colors">טכנו בתל אביב</Link></li>
-              <li><Link to="/קהל/מסיבות-נוער" className="hover:text-jungle-accent transition-colors">מסיבות נוער</Link></li>
+              <li><Link href="/ערים/תל-אביב/היום" className="hover:text-jungle-accent transition-colors">מסיבות בתל אביב היום</Link></li>
+              <li><Link href="/ערים/תל-אביב/טכנו" className="hover:text-jungle-accent transition-colors">טכנו בתל אביב</Link></li>
+              <li><Link href="/קהל/מסיבות-נוער" className="hover:text-jungle-accent transition-colors">מסיבות נוער</Link></li>
             </ul>
           </div>
           <div>
             <h3 className="font-display text-xl text-white mb-4">מידע ומשפטי</h3>
             <ul className="space-y-2">
-              <li><Link to="/terms" className="hover:text-jungle-accent transition-colors">תנאי שימוש</Link></li>
-              <li><Link to="/privacy" className="hover:text-jungle-accent transition-colors">מדיניות פרטיות</Link></li>
-              <li><Link to="/accessibility" className="hover:text-jungle-accent transition-colors">הצהרת נגישות</Link></li>
-              <li><Link to="/promoter-disclaimer" className="hover:text-jungle-accent transition-colors">הבהרה: האתר כמקדמי אירועים</Link></li>
+              <li><Link href="/terms" className="hover:text-jungle-accent transition-colors">תנאי שימוש</Link></li>
+              <li><Link href="/privacy" className="hover:text-jungle-accent transition-colors">מדיניות פרטיות</Link></li>
+              <li><Link href="/accessibility" className="hover:text-jungle-accent transition-colors">הצהרת נגישות</Link></li>
+              <li><Link href="/promoter-disclaimer" className="hover:text-jungle-accent transition-colors">הבהרה: האתר כמקדמי אירועים</Link></li>
             </ul>
           </div>
           <div className="text-center md:text-right">

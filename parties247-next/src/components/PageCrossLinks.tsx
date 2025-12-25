@@ -1,9 +1,12 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { pageLinkOptions } from '../data/pageLinks';
+"use client";
+
+import React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { pageLinkOptions } from "../data/pageLinks";
 
 const PageCrossLinks: React.FC = () => {
-  const { pathname } = useLocation();
+  const pathname = usePathname();
 
   const suggestedLinks = pageLinkOptions
     .filter((option) => !pathname.startsWith(option.path))
@@ -21,12 +24,12 @@ const PageCrossLinks: React.FC = () => {
           <p className="text-jungle-text/70 text-sm">קישורי המשך כדי לגלות עוד מסיבות והמלצות.</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {suggestedLinks.map((option) => (
-            <Link
-              key={option.path}
-              to={option.path}
-              className="block bg-jungle-deep border border-wood-brown/60 rounded-xl p-4 hover:border-jungle-accent hover:shadow-jungle-glow transition group"
-            >
+            {suggestedLinks.map((option) => (
+              <Link
+                key={option.path}
+                href={option.path}
+                className="block bg-jungle-deep border border-wood-brown/60 rounded-xl p-4 hover:border-jungle-accent hover:shadow-jungle-glow transition group"
+              >
               <p className="font-semibold text-white group-hover:text-jungle-accent transition-colors">{option.label}</p>
               {option.description ? (
                 <p className="text-sm text-jungle-text/70 mt-2 leading-snug">{option.description}</p>

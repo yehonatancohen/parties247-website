@@ -1,8 +1,8 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Party } from '../data/types';
-import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
-import DiscountCodeReveal from './DiscountCodeReveal';
+import React from "react";
+import Link from "next/link";
+import { Party } from "../data/types";
+import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from "./Icons";
+import DiscountCodeReveal from "./DiscountCodeReveal";
 
 interface PartyCardProps {
   party: Party;
@@ -37,7 +37,7 @@ const PartyCard: React.FC<PartyCardProps> = ({ party, showDiscountCode = false }
 
   return (
     <div className="bg-jungle-surface rounded-xl overflow-hidden shadow-lg hover:shadow-jungle-glow/60 transition-all duration-300 flex flex-col group transform hover:-translate-y-1 border border-wood-brown/50">
-      <Link to={`/event/${party.slug}`} className="block">
+      <Link href={`/event/${party.slug}`} className="block">
         <div className="relative">
           <img 
             src={party.imageUrl} 
@@ -73,7 +73,7 @@ const PartyCard: React.FC<PartyCardProps> = ({ party, showDiscountCode = false }
         </div>
         {showDiscountCode && <DiscountCodeReveal className="mb-4" />}
         <Link
-          to={`/event/${party.slug}`}
+          href={`/event/${party.slug}`}
           className="mt-auto flex items-center justify-center gap-2 text-center bg-gradient-to-r from-jungle-lime to-jungle-accent hover:from-jungle-lime/80 hover:to-jungle-accent/80 text-jungle-deep font-display text-2xl py-3 px-4 rounded-lg transition-all w-full group-hover:scale-105 tracking-wider"
         >
           <span>פרטים וכרטיסים</span>

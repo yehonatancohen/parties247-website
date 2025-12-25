@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { grantAnalyticsConsent, hasAnalyticsConsent, initializeAnalytics } from '../lib/analytics';
+"use client";
+
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { grantAnalyticsConsent, hasAnalyticsConsent, initializeAnalytics } from "../lib/analytics";
 
 const CookieBanner: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -26,7 +28,7 @@ const CookieBanner: React.FC = () => {
       <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
         <p className="text-sm text-jungle-text/80 text-center sm:text-right">
           אנחנו משתמשים בעוגיות (cookies) כדי לשפר את חווית הגלישה שלך ולנתח את תנועת הגולשים באתר.
-          <Link to="/privacy" className="text-jungle-accent hover:underline mr-1">למדיניות הפרטיות</Link>
+          <Link href="/privacy" className="text-jungle-accent hover:underline mr-1">למדיניות הפרטיות</Link>
         </p>
         <button 
           onClick={handleAccept}

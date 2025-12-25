@@ -1,6 +1,6 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Article } from '../data/types';
+import React from "react";
+import Link from "next/link";
+import { Article } from "../data/types";
 
 interface ArticleCardProps {
     article: Article;
@@ -8,7 +8,7 @@ interface ArticleCardProps {
 
 const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
     return (
-        <Link to={`/כתבות/${article.slug}`} className="block bg-jungle-surface rounded-lg overflow-hidden group border border-wood-brown/50 transform hover:-translate-y-1 transition-transform duration-300">
+        <Link href={`/כתבות/${article.slug}`} className="block bg-jungle-surface rounded-lg overflow-hidden group border border-wood-brown/50 transform hover:-translate-y-1 transition-transform duration-300">
             <img
               src={article.imageUrl}
               alt={article.title}
