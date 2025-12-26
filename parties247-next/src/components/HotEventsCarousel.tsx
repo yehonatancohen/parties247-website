@@ -7,8 +7,37 @@ import { register } from 'swiper/element/bundle';
 
 import { Party } from '../data/types';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
-import { useParties } from '../hooks/useParties';
 import { trackPartyRedirect } from '../lib/analytics';
+
+const SSR_SWIPER_STYLES = `
+  swiper-container {
+    display: flex;
+    width: 100%;
+    overflow: hidden;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+  
+  swiper-slide {
+    display: block;
+    flex-shrink: 0;
+    height: auto;
+    /* Default Mobile Width (approx 1.6 slides per view) */
+    width: 60%; 
+    margin-right: 12px;
+  }
+
+  /* Approximate widths based on your breakpoints to minimize layout shift */
+  @media (min-width: 640px) {
+    swiper-slide { width: 32%; } /* ~2.8 slides */
+  }
+  @media (min-width: 768px) {
+    swiper-slide { width: 30%; } /* ~3.0 slides */
+  }
+  @media (min-width: 1024px) {
+    swiper-slide { width: 28%; } /* ~3.4 slides */
+  }
+`;
 
 const ArrowLeft: FC<{ className?: string }> = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
@@ -37,6 +66,13 @@ const renderTagContent = (tag: string) => {
 };
 
 const CarouselPartyCard: FC<{ party: Party; directUrl: string; priority: boolean }> = React.memo(({ party, directUrl, priority }) => {
+  // 1. We defer ONLY the image component to the client
+  const [imageReady, setImageReady] = useState(false);
+
+  useEffect(() => {
+    setImageReady(true);
+  }, []);
+
   const partyDate = new Date(party.date);
   const formattedDate = new Intl.DateTimeFormat('he-IL', {
     weekday: 'long', day: '2-digit', month: '2-digit',
@@ -51,15 +87,19 @@ const CarouselPartyCard: FC<{ party: Party; directUrl: string; priority: boolean
       onClick={() => trackPartyRedirect(party.id, party.slug)}
     >
       <div className="relative h-full rounded-xl overflow-hidden shadow-lg border border-wood-brown/50 bg-jungle-surface/50 group-hover:border-jungle-accent/50 transition-colors">
+        {/* Placeholder color block exists on SSR */}
         <div className="relative w-full aspect-[2/3] bg-jungle-deep/50">
-           <Image
-            src={party.imageUrl}
-            alt={party.name}
-            fill
-            sizes="(max-width: 640px) 70vw, (max-width: 1024px) 33vw, 20vw"
-            priority={priority}
-            className="object-cover"
-           />
+           {/* Image only renders after hydration */}
+           {imageReady && (
+             <Image
+              src={party.imageUrl}
+              alt={party.name}
+              fill
+              sizes="(max-width: 640px) 70vw, (max-width: 1024px) 33vw, 20vw"
+              priority={priority}
+              className="object-cover transition-opacity duration-500 opacity-100"
+             />
+           )}
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none"></div>
         <div className="absolute top-3 right-3 flex flex-col gap-2 z-10">
@@ -123,7 +163,7 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
   const slides = useMemo(() => {
      if (upcomingParties.length === 0) return [];
      if (upcomingParties.length < 6) {
-        return [...upcomingParties, ...upcomingParties, ...upcomingParties].slice(0, 10);
+       return [...upcomingParties, ...upcomingParties, ...upcomingParties].slice(0, 10);
      }
      return upcomingParties;
   }, [upcomingParties]);
@@ -192,20 +232,17 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
     Object.assign(swiperEl, params);
     swiperEl.initialize();
     
-    return () => {
-      if (swiperEl.swiper) {
-        swiperEl.swiper.destroy(true, true);
-      }
-    };
   }, [slides, variant, uniqueId, BREAKPOINTS, mounted]);
 
   if (slides.length === 0) return null;
-  if (!mounted) return <div className="h-[400px] w-full bg-jungle-surface/10 animate-pulse rounded-xl" />; 
 
   const carouselClasses = `relative party-carousel ${variant === 'coverflow' ? 'party-carousel-coverflow' : 'party-carousel-standard'}`;
 
   return (
     <div className="py-4">
+      {/* 2. Inject Styles here to handle SSR layout before JS loads */}
+      <style>{SSR_SWIPER_STYLES}</style>
+      
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-3xl font-display text-white">{title}</h2>
@@ -222,7 +259,7 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
       <div className={carouselClasses}>
         {React.createElement(
           'swiper-container',
-          { ref: swiperElRef, init: 'false', className: 'py-4' },
+          { ref: swiperElRef, init: 'false' },
           ...slides.map((party, index) =>
             React.createElement(
               'swiper-slide',

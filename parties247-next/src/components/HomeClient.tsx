@@ -1,13 +1,11 @@
 "use client";
 
-import React, { Suspense, useMemo } from "react";
+import React, { useMemo } from "react";
 import Link from "next/link";
-import LoadingSpinner from "@/components/LoadingSpinner";
 import SocialsCta from "@/components/SocialsCta";
 import { createCarouselSlug } from "@/lib/carousels";
-import PartyCarouselHighPriority from "@/components/HotEventsCarousel";
-
-const PartyCarouselLazy = React.lazy(() => import("@/components/HotEventsCarousel"));
+// We use the SSR component for ALL carousels now
+import PartyCarousel from "@/components/HotEventsCarousel"; 
 
 const HERO_IMAGE_URL =
   "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1600&q=70";
@@ -17,34 +15,9 @@ interface HomeClientProps {
   initialCarousels: any[];
 }
 
-// --- Components ---
-const CarouselSkeleton: React.FC<{ title: string }> = ({ title }) => (
-  <div className="py-4 animate-pulse">
-    <div className="container mx-auto px-4">
-      <div className="flex justify-between items-center mb-4">
-        <div className="h-8 w-40 bg-jungle-surface/60 rounded-lg" aria-hidden="true" />
-        <div className="flex gap-2">
-          <div className="h-10 w-10 bg-jungle-surface/60 rounded-full" aria-hidden="true" />
-          <div className="h-10 w-10 bg-jungle-surface/60 rounded-full" aria-hidden="true" />
-        </div>
-      </div>
-    </div>
-    <div className="container mx-auto px-4">
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-        {Array.from({ length: 6 }).map((_, idx) => (
-          <div
-            key={`${title}-skeleton-${idx}`}
-            className="aspect-[2/3] bg-jungle-surface/50 rounded-xl"
-            aria-hidden="true"
-          />
-        ))}
-      </div>
-    </div>
-  </div>
-);
-
 // --- Main Component ---
-export default function HomeClient({ initialParties = [], initialCarousels = [] }: HomeClientProps) {  const carouselsWithParties = useMemo(
+export default function HomeClient({ initialParties = [], initialCarousels = [] }: HomeClientProps) {
+  const carouselsWithParties = useMemo(
     () =>
       initialCarousels
         .map((carousel) => {
@@ -103,59 +76,42 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
       {/* Carousels Section */}
       <div className="space-y-16">
         
-        {carouselsWithParties.map((carousel, index) => {
-          // STRATEGY: 
-          // If it's the first carousel (index 0), render directly.
-          // If it's the others, render lazily.
-          
-          if (index === 0) {
-            return (
-              <React.Fragment key={carousel.id}>
-                {/* HIGH PRIORITY: Renders HTML on server. Google loves this. */}
-                <PartyCarouselHighPriority
-                  title={carousel.title}
-                  parties={carousel.parties}
-                  viewAllLink={carousel.viewAllLink}
-                  variant="coverflow"
-                />
-                
-                {/* Your Quick Search Section */}
-                <section className="bg-gradient-to-r from-jungle-surface/80 via-jungle-deep/85 to-jungle-surface/80 border-y border-wood-brown/50 shadow-[0_10px_40px_rgba(0,0,0,0.35)]">
-                    <div className="container mx-auto px-4 py-6 flex flex-col md:flex-row items-center md:items-start justify-between gap-4">
-                      <div className="text-center md:text-right space-y-2">
-                        <p className="text-xs uppercase tracking-[0.2em] text-jungle-accent/80">חיפוש מהיר</p>
-                        <h2 className="text-2xl md:text-3xl font-display text-white">מצאו את המסיבה המושלמת בשבילכם</h2>
-                        <p className="text-jungle-text/80 max-w-3xl md:ml-auto md:pl-6">
-                          מסננים לפי עיר, וייב, מועדון או תאריך ומקבלים רשימה מתעדכנת של כל האירועים הקרובים. לחצו והתחילו לחפש ברגע.
-                        </p>
-                      </div>
-                      <Link
-                        href="/party-discovery"
-                        className="inline-flex items-center gap-3 rounded-full bg-jungle-accent text-black font-semibold px-6 py-3 shadow-lg shadow-jungle-accent/40 hover:-translate-y-0.5 hover:shadow-xl hover:bg-white transition"
-                      >
-                        <span>לעמוד החיפוש</span>
-                        <span aria-hidden="true" className="text-xl">↗</span>
-                      </Link>
-                    </div>
-                  </section>
-              </React.Fragment>
-            );
-          }
+        {carouselsWithParties.map((carousel, index) => (
+          <React.Fragment key={carousel.id}>
+            {/* Render ALL carousels with SSR. 
+                pass priority={index === 0} so only the top carousel preloads images 
+            */}
+            <PartyCarousel
+              title={carousel.title}
+              parties={carousel.parties}
+              viewAllLink={carousel.viewAllLink}
+              variant={index === 0 ? "coverflow" : "standard"}
+              priority={index === 0}
+            />
 
-          // LOWER PRIORITY: Renders only when JS loads. Browsers love this.
-          return (
-            <React.Fragment key={carousel.id}>
-              <Suspense fallback={<CarouselSkeleton title={carousel.title} />}>
-                <PartyCarouselLazy
-                  title={carousel.title}
-                  parties={carousel.parties}
-                  viewAllLink={carousel.viewAllLink}
-                  variant="standard"
-                />
-              </Suspense>
-            </React.Fragment>
-          );
-        })}
+            {/* Render the Quick Search section ONLY after the first carousel */}
+            {index === 0 && (
+              <section className="bg-gradient-to-r from-jungle-surface/80 via-jungle-deep/85 to-jungle-surface/80 border-y border-wood-brown/50 shadow-[0_10px_40px_rgba(0,0,0,0.35)]">
+                <div className="container mx-auto px-4 py-6 flex flex-col md:flex-row items-center md:items-start justify-between gap-4">
+                  <div className="text-center md:text-right space-y-2">
+                    <p className="text-xs uppercase tracking-[0.2em] text-jungle-accent/80">חיפוש מהיר</p>
+                    <h2 className="text-2xl md:text-3xl font-display text-white">מצאו את המסיבה המושלמת בשבילכם</h2>
+                    <p className="text-jungle-text/80 max-w-3xl md:ml-auto md:pl-6">
+                      מסננים לפי עיר, וייב, מועדון או תאריך ומקבלים רשימה מתעדכנת של כל האירועים הקרובים. לחצו והתחילו לחפש ברגע.
+                    </p>
+                  </div>
+                  <Link
+                    href="/party-discovery"
+                    className="inline-flex items-center gap-3 rounded-full bg-jungle-accent text-black font-semibold px-6 py-3 shadow-lg shadow-jungle-accent/40 hover:-translate-y-0.5 hover:shadow-xl hover:bg-white transition"
+                  >
+                    <span>לעמוד החיפוש</span>
+                    <span aria-hidden="true" className="text-xl">↗</span>
+                  </Link>
+                </div>
+              </section>
+            )}
+          </React.Fragment>
+        ))}
 
       </div>
 
