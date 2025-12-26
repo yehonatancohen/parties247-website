@@ -65,7 +65,7 @@ const Header: React.FC = () => {
         </NavLink>
       </li>
       <li>
-        <NavLink href="/כתבות" onClick={onLinkClick} className={({ isActive }: { isActive: boolean }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
+        <NavLink href="/articles" onClick={onLinkClick} className={({ isActive }: { isActive: boolean }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
           כתבות
         </NavLink>
       </li>

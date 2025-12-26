@@ -3,26 +3,19 @@
 import React, { useRef, useEffect, useMemo, FC, useId, useState } from 'react';
 import Link from "next/link";
 import Image from "next/image";
-// Import Swiper React components (The official way)
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Autoplay, EffectCoverflow } from 'swiper/modules';
-
-// Import Swiper styles
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/effect-coverflow';
+import { register } from 'swiper/element/bundle';
 
 import { Party } from '../data/types';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
 import { useParties } from '../hooks/useParties';
 import { trackPartyRedirect } from '../lib/analytics';
 
-// --- Icons & Helpers ---
 const ArrowLeft: FC<{ className?: string }> = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
   </svg>
 );
+
 const ArrowRight: FC<{ className?: string }> = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -43,7 +36,6 @@ const renderTagContent = (tag: string) => {
   return tag;
 };
 
-// --- Party Card ---
 const CarouselPartyCard: FC<{ party: Party; directUrl: string; priority: boolean }> = React.memo(({ party, directUrl, priority }) => {
   const partyDate = new Date(party.date);
   const formattedDate = new Intl.DateTimeFormat('he-IL', {
@@ -97,7 +89,6 @@ const CarouselPartyCard: FC<{ party: Party; directUrl: string; priority: boolean
   );
 });
 
-// --- Main Component ---
 interface PartyCarouselProps {
   title: string;
   parties: Party[];
@@ -113,13 +104,13 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
     variant = 'coverflow',
     priority = false 
 }) => {
-  const { defaultReferral } = useParties();
+  const swiperElRef = useRef<any>(null);
   const rawId = useId(); 
   const uniqueId = `carousel-${rawId.replace(/:/g, '')}`; 
   const [mounted, setMounted] = useState(false);
 
-  // Prevent hydration mismatch by only rendering Swiper on client
   useEffect(() => {
+    register();
     setMounted(true);
   }, []);
 
@@ -137,22 +128,81 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
      return upcomingParties;
   }, [upcomingParties]);
 
-  if (slides.length === 0) return null;
-  if (!mounted) return <div className="h-[400px] w-full bg-jungle-surface/10 animate-pulse rounded-xl" />; // Simple Skeleton
+  const BREAKPOINTS = useMemo(() => (
+    variant === 'coverflow'
+      ? {
+          0:    { slidesPerView: 1.6 },
+          360:  { slidesPerView: 1.9 },
+          420:  { slidesPerView: 2.2 },
+          640:  { slidesPerView: 2.8 },
+          768:  { slidesPerView: 3.0 },
+          1024: { slidesPerView: 3.4 },
+          1440: { slidesPerView: 3.8 },
+        }
+      : {
+          0:    { slidesPerView: 1.8 },
+          360:  { slidesPerView: 2.2 },
+          420:  { slidesPerView: 2.6 },
+          640:  { slidesPerView: 3.2 },
+          768:  { slidesPerView: 4.0 },
+          1024: { slidesPerView: 5.0 },
+          1280: { slidesPerView: 6.0 },
+        }
+  ), [variant]);
 
-  const isCoverflow = variant === 'coverflow';
-  
-  const breakpoints = isCoverflow 
-    ? {
-        0:    { slidesPerView: 1.6, spaceBetween: 12 },
-        640:  { slidesPerView: 2.8, spaceBetween: 20 },
-        1024: { slidesPerView: 3.4, spaceBetween: 24 },
+  useEffect(() => {
+    const swiperEl = swiperElRef.current;
+    if (!swiperEl || !mounted || slides.length === 0) return;
+    
+    const commonParams = {
+      breakpoints: BREAKPOINTS,
+      spaceBetween: 12,
+      loop: true,
+      observer: true,
+      observeParents: true,
+      navigation: {
+        nextEl: `#next-${uniqueId}`,
+        prevEl: `#prev-${uniqueId}`,
+      },
+      watchOverflow: true,
+    };
+    
+    const variantParams = variant === 'coverflow' ? {
+      effect: 'coverflow',
+      centeredSlides: true,
+      grabCursor: true,
+      autoplay: {
+        delay: 6500,
+        disableOnInteraction: false,
+        pauseOnMouseEnter: true,
+      },
+      coverflowEffect: {
+        rotate: 0,
+        stretch: 36,
+        depth: 90,
+        modifier: 1,
+        slideShadows: false,
+      },
+    } : {
+      centeredSlides: false,
+    };
+
+    const params = { ...commonParams, ...variantParams };
+    
+    Object.assign(swiperEl, params);
+    swiperEl.initialize();
+    
+    return () => {
+      if (swiperEl.swiper) {
+        swiperEl.swiper.destroy(true, true);
       }
-    : {
-        0:    { slidesPerView: 1.8, spaceBetween: 12 },
-        640:  { slidesPerView: 3.2, spaceBetween: 20 },
-        1024: { slidesPerView: 5.0, spaceBetween: 24 },
-      };
+    };
+  }, [slides, variant, uniqueId, BREAKPOINTS, mounted]);
+
+  if (slides.length === 0) return null;
+  if (!mounted) return <div className="h-[400px] w-full bg-jungle-surface/10 animate-pulse rounded-xl" />; 
+
+  const carouselClasses = `relative party-carousel ${variant === 'coverflow' ? 'party-carousel-coverflow' : 'party-carousel-standard'}`;
 
   return (
     <div className="py-4">
@@ -162,38 +212,30 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
           <div className="flex items-center gap-4">
             <Link href={viewAllLink} className="text-jungle-accent hover:text-white transition-colors">הצג הכל</Link>
             <div className="flex gap-2">
-              <button id={`prev-${uniqueId}`} className="swiper-button-prev !static !w-11 !h-11 border border-wood-brown/30 rounded-full flex items-center justify-center bg-jungle-surface/80 hover:bg-jungle-accent hover:text-black transition-colors">
-                <ArrowRight className="w-5 h-5" /> 
-              </button>
-              <button id={`next-${uniqueId}`} className="swiper-button-next !static !w-11 !h-11 border border-wood-brown/30 rounded-full flex items-center justify-center bg-jungle-surface/80 hover:bg-jungle-accent hover:text-black transition-colors">
-                <ArrowLeft className="w-5 h-5" />
-              </button>
+              <button id={`prev-${uniqueId}`} className="swiper-button-prev !static !w-11 !h-11"><ArrowLeft className="w-6 h-6" /></button>
+              <button id={`next-${uniqueId}`} className="swiper-button-next !static !w-11 !h-11"><ArrowRight className="w-6 h-6" /></button>
             </div>
           </div>
         </div>
       </div>
       
-      <Swiper
-        modules={[Navigation, Autoplay, EffectCoverflow]}
-        loop={true}
-        breakpoints={breakpoints}
-        navigation={{ nextEl: `#next-${uniqueId}`, prevEl: `#prev-${uniqueId}` }}
-        centeredSlides={isCoverflow}
-        effect={isCoverflow ? 'coverflow' : undefined}
-        coverflowEffect={isCoverflow ? { rotate: 0, stretch: 0, depth: 100, modifier: 1, slideShadows: false } : undefined}
-        autoplay={isCoverflow ? { delay: 5000, disableOnInteraction: false, pauseOnMouseEnter: true } : undefined}
-        className={`party-carousel w-full py-4 ${variant === 'coverflow' ? 'overflow-visible' : ''}`}
-      >
-        {slides.map((party, index) => (
-             <SwiperSlide key={`${party.id}-${index}`}>
-                 <CarouselPartyCard 
-                    party={party} 
-                    directUrl={party.originalUrl || '#'} 
-                    priority={priority && index < 2} 
-                  />
-             </SwiperSlide>
-        ))}
-      </Swiper>
+      <div className={carouselClasses}>
+        {React.createElement(
+          'swiper-container',
+          { ref: swiperElRef, init: 'false', className: 'py-4' },
+          ...slides.map((party, index) =>
+            React.createElement(
+              'swiper-slide',
+              { key: `${party.id}-${index}` },
+              <CarouselPartyCard 
+                party={party} 
+                directUrl={party.originalUrl || '#'} 
+                priority={priority && index < 2} 
+              />
+            )
+          )
+        )}
+      </div>
     </div>
   );
 };

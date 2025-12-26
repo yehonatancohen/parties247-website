@@ -784,8 +784,8 @@ export const holidayIntents: TaxonomyConfig[] = [
 export const topArticles: TaxonomyConfig[] = [
   {
     type: 'articles',
-    slug: 'כתבות/מדריך-מועדוני-טכנו-בתל-אביב',
-    path: '/כתבות/מדריך-מועדוני-טכנו-בתל-אביב',
+    slug: 'articles/מדריך-מועדוני-טכנו-בתל-אביב',
+    path: '/articles/מדריך-מועדוני-טכנו-בתל-אביב',
     label: 'מדריך מועדוני טכנו בתל אביב',
     title: 'מדריך מועדוני טכנו בתל אביב – הבלוק, פנגיה ועוד',
     description:
@@ -795,14 +795,14 @@ export const topArticles: TaxonomyConfig[] = [
     faq: [],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'כתבות', path: '/כתבות' },
+      { label: 'כתבות', path: '/articles' },
       { label: 'מדריך מועדוני טכנו בתל אביב' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=1200&q=80',
   },
   {
     type: 'articles',
-    slug: 'כתבות/מסיבות-נוער-המדריך-להורים',
+    slug: 'articles/מסיבות-נוער-המדריך-להורים',
     path: '/כתבות/מסיבות-נוער-המדריך-להורים',
     label: 'מסיבות נוער – המדריך להורים',
     title: 'מסיבות נוער בישראל – המדריך להורים ולמלווים',
@@ -813,7 +813,7 @@ export const topArticles: TaxonomyConfig[] = [
     faq: [],
     breadcrumbs: [
       { label: 'בית', path: '/' },
-      { label: 'כתבות', path: '/כתבות' },
+      { label: 'כתבות', path: '/articles' },
       { label: 'מסיבות נוער – המדריך להורים' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=1200&q=80',

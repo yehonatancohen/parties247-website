@@ -55,7 +55,7 @@ const clubLinks = [
 ];
 
 const helperLinks = [
-  { title: 'בלוג וטיפים', to: '/כתבות', blurb: 'מדריכים, ראיונות ותחקירי ליינים.' },
+  { title: 'בלוג וטיפים', to: '/articles', blurb: 'מדריכים, ראיונות ותחקירי ליינים.' },
   { title: 'הצהרת מקדמי אירועים', to: '/promoter-disclaimer', blurb: 'שקיפות מלאה מול מפיקים ושותפים.' },
 ];
 
