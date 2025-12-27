@@ -8,7 +8,7 @@ import { createCarouselSlug } from "@/lib/carousels";
 import PartyCarousel from "@/components/HotEventsCarousel"; 
 
 const HERO_IMAGE_URL =
-  "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1600&q=70";
+  "https://i.ibb.co/qMQXFTpr/Gemini-Generated-Image-a2279ca2279ca227.png";
 
 interface HomeClientProps {
   initialParties: any[];

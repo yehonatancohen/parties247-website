@@ -12,20 +12,20 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        "jungle-deep": "#0a1a1a",
-        "jungle-surface": "#162b2b",
-        "jungle-accent": "#76c893",
-        "jungle-lime": "#a7ff83",
-        "jungle-text": "#e0f0e3",
-        "wood-brown": "#4d3b2a",
+        'jungle-deep': '#0a1a1a',
+        'jungle-surface': '#162b2b',
+        'jungle-accent': '#76c893',
+        'jungle-lime': '#a7ff83',
+        'jungle-text': '#e0f0e3',
+        'wood-brown': '#4d3b2a',
       },
       fontFamily: {
-        sans: ['"Assistant"', "sans-serif"],
-        display: ['"Secular One"', "sans-serif"],
+        sans: ['"Assistant"', 'sans-serif'],
+        display: ['"Secular One"', 'sans-serif'],
       },
       boxShadow: {
-        // theme() can't resolve "colors.xxx/60" (opacity suffix). Use rgba for the faded glow.
-        "jungle-glow": "0 0 15px theme('colors.jungle-lime'), 0 0 25px rgba(167, 255, 131, 0.6)",
+        'jungle-glow':
+          '0 0 15px theme("colors.jungle-lime"), 0 0 25px theme("colors.jungle-lime/60")',
       },
     },
   },

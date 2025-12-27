@@ -2,13 +2,13 @@
 
 import React, { useRef, useEffect, useMemo, FC, useId, useState } from 'react';
 import Link from "next/link";
-import Image from "next/image";
 import { register } from 'swiper/element/bundle';
 
 import { Party } from '../data/types';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
 import { trackPartyRedirect } from '../lib/analytics';
 
+// --- EXACT CSS FROM VITE VERSION ---
 const SSR_SWIPER_STYLES = `
   swiper-container {
     display: flex;
@@ -22,20 +22,24 @@ const SSR_SWIPER_STYLES = `
     display: block;
     flex-shrink: 0;
     height: auto;
-    /* Default Mobile Width (approx 1.6 slides per view) */
+    /* Default Mobile Width */
     width: 60%; 
     margin-right: 12px;
+    
+    /* FIX: Ensure no 3D hacks blur the text */
+    backface-visibility: hidden;
+    transform: translate3d(0,0,0);
   }
 
-  /* Approximate widths based on your breakpoints to minimize layout shift */
+  /* Exact Breakpoints from Vite */
   @media (min-width: 640px) {
-    swiper-slide { width: 32%; } /* ~2.8 slides */
+    swiper-slide { width: 32%; }
   }
   @media (min-width: 768px) {
-    swiper-slide { width: 30%; } /* ~3.0 slides */
+    swiper-slide { width: 30%; }
   }
   @media (min-width: 1024px) {
-    swiper-slide { width: 28%; } /* ~3.4 slides */
+    swiper-slide { width: 28%; }
   }
 `;
 
@@ -66,13 +70,7 @@ const renderTagContent = (tag: string) => {
 };
 
 const CarouselPartyCard: FC<{ party: Party; directUrl: string; priority: boolean }> = React.memo(({ party, directUrl, priority }) => {
-  // 1. We defer ONLY the image component to the client
-  const [imageReady, setImageReady] = useState(false);
-
-  useEffect(() => {
-    setImageReady(true);
-  }, []);
-
+  
   const partyDate = new Date(party.date);
   const formattedDate = new Intl.DateTimeFormat('he-IL', {
     weekday: 'long', day: '2-digit', month: '2-digit',
@@ -83,25 +81,21 @@ const CarouselPartyCard: FC<{ party: Party; directUrl: string; priority: boolean
       href={directUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="group block outline-none h-full"
+      className="group block outline-none"
       onClick={() => trackPartyRedirect(party.id, party.slug)}
     >
-      <div className="relative h-full rounded-xl overflow-hidden shadow-lg border border-wood-brown/50 bg-jungle-surface/50 group-hover:border-jungle-accent/50 transition-colors">
-        {/* Placeholder color block exists on SSR */}
-        <div className="relative w-full aspect-[2/3] bg-jungle-deep/50">
-           {/* Image only renders after hydration */}
-           {imageReady && (
-             <Image
-              src={party.imageUrl}
-              alt={party.name}
-              fill
-              sizes="(max-width: 640px) 70vw, (max-width: 1024px) 33vw, 20vw"
-              priority={priority}
-              className="object-cover transition-opacity duration-500 opacity-100"
-             />
-           )}
-        </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none"></div>
+      <div className="relative rounded-xl overflow-hidden shadow-lg transition-all duration-500 ease-in-out border border-wood-brown/50">
+        
+        {/* --- USE STANDARD HTML IMG TAG --- */}
+        {/* This creates the exact same DOM structure as Vite, preventing layout shifts */}
+        <img
+          src={party.imageUrl}
+          alt={party.name}
+          loading={priority ? "eager" : "lazy"}
+          className="w-full aspect-[2/3] object-cover"
+        />
+
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
         <div className="absolute top-3 right-3 flex flex-col gap-2 z-10">
           {party.tags.slice(0, 2).map(tag => (
             <span key={tag} className={`${getTagColor(tag)} backdrop-blur-sm text-xs font-bold px-2 py-1 rounded-full shadow-lg flex items-center`}>
@@ -109,7 +103,7 @@ const CarouselPartyCard: FC<{ party: Party; directUrl: string; priority: boolean
             </span>
           ))}
         </div>
-        <div className="absolute bottom-0 left-0 p-4 w-full z-20">
+        <div className="absolute bottom-0 left-0 p-4 w-full">
           <div className="space-y-1 mb-2">
             <div className="flex items-center text-xs text-jungle-text/90 font-medium">
               <CalendarIcon className="w-3.5 h-3.5 ml-1.5 text-jungle-accent" />
@@ -120,7 +114,7 @@ const CarouselPartyCard: FC<{ party: Party; directUrl: string; priority: boolean
               <span className="truncate max-w-[150px]">{party.location.name}</span>
             </div>
           </div>
-          <h3 className="font-display text-xl md:text-2xl text-white truncate leading-tight" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.7)' }}>
+          <h3 className="font-display text-xl md:text-2xl text-white truncate" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.7)' }}>
             {party.name}
           </h3>
         </div>
@@ -200,6 +194,10 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
       loop: true,
       observer: true,
       observeParents: true,
+      
+      // FIX 2: Prevent pixelated text during 3D transform
+      roundLengths: true,
+      
       navigation: {
         nextEl: `#next-${uniqueId}`,
         prevEl: `#prev-${uniqueId}`,
@@ -221,7 +219,9 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
         stretch: 36,
         depth: 90,
         modifier: 1,
-        slideShadows: false,
+        // FIX 3: DISABLE SHADOWS. 
+        // This stops the browser from adding the blur filter over your text.
+        slideShadows: false, 
       },
     } : {
       centeredSlides: false,
@@ -240,7 +240,6 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
 
   return (
     <div className="py-4">
-      {/* 2. Inject Styles here to handle SSR layout before JS loads */}
       <style>{SSR_SWIPER_STYLES}</style>
       
       <div className="container mx-auto px-4">

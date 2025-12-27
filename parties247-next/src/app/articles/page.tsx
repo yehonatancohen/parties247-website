@@ -38,8 +38,6 @@ export default function ArticlesIndexPage() {
               <img
                 src={article.imageUrl}
                 alt={article.title}
-                // 2. Performance: Only lazy load images that are "below the fold" (index > 2)
-                // This ensures the top images appear INSTANTLY even without JS.
                 loading={index < 3 ? "eager" : "lazy"}
                 decoding="async"
                 className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"

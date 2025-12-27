@@ -8,7 +8,7 @@ export const articles: Article[] = [
     summary:
       'תל אביב היא בירת הטכנו של המזרח התיכון, אבל איפה נמצאים המקומות האמיתיים? צללנו לסצנת האנדרגראונד וחזרנו עם המלצות.',
     imageUrl:
-      'https://images.unsplash.com/photo-1521336575822-6da63fb45455?auto=format&fit=crop&w=1200&q=80',
+      'https://i.ibb.co/SXYQm29v/Gemini-Generated-Image-mfwkwnmfwkwnmfwk.png',
     content: `סצנת הטכנו של תל אביב היא חיה ובועטת, אבל עם כל כך הרבה אפשרויות, קל ללכת לאיבוד. כדי לעזור לכם למצוא את הסאונד והאווירה המדויקים, יצאנו למסע במרתפים האפלים והחללים התעשייתיים של העיר. אלו המקומות שלא תרצו לפספס.
 
 ### 1. הבלוק (The Block)
@@ -32,7 +32,7 @@ export const articles: Article[] = [
     title: 'המדריך המלא למסיבת הטבע הראשונה שלכם',
     summary: 'רוצים לחוות את הקסם של רייב בטבע אבל לא יודעים מאיפה להתחיל? כל הטיפים שיבטיחו לכם נחיתה רכה בעולם הפסיי-טראנס.',
     imageUrl:
-      'https://images.unsplash.com/photo-1470229538611-16ba8c7ffbd7?auto=format&fit=crop&w=1200&q=80',
+      'https://i.ibb.co/DBN75Vj/Gemini-Generated-Image-c5jwbrc5jwbrc5jw.png',
     content: `מסיבת טבע היא הרבה יותר מסתם מסיבה. זו חוויה הוליסטית שמחברת בין מוזיקה, טבע, קהילה ותודעה. אם זו הפעם הראשונה שלכם, כמה טיפים קטנים יכולים לעשות הבדל גדול.
 
 ### 1. ציוד: מה להביא?
@@ -56,7 +56,7 @@ export const articles: Article[] = [
     title: 'עליית המיינסטרים: איך הפופ הישראלי כבש את הרחבות',
     summary: 'פעם הרחבות היו שייכות לטכנו ולטראנס, אבל היום המיינסטרים הישראלי שולט. איך קרה המהפך ומה זה אומר על תרבות הבילוי שלנו?',
     imageUrl:
-      'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80',
+      'https://i.ibb.co/bjnqb5B5/Gemini-Generated-Image-rxzmmmrxzmmmrxzm.png',
     content: `בשנים האחרונות, אנחנו עדים לתופעה מרתקת בחיי הלילה של ישראל: המיינסטרים, ובעיקר הפופ הישראלי, כובש את רחבות הריקודים שהיו פעם נחלתם הבלעדית של ז'אנרים אלקטרוניים. אמנים כמו נועה קירל, עדן חסון ואנה זק הפכו לחלק בלתי נפרד מהפלייליסט של כל מועדון מוביל.
 
 ### הגורמים לשינוי
@@ -78,7 +78,7 @@ export const articles: Article[] = [
     title: 'מהי מסיבה? כל מה שצריך לדעת על הבסיס',
     summary: 'מגדירים פעם אחת ולתמיד מהי מסיבה, למה היא חשובה ואילו סוגים קיימים בישראל.',
     imageUrl:
-      'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=1200&q=80',
+      'https://i.ibb.co/FLQHVwp5/Gemini-Generated-Image-4x6f1u4x6f1u4x6f.png',
     content: `לפני שקופצים לליין הבא, שווה לעצור ולהבין מה בכלל מגדיר מסיבה. המונח נשמע פשוט, אבל הוא כולל עולם ומלואו של תרבות, קהילה וחוויה אנושית.
 
 ### הגדרה בסיסית
@@ -96,7 +96,7 @@ export const articles: Article[] = [
     title: 'איך מתכננים מסיבת בית מושלמת',
     summary: 'מהרשימת אורחים ועד לפלייליסט – המדריך שידריך אתכם צעד אחר צעד בתכנון מסיבת בית.',
     imageUrl:
-      'https://images.unsplash.com/photo-1504309092620-4d0ec726efa6?auto=format&fit=crop&w=1200&q=80',
+      'https://i.ibb.co/C3gGjjNd/Gemini-Generated-Image-qghz4cqghz4cqghz.png',
     content: `מסיבת בית טובה נשענת על הכנה מוקפדת. להלן ארבעה שלבים שיעזרו לכם להפוך את הסלון למועדון הביתי המושלם.
 
 ### 1. מגדירים קונספט
@@ -117,7 +117,7 @@ export const articles: Article[] = [
     title: 'מה להביא למסיבה? צ׳ק ליסט קצר למבלים',
     summary: 'הציוד הקטן שעושה הבדל ענק בכל סוג של מסיבה – בבית, במועדון או בטבע.',
     imageUrl:
-      'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80',
+      'https://i.ibb.co/3mKKwd1H/Gemini-Generated-Image-e63h24e63h24e63h.png',
     content: `לא משנה אם אתם בדרך למסיבת טבע או לבילוי במועדון בעיר – יש כמה דברים שכדאי להחזיק בהישג יד.
 
 ### למסיבות מועדון
@@ -135,7 +135,7 @@ export const articles: Article[] = [
     title: 'איך לבחור מוזיקה למסיבה שלכם',
     summary: 'הסאונד הוא הלב של כל מסיבה. כך תרכיבו פלייליסט שמרים את האנרגיות מתחילת הערב ועד הסוף.',
     imageUrl:
-      'https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=1200&q=80',
+      'https://i.ibb.co/3mdqv3hX/Gemini-Generated-Image-cd6j22cd6j22cd6j.png',
     content: `פלייליסט מוצלח מבטיח שהרחבה לא תתרוקן. כדאי להשקיע מחשבה מוקדמת בבחירת הזרם המוזיקלי ובבניית קשת של אנרגיות.
 
 ### הכרת הקהל
@@ -153,7 +153,7 @@ export const articles: Article[] = [
     title: 'בטיחות במסיבות: איך ליהנות ולהישאר מוגנים',
     summary: 'צעדים פשוטים שיעזרו לכם לשמור על עצמכם ועל החברים בזמן בילוי.',
     imageUrl:
-      'https://images.unsplash.com/photo-1440404653325-ab127d49abc1?auto=format&fit=crop&w=1200&q=80',
+      'https://i.ibb.co/4ZpxyLBK/Gemini-Generated-Image-8s8o1n8s8o1n8s8o.png',
     content: `הכיף של המסיבה חשוב, אבל גם החזרה הביתה בשלום. הנה כמה כללים בסיסיים שלא שוכחים.
 
 ### מגיעים וחוזרים יחד
@@ -171,7 +171,7 @@ export const articles: Article[] = [
     title: 'מסיבות נוער – המדריך להורים מודאגים',
     summary: 'איך בוחרים מסיבת נוער בטוחה? כל העצות החשובות לפני שמאפשרים לבני הנוער לצאת.',
     imageUrl:
-      'https://images.unsplash.com/photo-1527529482837-4698179dc6ce?auto=format&fit=crop&w=1200&q=80',
+      'https://i.ibb.co/8nbv0C4G/Gemini-Generated-Image-awseyfawseyfawse.png',
     content: `כאשר בני ובנות הנוער מבקשים לצאת למסיבה, הורים רבים מתלבטים כיצד לאפשר להם חופש תוך שמירה על ביטחונם. המדריך הקצר הבא יעזור לנהל את השיחה בצורה פתוחה ובטוחה.
 
 ### בודקים את ההפקה מראש
