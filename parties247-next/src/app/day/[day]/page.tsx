@@ -22,7 +22,8 @@ const dayConfig: Record<string, { title: string; description: string; weekday: n
 };
 
 export async function generateMetadata({ params }: { params: { day: string } }): Promise<Metadata> {
-  const config = dayConfig[params.day];
+  const { day } = await params;
+  const config = dayConfig[day];
   if (!config) {
     return {
       title: "מסיבות קרובות | Parties 24/7",
@@ -36,7 +37,8 @@ export async function generateMetadata({ params }: { params: { day: string } }):
 }
 
 export default async function DayPartiesPage({ params }: { params: { day: string } }) {
-  const config = dayConfig[params.day];
+  const { day } = await params;
+  const config = dayConfig[day];
   if (!config) {
     notFound();
   }
@@ -56,8 +58,7 @@ export default async function DayPartiesPage({ params }: { params: { day: string
   return (
     <PartyGrid
       parties={parties}
-      hotPartyIds={hotPartyIds}
-      initialFilters={{ weekday: config.weekday }}
+      hotPartyIds={Array.from(new Set(hotPartyIds || []))}
       showFilters={false}
       title={config.title}
       description={config.description}

@@ -36,7 +36,8 @@ const genreConfig: Record<GenreKey, { title: string; description: string; filter
 };
 
 export async function generateMetadata({ params }: { params: { genre: GenreKey } }): Promise<Metadata> {
-  const config = genreConfig[params.genre];
+  const { genre } = await params;
+  const config = genreConfig[genre];
   return {
     title: config ? `${config.title} | Parties 24/7` : "מסיבות לפי סגנון",
     description: config?.description,
@@ -44,7 +45,8 @@ export async function generateMetadata({ params }: { params: { genre: GenreKey }
 }
 
 export default async function GenrePage({ params }: { params: { genre: GenreKey } }) {
-  const config = genreConfig[params.genre];
+  const { genre } = await params;
+  const config = genreConfig[genre];
   if (!config) {
     notFound();
   }
@@ -65,7 +67,7 @@ export default async function GenrePage({ params }: { params: { genre: GenreKey 
   return (
     <PartyGrid
       parties={filteredParties}
-      hotPartyIds={hotPartyIds}
+      hotPartyIds={Array.from(new Set(hotPartyIds || []))}
       showFilters={false}
       title={config.title}
       description={config.description}

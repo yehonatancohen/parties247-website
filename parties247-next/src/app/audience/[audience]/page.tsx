@@ -36,7 +36,8 @@ const audienceConfig: Record<AudienceKey, { title: string; description: string; 
 };
 
 export async function generateMetadata({ params }: { params: { audience: AudienceKey } }): Promise<Metadata> {
-  const config = audienceConfig[params.audience];
+  const { audience } = await params;
+  const config = audienceConfig[audience];
   return {
     title: config ? `${config.title} | Parties 24/7` : "מסיבות לפי קהל יעד",
     description: config?.description,
@@ -44,7 +45,8 @@ export async function generateMetadata({ params }: { params: { audience: Audienc
 }
 
 export default async function AudiencePage({ params }: { params: { audience: AudienceKey } }) {
-  const config = audienceConfig[params.audience];
+  const { audience } = await params;
+  const config = audienceConfig[audience];
   if (!config) {
     notFound();
   }
@@ -65,7 +67,7 @@ export default async function AudiencePage({ params }: { params: { audience: Aud
   return (
     <PartyGrid
       parties={filteredParties}
-      hotPartyIds={hotPartyIds}
+      hotPartyIds={Array.from(new Set(hotPartyIds || []))}
       showFilters={false}
       title={config.title}
       description={config.description}

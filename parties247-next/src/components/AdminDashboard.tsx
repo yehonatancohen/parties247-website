@@ -13,7 +13,7 @@ const sanitizeGoOutUrl = (input: string): string => {
   }
 
   const trimmedInput = input.trim();
-  const urlMatches = trimmedInput.match(/https?:\/\/[^\s"'<>]+/gi) || [];
+  const urlMatches: string[] = trimmedInput.match(/https?:\/\/[^\s"'<>]+/gi) || [];
   const goOutMatch = urlMatches.find(match => match.toLowerCase().includes('go-out.co'));
   const candidate = goOutMatch || '';
 

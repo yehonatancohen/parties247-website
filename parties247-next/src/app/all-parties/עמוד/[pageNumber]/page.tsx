@@ -87,9 +87,8 @@ export default async function AllPartiesPage({ params, searchParams }: Props) {
   return (
     <PartyGrid
       parties={data.parties}
-      hotPartyIds={new Set(data.hotPartyIds)}
-      initialPage={currentPage}
-      initialQuery={searchParams.query || ''}
+      hotPartyIds={Array.from(new Set(data.hotPartyIds || []))}
+      currentPage={currentPage}
       title="כל המסיבות"
       description="מצאו את הבילוי הבא שלכם בג'ונגל העירוני"
       syncNavigation

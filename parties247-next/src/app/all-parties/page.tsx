@@ -45,16 +45,14 @@ export const metadata: Metadata = {
 
 export default async function AllPartiesPage({ searchParams }: { searchParams: { query?: string } }) {
   const data = await getPageData();
-  const { query } = searchParams;
+  const { query } = await searchParams;
 
   if (!data) return <div className="text-center text-white p-10">Error loading parties</div>;
 
   return (
     <PartyGrid
       parties={data.parties}
-      hotPartyIds={new Set(data.hotPartyIds)}
-      initialPage={1}
-      initialQuery={query || ''}
+      hotPartyIds={Array.from(new Set(data.hotPartyIds || []))}
       title="כל המסיבות"
       description="מצאו את הבילוי הבא שלכם בג'ונגל העירוני"
       syncNavigation

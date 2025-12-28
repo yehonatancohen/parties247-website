@@ -6,7 +6,8 @@ import { getCarousels, getParties } from "@/services/api";
 export const revalidate = 300;
 
 export async function generateMetadata({ params }: { params: { city: string } }): Promise<Metadata> {
-  const cityName = decodeURIComponent(params.city);
+  const { city } = await params;
+  const cityName = decodeURIComponent(city);
   return {
     title: `מסיבות ב${cityName} | Parties247`,
     description: `גילוי מסיבות ואירועים ב${cityName}.`,
@@ -14,7 +15,8 @@ export async function generateMetadata({ params }: { params: { city: string } })
 }
 
 export default async function CityPage({ params }: { params: { city: string } }) {
-  const cityName = decodeURIComponent(params.city);
+  const { city } = await params;
+  const cityName = decodeURIComponent(city);
 
   const [parties, carousels] = await Promise.all([
     getParties(),
@@ -36,11 +38,11 @@ export default async function CityPage({ params }: { params: { city: string } })
   return (
     <PartyGrid
       parties={cityParties}
-      hotPartyIds={new Set(hotNowCarousel?.partyIds || [])}
+      hotPartyIds={Array.from(new Set(hotNowCarousel?.partyIds || []))}
       showFilters={false}
       title={`מסיבות ב${cityName}`}
       description="כל האירועים הקרובים בעיר שאתם אוהבים."
-      basePath={`/city/${params.city}`}
+      basePath={`/city/${cityName}`}
       syncNavigation
     />
   );
