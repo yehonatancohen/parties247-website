@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { FilterState } from '../data/types';
 import DatePicker from './DatePicker';
 import { CalendarIcon } from './Icons';
 
 interface AdvancedFilterProps {
   onFilterChange: (filters: FilterState) => void;
+  defaultFilters?: Partial<FilterState>;
 }
 
 const initialFilters: FilterState = {
@@ -14,10 +15,12 @@ const initialFilters: FilterState = {
   age: '',
   tags: [],
   date: '',
+  weekday: undefined,
 };
 
-const AdvancedFilter: React.FC<AdvancedFilterProps> = ({ onFilterChange }) => {
-  const [filters, setFilters] = useState<FilterState>(initialFilters);
+const AdvancedFilter: React.FC<AdvancedFilterProps> = ({ onFilterChange, defaultFilters }) => {
+  const mergedDefaults = useMemo(() => ({ ...initialFilters, ...defaultFilters }), [defaultFilters]);
+  const [filters, setFilters] = useState<FilterState>(mergedDefaults);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const datePickerRef = useRef<HTMLDivElement>(null);
 
@@ -25,6 +28,10 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({ onFilterChange }) => {
   useEffect(() => {
     onFilterChange(filters);
   }, [filters, onFilterChange]);
+
+  useEffect(() => {
+    setFilters(mergedDefaults);
+  }, [mergedDefaults]);
 
   // Handle clicks outside of the datepicker to close it
   useEffect(() => {
@@ -62,7 +69,7 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({ onFilterChange }) => {
   };
 
   const clearFilters = () => {
-    setFilters(initialFilters);
+    setFilters(mergedDefaults);
   };
 
   const inputBaseClasses = "bg-jungle-surface border border-wood-brown text-white text-sm rounded-lg focus:ring-jungle-lime focus:border-jungle-lime block w-full p-2.5";

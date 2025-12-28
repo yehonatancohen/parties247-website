@@ -337,7 +337,7 @@ export const genres: TaxonomyConfig[] = [
     ],
     ogImage: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
-      { label: 'מסיבות סטודנטים', path: '/student-parties' },
+      { label: 'מסיבות סטודנטים', path: '/audience/student-parties' },
       { label: 'מסיבות היום', path: '/מתי/היום' },
     ],
   },
@@ -370,7 +370,7 @@ export const genres: TaxonomyConfig[] = [
     ogImage: 'https://images.unsplash.com/photo-1507874457470-272b3c8d8ee2?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
       { label: 'מסיבות 25+', path: '/קהל/25-פלוס' },
-      { label: 'תל אביב האוס', path: '/tel-aviv-parties' },
+      { label: 'תל אביב האוס', path: '/city/tel-aviv' },
     ],
   },
 ];
@@ -535,7 +535,7 @@ export const audiences: TaxonomyConfig[] = [
     ogImage: 'https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
       { label: 'האוס וגרוב', path: '/זאנרים/האוס' },
-      { label: 'מסיבות תל אביב', path: '/tel-aviv-parties' },
+      { label: 'מסיבות תל אביב', path: '/city/tel-aviv' },
     ],
   },
 ];
@@ -824,7 +824,7 @@ const englishFriendlyTaxonomies: TaxonomyConfig[] = [
   {
     type: 'city',
     slug: 'תל-אביב',
-    path: '/tel-aviv-parties',
+    path: '/city/tel-aviv',
     label: 'Tel Aviv Parties',
     title: 'Tel Aviv Parties – מדריך המסיבות הרשמי של העיר ללא הפסקה',
     description: 'ריכוז מסיבות בתל אביב עם חלוקה לפי שכונות, ליינים חמים וקישורים מהירים לרכישת כרטיסים.',
@@ -844,14 +844,14 @@ const englishFriendlyTaxonomies: TaxonomyConfig[] = [
     ogImage: 'https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
       { label: 'טכנו תל אביב', path: '/זאנרים/טכנו' },
-      { label: 'מסיבות האוס', path: '/house-parties' },
-      { label: 'סטודנטים בעיר', path: '/student-parties' },
+      { label: 'מסיבות האוס', path: '/genre/house-music' },
+      { label: 'סטודנטים בעיר', path: '/audience/student-parties' },
     ],
   },
   {
     type: 'city',
     slug: 'חיפה',
-    path: '/haifa-parties',
+    path: '/city/haifa',
     label: 'Haifa Parties',
     title: 'Haifa Parties – מסיבות בין ההר לים',
     description: 'עמוד מסיבות חיפה כולל רייבי חוף, ברים עם סטים חיים ושאטלים לסטודנטים בקריות.',
@@ -871,13 +871,13 @@ const englishFriendlyTaxonomies: TaxonomyConfig[] = [
     ogImage: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
       { label: 'חיפה טכנו', path: '/ערים/חיפה/טכנו' },
-      { label: 'מסיבות סטודנטים', path: '/student-parties' },
+      { label: 'מסיבות סטודנטים', path: '/audience/student-parties' },
     ],
   },
   {
     type: 'genre',
     slug: 'טכנו',
-    path: '/techno-parties',
+    path: '/genre/techno-music',
     label: 'Techno Parties',
     title: 'Techno Parties in Israel – רייבים, מחסנים וגגות',
     description: 'רשימת מסיבות טכנו בישראל עם חלוקה לאירועי מחסן, רייבי שטח וליינים קבועים במועדונים.',
@@ -896,14 +896,14 @@ const englishFriendlyTaxonomies: TaxonomyConfig[] = [
     ],
     ogImage: 'https://images.unsplash.com/photo-1464375117522-1311d6a5b81e?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
-      { label: 'טכנו תל אביב', path: '/tel-aviv-parties' },
+      { label: 'טכנו תל אביב', path: '/city/tel-aviv' },
       { label: 'רייבי טראנס', path: '/זאנרים/טראנס' },
     ],
   },
   {
     type: 'genre',
     slug: 'מיינסטרים',
-    path: '/mainstream-parties',
+    path: '/genre/mainstream-music',
     label: 'Mainstream & Pop Parties',
     title: 'Mainstream Parties – להיטים, רגאטון וקריוקי',
     description: 'רחבות עם הלהיטים העדכניים, מיינסטרים ישראלי וסטים של פופ ורגאטון בליינים מתחלפים.',
@@ -922,14 +922,14 @@ const englishFriendlyTaxonomies: TaxonomyConfig[] = [
     ],
     ogImage: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
-      { label: 'מסיבות סטודנטים', path: '/student-parties' },
-      { label: 'House & Groove', path: '/house-parties' },
+      { label: 'מסיבות סטודנטים', path: '/audience/student-parties' },
+      { label: 'House & Groove', path: '/genre/house-music' },
     ],
   },
   {
     type: 'genre',
     slug: 'האוס',
-    path: '/house-parties',
+    path: '/genre/house-music',
     label: 'House Parties',
     title: 'House Parties – גרוב נעים ורחבות שקיעה',
     description: 'אירועי האוס וגרוב ברחבי הארץ עם דגש על סאונד איכותי, גגות וסטים שמחים.',
@@ -948,14 +948,14 @@ const englishFriendlyTaxonomies: TaxonomyConfig[] = [
     ],
     ogImage: 'https://images.unsplash.com/photo-1507874457470-272b3c8d8ee2?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
-      { label: 'מסיבות 25+', path: '/25plus-parties' },
-      { label: 'טכנו בישראל', path: '/techno-parties' },
+      { label: 'מסיבות 24+', path: '/audience/24plus-parties' },
+      { label: 'טכנו בישראל', path: '/genre/techno-music' },
     ],
   },
   {
     type: 'audience',
     slug: 'מסיבות-סטודנטים',
-    path: '/student-parties',
+    path: '/audience/student-parties',
     label: 'Student Parties',
     title: 'Student Parties – ליינים אקדמיים והנחות סטודנטים',
     description: 'כל המסיבות שמעניקות יתרון לסטודנטים: הנחות, שאטלים מקמפוסים וליינים של אגודות.',
@@ -974,14 +974,14 @@ const englishFriendlyTaxonomies: TaxonomyConfig[] = [
     ],
     ogImage: 'https://images.unsplash.com/photo-1532634896-26909d0d4b86?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
-      { label: 'מסיבות חמישי', path: '/thursday-parties' },
-      { label: 'Mainstream', path: '/mainstream-parties' },
+      { label: 'מסיבות חמישי', path: '/day/thursday' },
+      { label: 'Mainstream', path: '/genre/mainstream-music' },
     ],
   },
   {
     type: 'audience',
     slug: 'מסיבות-חיילים',
-    path: '/soldier-parties',
+    path: '/audience/soldier-parties',
     label: 'Soldier Parties',
     title: 'Soldier Parties – ליינים עם הטבות חיילים',
     description: 'אירועים שמעניקים כניסה או הנחות בהצגת חוגר, כולל שאטלים בסופי שבוע.',
@@ -1000,14 +1000,14 @@ const englishFriendlyTaxonomies: TaxonomyConfig[] = [
     ],
     ogImage: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
-      { label: 'מסיבות שישי', path: '/friday-parties' },
-      { label: 'Techno', path: '/techno-parties' },
+      { label: 'מסיבות שישי', path: '/day/friday' },
+      { label: 'Techno', path: '/genre/techno-music' },
     ],
   },
   {
     type: 'audience',
     slug: 'מסיבות-נוער',
-    path: '/teen-parties',
+    path: '/audience/teenage-parties',
     label: 'Teen Parties',
     title: 'Teen Parties – מסיבות בטוחות לגילאי 16-18',
     description: 'מסיבות נוער מפוקחות עם פירוט גיל כניסה, נהלי אבטחה וקודי לבוש ברורים.',
@@ -1027,13 +1027,13 @@ const englishFriendlyTaxonomies: TaxonomyConfig[] = [
     ogImage: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
       { label: 'מסיבות נוער תל אביב', path: '/ערים/תל-אביב/מסיבות-נוער' },
-      { label: 'Mainstream', path: '/mainstream-parties' },
+      { label: 'Mainstream', path: '/genre/mainstream-music' },
     ],
   },
   {
     type: 'audience',
     slug: 'מסיבות-25-פלוס',
-    path: '/25plus-parties',
+    path: '/audience/24plus-parties',
     label: '25+ Parties',
     title: '25+ Parties – חוויות בוגרות עם שירות מעולה',
     description: 'מסיבות לקהל בוגר עם דגש על שירות, קוקטיילים איכותיים ורחבות לא צפופות.',
@@ -1052,8 +1052,8 @@ const englishFriendlyTaxonomies: TaxonomyConfig[] = [
     ],
     ogImage: 'https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
-      { label: 'House & Groove', path: '/house-parties' },
-      { label: 'מסיבות תל אביב', path: '/tel-aviv-parties' },
+      { label: 'House & Groove', path: '/genre/house-music' },
+      { label: 'מסיבות תל אביב', path: '/city/tel-aviv' },
     ],
   },
   {
@@ -1078,8 +1078,8 @@ const englishFriendlyTaxonomies: TaxonomyConfig[] = [
     ],
     ogImage: 'https://images.unsplash.com/photo-1464375117522-1311d6a5b81e?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
-      { label: 'Techno Parties', path: '/techno-parties' },
-      { label: 'מסיבות האוס', path: '/house-parties' },
+      { label: 'Techno Parties', path: '/genre/techno-music' },
+      { label: 'מסיבות האוס', path: '/genre/house-music' },
     ],
   },
   {
@@ -1104,8 +1104,8 @@ const englishFriendlyTaxonomies: TaxonomyConfig[] = [
     ],
     ogImage: 'https://images.unsplash.com/photo-1516214104703-d870798883c5?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
-      { label: 'Mainstream Parties', path: '/mainstream-parties' },
-      { label: 'Student Parties', path: '/student-parties' },
+      { label: 'Mainstream Parties', path: '/genre/mainstream-music' },
+      { label: 'Student Parties', path: '/audience/student-parties' },
     ],
   },
 ];

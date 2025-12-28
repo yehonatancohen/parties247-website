@@ -1,8 +1,7 @@
 import React from 'react';
 import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import AllPartiesClient from '../../_components/AllPartiesClient'; // The new client component
-import * as api from '@/services/api'; // Your data fetchers
+import PartyGrid from '@/components/PartyGrid';
+import * as api from '@/services/api';
 import { createCarouselSlug } from '@/lib/carousels';
 
 // Handle dynamic routes like /all-parties/עמוד/2
@@ -86,11 +85,15 @@ export default async function AllPartiesPage({ params, searchParams }: Props) {
 
   // Pass data to the Client Component
   return (
-    <AllPartiesClient 
-      initialParties={data.parties} 
-      hotPartyIds={data.hotPartyIds}
+    <PartyGrid
+      parties={data.parties}
+      hotPartyIds={new Set(data.hotPartyIds)}
       initialPage={currentPage}
       initialQuery={searchParams.query || ''}
+      title="כל המסיבות"
+      description="מצאו את הבילוי הבא שלכם בג'ונגל העירוני"
+      syncNavigation
+      basePath="/all-parties"
     />
   );
 }

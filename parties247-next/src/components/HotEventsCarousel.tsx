@@ -13,10 +13,10 @@ const SSR_SWIPER_STYLES = `
   swiper-container {
     display: flex;
     width: 100%;
-    max-width: 1200px;
+    max-width: min(1800px, 96vw);
     margin: 0 auto;
     overflow: hidden;
-    padding: 0.75rem clamp(0.5rem, 3vw, 1.5rem) 1.25rem;
+    padding: 0.75rem clamp(0.5rem, 4vw, 2rem) 1.5rem;
   }
 
   swiper-slide {
@@ -159,11 +159,11 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
 
   const slides = useMemo(() => {
      if (upcomingParties.length === 0) return [];
-     if (upcomingParties.length < 6) {
-       return [...upcomingParties, ...upcomingParties, ...upcomingParties].slice(0, 10);
-     }
-     return upcomingParties;
-  }, [upcomingParties]);
+     const minSlides = variant === 'coverflow' ? 8 : 12;
+     const repetitions = Math.ceil(minSlides / upcomingParties.length);
+     const duplicated = Array.from({ length: repetitions }, () => upcomingParties).flat();
+     return duplicated.slice(0, Math.max(minSlides, upcomingParties.length * 2));
+  }, [upcomingParties, variant]);
 
   const BREAKPOINTS = useMemo(() => (
     variant === 'coverflow'
@@ -197,6 +197,7 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
       loop: true,
       observer: true,
       observeParents: true,
+      loopAdditionalSlides: 4,
       
       // FIX 2: Prevent pixelated text during 3D transform
       roundLengths: true,

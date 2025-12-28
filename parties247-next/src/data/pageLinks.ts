@@ -38,12 +38,12 @@ export const pageLinkOptions: PageLinkOption[] = [
   },
   {
     label: 'מסיבות חמישי',
-    path: '/thursday-parties',
+    path: '/day/thursday',
     description: 'הפתיחה הרשמית של סוף השבוע עם מסיבות חמישי.',
   },
   {
     label: 'מסיבות שישי',
-    path: '/friday-parties',
+    path: '/day/friday',
     description: 'רשימת האירועים החמים לשישי הקרוב.',
   },
   {

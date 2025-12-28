@@ -143,7 +143,7 @@ export default async function CarouselPage({ params }: Props) {
           If PartyGrid uses Next/Image, images will lazy load on the client.
           The text and structure are already here for SEO.
         */}
-        <PartyGrid parties={carouselParties} />
+        <PartyGrid parties={carouselParties} showFilters={false} showSearch={false} />
       </div>
     </>
   );

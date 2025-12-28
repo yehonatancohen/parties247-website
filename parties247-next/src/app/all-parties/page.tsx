@@ -1,7 +1,7 @@
 import React from 'react';
 import { Metadata } from 'next';
-import AllPartiesClient from './_components/AllPartiesClient';
-import * as api from '@/services/api'; 
+import PartyGrid from '@/components/PartyGrid';
+import * as api from '@/services/api';
 import { createCarouselSlug } from '@/lib/carousels';
 
 // Helper function to fetch and prepare data
@@ -45,16 +45,20 @@ export const metadata: Metadata = {
 
 export default async function AllPartiesPage({ searchParams }: { searchParams: { query?: string } }) {
   const data = await getPageData();
-  const { query } = await searchParams;
+  const { query } = searchParams;
 
   if (!data) return <div className="text-center text-white p-10">Error loading parties</div>;
 
   return (
-    <AllPartiesClient 
-      initialParties={data.parties} 
-      hotPartyIds={data.hotPartyIds}
+    <PartyGrid
+      parties={data.parties}
+      hotPartyIds={new Set(data.hotPartyIds)}
       initialPage={1}
       initialQuery={query || ''}
+      title="כל המסיבות"
+      description="מצאו את הבילוי הבא שלכם בג'ונגל העירוני"
+      syncNavigation
+      basePath="/all-parties"
     />
   );
 }
