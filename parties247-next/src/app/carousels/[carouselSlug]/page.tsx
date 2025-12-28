@@ -1,43 +1,150 @@
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import { createCarouselSlug } from "@/lib/carousels";
-import { getCarousels, getParties } from "@/services/api";
+import React from 'react';
+import { notFound } from 'next/navigation';
+import Link from 'next/link';
+import { Metadata } from 'next';
+import PartyGrid from '@/components/PartyGrid'; // Ensure this path is correct
+import { BASE_URL } from '@/data/constants';
+import { findCarouselBySlug, createCarouselSlug } from '@/lib/carousels';
+import * as api from '@/services/api'; // Assumption: You have an API service
 
-type Props = {
-  params: Promise<{ carouselSlug: string }>;
-};
+// Types for the Page Props
+interface Props {
+  params: {
+    carouselSlug: string;
+  };
+}
 
-export const revalidate = 300;
 
-export default async function CarouselPage({ params }: Props) {
-  const { carouselSlug } = await params;
-  const [carousels, parties] = await Promise.all([getCarousels(), getParties()]);
-  const carousel = carousels.find(c => createCarouselSlug(c.title) === carouselSlug);
+async function getCarouselData(slug: string) {
+  try {
+    const [carousels, parties] = await Promise.all([
+      api.getCarousels(),
+      api.getParties()
+    ]);
 
-  if (!carousel) {
-    notFound();
+    const carousel = findCarouselBySlug(carousels, slug);
+
+    if (!carousel) return null;
+
+    const carouselParties = parties.filter(party => 
+      carousel.partyIds.includes(party.id)
+    );
+
+    return { carousel, carouselParties };
+  } catch (error) {
+    console.error("Failed to fetch carousel data:", error);
+    return null;
+  }
+}
+
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const data = await getCarouselData((await params).carouselSlug);
+  
+  if (!data) {
+    return {
+      title: 'Carousel Not Found',
+    };
   }
 
-  const carouselParties = parties.filter(p => carousel.partyIds.includes(p.id));
+  const { carousel } = data;
+  const slug = createCarouselSlug(carousel.title);
+  
+  return {
+    title: `${carousel.title} | Parties247`,
+    description: `כל המסיבות בקרוסלת "${carousel.title}". הצטרפו לרייב הבא שלכם.`,
+    alternates: {
+      canonical: `/carousels/${slug}`,
+    },
+    openGraph: {
+      title: `${carousel.title} | Parties247`,
+      description: `כל המסיבות בקרוסלת "${carousel.title}". הצטרפו לרייב הבא שלכם.`,
+      url: `${BASE_URL}/carousels/${slug}`,
+    }
+  };
+}
+
+/**
+ * 3. MAIN PAGE COMPONENT (Server Component)
+ * This is async because it awaits data.
+ */
+export default async function CarouselPage({ params }: Props) {
+  const data = await getCarouselData((await params).carouselSlug);
+
+  // Handle 404 - Server Side
+  if (!data) {
+    // This renders the closest not-found.tsx file
+    // Or you can return a custom UI here like in your original code:
+    return (
+      <div className="container mx-auto px-4 text-center py-16">
+        <h2 className="text-2xl font-bold text-white">לא מצאנו את הקרוסלה הזו</h2>
+        <p className="text-jungle-text/80 mt-2">
+          ייתכן שהמסיבה כבר הסתיימה או שהקישור השתנה.
+        </p>
+        <Link href="/" className="mt-6 inline-block text-jungle-accent hover:text-white">
+          חזרה לעמוד הבית
+        </Link>
+      </div>
+    );
+  }
+
+  const { carousel, carouselParties } = data;
+  const slug = createCarouselSlug(carousel.title);
+  const canonicalPath = `/carousels/${slug}`;
+
+  // JSON-LD Construction
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'עמוד הבית',
+        item: `${BASE_URL}/`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: carousel.title,
+        item: `${BASE_URL}${canonicalPath}`,
+      },
+    ],
+  };
+
+  const itemListJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    itemListElement: carouselParties.map((party, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: party.name,
+      url: `${BASE_URL}/event/${party.slug}`,
+    })),
+  };
 
   return (
-    <main className="space-y-6 p-6">
-      <h1 className="text-3xl font-bold text-white">{carousel.title}</h1>
-      {carouselParties.length === 0 ? (
-        <p className="text-gray-300">אין אירועים בקרוסלה זו.</p>
-      ) : (
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {carouselParties.map(party => (
-            <li key={party.id} className="rounded-xl border border-white/10 bg-white/5 p-4 shadow">
-              <h2 className="text-xl font-semibold text-white">{party.name}</h2>
-              <p className="text-sm text-gray-200 line-clamp-2">{party.description}</p>
-              <Link className="text-lime-300 hover:text-white" href={`/event/${party.slug}`}>
-                לעמוד האירוע
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-    </main>
+    <>
+      {/* Inject JSON-LD directly into the HTML */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify([breadcrumbJsonLd, itemListJsonLd]) }}
+      />
+
+      <div className="container mx-auto px-4">
+        <h1 className="text-3xl md:text-4xl font-display text-center mb-2 text-white">
+          {carousel.title}
+        </h1>
+        <p className="text-center text-jungle-text/80 mb-6 max-w-lg mx-auto">
+          כל המסיבות החמות של "{carousel.title}" במקום אחד.
+        </p>
+        
+        {/* We pass the PRE-FETCHED data to the grid. 
+          If PartyGrid uses Next/Image, images will lazy load on the client.
+          The text and structure are already here for SEO.
+        */}
+        <PartyGrid parties={carouselParties} />
+      </div>
+    </>
   );
 }

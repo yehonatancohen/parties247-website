@@ -1,49 +1,60 @@
-import type { Metadata } from "next";
-import AllPartiesClient from "./_components/AllPartiesClient";
-import { BASE_URL } from "../../data/constants";
+import React from 'react';
+import { Metadata } from 'next';
+import AllPartiesClient from './_components/AllPartiesClient';
+import * as api from '@/services/api'; 
+import { createCarouselSlug } from '@/lib/carousels';
 
-export const revalidate = 300;
+// Helper function to fetch and prepare data
+// We keep this separate so we can reuse the logic concept, though we'll just call it directly here
+async function getPageData() {
+  try {
+    const [parties, carousels] = await Promise.all([
+      api.getParties(),
+      api.getCarousels(),
+    ]);
 
-type PageProps = {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-};
+    // Filter out past parties on server
+    const now = new Date();
+    const futureParties = parties.filter(p => new Date(p.date) >= now);
 
-export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
-  const currentPage = 1;
-  const pageTitle = `כל המסיבות - עמוד ${currentPage} | Parties 24/7`;
-  const pageDescription =
-    "חיפוש וסינון בכל המסיבות, הרייבים והאירועים בישראל. מצאו את המסיבה המושלמת עבורכם לפי אזור, סגנון מוזיקה, תאריך ועוד.";
+    // Calculate Hot IDs on server
+    const hotNowCarousel = carousels.find((carousel) => {
+      const slug = createCarouselSlug(carousel.title);
+      return (
+        slug === "hot-now" || slug === "חם-עכשיו" ||
+        (slug.includes("hot") && slug.includes("now")) ||
+        slug.includes("חם-עכשיו")
+      );
+    });
 
-  const canonicalPath = `/all-parties`;
-  const resolvedSearchParams = await searchParams;
-  const query = resolvedSearchParams.query ? `?query=${encodeURIComponent(resolvedSearchParams.query as string)}` : "";
-
-  return {
-    title: pageTitle,
-    description: pageDescription,
-    alternates: {
-      canonical: `${BASE_URL}${canonicalPath}${query}`,
-    },
-  };
+    return { 
+      parties: futureParties, 
+      hotPartyIds: hotNowCarousel?.partyIds || [] 
+    };
+  } catch (error) {
+    console.error("Failed to fetch parties:", error);
+    return null;
+  }
 }
 
-export default async function AllPartiesPage({ searchParams }: PageProps) {
-  const resolvedSearchParams = await searchParams;
-  const query = resolvedSearchParams.query ? `?query=${encodeURIComponent(resolvedSearchParams.query as string)}` : "";
+export const metadata: Metadata = {
+  title: 'כל המסיבות | Parties 24/7',
+  description: 'מצאו את הבילוי הבא שלכם בג\'ונגל העירוני.',
+  alternates: { canonical: '/all-parties' }
+};
 
-  const breadcrumbJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "עמוד הבית", item: `${BASE_URL}/` },
-      { "@type": "ListItem", position: 2, name: "כל המסיבות", item: `${BASE_URL}/all-parties` },
-    ],
-  };
+export default async function AllPartiesPage({ searchParams }: { searchParams: { query?: string } }) {
+  const data = await getPageData();
+  const { query } = await searchParams;
+
+  if (!data) return <div className="text-center text-white p-10">Error loading parties</div>;
 
   return (
-    <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
-      <AllPartiesClient currentPage={1} initialQuery={query} />
-    </>
+    <AllPartiesClient 
+      initialParties={data.parties} 
+      hotPartyIds={data.hotPartyIds}
+      initialPage={1}
+      initialQuery={query || ''}
+    />
   );
 }

@@ -3,9 +3,7 @@ import Link from 'next/link';
 import { Carousel } from '@/data/types';
 import { Metadata } from 'next';
 import { createCarouselSlug } from '@/lib/carousels'; // Assumed path
-// Note: We cannot use hooks (useParties) in Server Components.
-// We must fetch data directly or import a utility function.
-import { getCarouselsData } from '@/lib/api/parties'; // See explanation below
+import { getCarousels } from '@/services/api';
 
 // --- Static Data Definitions (Moved outside component) ---
 const quickLinks = [
@@ -59,7 +57,6 @@ const helperLinks = [
   { title: 'הצהרת מקדמי אירועים', to: '/promoter-disclaimer', blurb: 'שקיפות מלאה מול מפיקים ושותפים.' },
 ];
 
-// --- SEO Metadata Configuration ---
 export const metadata: Metadata = {
   title: 'חיפוש מסיבות בישראל | Parties 24/7',
   description: 'חפשו מסיבות לפי קהל יעד, עיר, סגנון מוזיקלי או מועדון ספציפי. עמוד הניווט המהיר שלנו מציג קישורים פנימיים מסודרים לכל העמודים החמים והמתעדכנים בזמן אמת.',
@@ -75,9 +72,7 @@ export default async function PartyDiscoveryPage() {
   // This ensures the HTML is populated BEFORE it reaches the browser (Great for SEO).
   let carousels: Carousel[] = [];
   try {
-     // You need to expose the fetching logic from useParties as a standalone function
-     // e.g., const data = await fetch('api/carousels', { cache: 'no-store' }).json();
-     carousels = await getCarouselsData();
+     carousels = await getCarousels();
   } catch (error) {
      console.error("Failed to fetch carousels for SSR", error);
   }

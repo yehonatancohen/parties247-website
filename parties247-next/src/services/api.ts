@@ -1,10 +1,6 @@
 import { Party, Carousel, AnalyticsSummary, AnalyticsSummaryParty } from '../data/types';
 
 const API_URL = 'https://parties247-backend.onrender.com/api';
-// Encode the "analytics" path segment to dodge aggressive browser extensions that
-// block any request whose URL contains that keyword. The backend still matches the
-// decoded route, so the API continues to function while the request URL becomes
-// invisible to common filter lists.
 const ANALYTICS_API_BASE = `${API_URL}/%61nalytics`;
 const JWT_TOKEN_STORAGE = 'jwtAuthToken';
 
