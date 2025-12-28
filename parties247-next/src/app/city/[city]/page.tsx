@@ -1,6 +1,7 @@
 import { Metadata } from "next";
-import Link from "next/link";
-import { getParties } from "@/services/api";
+import PartyGrid from "@/components/PartyGrid";
+import { createCarouselSlug } from "@/lib/carousels";
+import { getCarousels, getParties } from "@/services/api";
 
 export const revalidate = 300;
 
@@ -14,28 +15,33 @@ export async function generateMetadata({ params }: { params: { city: string } })
 
 export default async function CityPage({ params }: { params: { city: string } }) {
   const cityName = decodeURIComponent(params.city);
-  const parties = await getParties();
-  const cityParties = parties.filter(p => p.region?.toLowerCase() === cityName.toLowerCase());
+
+  const [parties, carousels] = await Promise.all([
+    getParties(),
+    getCarousels(),
+  ]);
+
+  const lowerCity = cityName.toLowerCase();
+  const cityParties = parties.filter((party) =>
+    party.location.name.toLowerCase().includes(lowerCity) ||
+    party.region?.toLowerCase() === lowerCity ||
+    party.tags.some((tag) => tag.toLowerCase().includes(lowerCity))
+  );
+
+  const hotNowCarousel = carousels.find((carousel) => {
+    const slug = createCarouselSlug(carousel.title);
+    return slug === "hot-now" || slug.includes("hot") || slug.includes("חם-עכשיו");
+  });
 
   return (
-    <main className="space-y-6 p-6">
-      <h1 className="text-3xl font-bold text-white">מסיבות ב{cityName}</h1>
-      {cityParties.length === 0 ? (
-        <p className="text-gray-300">לא נמצאו מסיבות בעיר זו.</p>
-      ) : (
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {cityParties.map(party => (
-            <li key={party.id} className="rounded-xl border border-white/10 bg-white/5 p-4 shadow">
-              <div className="text-sm text-gray-300">{new Date(party.date).toLocaleDateString("he-IL")}</div>
-              <h2 className="text-xl font-semibold text-white">{party.name}</h2>
-              <p className="text-sm text-gray-200 line-clamp-2">{party.description}</p>
-              <Link className="text-lime-300 hover:text-white" href={`/event/${party.slug}`}>
-                פרטים נוספים
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-    </main>
+    <PartyGrid
+      parties={cityParties}
+      hotPartyIds={new Set(hotNowCarousel?.partyIds || [])}
+      showFilters={false}
+      title={`מסיבות ב${cityName}`}
+      description="כל האירועים הקרובים בעיר שאתם אוהבים."
+      basePath={`/city/${params.city}`}
+      syncNavigation
+    />
   );
 }

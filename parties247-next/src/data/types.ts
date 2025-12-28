@@ -62,6 +62,7 @@ export type FilterState = {
     age?: string;
     tags: string[];
     date?: string;
+    weekday?: number;
 };
 
 export interface PartyContextType {

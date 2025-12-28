@@ -48,8 +48,8 @@ export const seoLandingPages: SeoLandingPageConfig[] = [
           'ניסחנו לכם קישורים שמחזירים אתכם לעמודים הכי מבוקשים – מסיבות חמישי ושישי, רשימות לפי ז׳אנרים ולוח מסיבות לכל השבוע.',
         links: [
           { label: 'כל המסיבות בישראל', to: '/all-parties', description: 'רשימת אירועים מלאה ומתעדכנת' },
-          { label: 'מסיבות חמישי', to: '/thursday-parties', description: 'ריכוז מסיבות סוף השבוע שמתקרבות' },
-          { label: 'מסיבות שישי', to: '/friday-parties', description: 'אירועי מועדונים ורייבים ללילה הגדול של השבוע' },
+          { label: 'מסיבות חמישי', to: '/day/thursday', description: 'ריכוז מסיבות סוף השבוע שמתקרבות' },
+          { label: 'מסיבות שישי', to: '/day/friday', description: 'אירועי מועדונים ורייבים ללילה הגדול של השבוע' },
           { label: 'מסיבות לפי ז׳אנרים', to: '/זאנרים', description: 'טכנו, היפ הופ, טראנס, EDM ועוד' },
           { label: 'מסיבות לפי זמן', to: '/מתי', description: 'היום, מחר, השבוע או חגים מיוחדים' },
         ],
@@ -95,8 +95,8 @@ export const seoLandingPages: SeoLandingPageConfig[] = [
         body:
           'התחילו במסיבות חמישי כדי לתפוס כרטיסים זולים, השאירו את שישי למופעי הדגל ובדקו את שבת לצהריים רגועים. כך תבנו סוף שבוע מלא בלי לפספס מופעים גדולים.',
         links: [
-          { label: 'מסיבות חמישי', to: '/thursday-parties' },
-          { label: 'מסיבות שישי', to: '/friday-parties' },
+          { label: 'מסיבות חמישי', to: '/day/thursday' },
+          { label: 'מסיבות שישי', to: '/day/friday' },
         ],
       },
     ],
@@ -131,7 +131,7 @@ export const seoLandingPages: SeoLandingPageConfig[] = [
         links: [
           { label: 'עמוד העיר חיפה', to: '/ערים/חיפה', description: 'כל הליינים והאירועים בעיר ובקריות' },
           { label: 'טכנו בחיפה', to: '/ערים/חיפה/טכנו', description: 'מסיבות מחסן ושוק אלקטרוניות' },
-          { label: 'מסיבות שישי', to: '/friday-parties', description: 'למצוא את הליין החיפאי לליל שישי' },
+          { label: 'מסיבות שישי', to: '/day/friday', description: 'למצוא את הליין החיפאי לליל שישי' },
         ],
       },
       {

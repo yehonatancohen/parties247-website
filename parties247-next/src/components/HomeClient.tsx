@@ -125,11 +125,11 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
               דף הטכנו
             </Link>
             , את{" "}
-            <Link href="/tel-aviv-parties" className="text-jungle-accent hover:text-white">
+            <Link href="/city/tel-aviv" className="text-jungle-accent hover:text-white">
               מדריך תל אביב
             </Link>{" "}
             או את{" "}
-            <Link href="/student-parties" className="text-jungle-accent hover:text-white">
+            <Link href="/audience/student-parties" className="text-jungle-accent hover:text-white">
               מסיבות הסטודנטים
             </Link>{" "}
             כדי לתכנן את הלילה הבא שלכם.

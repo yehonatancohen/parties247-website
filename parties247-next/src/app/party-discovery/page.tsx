@@ -15,12 +15,12 @@ const quickLinks = [
   {
     label: 'מסיבות חמישי',
     description: 'קפיצה מהירה ללילה הפותח את הסופ״ש',
-    to: '/thursday-parties',
+    to: '/day/thursday',
   },
   {
     label: 'מסיבות שישי',
     description: 'רחבות הסופ״ש הכי מבוקשות',
-    to: '/friday-parties',
+    to: '/day/friday',
   },
   {
     label: 'מסיבות סוף השבוע',
@@ -30,21 +30,21 @@ const quickLinks = [
 ];
 
 const audienceLinks = [
-  { title: 'מסיבות נוער', to: '/teen-parties', blurb: 'אירועים מפוקחים עם פירוט אבטחה וגיל כניסה.' },
-  { title: 'מסיבות סטודנטים', to: '/student-parties', blurb: 'ליינים אקדמיים, הנחות ושאטלים מקמפוסים.' },
-  { title: 'מסיבות חיילים', to: '/soldier-parties', blurb: 'הטבות חיילים, שעות מאוחרות ושמירת ציוד.' },
-  { title: 'מסיבות 25+', to: '/25plus-parties', blurb: 'וייב בוגר, שירות מוקפד וקוקטיילים איכותיים.' },
+  { title: 'מסיבות נוער', to: '/audience/teenage-parties', blurb: 'אירועים מפוקחים עם פירוט אבטחה וגיל כניסה.' },
+  { title: 'מסיבות סטודנטים', to: '/audience/student-parties', blurb: 'ליינים אקדמיים, הנחות ושאטלים מקמפוסים.' },
+  { title: 'מסיבות חיילים', to: '/audience/soldier-parties', blurb: 'הטבות חיילים, שעות מאוחרות ושמירת ציוד.' },
+  { title: 'מסיבות 24+', to: '/audience/24plus-parties', blurb: 'וייב בוגר, שירות מוקפד וקוקטיילים איכותיים.' },
 ];
 
 const cityLinks = [
-  { title: 'מסיבות תל אביב', to: '/tel-aviv-parties', blurb: 'טכנו בדרום, גגות במרכז והכל בעדכון יומיומי.' },
-  { title: 'מסיבות חיפה', to: '/haifa-parties', blurb: 'חוף, כרמל ושוק תלפיות – כל הוייבים בדף אחד.' },
+  { title: 'מסיבות תל אביב', to: '/city/tel-aviv', blurb: 'טכנו בדרום, גגות במרכז והכל בעדכון יומיומי.' },
+  { title: 'מסיבות חיפה', to: '/city/haifa', blurb: 'חוף, כרמל ושוק תלפיות – כל הוייבים בדף אחד.' },
 ];
 
 const styleLinks = [
-  { title: 'טכנו', to: '/techno-parties', blurb: 'רייבי מחסן, חופים ומועדוני ענק.' },
-  { title: 'האוס וגרוב', to: '/house-parties', blurb: 'גגות שקיעה, ברים אינטימיים וסאונד נעים.' },
-  { title: 'מיינסטרים ופופ', to: '/mainstream-parties', blurb: 'להיטים, רגאטון וקריוקי עד הבוקר.' },
+  { title: 'טכנו', to: '/genre/techno-music', blurb: 'רייבי מחסן, חופים ומועדוני ענק.' },
+  { title: 'האוס וגרוב', to: '/genre/house-music', blurb: 'גגות שקיעה, ברים אינטימיים וסאונד נעים.' },
+  { title: 'מיינסטרים ופופ', to: '/genre/mainstream-music', blurb: 'להיטים, רגאטון וקריוקי עד הבוקר.' },
 ];
 
 const clubLinks = [
