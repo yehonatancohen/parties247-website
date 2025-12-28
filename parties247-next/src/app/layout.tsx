@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import "../styles/tailwind.css"; // Ensure this path is correct
 import Providers from "./providers";
 import SwiperRegister from "../components/SwiperRegister";
+import { Assistant, Secular_One } from "next/font/google";
 
 // Component Imports
 import Header from '../components/Header';
@@ -13,6 +14,20 @@ import CookieBanner from '../components/CookieBanner';
 import ScrollToTop from '../components/ScrollToTop';
 import PrefetchLinks from '../components/PrefetchLinks';
 import PageCrossLinks from '../components/PageCrossLinks';
+
+const assistant = Assistant({
+  subsets: ["latin", "hebrew"],
+  weight: ["400", "600", "700"],
+  display: "swap",
+  variable: "--font-assistant",
+});
+
+const secular = Secular_One({
+  subsets: ["latin", "hebrew"],
+  weight: ["400"],
+  display: "swap",
+  variable: "--font-secular-one",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -25,8 +40,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="he" dir="rtl">
-      <body suppressHydrationWarning>
+    <html lang="he" dir="rtl" className={`${assistant.variable} ${secular.variable}`}>
+      <body suppressHydrationWarning className="font-sans">
         <SwiperRegister />
         <Providers>
           {/* Global Decorations/Logic */}
