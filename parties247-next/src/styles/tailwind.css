@@ -51,31 +51,6 @@
     scroll-behavior: smooth;
   }
 
-  .party-carousel swiper-slide {
-    display: block;
-    flex-shrink: 0;
-    height: auto;
-    width: 78%;
-    margin-inline-end: 14px;
-    backface-visibility: hidden;
-    transform: translate3d(0, 0, 0);
-  }
-
-  @media (min-width: 480px) {
-    .party-carousel swiper-slide { width: 62%; }
-  }
-
-  @media (min-width: 640px) {
-    .party-carousel swiper-slide { width: 38%; }
-  }
-
-  @media (min-width: 768px) {
-    .party-carousel swiper-slide { width: 32%; }
-  }
-
-  @media (min-width: 1024px) {
-    .party-carousel swiper-slide { width: 28%; }
-  }
 
   .party-carousel-coverflow .swiper-slide {
     transition: transform 0.45s ease, filter 0.45s ease;

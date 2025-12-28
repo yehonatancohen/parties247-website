@@ -1,4 +1,4 @@
-// FIX: Corrected a typo in the React import statement (removed an extra 'a,') which was causing compilation errors.
+"use client"
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { useParties } from '../hooks/useParties';
 import { Party, Carousel } from '../data/types';
