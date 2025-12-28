@@ -13,31 +13,34 @@ const SSR_SWIPER_STYLES = `
   swiper-container {
     display: flex;
     width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
     overflow: hidden;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
+    padding: 0.75rem clamp(0.5rem, 3vw, 1.5rem) 1.25rem;
   }
-  
+
   swiper-slide {
     display: block;
     flex-shrink: 0;
     height: auto;
-    /* Default Mobile Width */
-    width: 60%; 
-    margin-right: 12px;
-    
-    /* FIX: Ensure no 3D hacks blur the text */
+    width: 78%;
+    margin-inline-end: 14px;
     backface-visibility: hidden;
     transform: translate3d(0,0,0);
   }
 
-  /* Exact Breakpoints from Vite */
+  @media (min-width: 480px) {
+    swiper-slide { width: 62%; }
+  }
+
   @media (min-width: 640px) {
+    swiper-slide { width: 38%; }
+  }
+
+  @media (min-width: 768px) {
     swiper-slide { width: 32%; }
   }
-  @media (min-width: 768px) {
-    swiper-slide { width: 30%; }
-  }
+
   @media (min-width: 1024px) {
     swiper-slide { width: 28%; }
   }
@@ -165,13 +168,13 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
   const BREAKPOINTS = useMemo(() => (
     variant === 'coverflow'
       ? {
-          0:    { slidesPerView: 1.6 },
-          360:  { slidesPerView: 1.9 },
-          420:  { slidesPerView: 2.2 },
-          640:  { slidesPerView: 2.8 },
-          768:  { slidesPerView: 3.0 },
-          1024: { slidesPerView: 3.4 },
-          1440: { slidesPerView: 3.8 },
+          0:    { slidesPerView: 1.15 },
+          360:  { slidesPerView: 1.3 },
+          480:  { slidesPerView: 1.6 },
+          640:  { slidesPerView: 2.4 },
+          768:  { slidesPerView: 2.9 },
+          1024: { slidesPerView: 3.3 },
+          1440: { slidesPerView: 3.7 },
         }
       : {
           0:    { slidesPerView: 1.8 },
@@ -216,12 +219,12 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
       },
       coverflowEffect: {
         rotate: 0,
-        stretch: 36,
-        depth: 90,
+        stretch: 22,
+        depth: 60,
         modifier: 1,
-        // FIX 3: DISABLE SHADOWS. 
+        // FIX 3: DISABLE SHADOWS.
         // This stops the browser from adding the blur filter over your text.
-        slideShadows: false, 
+        slideShadows: false,
       },
     } : {
       centeredSlides: false,

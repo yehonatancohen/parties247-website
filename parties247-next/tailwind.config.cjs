@@ -20,8 +20,8 @@ module.exports = {
         'wood-brown': '#4d3b2a',
       },
       fontFamily: {
-        sans: ['"Assistant"', 'sans-serif'],
-        display: ['"Secular One"', 'sans-serif'],
+        sans: ['var(--font-assistant)', '"Assistant"', 'sans-serif'],
+        display: ['var(--font-secular-one)', '"Secular One"', 'sans-serif'],
       },
       boxShadow: {
         'jungle-glow':
