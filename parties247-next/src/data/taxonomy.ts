@@ -1059,7 +1059,7 @@ const englishFriendlyTaxonomies: TaxonomyConfig[] = [
   {
     type: 'club',
     slug: 'echo-club',
-    path: '/echo-club',
+    path: '/club/echo-club',
     label: 'ECHO Club תל אביב',
     title: 'ECHO Club – טכנו, האוס והופעות חיות בדרום תל אביב',
     description: 'עמוד הבית של מועדון ECHO: ליינים קבועים, רייבי סוף שבוע וקישורים מהירים לכרטיסים.',
@@ -1085,7 +1085,7 @@ const englishFriendlyTaxonomies: TaxonomyConfig[] = [
   {
     type: 'club',
     slug: 'jimmy-who',
-    path: '/jimmy-who-club',
+    path: '/club/jimmy-who',
     label: 'Jimmy Who תל אביב',
     title: 'Jimmy Who – בר-מועדון עם וייב אורבני ורחבת להיטים',
     description: 'העמוד הרשמי של ג׳ימי הו: ערבי להיטים, מסיבות פופ ורמיקסים מסחריים עם אווירה תל אביבית.',
