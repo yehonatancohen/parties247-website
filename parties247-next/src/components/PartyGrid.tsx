@@ -38,23 +38,18 @@ export default function PartyGrid({
   syncNavigation = false,
 }: PartyGridProps) {
 
-  // 1. Parse Search Params into usable variables
   const searchTerm = typeof searchParams.query === 'string' ? searchParams.query : '';
   
-  // Construct filter object from URL params
-  // (Assuming your URL looks like ?region=Center&musicType=Techno)
   const filters: FilterState = {
     region: typeof searchParams.region === 'string' ? searchParams.region : '',
     musicType: typeof searchParams.musicType === 'string' ? searchParams.musicType : '',
     eventType: typeof searchParams.eventType === 'string' ? searchParams.eventType : '',
     age: typeof searchParams.age === 'string' ? searchParams.age : '',
     date: typeof searchParams.date === 'string' ? searchParams.date : '',
-    // Handle tags (can be comma separated or multiple keys)
     tags: typeof searchParams.tags === 'string' ? searchParams.tags.split(',') : [],
     weekday: typeof searchParams.weekday === 'string' ? parseInt(searchParams.weekday) : undefined,
   };
 
-  // 2. Filter & Sort Logic (Runs on Server)
   const hotIdsSet = new Set(hotPartyIds);
   const now = new Date();
   const lowercasedTerm = searchTerm.toLowerCase();
@@ -126,9 +121,6 @@ export default function PartyGrid({
 
       {showSearch && (
         <div className="mb-6 max-w-2xl mx-auto">
-          {/* NOTE: PartySearchInput must be a Client Component. 
-            It should accept 'defaultValue' and push to router on change/submit. 
-          */}
           <PartySearchInput defaultValue={searchTerm} />
         </div>
       )}

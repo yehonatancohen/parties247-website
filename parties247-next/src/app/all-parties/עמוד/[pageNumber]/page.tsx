@@ -1,4 +1,3 @@
-import React from 'react';
 import { Metadata } from 'next';
 import PartyGrid from '@/components/PartyGrid';
 import * as api from '@/services/api';

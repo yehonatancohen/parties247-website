@@ -69,6 +69,7 @@ export default async function GenrePage({ params }: { params: { genre: GenreKey 
       parties={filteredParties}
       hotPartyIds={Array.from(new Set(hotPartyIds || []))}
       showFilters={false}
+      showSearch={false}
       title={config.title}
       description={config.description}
       basePath={config.basePath}

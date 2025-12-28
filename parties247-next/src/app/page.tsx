@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import HomeClient from '../components/HomeClient'; // Point to where you saved the file above
+import HomeClient from '../components/HomeClient';
 import { BASE_URL } from '@/data/constants';
 
 async function getData() {

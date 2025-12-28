@@ -1,11 +1,16 @@
 import React from 'react';
 import Link from 'next/link';
-import { Carousel } from '@/data/types';
+import { Carousel } from '@/data/types'; // Ensure this path is correct
 import { Metadata } from 'next';
-import { createCarouselSlug } from '@/lib/carousels'; // Assumed path
+import { createCarouselSlug } from '@/lib/carousels';
 import { getCarousels } from '@/services/api';
 
-// --- Static Data Definitions (Moved outside component) ---
+// 1. Force Dynamic Rendering
+// This ensures the server builds this page fresh on every request, 
+// preventing hydration/static generation mismatches that can cause loops.
+export const dynamic = 'force-dynamic';
+
+// --- Static Data Definitions ---
 const quickLinks = [
   {
     label: 'כל המסיבות הקרובות',
@@ -67,14 +72,17 @@ export const metadata: Metadata = {
 
 // --- Main Server Component ---
 export default async function PartyDiscoveryPage() {
-  // SSR Data Fetching:
-  // Instead of useParties(), we fetch data directly on the server.
-  // This ensures the HTML is populated BEFORE it reaches the browser (Great for SEO).
+  // SSR Data Fetching
   let carousels: Carousel[] = [];
   try {
-     carousels = await getCarousels();
+     const data = await getCarousels();
+     // 2. Safeguard Data: Ensure we actually have an array to prevent sort() crashing
+     if (Array.isArray(data)) {
+        carousels = data;
+     }
   } catch (error) {
      console.error("Failed to fetch carousels for SSR", error);
+     // We intentionally continue rendering the rest of the page even if carousels fail
   }
 
   const carouselLinks = carousels
@@ -94,7 +102,7 @@ export default async function PartyDiscoveryPage() {
           ריכזנו את כל הדרכים לגלות מסיבות בעמוד אחד ברור: קהל יעד, ערים, סגנונות ומועדונים ספציפיים. השתמשו בתפריט הקפיצה כדי להגיע מיד לחלק הרלוונטי, או התחילו עם קיצורי הדרך לסוף השבוע הקרוב.
         </p>
         
-        {/* Hash Links (Standard <a> is fine for same-page anchors) */}
+        {/* Hash Links - Standard <a> tags are perfect for anchors */}
         <div className="flex flex-wrap justify-center gap-3 text-sm text-jungle-accent">
           <a href="#audiences" className="hover:text-white">קהל יעד</a>
           <span className="text-jungle-text/40">•</span>
@@ -112,6 +120,7 @@ export default async function PartyDiscoveryPage() {
           <Link
             key={item.to}
             href={item.to}
+            prefetch={false} // 3. Disable prefetch for stability without JS
             className="group rounded-2xl border border-wood-brown/50 bg-gradient-to-br from-jungle-surface/90 to-jungle-bg/80 p-5 text-right hover:border-jungle-accent/70 hover:-translate-y-1 transition"
           >
             <span className="text-sm font-semibold text-jungle-accent/80">קיצור דרך</span>
@@ -126,13 +135,14 @@ export default async function PartyDiscoveryPage() {
       <section id="audiences" className="mb-12">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-3xl font-display text-white">לפי קהל יעד</h2>
-          <Link href="/קהל" className="text-jungle-accent hover:text-white text-sm">ראו את כל קהלי היעד</Link>
+          <Link href="/קהל" prefetch={false} className="text-jungle-accent hover:text-white text-sm">ראו את כל קהלי היעד</Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {audienceLinks.map((item) => (
             <Link
               key={item.to}
               href={item.to}
+              prefetch={false}
               className="rounded-2xl border border-wood-brown/40 bg-jungle-surface/80 p-5 hover:border-jungle-accent/60 transition"
             >
               <h3 className="text-2xl font-display text-white mb-2">{item.title}</h3>
@@ -146,13 +156,14 @@ export default async function PartyDiscoveryPage() {
       <section id="cities" className="mb-12">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-3xl font-display text-white">לפי עיר</h2>
-          <Link href="/ערים" className="text-jungle-accent hover:text-white text-sm">כל הערים</Link>
+          <Link href="/ערים" prefetch={false} className="text-jungle-accent hover:text-white text-sm">כל הערים</Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {cityLinks.map((item) => (
             <Link
               key={item.to}
               href={item.to}
+              prefetch={false}
               className="rounded-2xl border border-wood-brown/40 bg-jungle-surface/80 p-5 hover:border-jungle-accent/60 transition"
             >
               <h3 className="text-2xl font-display text-white mb-2">{item.title}</h3>
@@ -166,13 +177,14 @@ export default async function PartyDiscoveryPage() {
       <section id="styles" className="mb-12">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-3xl font-display text-white">לפי סגנון</h2>
-          <Link href="/זאנרים" className="text-jungle-accent hover:text-white text-sm">כל הסגנונות</Link>
+          <Link href="/זאנרים" prefetch={false} className="text-jungle-accent hover:text-white text-sm">כל הסגנונות</Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {styleLinks.map((item) => (
             <Link
               key={item.to}
               href={item.to}
+              prefetch={false}
               className="rounded-2xl border border-wood-brown/40 bg-jungle-surface/80 p-5 hover:border-jungle-accent/60 transition"
             >
               <h3 className="text-2xl font-display text-white mb-2">{item.title}</h3>
@@ -192,6 +204,7 @@ export default async function PartyDiscoveryPage() {
             <Link
               key={item.to}
               href={item.to}
+              prefetch={false}
               className="rounded-2xl border border-wood-brown/40 bg-jungle-surface/80 p-5 hover:border-jungle-accent/60 transition"
             >
               <h3 className="text-2xl font-display text-white mb-2">{item.title}</h3>
@@ -212,6 +225,7 @@ export default async function PartyDiscoveryPage() {
               <Link
                 key={item.to}
                 href={item.to}
+                prefetch={false}
                 className="rounded-2xl border border-wood-brown/40 bg-jungle-surface/80 p-5 hover:border-jungle-accent/60 transition"
               >
                 <h3 className="text-2xl font-display text-white mb-2">{item.title}</h3>
@@ -230,6 +244,7 @@ export default async function PartyDiscoveryPage() {
             <Link
               key={item.to}
               href={item.to}
+              prefetch={false}
               className="rounded-2xl border border-wood-brown/40 bg-jungle-surface/80 p-5 hover:border-jungle-accent/60 transition"
             >
               <h3 className="text-xl font-display text-white">{item.title}</h3>

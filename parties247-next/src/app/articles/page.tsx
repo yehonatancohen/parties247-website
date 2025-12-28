@@ -4,10 +4,6 @@ import { articles } from '../../data/articles';
 import { BASE_URL } from '../../data/constants';
 import type { Metadata } from 'next';
 
-// 1. Force Static Generation: This guarantees the page is built as HTML 
-// at build time (SSG), which serves instantly like a static file.
-export const dynamic = 'force-static';
-
 export const metadata: Metadata = {
   title: 'המגזין - Parties 24/7',
   description: 'כל הכתבות והעדכונים החמים',

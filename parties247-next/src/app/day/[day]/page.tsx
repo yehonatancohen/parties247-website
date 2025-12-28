@@ -60,6 +60,7 @@ export default async function DayPartiesPage({ params }: { params: { day: string
       parties={parties}
       hotPartyIds={Array.from(new Set(hotPartyIds || []))}
       showFilters={false}
+      showSearch={false}
       title={config.title}
       description={config.description}
       basePath={config.basePath}
