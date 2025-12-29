@@ -8,9 +8,16 @@ export const revalidate = 300;
 const buildCityBody = (cityName: string) =>
   `עמוד מסיבות ${cityName} מרכז את כל מה שצריך כדי לתכנן ערב בעיר: אילו מועדונים פתוחים, איזה ליינים חוזרים ומהן ההפקות החד פעמיות שמגיעות השבוע. פתחנו את הטקסט בתיאור קצר של אזורי הבילוי המרכזיים בעיר, כדי שתדעו אם להתכוונן לדרום התעשייתי, לחוף או למרכז העירוני. כל פסקה מוסיפה עוד פרטים על אפשרויות ההגעה, שעות השיא של הרחבות וטיפים לאיך לסגור כרטיסים בלי להיתקע בתורים.\n\nכדי להגיע ליותר מ-500 תווים אספנו גם עצות על מה לעשות לפני ואחרי המסיבה: איפה לעצור לאכול משהו קטן, איך לשלב בין שתי מסיבות באותו לילה ואיך לבדוק מדיניות כניסה של מועדונים שונים בעיר ${cityName}. אם אתם מגיעים מרחוק, שימו לב להמלצות על קווי לילה, חניונים מאובטחים או שאטלים שמוצעים באירועים גדולים.\n\nהעמוד מחובר גם לעמודי ז׳אנר, קהל יעד וימים ספציפיים, כך שתוכלו לסנן את הרשימה למסיבות טכנו, היפ הופ או ערב חמישי בלבד. המטרה היא לתת לכם תיאור עשיר על העיר ${cityName} לצד כפתורי פעולה ברורים, כדי שתדעו מה מחכה ברחבות עוד לפני שהגעתם.`;
 
+const formatCityName = (rawCity: string) =>
+  rawCity
+    .split(/[-\s]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+
 export async function generateMetadata({ params }: { params: { city: string } }): Promise<Metadata> {
   const { city } = await params;
-  const cityName = decodeURIComponent(city);
+  const cityName = formatCityName(decodeURIComponent(city));
   return {
     title: `מסיבות ב${cityName} | Parties247`,
     description: `גילוי מסיבות ואירועים ב${cityName}.`,
@@ -19,14 +26,15 @@ export async function generateMetadata({ params }: { params: { city: string } })
 
 export default async function CityPage({ params }: { params: { city: string } }) {
   const { city } = await params;
-  const cityName = decodeURIComponent(city);
+  const citySlug = decodeURIComponent(city);
+  const cityName = formatCityName(citySlug);
 
   const [parties, carousels] = await Promise.all([
     getParties(),
     getCarousels(),
   ]);
 
-  const lowerCity = cityName.toLowerCase();
+  const lowerCity = citySlug.replace(/-/g, " ").toLowerCase();
   const cityParties = parties.filter((party) =>
     party.location.name.toLowerCase().includes(lowerCity) ||
     party.region?.toLowerCase() === lowerCity ||
@@ -49,7 +57,7 @@ export default async function CityPage({ params }: { params: { city: string } })
         showSearch={false}
         title={`מסיבות ב${cityName}`}
         description="כל האירועים הקרובים בעיר שאתם אוהבים."
-        basePath={`/city/${cityName}`}
+        basePath={`/city/${citySlug}`}
         syncNavigation
       />
 

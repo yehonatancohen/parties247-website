@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import SocialsCta from "@/components/SocialsCta";
 import { createCarouselSlug } from "@/lib/carousels";
@@ -77,6 +77,19 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
     },
   ];
 
+  const [leafOpenProgress, setLeafOpenProgress] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const progress = Math.min(1, window.scrollY / 420);
+      setLeafOpenProgress(progress);
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <>
       {/* Hero Section */}
@@ -102,6 +115,26 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
         </picture>
         <div className="absolute inset-0 bg-gradient-to-t from-jungle-deep via-transparent to-jungle-deep/50" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-transparent to-black/60" aria-hidden="true" />
+        <div className="pointer-events-none absolute inset-0">
+          <img
+            src="/leaf-left.svg"
+            alt="עיטור עלים טרופי"
+            className="absolute left-[-8%] top-[-6%] w-64 sm:w-80 drop-shadow-[0_12px_40px_rgba(0,0,0,0.35)] opacity-90"
+            style={{
+              transform: `translateX(${-26 * leafOpenProgress}px) rotate(-6deg) scale(${1 + leafOpenProgress * 0.05})`,
+              transition: "transform 0.2s ease-out",
+            }}
+          />
+          <img
+            src="/leaf-right.svg"
+            alt="עיטור עלים טרופי"
+            className="absolute right-[-10%] bottom-[-2%] w-64 sm:w-80 drop-shadow-[0_12px_40px_rgba(0,0,0,0.35)] opacity-90"
+            style={{
+              transform: `translateX(${26 * leafOpenProgress}px) rotate(8deg) scale(${1 + leafOpenProgress * 0.05})`,
+              transition: "transform 0.2s ease-out",
+            }}
+          />
+        </div>
         <div className="relative z-10 p-6 max-w-6xl mx-auto flex flex-col items-center gap-6">
           <h1
             className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl mb-2 text-white drop-shadow-xl"
