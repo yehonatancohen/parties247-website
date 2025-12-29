@@ -62,6 +62,34 @@ const helperLinks = [
   { title: 'הצהרת מקדמי אירועים', to: '/promoter-disclaimer', blurb: 'שקיפות מלאה מול מפיקים ושותפים.' },
 ];
 
+const vibePills = [
+  { label: 'מסיבת רגע אחרון', to: '/all-parties', gradient: 'from-pink-500/90 via-orange-400/90 to-yellow-300/80' },
+  { label: 'וייב גג שקיעה', to: '/weekend-parties', gradient: 'from-fuchsia-500/80 via-purple-500/80 to-blue-400/80' },
+  { label: 'טכנו', to: '/genre/techno-music', gradient: 'from-emerald-400/90 via-teal-400/90 to-cyan-300/90' },
+  { label: 'הנחת חיילים/סטודנטים', to: '/audience/student-parties', gradient: 'from-indigo-400/80 via-blue-500/80 to-sky-400/80' },
+];
+
+const impulseLinks = [
+  {
+    title: 'דילים של הרגע האחרון',
+    to: '/all-parties',
+    badge: '🔥 לוהט',
+    blurb: 'קפצו ישר למסיבות שמתמלאות עכשיו ושריינו מקום לפני שזה נעלם.',
+  },
+  {
+    title: 'היום בלילה',
+    to: '/weekend-parties',
+    badge: '⚡ ספונטני',
+    blurb: 'סינון מהיר לליינים של הלילה הקרוב, עם שעות פתיחה וכניסה מהירה.',
+  },
+  {
+    title: 'חברים באים?',
+    to: '/carousels/hot-groups',
+    badge: '✨ וייב חברתי',
+    blurb: 'אוספים עם רחבות ענק, חבילות שולחן וסטים של הדיג׳יים המדוברים.',
+  },
+];
+
 export const metadata: Metadata = {
   title: 'חיפוש מסיבות בישראל | Parties 24/7',
   description: 'חפשו מסיבות לפי קהל יעד, עיר, סגנון מוזיקלי או מועדון ספציפי. עמוד הניווט המהיר שלנו מציג קישורים פנימיים מסודרים לכל העמודים החמים והמתעדכנים בזמן אמת.',
@@ -95,22 +123,62 @@ export default async function PartyDiscoveryPage() {
   return (
     <div className="container mx-auto px-4">
       {/* Header Section */}
-      <div className="max-w-5xl mx-auto text-center mb-12 space-y-4">
-        <p className="text-sm uppercase tracking-wide text-jungle-accent/80">ניווט ממוקד</p>
-        <h1 className="text-4xl md:text-5xl font-display text-white">איך תרצו לבחור את המסיבה הבאה?</h1>
-        <p className="text-lg text-jungle-text/80 leading-relaxed">
-          ריכזנו את כל הדרכים לגלות מסיבות בעמוד אחד ברור: קהל יעד, ערים, סגנונות ומועדונים ספציפיים. השתמשו בתפריט הקפיצה כדי להגיע מיד לחלק הרלוונטי, או התחילו עם קיצורי הדרך לסוף השבוע הקרוב.
-        </p>
-        
-        {/* Hash Links - Standard <a> tags are perfect for anchors */}
-        <div className="flex flex-wrap justify-center gap-3 text-sm text-jungle-accent">
-          <a href="#audiences" className="hover:text-white">קהל יעד</a>
-          <span className="text-jungle-text/40">•</span>
-          <a href="#cities" className="hover:text-white">ערים</a>
-          <span className="text-jungle-text/40">•</span>
-          <a href="#styles" className="hover:text-white">סגנונות</a>
-          <span className="text-jungle-text/40">•</span>
-          <a href="#clubs" className="hover:text-white">מועדונים</a>
+      <div className="max-w-6xl mx-auto text-center mb-12">
+        <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-fuchsia-600/20 via-emerald-500/15 to-cyan-500/15 px-6 py-10 shadow-jungle-glow">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.12),transparent_35%),radial-gradient(circle_at_80%_10%,rgba(129,230,217,0.2),transparent_30%)]" />
+          <div className="relative space-y-5">
+            <p className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-jungle-text/80">
+              ניווט ממוקד • בחירה מהירה
+            </p>
+            <h1 className="text-4xl md:text-5xl font-display text-white leading-tight">
+              מוצאים את המסיבה הבאה ב־60 שניות
+            </h1>
+            <p className="text-lg text-jungle-text/85 leading-relaxed max-w-4xl mx-auto">
+              חיברנו בין הקיצורי דרך החמים, הוייבים הצבעוניים והטבות ספונטניות כדי שתמצאו מיד את האירוע שמדליק אתכם. בחרו לפי אנרגיה, עיר או חבר׳ה ותעברו ישר לעמוד הרלוונטי.
+            </p>
+
+            <div className="flex flex-wrap justify-center gap-3">
+              {vibePills.map((pill) => (
+                <Link
+                  key={pill.to}
+                  href={pill.to}
+                  prefetch={false}
+                  className={`group relative overflow-hidden rounded-full border border-white/20 bg-gradient-to-r ${pill.gradient} px-4 py-2 text-sm font-semibold text-slate-950 shadow-lg transition hover:scale-105 hover:-rotate-1`}
+                >
+                  <span className="absolute inset-0 bg-white/20 opacity-0 transition group-hover:opacity-20" />
+                  <span className="relative flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-white/80 shadow-[0_0_0_4px_rgba(255,255,255,0.2)]" aria-hidden />
+                    {pill.label}
+                  </span>
+                </Link>
+              ))}
+            </div>
+
+            <div className="flex flex-wrap justify-center gap-4 pt-2">
+              <Link
+                href="/all-parties"
+                prefetch={false}
+                className="rounded-full bg-gradient-to-r from-emerald-400 via-jungle-lime to-yellow-300 px-6 py-3 text-base font-bold text-slate-900 shadow-[0_10px_40px_rgba(167,255,131,0.35)] transition hover:-translate-y-1 hover:shadow-[0_15px_45px_rgba(167,255,131,0.5)]"
+              >
+                מצאו מסיבה עכשיו
+              </Link>
+              <Link
+                href="/weekend-parties"
+                prefetch={false}
+                className="rounded-full border border-white/25 px-6 py-3 text-base font-bold text-white backdrop-blur transition hover:border-jungle-lime hover:text-jungle-lime"
+              >
+                לראות מה קורה בסופ׳׳ש
+              </Link>
+            </div>
+
+            {/* Hash Links - Standard <a> tags are perfect for anchors */}
+            <div className="flex flex-wrap justify-center gap-3 text-sm text-jungle-accent/90 pt-2">
+              <a href="#audiences" className="rounded-full border border-white/10 px-3 py-1 hover:border-jungle-lime hover:text-white">קהל יעד</a>
+              <a href="#cities" className="rounded-full border border-white/10 px-3 py-1 hover:border-jungle-lime hover:text-white">ערים</a>
+              <a href="#styles" className="rounded-full border border-white/10 px-3 py-1 hover:border-jungle-lime hover:text-white">סגנונות</a>
+              <a href="#clubs" className="rounded-full border border-white/10 px-3 py-1 hover:border-jungle-lime hover:text-white">מועדונים</a>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -121,15 +189,44 @@ export default async function PartyDiscoveryPage() {
             key={item.to}
             href={item.to}
             prefetch={false} // 3. Disable prefetch for stability without JS
-            className="group rounded-2xl border border-wood-brown/50 bg-gradient-to-br from-jungle-surface/90 to-jungle-bg/80 p-5 text-right hover:border-jungle-accent/70 hover:-translate-y-1 transition"
+            className="group overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-jungle-surface/80 via-emerald-900/30 to-slate-900/40 p-5 text-right shadow-lg backdrop-blur transition hover:-translate-y-1 hover:shadow-jungle-glow"
           >
-            <span className="text-sm font-semibold text-jungle-accent/80">קיצור דרך</span>
-            <h2 className="text-2xl font-display text-white group-hover:text-jungle-accent transition-colors">{item.label}</h2>
-            <p className="text-jungle-text/75 text-sm leading-relaxed">{item.description}</p>
-            <span className="inline-flex items-center gap-2 text-xs text-jungle-accent mt-3">פתחו את הרשימה <span aria-hidden="true">&rarr;</span></span>
+            <div className="absolute inset-0 opacity-0 transition group-hover:opacity-15 bg-[radial-gradient(circle_at_20%_20%,rgba(167,255,131,0.25),transparent_35%),radial-gradient(circle_at_80%_10%,rgba(255,255,255,0.18),transparent_32%)]" />
+            <span className="relative inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-jungle-lime/90">
+              קיצור דרך
+              <span className="h-1 w-1 rounded-full bg-jungle-lime" />
+            </span>
+            <h2 className="relative text-2xl font-display text-white group-hover:text-jungle-lime transition-colors">{item.label}</h2>
+            <p className="relative text-jungle-text/80 text-sm leading-relaxed">{item.description}</p>
+            <span className="relative inline-flex items-center gap-2 text-xs font-semibold text-jungle-lime mt-3">פתחו את הרשימה <span aria-hidden="true">&rarr;</span></span>
           </Link>
         ))}
       </div>
+
+      {/* Impulse Highlights */}
+      <section className="mb-12">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-3xl font-display text-white">למי שמתחשק עכשיו</h2>
+          <p className="text-sm text-jungle-text/70">קיצורי דרך עם צבעים ויתרונות מיידיים.</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {impulseLinks.map((item) => (
+            <Link
+              key={item.to}
+              href={item.to}
+              prefetch={false}
+              className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-pink-600/30 via-purple-700/30 to-cyan-600/25 p-5 text-right shadow-lg transition hover:-translate-y-1 hover:shadow-jungle-glow"
+            >
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(255,255,255,0.15),transparent_35%)] opacity-80" />
+              <div className="relative flex items-center justify-between gap-3">
+                <h3 className="text-2xl font-display text-white">{item.title}</h3>
+                <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold text-white">{item.badge}</span>
+              </div>
+              <p className="relative mt-2 text-jungle-text/85 leading-relaxed">{item.blurb}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
 
       {/* Audiences Section */}
       <section id="audiences" className="mb-12">
@@ -143,10 +240,10 @@ export default async function PartyDiscoveryPage() {
               key={item.to}
               href={item.to}
               prefetch={false}
-              className="rounded-2xl border border-wood-brown/40 bg-jungle-surface/80 p-5 hover:border-jungle-accent/60 transition"
+              className="rounded-2xl border border-white/10 bg-gradient-to-r from-jungle-surface/80 via-emerald-900/20 to-slate-900/40 p-5 shadow-md transition hover:-translate-y-1 hover:border-jungle-lime/60 hover:shadow-jungle-glow"
             >
               <h3 className="text-2xl font-display text-white mb-2">{item.title}</h3>
-              <p className="text-jungle-text/75 leading-relaxed">{item.blurb}</p>
+              <p className="text-jungle-text/85 leading-relaxed">{item.blurb}</p>
             </Link>
           ))}
         </div>
@@ -164,10 +261,10 @@ export default async function PartyDiscoveryPage() {
               key={item.to}
               href={item.to}
               prefetch={false}
-              className="rounded-2xl border border-wood-brown/40 bg-jungle-surface/80 p-5 hover:border-jungle-accent/60 transition"
+              className="rounded-2xl border border-white/10 bg-gradient-to-r from-jungle-surface/80 via-slate-900/40 to-indigo-900/30 p-5 shadow-md transition hover:-translate-y-1 hover:border-jungle-lime/60 hover:shadow-jungle-glow"
             >
               <h3 className="text-2xl font-display text-white mb-2">{item.title}</h3>
-              <p className="text-jungle-text/75 leading-relaxed">{item.blurb}</p>
+              <p className="text-jungle-text/85 leading-relaxed">{item.blurb}</p>
             </Link>
           ))}
         </div>
@@ -185,10 +282,10 @@ export default async function PartyDiscoveryPage() {
               key={item.to}
               href={item.to}
               prefetch={false}
-              className="rounded-2xl border border-wood-brown/40 bg-jungle-surface/80 p-5 hover:border-jungle-accent/60 transition"
+              className="rounded-2xl border border-white/10 bg-gradient-to-r from-jungle-surface/80 via-purple-900/30 to-pink-900/30 p-5 shadow-md transition hover:-translate-y-1 hover:border-jungle-lime/60 hover:shadow-jungle-glow"
             >
               <h3 className="text-2xl font-display text-white mb-2">{item.title}</h3>
-              <p className="text-jungle-text/75 leading-relaxed">{item.blurb}</p>
+              <p className="text-jungle-text/85 leading-relaxed">{item.blurb}</p>
             </Link>
           ))}
         </div>
@@ -205,10 +302,10 @@ export default async function PartyDiscoveryPage() {
               key={item.to}
               href={item.to}
               prefetch={false}
-              className="rounded-2xl border border-wood-brown/40 bg-jungle-surface/80 p-5 hover:border-jungle-accent/60 transition"
+              className="rounded-2xl border border-white/10 bg-gradient-to-r from-jungle-surface/80 via-slate-900/40 to-emerald-900/30 p-5 shadow-md transition hover:-translate-y-1 hover:border-jungle-lime/60 hover:shadow-jungle-glow"
             >
               <h3 className="text-2xl font-display text-white mb-2">{item.title}</h3>
-              <p className="text-jungle-text/75 leading-relaxed">{item.blurb}</p>
+              <p className="text-jungle-text/85 leading-relaxed">{item.blurb}</p>
             </Link>
           ))}
         </div>
@@ -226,7 +323,7 @@ export default async function PartyDiscoveryPage() {
                 key={item.to}
                 href={item.to}
                 prefetch={false}
-                className="rounded-2xl border border-wood-brown/40 bg-jungle-surface/80 p-5 hover:border-jungle-accent/60 transition"
+                className="rounded-2xl border border-white/10 bg-gradient-to-r from-jungle-surface/80 via-cyan-900/30 to-purple-900/30 p-5 shadow-md transition hover:-translate-y-1 hover:border-jungle-lime/60 hover:shadow-jungle-glow"
               >
                 <h3 className="text-2xl font-display text-white mb-2">{item.title}</h3>
                 <p className="text-jungle-text/75 leading-relaxed">כל הליינים החמים בקרוסלה אחת.</p>
@@ -245,10 +342,10 @@ export default async function PartyDiscoveryPage() {
               key={item.to}
               href={item.to}
               prefetch={false}
-              className="rounded-2xl border border-wood-brown/40 bg-jungle-surface/80 p-5 hover:border-jungle-accent/60 transition"
+              className="rounded-2xl border border-white/10 bg-gradient-to-r from-jungle-surface/80 via-emerald-900/30 to-slate-900/40 p-5 shadow-md transition hover:-translate-y-1 hover:border-jungle-lime/60 hover:shadow-jungle-glow"
             >
               <h3 className="text-xl font-display text-white">{item.title}</h3>
-              <p className="text-jungle-text/75 leading-relaxed">{item.blurb}</p>
+              <p className="text-jungle-text/85 leading-relaxed">{item.blurb}</p>
             </Link>
           ))}
         </div>

@@ -8,7 +8,7 @@ const PrefetchLinks: React.FC = () => (
     <link rel="prefetch" href="/all-parties" as="document" />
     <link rel="prefetch" href="/day/thursday" as="document" />
     <link rel="prefetch" href="/day/friday" as="document" />
-    <link rel="prefetch" href="/techno-parties" as="document" />
+    <link rel="prefetch" href="/genre/techno-music" as="document" />
     <link rel="prefetch" href="/city/tel-aviv" as="document" />
   </Helmet>
 );
