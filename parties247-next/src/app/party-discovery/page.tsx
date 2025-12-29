@@ -390,5 +390,6 @@ export default async function PartyDiscoveryPage() {
         </div>
       </section>
     </div>
+  </div>
   );
 }
