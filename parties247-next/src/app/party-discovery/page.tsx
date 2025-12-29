@@ -65,7 +65,7 @@ const helperLinks = [
 const vibePills = [
   { label: 'מסיבת רגע אחרון', to: '/all-parties', gradient: 'from-pink-500/90 via-orange-400/90 to-yellow-300/80' },
   { label: 'וייב גג שקיעה', to: '/weekend-parties', gradient: 'from-fuchsia-500/80 via-purple-500/80 to-blue-400/80' },
-  { label: 'קרחנה טכנו', to: '/genre/techno-music', gradient: 'from-emerald-400/90 via-teal-400/90 to-cyan-300/90' },
+  { label: 'טכנו', to: '/genre/techno-music', gradient: 'from-emerald-400/90 via-teal-400/90 to-cyan-300/90' },
   { label: 'הנחת חיילים/סטודנטים', to: '/audience/student-parties', gradient: 'from-indigo-400/80 via-blue-500/80 to-sky-400/80' },
 ];
 
@@ -128,7 +128,7 @@ export default async function PartyDiscoveryPage() {
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.12),transparent_35%),radial-gradient(circle_at_80%_10%,rgba(129,230,217,0.2),transparent_30%)]" />
           <div className="relative space-y-5">
             <p className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-jungle-text/80">
-              ניווט ממוקד • יותר צבע, יותר וייב
+              ניווט ממוקד • בחירה מהירה
             </p>
             <h1 className="text-4xl md:text-5xl font-display text-white leading-tight">
               מוצאים את המסיבה הבאה ב־60 שניות

@@ -40,14 +40,14 @@ const cityLinks = [
 ];
 
 const styleLinks = [
-  { title: 'טכנו', to: '/techno-parties', blurb: 'רייבי מחסן, חופים ומועדוני ענק.' },
+  { title: 'טכנו', to: '/genre/techno-parties', blurb: 'רייבי מחסן, חופים ומועדוני ענק.' },
   { title: 'האוס וגרוב', to: '/house-parties', blurb: 'גגות שקיעה, ברים אינטימיים וסאונד נעים.' },
   { title: 'מיינסטרים ופופ', to: '/mainstream-parties', blurb: 'להיטים, רגאטון וקריוקי עד הבוקר.' },
 ];
 
 const clubLinks = [
-  { title: 'ECHO Club', to: '/echo-club', blurb: 'רחבה דרומית עם טכנו, האוס והופעות לייב.' },
-  { title: 'Jimmy Who', to: '/jimmy-who-club', blurb: 'בר-מועדון תל אביבי עם להיטים ורחבה שמחה.' },
+  { title: 'ECHO Club', to: '/club/echo-club', blurb: 'רחבה דרומית עם טכנו, האוס והופעות לייב.' },
+  { title: 'Jimmy Who', to: '/club/jimmy-who-club', blurb: 'בר-מועדון תל אביבי עם להיטים ורחבה שמחה.' },
 ];
 
 const helperLinks = [
