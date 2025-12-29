@@ -53,8 +53,13 @@ export const pageLinkOptions: PageLinkOption[] = [
   },
   {
     label: 'מסיבות סוף שבוע',
-    path: '/weekend-parties',
+    path: '/day/weekend',
     description: 'כל מה שקורה בין חמישי לשבת בערב אחד.',
+  },
+  {
+    label: 'מסיבות היום',
+    path: '/day/today',
+    description: 'רשימת ספונטנית של מה שקורה עוד הלילה.',
   },
   {
     label: 'מסיבות בתל אביב',
