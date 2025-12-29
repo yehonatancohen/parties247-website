@@ -8,7 +8,6 @@ import Link from 'next/link';
 const PageCrossLinks: React.FC = () => {
   const pathname = usePathname();
 
-  // Safe check for pathname (it can technically be null during build time in some edge cases)
   const currentPath = pathname || '';
 
   const suggestedLinks = pageLinkOptions
@@ -30,7 +29,7 @@ const PageCrossLinks: React.FC = () => {
           {suggestedLinks.map((option) => (
             <Link
               key={option.path}
-              href={option.path} // 2. Changed 'to' to 'href'
+              href={option.path}
               className="block bg-jungle-deep border border-wood-brown/60 rounded-xl p-4 hover:border-jungle-accent hover:shadow-jungle-glow transition group"
             >
               <p className="font-semibold text-white group-hover:text-jungle-accent transition-colors">{option.label}</p>

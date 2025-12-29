@@ -8,33 +8,33 @@ export interface PageLinkOption {
 export const pageLinkOptions: PageLinkOption[] = [
   {
     label: 'מסיבות סטודנטים',
-    path: '/קהל/מסיבות-סטודנטים',
+    path: '/audience/student-parties',
     tag: 'סטודנטים',
     description: 'אירועים עם הנחות סטודנט ואווירה קמפוסית.',
   },
   {
     label: 'מסיבות נוער',
-    path: '/קהל/מסיבות-נוער',
+    path: '/audience/teenage-parties',
     tag: 'נוער',
     description: 'מסיבות מותאמות לגילאי נוער עם פיקוח בטיחותי.',
   },
   {
     label: 'מסיבות חיילים',
-    path: '/קהל/מסיבות-חיילים',
+    path: '/audience/soldier-parties',
     tag: 'חיילים',
     description: 'ליינים שמקבלים חוגר ומציעים כניסה מוזלת.',
   },
   {
     label: 'מסיבות להט"ב',
-    path: '/קהל/מסיבות-להטב',
+    path: '/audience/מסיבות-להטב',
     tag: 'להט"ב',
     description: 'אירועים וגאווה ברחבי הארץ עם אווירה מכילה.',
   },
   {
-    label: 'מסיבות 25+',
-    path: '/קהל/מסיבות-25-פלוס',
-    tag: '25 פלוס',
-    description: 'ערבים בוגרים יותר עם קהל 25 פלוס.',
+    label: 'מסיבות 24+',
+    path: '/audience/24plus-parties',
+    tag: '24 פלוס',
+    description: 'ערבים בוגרים יותר עם קהל 24 פלוס.',
   },
   {
     label: 'מסיבות חמישי',
@@ -58,7 +58,12 @@ export const pageLinkOptions: PageLinkOption[] = [
   },
   {
     label: 'מסיבות בתל אביב',
-    path: '/ערים/תל-אביב',
+    path: '/city/tel-aviv',
     description: 'אירועים בעיר שלא נרדמת – טכנו, גגות וחופים.',
   },
+  {
+    label: 'מסיבות בחיפה',
+    path: '/city/haifa',
+    description: 'אירועים בעיר הצפונית עם אווירה מרהיבה.',
+  }
 ];
