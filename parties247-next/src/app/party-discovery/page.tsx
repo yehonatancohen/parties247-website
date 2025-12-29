@@ -30,7 +30,12 @@ const quickLinks = [
   {
     label: 'מסיבות סוף השבוע',
     description: 'כל האירועים של שישי ושבת במקום אחד',
-    to: '/weekend-parties',
+    to: '/day/weekend',
+  },
+  {
+    label: 'מסיבות הערב',
+    description: 'כל מה שקורה היום בלבד',
+    to: '/day/today',
   },
 ];
 
@@ -64,7 +69,7 @@ const helperLinks = [
 
 const vibePills = [
   { label: 'מסיבת רגע אחרון', to: '/all-parties', gradient: 'from-pink-500/90 via-orange-400/90 to-yellow-300/80' },
-  { label: 'וייב גג שקיעה', to: '/weekend-parties', gradient: 'from-fuchsia-500/80 via-purple-500/80 to-blue-400/80' },
+  { label: 'וייב גג שקיעה', to: '/day/weekend', gradient: 'from-fuchsia-500/80 via-purple-500/80 to-blue-400/80' },
   { label: 'טכנו', to: '/genre/techno-music', gradient: 'from-emerald-400/90 via-teal-400/90 to-cyan-300/90' },
   { label: 'הנחת חיילים/סטודנטים', to: '/audience/student-parties', gradient: 'from-indigo-400/80 via-blue-500/80 to-sky-400/80' },
 ];
@@ -73,18 +78,21 @@ const impulseLinks = [
   {
     title: 'דילים של הרגע האחרון',
     to: '/all-parties',
+    anchor: 'impulse-last-minute',
     badge: '🔥 לוהט',
     blurb: 'קפצו ישר למסיבות שמתמלאות עכשיו ושריינו מקום לפני שזה נעלם.',
   },
   {
     title: 'היום בלילה',
-    to: '/weekend-parties',
+    to: '/day/today',
+    anchor: 'impulse-tonight',
     badge: '⚡ ספונטני',
     blurb: 'סינון מהיר לליינים של הלילה הקרוב, עם שעות פתיחה וכניסה מהירה.',
   },
   {
     title: 'חברים באים?',
     to: '/carousels/hot-groups',
+    anchor: 'impulse-groups',
     badge: '✨ וייב חברתי',
     blurb: 'אוספים עם רחבות ענק, חבילות שולחן וסטים של הדיג׳יים המדוברים.',
   },
@@ -121,11 +129,12 @@ export default async function PartyDiscoveryPage() {
     }));
 
   return (
-    <div className="container mx-auto px-4">
-      {/* Header Section */}
-      <div className="max-w-6xl mx-auto text-center mb-12">
-        <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-fuchsia-600/20 via-emerald-500/15 to-cyan-500/15 px-6 py-10 shadow-jungle-glow">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.12),transparent_35%),radial-gradient(circle_at_80%_10%,rgba(129,230,217,0.2),transparent_30%)]" />
+    <div id="top" className="min-h-screen bg-gradient-to-b from-jungle-deep via-[#0c1713] to-black text-white scroll-smooth">
+      <div className="container mx-auto px-4 pb-16">
+        {/* Header Section */}
+        <div className="max-w-6xl mx-auto text-center mb-12">
+          <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-jungle-surface/80 via-emerald-900/35 to-jungle-deep/70 px-6 py-10 shadow-[0_15px_60px_rgba(0,0,0,0.35)]">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_15%,rgba(167,255,131,0.16),transparent_32%),radial-gradient(circle_at_70%_30%,rgba(0,191,165,0.12),transparent_36%),radial-gradient(circle_at_40%_90%,rgba(255,255,255,0.06),transparent_30%)]" />
           <div className="relative space-y-5">
             <p className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-jungle-text/80">
               ניווט ממוקד • בחירה מהירה
@@ -143,7 +152,7 @@ export default async function PartyDiscoveryPage() {
                   key={pill.to}
                   href={pill.to}
                   prefetch={false}
-                  className={`group relative overflow-hidden rounded-full border border-white/20 bg-gradient-to-r ${pill.gradient} px-4 py-2 text-sm font-semibold text-slate-950 shadow-lg transition hover:scale-105 hover:-rotate-1`}
+                  className={`group relative overflow-hidden rounded-full border border-white/10 bg-gradient-to-r ${pill.gradient} px-4 py-2 text-sm font-semibold text-slate-900 shadow-lg transition hover:scale-105 hover:-rotate-1`}
                 >
                   <span className="absolute inset-0 bg-white/20 opacity-0 transition group-hover:opacity-20" />
                   <span className="relative flex items-center gap-2">
@@ -158,12 +167,12 @@ export default async function PartyDiscoveryPage() {
               <Link
                 href="/all-parties"
                 prefetch={false}
-                className="rounded-full bg-gradient-to-r from-emerald-400 via-jungle-lime to-yellow-300 px-6 py-3 text-base font-bold text-slate-900 shadow-[0_10px_40px_rgba(167,255,131,0.35)] transition hover:-translate-y-1 hover:shadow-[0_15px_45px_rgba(167,255,131,0.5)]"
+                className="rounded-full bg-gradient-to-r from-emerald-500 via-jungle-accent to-amber-200/90 px-6 py-3 text-base font-bold text-slate-950 shadow-[0_10px_40px_rgba(114,213,174,0.35)] transition hover:-translate-y-1 hover:shadow-[0_18px_55px_rgba(114,213,174,0.45)]"
               >
                 מצאו מסיבה עכשיו
               </Link>
               <Link
-                href="/weekend-parties"
+                href="/day/weekend"
                 prefetch={false}
                 className="rounded-full border border-white/25 px-6 py-3 text-base font-bold text-white backdrop-blur transition hover:border-jungle-lime hover:text-jungle-lime"
               >
@@ -213,14 +222,14 @@ export default async function PartyDiscoveryPage() {
           {impulseLinks.map((item) => (
             <Link
               key={item.to}
-              href={item.to}
+              href={`#${item.anchor}`}
               prefetch={false}
-              className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-pink-600/30 via-purple-700/30 to-cyan-600/25 p-5 text-right shadow-lg transition hover:-translate-y-1 hover:shadow-jungle-glow"
+              className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-emerald-700/30 via-jungle-surface/70 to-amber-700/25 p-5 text-right shadow-lg transition hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(0,0,0,0.35)]"
             >
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(255,255,255,0.15),transparent_35%)] opacity-80" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(255,255,255,0.12),transparent_35%)] opacity-80" />
               <div className="relative flex items-center justify-between gap-3">
                 <h3 className="text-2xl font-display text-white">{item.title}</h3>
-                <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold text-white">{item.badge}</span>
+                <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-semibold text-white">{item.badge}</span>
               </div>
               <p className="relative mt-2 text-jungle-text/85 leading-relaxed">{item.blurb}</p>
             </Link>
@@ -228,8 +237,43 @@ export default async function PartyDiscoveryPage() {
         </div>
       </section>
 
+      {/* Impulse Landing Sections */}
+      <div className="space-y-8 mb-14">
+        {impulseLinks.map((item) => (
+          <section
+            key={item.anchor}
+            id={item.anchor}
+            className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-r from-jungle-surface/85 via-jungle-deep/80 to-emerald-900/40 p-6 md:p-8 shadow-[0_18px_45px_rgba(0,0,0,0.32)] transition-all duration-500 target:-translate-y-1 target:shadow-jungle-glow"
+          >
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_20%,rgba(167,255,131,0.12),transparent_32%),radial-gradient(circle_at_80%_15%,rgba(0,191,165,0.16),transparent_34%)]" />
+            <div className="relative flex flex-col md:flex-row md:items-center gap-4 md:gap-8">
+              <div className="flex-1 space-y-2">
+                <p className="inline-flex items-center gap-2 rounded-full bg-white/5 px-3 py-1 text-xs font-semibold text-jungle-accent">
+                  {item.badge}
+                  <span className="h-1 w-1 rounded-full bg-jungle-accent" />
+                  עכשיו
+                </p>
+                <h3 className="text-2xl md:text-3xl font-display text-white">{item.title}</h3>
+                <p className="text-jungle-text/80 leading-relaxed max-w-2xl">{item.blurb}</p>
+              </div>
+              <div className="flex flex-col items-center gap-3">
+                <Link
+                  href={item.to}
+                  prefetch={false}
+                  className="inline-flex items-center gap-2 rounded-full bg-jungle-accent px-5 py-3 text-base font-semibold text-black shadow-lg shadow-jungle-accent/30 transition hover:-translate-y-0.5 hover:bg-white"
+                >
+                  מעבר לעמוד המלא
+                  <span aria-hidden="true">↗</span>
+                </Link>
+                <a href="#top" className="text-sm text-jungle-text/70 hover:text-jungle-accent">חזרה לראש הדף</a>
+              </div>
+            </div>
+          </section>
+        ))}
+      </div>
+
       {/* Audiences Section */}
-      <section id="audiences" className="mb-12">
+      <section id="audiences" className="mb-12 scroll-mt-24">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-3xl font-display text-white">לפי קהל יעד</h2>
           <Link href="/קהל" prefetch={false} className="text-jungle-accent hover:text-white text-sm">ראו את כל קהלי היעד</Link>
@@ -250,7 +294,7 @@ export default async function PartyDiscoveryPage() {
       </section>
 
       {/* Cities Section */}
-      <section id="cities" className="mb-12">
+      <section id="cities" className="mb-12 scroll-mt-24">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-3xl font-display text-white">לפי עיר</h2>
           <Link href="/ערים" prefetch={false} className="text-jungle-accent hover:text-white text-sm">כל הערים</Link>
@@ -271,7 +315,7 @@ export default async function PartyDiscoveryPage() {
       </section>
 
       {/* Styles Section */}
-      <section id="styles" className="mb-12">
+      <section id="styles" className="mb-12 scroll-mt-24">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-3xl font-display text-white">לפי סגנון</h2>
           <Link href="/זאנרים" prefetch={false} className="text-jungle-accent hover:text-white text-sm">כל הסגנונות</Link>
@@ -292,7 +336,7 @@ export default async function PartyDiscoveryPage() {
       </section>
 
       {/* Clubs Section */}
-      <section id="clubs" className="mb-12">
+      <section id="clubs" className="mb-12 scroll-mt-24">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-3xl font-display text-white">מועדונים</h2>
         </div>
