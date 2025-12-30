@@ -120,7 +120,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
   const referralUrl = getReferralUrl(party.originalUrl, party.referralCode);
   const hasLastTickets = party.tags.includes(LAST_TICKETS_TAG);
   const whatsappMessage = encodeURIComponent(`היי, אשמח לשמור כרטיסים ל"${party.name}" ב-${formattedDate}. ${referralUrl}`);
-  const whatsappHref = `https://wa.me/?text=${whatsappMessage}`;
+  const whatsappHref = `https://wa.me/me?text=${whatsappMessage}`;
   // Note: hotNow logic requires fetching carousels. Passing false for now.
   const showDiscountCode = false;
 
