@@ -21,7 +21,7 @@ module.exports = {
       },
       fontFamily: {
         sans: ['var(--font-assistant)', '"Assistant"', 'sans-serif'],
-        display: ['var(--font-secular-one)', '"Secular One"', 'sans-serif'],
+        display: ['var(--font-rubik)', '"Rubik"', 'sans-serif'],
       },
       boxShadow: {
         'jungle-glow':
