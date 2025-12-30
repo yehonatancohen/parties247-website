@@ -3,12 +3,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPartyBySlug, getParties } from "@/services/api"; // Ensure getParties is exported
 import { Party } from "@/data/types";
-import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from "@/components/Icons"; // Adjust imports
+import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon, WhatsAppIcon } from "@/components/Icons"; // Adjust imports
 import ShareButtons from "@/components/ShareButtons"; // Ensure this handles 'use client' internally if it has state
 import DiscountCodeReveal from "@/components/DiscountCodeReveal"; // Ensure this handles 'use client' internally
 import RelatedPartyCard from "@/components/RelatedPartyCard"; 
 import PurchaseButton from "@/components/PurchaseButton"; 
-import { BASE_URL } from "@/data/constants";
+import { BASE_URL, LAST_TICKETS_TAG } from "@/data/constants";
 
 // Force dynamic rendering if API data changes often, or use revalidate
 export const revalidate = 60;
@@ -22,6 +22,7 @@ function isHotNow(partyId: string) {
 
 // Helper for Tag Colors
 const getTagColor = (tag: string) => {
+  if (tag === LAST_TICKETS_TAG) return 'bg-red-500/90 text-white';
   if (tag === 'לוהט') return 'bg-red-500/80 text-white';
   if (tag === 'ביקוש גבוה') return 'bg-yellow-500/80 text-jungle-deep';
   return 'bg-jungle-accent/80 text-jungle-deep';
@@ -117,8 +118,11 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
   const formattedTime = new Intl.DateTimeFormat('he-IL', { timeStyle: 'short', timeZone: 'Asia/Jerusalem' }).format(partyDate);
 
   const referralUrl = getReferralUrl(party.originalUrl, party.referralCode);
+  const hasLastTickets = party.tags.includes(LAST_TICKETS_TAG);
+  const whatsappMessage = encodeURIComponent(`היי, אשמח לשמור כרטיסים ל"${party.name}" ב-${formattedDate}. ${referralUrl}`);
+  const whatsappHref = `https://wa.me/?text=${whatsappMessage}`;
   // Note: hotNow logic requires fetching carousels. Passing false for now.
-  const showDiscountCode = false; 
+  const showDiscountCode = false;
 
   // JSON-LD Schema
   const eventJsonLd = {
@@ -177,12 +181,20 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
                     <div className="flex flex-wrap gap-2 mb-4">
                         {party.tags.map(tag => (
                             <span key={tag} className={`${getTagColor(tag)} text-xs font-bold px-3 py-1 rounded-full flex items-center`}>
+                               {tag === LAST_TICKETS_TAG && <FireIcon className="w-4 h-4 ml-1" />}
                                {tag === 'לוהט' && <FireIcon className="w-4 h-4 ml-1" />}
                                {tag === 'ביקוש גבוה' && <PartyPopperIcon className="w-4 h-4 ml-1" />}
                                {tag}
                             </span>
                         ))}
                     </div>
+
+                    {hasLastTickets && (
+                      <div className="mb-4 inline-flex items-center gap-2 rounded-lg border border-red-400/60 bg-red-500/10 px-3 py-2 text-red-100">
+                        <FireIcon className="w-5 h-5" />
+                        <span>כרטיסים אחרונים - מומלץ לשריין כרטיס עכשיו</span>
+                      </div>
+                    )}
                     
                     <h1 className="font-display text-4xl md:text-5xl text-white mb-4">{party.name}</h1>
                     
@@ -207,12 +219,32 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
 
                     {showDiscountCode && <DiscountCodeReveal variant="expanded" className="mb-6" />}
 
-                    <div className="flex items-center justify-between mb-6">
-                      <ShareButtons partyName={party.name} shareUrl={referralUrl} />
+                    <div className="flex flex-col gap-3 mb-6">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <ShareButtons partyName={party.name} shareUrl={referralUrl} />
+                        {hasLastTickets && (
+                          <span className="inline-flex items-center gap-1 text-sm text-red-200">
+                            <FireIcon className="w-4 h-4" />
+                            כרטיסים אחרונים
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                        <div className="w-full sm:flex-1">
+                          <PurchaseButton partyId={party.id} slug={party.slug} href={referralUrl} />
+                        </div>
+                        <a
+                          href={whatsappHref}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full sm:flex-1 inline-flex items-center justify-center gap-3 rounded-lg border border-green-300/70 bg-green-500/10 px-6 py-4 text-2xl sm:text-3xl font-semibold text-green-100 transition hover:bg-green-500/20"
+                        >
+                          <WhatsAppIcon className="w-5 h-5" />
+                          שלחו לי בווטסאפ
+                        </a>
+                      </div>
                     </div>
-                    
-                    {/* Replaced 'a' tag with Client Component for tracking logic */}
-                    <PurchaseButton partyId={party.id} slug={party.slug} href={referralUrl} />
                 </div>
             </div>
 

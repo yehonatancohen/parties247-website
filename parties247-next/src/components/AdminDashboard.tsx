@@ -3,7 +3,7 @@ import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { useParties } from '../hooks/useParties';
 import { Party, Carousel } from '../data/types';
 import LoadingSpinner from './LoadingSpinner';
-import { BASE_URL } from '../data/constants';
+import { BASE_URL, LAST_TICKETS_TAG } from '../data/constants';
 import { SearchIcon, EditIcon, ChevronDownIcon, ArrowUpIcon, ArrowDownIcon, MegaphoneIcon, ShareIcon } from './Icons';
 import { pageLinkOptions } from '../data/pageLinks';
 
@@ -470,6 +470,15 @@ const AdminDashboard: React.FC = () => {
     updateParty({ ...party, tags: updatedTags });
   }, [updateParty]);
 
+  const toggleLastTicketsTag = useCallback((party: Party) => {
+    const hasTag = party.tags.includes(LAST_TICKETS_TAG);
+    const updatedTags = hasTag
+      ? party.tags.filter((tag) => tag !== LAST_TICKETS_TAG)
+      : [...party.tags, LAST_TICKETS_TAG];
+
+    updateParty({ ...party, tags: updatedTags });
+  }, [updateParty]);
+
   // FIX: Explicitly type PartyListItem as React.FC to correctly handle props like 'key' and resolve assignment errors.
   const PartyListItem: React.FC<{ party: Party }> = ({ party }) => (
     <div className="bg-jungle-deep p-3 rounded-md">
@@ -513,6 +522,16 @@ const AdminDashboard: React.FC = () => {
       <div className="mt-2 pt-2 border-t border-wood-brown">
         <TagInput tags={party.tags} onTagsChange={(newTags) => updateParty({ ...party, tags: newTags })} />
         <div className="flex flex-wrap gap-2 mt-2">
+          <button
+            onClick={() => toggleLastTicketsTag(party)}
+            className={`px-3 py-1 rounded-full text-xs border transition-colors ${
+              party.tags.includes(LAST_TICKETS_TAG)
+                ? 'bg-red-500 text-white border-red-400 shadow-lg shadow-red-500/30'
+                : 'bg-jungle-surface text-jungle-text/80 border-wood-brown hover:border-red-400 hover:text-white'
+            }`}
+          >
+            כרטיסים אחרונים
+          </button>
           {pageTagOptions.map((option) => {
             const isActive = party.tags.includes(option.tag);
             return (

@@ -4,6 +4,7 @@ import { Carousel } from '@/data/types'; // Ensure this path is correct
 import { Metadata } from 'next';
 import { createCarouselSlug } from '@/lib/carousels';
 import { getCarousels } from '@/services/api';
+import SmoothScrollAnchors from '@/components/SmoothScrollAnchors';
 
 // 1. Force Dynamic Rendering
 // This ensures the server builds this page fresh on every request, 
@@ -58,8 +59,10 @@ const styleLinks = [
 ];
 
 const clubLinks = [
-  { title: 'ECHO Club', to: '/echo-club', blurb: 'רחבה דרומית עם טכנו, האוס והופעות לייב.' },
-  { title: 'Jimmy Who', to: '/jimmy-who-club', blurb: 'בר-מועדון תל אביבי עם להיטים ורחבה שמחה.' },
+  { title: 'ECHO Club', to: '/club/echo', blurb: 'רחבה דרומית עם טכנו, האוס והופעות לייב.' },
+  { title: 'Jimmy Who', to: '/club/jimmy-who', blurb: 'בר-מועדון תל אביבי עם להיטים ורחבה שמחה.' },
+  { title: 'Gagarin', to: '/club/gagarin', blurb: 'חלל אנדרגראונד עם במה להופעות חיות וסטים אלקטרוניים.' },
+  { title: 'Moon Child', to: '/club/moon-child', blurb: 'וייב ירח עם קוקטיילים, גרוב מלודי ורחבה אינטימית.' },
 ];
 
 const helperLinks = [
@@ -130,6 +133,7 @@ export default async function PartyDiscoveryPage() {
 
   return (
     <div id="top" className="min-h-screen bg-gradient-to-b from-jungle-deep via-[#0c1713] to-black text-white scroll-smooth">
+      <SmoothScrollAnchors />
       <div className="container mx-auto px-4 pb-16">
         {/* Header Section */}
         <div className="max-w-6xl mx-auto text-center mb-12">

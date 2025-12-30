@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import Link from "next/link";
 import SocialsCta from "@/components/SocialsCta";
 import { createCarouselSlug } from "@/lib/carousels";
@@ -56,15 +56,15 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
     { href: "/day/weekend", label: "מסיבות סוף שבוע" },
     { href: "/day/today", label: "מסיבות היום" },
     { href: "/party-discovery", label: "חיפוש מתקדם" },
-    { href: "/thursday-parties", label: "חמישי" },
-    { href: "/friday-parties", label: "שישי" },
+    { href: "/day/thursday", label: "חמישי" },
+    { href: "/day/friday", label: "שישי" },
   ];
 
   const inspirations = [
     {
       title: "ליין אלקטרוני",
       description: "סטים מעולמות הטכנו, האוס ומלודיק – עם דיג׳ייז בינלאומיים ומערכות סאונד משודרגות.",
-      href: "/genre/techno-parties",
+      href: "/genre/techno-music",
     },
     {
       title: "מסיבות גגות וחופים",
@@ -74,67 +74,17 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
     {
       title: "חוויות בוטיק",
       description: "לילות קוקטיילים, קוד לבוש מוקפד ומוזיקה חצופה שמושמעת רק למביני עניין.",
-      href: "/audience/25-plus-parties",
+      href: "/audience/24plus-parties",
     },
   ];
 
-  const [leafOpenProgress, setLeafOpenProgress] = useState(0);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const progress = Math.min(1, window.scrollY / 420);
-      setLeafOpenProgress(progress);
-    };
-
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const leafLayers = [
-    {
-      src: "/leaf-left.svg",
-      className:
-        "absolute left-[-14%] top-[-12%] w-72 sm:w-96 drop-shadow-[0_12px_40px_rgba(0,0,0,0.35)] opacity-95",
-      translateX: -32,
-      translateY: 0,
-      rotate: -8,
-      scale: 0.08,
-    },
-    {
-      src: "/leaf-right.svg",
-      className:
-        "absolute right-[-14%] top-[-10%] w-72 sm:w-96 drop-shadow-[0_12px_40px_rgba(0,0,0,0.35)] opacity-95",
-      translateX: 32,
-      translateY: 0,
-      rotate: 10,
-      scale: 0.08,
-    },
-    {
-      src: "/leaf-left.svg",
-      className:
-        "absolute left-[-6%] bottom-[-12%] w-[22rem] sm:w-[28rem] rotate-3 drop-shadow-[0_16px_50px_rgba(0,0,0,0.45)] opacity-90",
-      translateX: -18,
-      translateY: 18,
-      rotate: -4,
-      scale: 0.12,
-    },
-    {
-      src: "/leaf-right.svg",
-      className:
-        "absolute right-[-10%] bottom-[-16%] w-[24rem] sm:w-[30rem] drop-shadow-[0_16px_50px_rgba(0,0,0,0.45)] opacity-90",
-      translateX: 22,
-      translateY: 22,
-      rotate: 6,
-      scale: 0.1,
-    },
-  ];
 
   return (
     <>
       {/* Hero Section */}
       <section
-        className="relative text-center mb-16 -mt-8 h-[70vh] sm:h-[65vh] flex items-center justify-center overflow-hidden bg-jungle-deep"
+        className="relative text-center mb-16 pt-16 md:pt-20 min-h-[78vh] sm:min-h-[75vh] lg:min-h-[85vh] flex items-center justify-center overflow-hidden bg-jungle-deep"
         style={{
           backgroundImage:
             "radial-gradient(circle at 30% 20%, rgba(47, 197, 165, 0.18), transparent 40%), radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.08), transparent 45%)",
@@ -155,34 +105,12 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
         </picture>
         <div className="absolute inset-0 bg-gradient-to-t from-jungle-deep via-transparent to-jungle-deep/50" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-transparent to-black/60" aria-hidden="true" />
-        <div className="pointer-events-none absolute inset-0">
-          {leafLayers.map((leaf, index) => (
-            <img
-              key={`${leaf.src}-${index}`}
-              src={leaf.src}
-              alt="עיטור עלים טרופי"
-              className={leaf.className}
-              style={{
-                transform: `translate(${leaf.translateX * leafOpenProgress}px, ${leaf.translateY * leafOpenProgress}px) rotate(${leaf.rotate + leafOpenProgress * 4}deg) scale(${1 + leafOpenProgress * leaf.scale})`,
-                transition: "transform 0.25s ease-out",
-              }}
-            />
-          ))}
-          <div className="absolute inset-x-[-20%] bottom-[-10%] h-[40vh] sm:h-[45vh] bg-gradient-to-t from-jungle-deep via-black/60 to-transparent" aria-hidden />
-          <div className="absolute inset-x-[-15%] bottom-[-12%] flex justify-center gap-6 sm:gap-10">
-            {Array.from({ length: 3 }).map((_, idx) => (
-              <img
-                key={idx}
-                src={idx % 2 === 0 ? "/leaf-left.svg" : "/leaf-right.svg"}
-                alt="מסך עלים טרופי"
-                className="w-[16rem] sm:w-[18rem] opacity-90 drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
-                style={{
-                  transform: `translateY(${(18 - idx * 6) * (1 - leafOpenProgress)}px) scale(${1.05 + leafOpenProgress * 0.08}) rotate(${idx === 1 ? -6 : 6}deg)`,
-                  transition: "transform 0.25s ease-out, opacity 0.25s ease-out",
-                }}
-              />
-            ))}
-          </div>
+        <div
+          className="pointer-events-none absolute inset-0"
+          aria-hidden
+        >
+          <div className="absolute inset-x-[-20%] bottom-[-10%] h-[40vh] sm:h-[45vh] bg-gradient-to-t from-jungle-deep via-black/60 to-transparent" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(167,255,131,0.12),transparent_32%),radial-gradient(circle_at_80%_20%,rgba(255,255,255,0.12),transparent_30%)]" />
         </div>
         <div className="relative z-10 p-6 max-w-6xl mx-auto flex flex-col items-center gap-6">
           <h1
@@ -319,7 +247,7 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
           <h2 className="text-3xl font-display text-white">למה לבחור ב- Parties 24/7?</h2>
           <p className="text-jungle-text/85 leading-relaxed">
 Parties 24/7 הוא המקום שבו חיי הלילה בישראל מתחברים לנקודה אחת ברורה, פשוטה ונוחה. במקום לבזבז זמן על חיפושים מפוזרים, עמודי אינסטגרם, קבוצות וואטסאפ או המלצות מפה לאוזן – כאן אפשר למצוא מסיבות, אירועים וליינאפים נבחרים מכל רחבי הארץ, עם דגש על תל אביב והמרכז. האתר מרכז מסיבות מיינסטרים, טכנו, טראנס, אירועי סילבסטר, חגים, מסיבות אלכוהול חופשי ואירועים מיוחדים, ומאפשר לבחור את המסיבה שמתאימה בדיוק לסגנון, ליום ולוייב שאתם מחפשים.
-אנחנו עובדים ישירות עם מפיקים, יחסי ציבור ודיג’יים, ומביאים רק אירועים שאנחנו מאמינים בהם – בלי ספאם ובלי עומס מיותר. המטרה שלנו היא לחסוך לכם זמן, להוריד חוסר ודאות, ולתת לכם חוויית גילוי נוחה, מהירה וברורה, שמובילה להחלטה ולקנייה בצורה טבעית. בנוסף, Parties 24/7 מחובר לקהילות חיי לילה, עדכונים שוטפים ותוכן שמגיע מהשטח, כדי שתמיד תהיו עם היד על הדופק ותדעו מה קורה הלילה, מחר ובסוף השבוע. אם אתם מחפשים מסיבות בישראל ולא רוצים לפספס את האירועים החזקים באמת – זה המקום להתחיל בו.            <Link href="/techno-parties" className="text-jungle-accent hover:text-white">
+אנחנו עובדים ישירות עם מפיקים, יחסי ציבור ודיג’יים, ומביאים רק אירועים שאנחנו מאמינים בהם – בלי ספאם ובלי עומס מיותר. המטרה שלנו היא לחסוך לכם זמן, להוריד חוסר ודאות, ולתת לכם חוויית גילוי נוחה, מהירה וברורה, שמובילה להחלטה ולקנייה בצורה טבעית. בנוסף, Parties 24/7 מחובר לקהילות חיי לילה, עדכונים שוטפים ותוכן שמגיע מהשטח, כדי שתמיד תהיו עם היד על הדופק ותדעו מה קורה הלילה, מחר ובסוף השבוע. אם אתם מחפשים מסיבות בישראל ולא רוצים לפספס את האירועים החזקים באמת – זה המקום להתחיל בו.            <Link href="/genre/techno-music" className="text-jungle-accent hover:text-white">
               דף הטכנו
             </Link>
             , את{" "}
@@ -334,12 +262,20 @@ Parties 24/7 הוא המקום שבו חיי הלילה בישראל מתחבר�
           </p>
           <p className="text-jungle-text/80 leading-relaxed">
             קיצורי הדרך בראש העמוד מחברים אתכם למסיבות היום, חמישי ושישי, בעוד עמוד החיפוש המצומצם מציג את כל הקטגוריות החדשות – כולל דפי מועדון ל-
-            <Link href="/echo-club" className="text-jungle-accent hover:text-white">
+            <Link href="/club/echo" className="text-jungle-accent hover:text-white">
               ECHO
-            </Link>{" "}
-            ול-
-            <Link href="/jimmy-who-club" className="text-jungle-accent hover:text-white">
+            </Link>
+            ,
+            <Link href="/club/jimmy-who" className="text-jungle-accent hover:text-white">
               Jimmy Who
+            </Link>
+            ,
+            <Link href="/club/gagarin" className="text-jungle-accent hover:text-white">
+              Gagarin
+            </Link>{" "}
+            ו-
+            <Link href="/club/moon-child" className="text-jungle-accent hover:text-white">
+              Moon Child
             </Link>
             . שמרו את העמוד במועדפים וחזרו מדי שבוע כדי לא לפספס שום רייב.
           </p>
