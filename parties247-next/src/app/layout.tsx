@@ -53,7 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="min-h-screen flex flex-col relative z-10">
             <Header />
             
-            <main className="flex-grow py-8">
+            <main className="flex-grow pb-8">
               {/* Page Transition Wrapper */}
               <div className="page-transition">
                 {children}

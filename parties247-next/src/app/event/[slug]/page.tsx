@@ -120,7 +120,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
   const referralUrl = getReferralUrl(party.originalUrl, party.referralCode);
   const hasLastTickets = party.tags.includes(LAST_TICKETS_TAG);
   const whatsappMessage = encodeURIComponent(`היי, אשמח לשמור כרטיסים ל"${party.name}" ב-${formattedDate}. ${referralUrl}`);
-  const whatsappHref = `https://wa.me/me?text=${whatsappMessage}`;
+  const whatsappHref = `https://wa.me/?text=${whatsappMessage}`;
   // Note: hotNow logic requires fetching carousels. Passing false for now.
   const showDiscountCode = false;
 
@@ -238,7 +238,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
                           href={whatsappHref}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="w-full sm:flex-1 inline-flex items-center justify-center gap-2 rounded-lg border border-green-300/70 bg-green-500/10 px-5 py-4 text-lg font-semibold text-green-100 transition hover:bg-green-500/20"
+                          className="w-full sm:flex-1 inline-flex items-center justify-center gap-3 rounded-lg border border-green-300/70 bg-green-500/10 px-6 py-4 text-2xl sm:text-3xl font-semibold text-green-100 transition hover:bg-green-500/20"
                         >
                           <WhatsAppIcon className="w-5 h-5" />
                           שלחו לי בווטסאפ
