@@ -133,9 +133,13 @@ const EventPage: React.FC = () => {
       return inSameCity || hasSharedTag;
   }).slice(0, 4);
 
-  const partyDate = new Date(party.date);
-  const formattedDate = new Intl.DateTimeFormat('he-IL', { dateStyle: 'full', timeZone: 'Asia/Jerusalem' }).format(partyDate);
-  const formattedTime = new Intl.DateTimeFormat('he-IL', { timeStyle: 'short', timeZone: 'Asia/Jerusalem' }).format(partyDate);
+  const [rawDatePart, rawTimePart] = party.date.split('T');
+  const formattedDate = rawDatePart
+    ? new Intl.DateTimeFormat('he-IL', { dateStyle: 'full' }).format(new Date(rawDatePart))
+    : '';
+  const formattedTime = rawTimePart
+    ? rawTimePart.replace(/Z$/, '').split(/[+-]/)[0].slice(0, 5)
+    : '';
   
   const referralUrl = getReferralUrl(party.originalUrl, party.referralCode);
   const showDiscountCode = party.id ? hotNowPartyIds.has(party.id) : false;
