@@ -84,7 +84,7 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
     <>
       {/* Hero Section */}
       <section
-        className="relative text-center mb-16 -mt-8 h-[70vh] sm:h-[65vh] flex items-center justify-center overflow-hidden bg-jungle-deep"
+        className="relative text-center mb-16 pt-16 md:pt-20 min-h-[78vh] sm:min-h-[75vh] lg:min-h-[85vh] flex items-center justify-center overflow-hidden bg-jungle-deep"
         style={{
           backgroundImage:
             "radial-gradient(circle at 30% 20%, rgba(47, 197, 165, 0.18), transparent 40%), radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.08), transparent 45%)",
@@ -262,12 +262,20 @@ Parties 24/7 הוא המקום שבו חיי הלילה בישראל מתחבר�
           </p>
           <p className="text-jungle-text/80 leading-relaxed">
             קיצורי הדרך בראש העמוד מחברים אתכם למסיבות היום, חמישי ושישי, בעוד עמוד החיפוש המצומצם מציג את כל הקטגוריות החדשות – כולל דפי מועדון ל-
-            <Link href="/echo-club" className="text-jungle-accent hover:text-white">
+            <Link href="/club/echo" className="text-jungle-accent hover:text-white">
               ECHO
-            </Link>{" "}
-            ול-
-            <Link href="/jimmy-who-club" className="text-jungle-accent hover:text-white">
+            </Link>
+            ,
+            <Link href="/club/jimmy-who" className="text-jungle-accent hover:text-white">
               Jimmy Who
+            </Link>
+            ,
+            <Link href="/club/gagarin" className="text-jungle-accent hover:text-white">
+              Gagarin
+            </Link>{" "}
+            ו-
+            <Link href="/club/moon-child" className="text-jungle-accent hover:text-white">
+              Moon Child
             </Link>
             . שמרו את העמוד במועדפים וחזרו מדי שבוע כדי לא לפספס שום רייב.
           </p>

@@ -59,8 +59,10 @@ const styleLinks = [
 ];
 
 const clubLinks = [
-  { title: 'ECHO Club', to: '/echo-club', blurb: 'רחבה דרומית עם טכנו, האוס והופעות לייב.' },
-  { title: 'Jimmy Who', to: '/jimmy-who-club', blurb: 'בר-מועדון תל אביבי עם להיטים ורחבה שמחה.' },
+  { title: 'ECHO Club', to: '/club/echo', blurb: 'רחבה דרומית עם טכנו, האוס והופעות לייב.' },
+  { title: 'Jimmy Who', to: '/club/jimmy-who', blurb: 'בר-מועדון תל אביבי עם להיטים ורחבה שמחה.' },
+  { title: 'Gagarin', to: '/club/gagarin', blurb: 'חלל אנדרגראונד עם במה להופעות חיות וסטים אלקטרוניים.' },
+  { title: 'Moon Child', to: '/club/moon-child', blurb: 'וייב ירח עם קוקטיילים, גרוב מלודי ורחבה אינטימית.' },
 ];
 
 const helperLinks = [
