@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import Link from "next/link";
 import SocialsCta from "@/components/SocialsCta";
 import { createCarouselSlug } from "@/lib/carousels";
@@ -78,57 +78,7 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
     },
   ];
 
-  const [leafOpenProgress, setLeafOpenProgress] = useState(0);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const progress = Math.min(1, window.scrollY / 420);
-      setLeafOpenProgress(progress);
-    };
-
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const leafLayers = [
-    {
-      src: "/leaf-left.svg",
-      className:
-        "absolute left-[-14%] top-[-12%] w-72 sm:w-96 drop-shadow-[0_12px_40px_rgba(0,0,0,0.35)] opacity-95",
-      translateX: -32,
-      translateY: 0,
-      rotate: -8,
-      scale: 0.08,
-    },
-    {
-      src: "/leaf-right.svg",
-      className:
-        "absolute right-[-14%] top-[-10%] w-72 sm:w-96 drop-shadow-[0_12px_40px_rgba(0,0,0,0.35)] opacity-95",
-      translateX: 32,
-      translateY: 0,
-      rotate: 10,
-      scale: 0.08,
-    },
-    {
-      src: "/leaf-left.svg",
-      className:
-        "absolute left-[-6%] bottom-[-12%] w-[22rem] sm:w-[28rem] rotate-3 drop-shadow-[0_16px_50px_rgba(0,0,0,0.45)] opacity-90",
-      translateX: -18,
-      translateY: 18,
-      rotate: -4,
-      scale: 0.12,
-    },
-    {
-      src: "/leaf-right.svg",
-      className:
-        "absolute right-[-10%] bottom-[-16%] w-[24rem] sm:w-[30rem] drop-shadow-[0_16px_50px_rgba(0,0,0,0.45)] opacity-90",
-      translateX: 22,
-      translateY: 22,
-      rotate: 6,
-      scale: 0.1,
-    },
-  ];
 
   return (
     <>
@@ -155,34 +105,12 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
         </picture>
         <div className="absolute inset-0 bg-gradient-to-t from-jungle-deep via-transparent to-jungle-deep/50" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-transparent to-black/60" aria-hidden="true" />
-        <div className="pointer-events-none absolute inset-0">
-          {leafLayers.map((leaf, index) => (
-            <img
-              key={`${leaf.src}-${index}`}
-              src={leaf.src}
-              alt="עיטור עלים טרופי"
-              className={leaf.className}
-              style={{
-                transform: `translate(${leaf.translateX * leafOpenProgress}px, ${leaf.translateY * leafOpenProgress}px) rotate(${leaf.rotate + leafOpenProgress * 4}deg) scale(${1 + leafOpenProgress * leaf.scale})`,
-                transition: "transform 0.25s ease-out",
-              }}
-            />
-          ))}
-          <div className="absolute inset-x-[-20%] bottom-[-10%] h-[40vh] sm:h-[45vh] bg-gradient-to-t from-jungle-deep via-black/60 to-transparent" aria-hidden />
-          <div className="absolute inset-x-[-15%] bottom-[-12%] flex justify-center gap-6 sm:gap-10">
-            {Array.from({ length: 3 }).map((_, idx) => (
-              <img
-                key={idx}
-                src={idx % 2 === 0 ? "/leaf-left.svg" : "/leaf-right.svg"}
-                alt="מסך עלים טרופי"
-                className="w-[16rem] sm:w-[18rem] opacity-90 drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
-                style={{
-                  transform: `translateY(${(18 - idx * 6) * (1 - leafOpenProgress)}px) scale(${1.05 + leafOpenProgress * 0.08}) rotate(${idx === 1 ? -6 : 6}deg)`,
-                  transition: "transform 0.25s ease-out, opacity 0.25s ease-out",
-                }}
-              />
-            ))}
-          </div>
+        <div
+          className="pointer-events-none absolute inset-0"
+          aria-hidden
+        >
+          <div className="absolute inset-x-[-20%] bottom-[-10%] h-[40vh] sm:h-[45vh] bg-gradient-to-t from-jungle-deep via-black/60 to-transparent" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(167,255,131,0.12),transparent_32%),radial-gradient(circle_at_80%_20%,rgba(255,255,255,0.12),transparent_30%)]" />
         </div>
         <div className="relative z-10 p-6 max-w-6xl mx-auto flex flex-col items-center gap-6">
           <h1

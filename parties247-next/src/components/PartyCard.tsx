@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link'
 import { Party } from '../data/types';
+import { LAST_TICKETS_TAG } from '../data/constants';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
 import DiscountCodeReveal from './DiscountCodeReveal';
 
@@ -22,6 +23,7 @@ const PartyCard: React.FC<PartyCardProps> = ({ party, showDiscountCode = false }
   }).format(partyDate);
 
   const getTagColor = (tag: string) => {
+    if (tag === LAST_TICKETS_TAG) return 'bg-red-500/90 text-white';
     if (tag === 'לוהט') return 'bg-jungle-lime/80 text-jungle-deep';
     if (tag === 'ביקוש גבוה') return 'bg-jungle-accent/80 text-jungle-deep';
     if (tag.includes('חינם')) return 'bg-green-500/80 text-white';
@@ -30,6 +32,7 @@ const PartyCard: React.FC<PartyCardProps> = ({ party, showDiscountCode = false }
   };
   
   const renderTagContent = (tag: string) => {
+    if (tag === LAST_TICKETS_TAG) return <>🔥 {tag}</>;
     if (tag === 'לוהט') return <><FireIcon className="w-3.5 h-3.5 ml-1" />{tag}</>;
     if (tag === 'ביקוש גבוה') return <><PartyPopperIcon className="w-3.5 h-3.5 ml-1" />{tag}</>;
     return tag;
