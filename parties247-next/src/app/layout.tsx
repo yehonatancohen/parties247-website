@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import "../styles/tailwind.css"; // Ensure this path is correct
 import Providers from "./providers";
 import SwiperRegister from "../components/SwiperRegister";
-import { Assistant, Secular_One } from "next/font/google";
+import { Assistant, Rubik } from "next/font/google";
 
 // Component Imports
 import Header from '../components/Header';
@@ -22,11 +22,11 @@ const assistant = Assistant({
   variable: "--font-assistant",
 });
 
-const secular = Secular_One({
+const rubik = Rubik({
   subsets: ["latin", "hebrew"],
-  weight: ["400"],
+  weight: ["800"],
   display: "swap",
-  variable: "--font-secular-one",
+  variable: "--font-rubik",
 });
 
 export const metadata: Metadata = {
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="he" dir="rtl" className={`${assistant.variable} ${secular.variable}`}>
+    <html lang="he" dir="rtl" className={`${assistant.variable} ${rubik.variable}`}>
       <body suppressHydrationWarning className="font-sans">
         <SwiperRegister />
         <Providers>
