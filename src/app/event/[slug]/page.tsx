@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPartyBySlug, getParties } from "@/services/api"; // Ensure getParties is exported
 import { Party } from "@/data/types";
+import { BRAND_LOGO_URL } from "@/data/constants";
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon, WhatsAppIcon } from "@/components/Icons"; // Adjust imports
 import ShareButtons from "@/components/ShareButtons"; // Ensure this handles 'use client' internally if it has state
 import DiscountCodeReveal from "@/components/DiscountCodeReveal"; // Ensure this handles 'use client' internally
@@ -80,6 +81,13 @@ async function fetchPartyData(slug: string) {
   }
 }
 
+const getWhatsappOgImage = (imageUrl?: string) => {
+  if (!imageUrl) return BRAND_LOGO_URL;
+  if (imageUrl.includes("_whatsappImage")) return imageUrl;
+  if (imageUrl.includes("_coverImage")) return imageUrl.replace("_coverImage", "_whatsappImage");
+  return imageUrl;
+};
+
 export async function generateMetadata(
   { params }: { params: Promise<{ slug: string }> },
   _parent: ResolvingMetadata,
@@ -89,6 +97,7 @@ export async function generateMetadata(
   
   if (!data?.party) return { title: "אירוע לא נמצא" };
   const { party } = data;
+  const ogImage = getWhatsappOgImage(party.imageUrl);
 
   return {
     title: `${party.name} | Parties 24/7`,
@@ -96,7 +105,7 @@ export async function generateMetadata(
     openGraph: {
       title: party.name,
       description: party.description,
-      images: party.imageUrl ? [{ url: party.imageUrl }] : undefined,
+      images: ogImage ? [{ url: ogImage }] : [{ url: BRAND_LOGO_URL }],
       type: "article",
     },
   };

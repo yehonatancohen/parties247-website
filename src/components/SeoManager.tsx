@@ -17,7 +17,7 @@ const SeoManager: React.FC<SeoManagerProps> = ({
   title,
   description,
   canonicalPath,
-  ogImage = 'https://www.parties247.co.il/preview.jpg',
+  ogImage = BRAND_LOGO_URL,
   ogType = 'website',
   jsonLd,
   alternateLocales,
