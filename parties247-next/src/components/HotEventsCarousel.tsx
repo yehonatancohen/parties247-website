@@ -8,52 +8,6 @@ import { Party } from '../data/types';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
 import { trackPartyRedirect } from '../lib/analytics';
 
-// --- EXACT CSS FROM VITE VERSION ---
-const SSR_SWIPER_STYLES = `
-  swiper-container {
-    display: flex;
-    width: 100%;
-    max-width: none;
-    margin: 0;
-    overflow: hidden;
-    padding: 1.5rem clamp(0.5rem, 3vw, 1.5rem) 2.5rem;
-    box-sizing: border-box;
-  }
-
-  @media (min-width: 768px) {
-    swiper-container {
-      width: 100vw;
-      margin-left: calc(50% - 50vw);
-    }
-  }
-
-  swiper-slide {
-    display: block;
-    flex-shrink: 0;
-    height: auto;
-    width: 94%;
-    margin-inline-end: 18px;
-    backface-visibility: hidden;
-    transform: translate3d(0,0,0);
-  }
-
-  @media (min-width: 480px) {
-    swiper-slide { width: 82%; }
-  }
-
-  @media (min-width: 640px) {
-    swiper-slide { width: 68%; }
-  }
-
-  @media (min-width: 768px) {
-    swiper-slide { width: 60%; }
-  }
-
-  @media (min-width: 1024px) {
-    swiper-slide { width: 50%; }
-  }
-`;
-
 const ArrowLeft: FC<{ className?: string }> = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
@@ -92,18 +46,20 @@ const CarouselPartyCard: FC<{ party: Party; directUrl: string; priority: boolean
       href={directUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="group block outline-none"
+      className="group block outline-none select-none" // Added select-none to prevent dragging image ghost
       onClick={() => trackPartyRedirect(party.id, party.slug)}
+      draggable="false"
     >
-      <div className="relative rounded-xl overflow-hidden shadow-lg transition-all duration-500 ease-in-out border border-wood-brown/50">
+      {/* ADDED: 'subpixel-antialiased' and transform fix for clarity 
+      */}
+      <div className="relative rounded-xl overflow-hidden shadow-lg transition-all duration-500 ease-in-out border border-wood-brown/50 transform-gpu subpixel-antialiased">
         
-        {/* --- USE STANDARD HTML IMG TAG --- */}
-        {/* This creates the exact same DOM structure as Vite, preventing layout shifts */}
         <img
           src={party.imageUrl}
           alt={party.name}
           loading={priority ? "eager" : "lazy"}
           className="w-full aspect-[2/3] object-cover"
+          draggable="false"
         />
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
@@ -159,42 +115,46 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
     setMounted(true);
   }, []);
 
-  const sortedParties = useMemo(() =>
-    [...parties].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
-  [parties]);
-
-  const upcomingParties = useMemo(() =>
-    sortedParties.filter((p) => new Date(p.date) >= new Date()),
-  [sortedParties]);
+  const sortedParties = useMemo(
+    () =>
+      [...parties].sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+      ),
+    [parties]
+  );
 
   const slides = useMemo(() => {
-     const source = upcomingParties.length > 0 ? upcomingParties : sortedParties;
-     if (source.length === 0) return [];
+     if (sortedParties.length === 0) return [];
+     
+     // Matches the loop logic from the previous efficient version
      const minSlides = variant === 'coverflow' ? 12 : 16;
-     const repetitions = Math.ceil(minSlides / source.length);
-     const duplicated = Array.from({ length: repetitions }, () => source).flat();
-     return duplicated.slice(0, Math.max(minSlides, source.length * 2));
-  }, [upcomingParties, sortedParties, variant]);
+     const repetitions = Math.ceil(minSlides / sortedParties.length);
+     const duplicated = Array.from({ length: repetitions }, () => sortedParties).flat();
+     
+     return duplicated.slice(0, Math.max(minSlides, sortedParties.length * 2));
+  }, [sortedParties, variant]);
 
+  // --- RESTORED VITE BREAKPOINTS ---
+  // These allow for bigger slides (fewer slidesPerView) and better scaling
   const BREAKPOINTS = useMemo(() => (
     variant === 'coverflow'
       ? {
-          0:    { slidesPerView: 1.1 },
-          360:  { slidesPerView: 1.2 },
-          480:  { slidesPerView: 1.4 },
-          640:  { slidesPerView: 1.9 },
-          768:  { slidesPerView: 2.2 },
-          1024: { slidesPerView: 2.6 },
-          1440: { slidesPerView: 2.9 },
+          0:    { slidesPerView: 1.6 },
+          360:  { slidesPerView: 1.9 },
+          420:  { slidesPerView: 2.2 },
+          640:  { slidesPerView: 2.8 },
+          768:  { slidesPerView: 3.0 },
+          1024: { slidesPerView: 3.4 },
+          1440: { slidesPerView: 3.8 },
         }
       : {
-          0:    { slidesPerView: 1.25 },
-          360:  { slidesPerView: 1.5 },
-          420:  { slidesPerView: 1.9 },
-          640:  { slidesPerView: 2.3 },
-          768:  { slidesPerView: 2.8 },
-          1024: { slidesPerView: 3.3 },
-          1280: { slidesPerView: 3.8 },
+          0:    { slidesPerView: 1.8 },
+          360:  { slidesPerView: 2.2 },
+          420:  { slidesPerView: 2.6 },
+          640:  { slidesPerView: 3.2 },
+          768:  { slidesPerView: 4.0 },
+          1024: { slidesPerView: 5.0 },
+          1280: { slidesPerView: 6.0 },
         }
   ), [variant]);
 
@@ -204,14 +164,12 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
     
     const commonParams = {
       breakpoints: BREAKPOINTS,
-      spaceBetween: 18,
+      spaceBetween: 12, // Matched Vite (was 18)
       loop: true,
       observer: true,
       observeParents: true,
-      loopAdditionalSlides: Math.max(6, slides.length),
-      
-      // FIX 2: Prevent pixelated text during 3D transform
-      roundLengths: true,
+      loopAdditionalSlides: Math.min(slides.length, 8),
+      roundLengths: true, // Crucial for clear text
       
       navigation: {
         nextEl: `#next-${uniqueId}`,
@@ -220,23 +178,22 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
       watchOverflow: true,
     };
     
+    // --- RESTORED VITE COVERFLOW SETTINGS ---
     const variantParams = variant === 'coverflow' ? {
       effect: 'coverflow',
       centeredSlides: true,
       grabCursor: true,
       autoplay: {
-        delay: 7200,
+        delay: 6500, // Matched Vite (was 7200)
         disableOnInteraction: false,
         pauseOnMouseEnter: true,
       },
       coverflowEffect: {
         rotate: 0,
-        stretch: 28,
-        depth: 80,
+        stretch: 36, // Matched Vite (was 28) - this makes slides overlap less/look bigger
+        depth: 90,   // Matched Vite (was 80)
         modifier: 1,
-        // FIX 3: DISABLE SHADOWS.
-        // This stops the browser from adding the blur filter over your text.
-        slideShadows: false,
+        slideShadows: false, // Keep false for clarity
       },
     } : {
       centeredSlides: false,
@@ -255,9 +212,7 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
 
   return (
     <div className="py-4">
-      <style>{SSR_SWIPER_STYLES}</style>
-      
-      <div className="container mx-auto px-4">
+      <div className="mx-auto w-full max-w-[min(2200px,calc(100vw-1.25rem))] px-4 sm:px-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-3xl font-display text-white">{title}</h2>
           <div className="flex items-center gap-4">
@@ -270,7 +225,7 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
         </div>
       </div>
       
-      <div className={carouselClasses}>
+      <div className={`${carouselClasses} mx-auto w-full max-w-[min(2200px,calc(100vw-1.25rem))]`}>
         {React.createElement(
           'swiper-container',
           { ref: swiperElRef, init: 'false' },

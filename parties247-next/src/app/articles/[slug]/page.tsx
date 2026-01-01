@@ -30,10 +30,11 @@ export async function generateStaticParams() {
   return articles.map((article) => ({ slug: encodeURIComponent(article.slug) }));
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const decodedSlug = decodeURIComponent(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const decodedSlug = decodeURIComponent(slug);
   const article = articles.find((entry) =>
-    entry.slug === decodedSlug || encodeURIComponent(entry.slug) === params.slug
+    entry.slug === decodedSlug || encodeURIComponent(entry.slug) === slug
   );
 
   if (!article) {
@@ -57,25 +58,29 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function ArticlePage({ params }: { params: { slug: string } }) {
-  const decodedSlug = decodeURIComponent(params.slug);
-  const article = articles.find((entry) =>
-    entry.slug === decodedSlug || encodeURIComponent(entry.slug) === params.slug
+export default async function ArticlePage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const decodedSlug = decodeURIComponent(slug);
+
+  const article = articles.find(
+    (entry) => entry.slug === decodedSlug || encodeURIComponent(entry.slug) === slug
   );
 
-  if (!article) {
-    notFound();
-  }
+  if (!article) notFound();
 
   return (
     <main className="container mx-auto max-w-4xl px-4 py-12 space-y-8">
       <header className="space-y-4 text-center">
         <p className="text-sm uppercase tracking-wide text-jungle-text/60">המגזין</p>
-        <h1 className="text-3xl md:text-4xl font-display text-white">{article?.title}</h1>
-        <p className="text-jungle-text/80 text-base md:text-lg">{article?.summary}</p>
+        <h1 className="text-3xl md:text-4xl font-display text-white">{article.title}</h1>
+        <p className="text-jungle-text/80 text-base md:text-lg">{article.summary}</p>
       </header>
 
-      {article?.imageUrl && (
+      {article.imageUrl && (
         <div className="overflow-hidden rounded-2xl border border-white/10 shadow-xl">
           <img
             src={article.imageUrl}
@@ -88,7 +93,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
       )}
 
       <article className="space-y-4 rounded-2xl border border-white/10 bg-white/5 p-6 shadow">
-        {renderContent(article?.content || "")}
+        {renderContent(article.content || "")}
       </article>
 
       <div className="text-center">
