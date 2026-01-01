@@ -22,14 +22,21 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
       initialCarousels
         .map((carousel) => {
           const targetIds = carousel.partyIds.map((_id: any) => String(_id));
-          
-          const carouselParties = initialParties.filter((p) => 
+
+          const carouselParties = initialParties.filter((p) =>
             targetIds.includes(String(p.id))
           );
 
+          const fillerParties = initialParties
+            .filter((p) => !targetIds.includes(String(p.id)))
+            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+            .slice(0, Math.max(0, 12 - carouselParties.length));
+
+          const hydratedParties = [...carouselParties, ...fillerParties];
+
           return {
             ...carousel,
-            parties: carouselParties,
+            parties: hydratedParties,
             viewAllLink: `/carousels/${createCarouselSlug(carousel.title)}`,
           };
         })

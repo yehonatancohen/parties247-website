@@ -16,7 +16,7 @@ const SSR_SWIPER_STYLES = `
     max-width: none;
     margin: 0;
     overflow: hidden;
-    padding: 1.25rem clamp(0.25rem, 2vw, 1rem) 2rem;
+    padding: 1.5rem clamp(0.5rem, 3vw, 1.5rem) 2.5rem;
     box-sizing: border-box;
   }
 
@@ -27,30 +27,30 @@ const SSR_SWIPER_STYLES = `
     }
   }
 
-    swiper-slide {
-      display: block;
-      flex-shrink: 0;
-      height: auto;
-      width: 88%;
-      margin-inline-end: 14px;
-      backface-visibility: hidden;
-      transform: translate3d(0,0,0);
-    }
+  swiper-slide {
+    display: block;
+    flex-shrink: 0;
+    height: auto;
+    width: 94%;
+    margin-inline-end: 18px;
+    backface-visibility: hidden;
+    transform: translate3d(0,0,0);
+  }
 
   @media (min-width: 480px) {
-    swiper-slide { width: 70%; }
+    swiper-slide { width: 82%; }
   }
 
   @media (min-width: 640px) {
-    swiper-slide { width: 52%; }
+    swiper-slide { width: 68%; }
   }
 
   @media (min-width: 768px) {
-    swiper-slide { width: 46%; }
+    swiper-slide { width: 60%; }
   }
 
   @media (min-width: 1024px) {
-    swiper-slide { width: 38%; }
+    swiper-slide { width: 50%; }
   }
 `;
 
@@ -170,7 +170,7 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
   const slides = useMemo(() => {
      const source = upcomingParties.length > 0 ? upcomingParties : sortedParties;
      if (source.length === 0) return [];
-     const minSlides = variant === 'coverflow' ? 8 : 12;
+     const minSlides = variant === 'coverflow' ? 12 : 16;
      const repetitions = Math.ceil(minSlides / source.length);
      const duplicated = Array.from({ length: repetitions }, () => source).flat();
      return duplicated.slice(0, Math.max(minSlides, source.length * 2));
@@ -179,22 +179,22 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
   const BREAKPOINTS = useMemo(() => (
     variant === 'coverflow'
       ? {
-          0:    { slidesPerView: 1.05 },
+          0:    { slidesPerView: 1.1 },
           360:  { slidesPerView: 1.2 },
-          480:  { slidesPerView: 1.45 },
-          640:  { slidesPerView: 2.1 },
-          768:  { slidesPerView: 2.5 },
-          1024: { slidesPerView: 3.0 },
-          1440: { slidesPerView: 3.4 },
+          480:  { slidesPerView: 1.4 },
+          640:  { slidesPerView: 1.9 },
+          768:  { slidesPerView: 2.2 },
+          1024: { slidesPerView: 2.6 },
+          1440: { slidesPerView: 2.9 },
         }
       : {
-          0:    { slidesPerView: 1.4 },
-          360:  { slidesPerView: 1.8 },
-          420:  { slidesPerView: 2.2 },
-          640:  { slidesPerView: 2.8 },
-          768:  { slidesPerView: 3.4 },
-          1024: { slidesPerView: 4.0 },
-          1280: { slidesPerView: 4.6 },
+          0:    { slidesPerView: 1.25 },
+          360:  { slidesPerView: 1.5 },
+          420:  { slidesPerView: 1.9 },
+          640:  { slidesPerView: 2.3 },
+          768:  { slidesPerView: 2.8 },
+          1024: { slidesPerView: 3.3 },
+          1280: { slidesPerView: 3.8 },
         }
   ), [variant]);
 
@@ -204,11 +204,11 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
     
     const commonParams = {
       breakpoints: BREAKPOINTS,
-      spaceBetween: 12,
+      spaceBetween: 18,
       loop: true,
       observer: true,
       observeParents: true,
-      loopAdditionalSlides: 4,
+      loopAdditionalSlides: Math.max(6, slides.length),
       
       // FIX 2: Prevent pixelated text during 3D transform
       roundLengths: true,
@@ -225,14 +225,14 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
       centeredSlides: true,
       grabCursor: true,
       autoplay: {
-        delay: 6500,
+        delay: 7200,
         disableOnInteraction: false,
         pauseOnMouseEnter: true,
       },
       coverflowEffect: {
         rotate: 0,
-        stretch: 22,
-        depth: 60,
+        stretch: 28,
+        depth: 80,
         modifier: 1,
         // FIX 3: DISABLE SHADOWS.
         // This stops the browser from adding the blur filter over your text.

@@ -27,12 +27,14 @@ const renderContent = (content: string) => {
 };
 
 export async function generateStaticParams() {
-  return articles.map((article) => ({ slug: article.slug }));
+  return articles.map((article) => ({ slug: encodeURIComponent(article.slug) }));
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const decodedSlug = decodeURIComponent(params.slug);
-  const article = articles.find((entry) => entry.slug === decodedSlug);
+  const article = articles.find((entry) =>
+    entry.slug === decodedSlug || encodeURIComponent(entry.slug) === params.slug
+  );
 
   if (!article) {
     return {
@@ -45,7 +47,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     title: `${article.title} | המגזין של Parties 24/7`,
     description: article.summary,
     alternates: {
-      canonical: `${BASE_URL}/articles/${article.slug}`,
+      canonical: `${BASE_URL}/articles/${encodeURIComponent(article.slug)}`,
     },
     openGraph: {
       title: `${article.title} | Parties 24/7`,
@@ -57,7 +59,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 
 export default async function ArticlePage({ params }: { params: { slug: string } }) {
   const decodedSlug = decodeURIComponent(params.slug);
-  const article = articles.find((entry) => entry.slug === decodedSlug);
+  const article = articles.find((entry) =>
+    entry.slug === decodedSlug || encodeURIComponent(entry.slug) === params.slug
+  );
 
   if (!article) {
     notFound();
