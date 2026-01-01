@@ -5,6 +5,7 @@ import { Metadata } from 'next';
 import { createCarouselSlug } from '@/lib/carousels';
 import { getCarousels } from '@/services/api';
 import SmoothScrollAnchors from '@/components/SmoothScrollAnchors';
+import BackButton from '@/components/BackButton';
 
 // 1. Force Dynamic Rendering
 // This ensures the server builds this page fresh on every request, 
@@ -134,7 +135,10 @@ export default async function PartyDiscoveryPage() {
   return (
     <div id="top" className="min-h-screen bg-gradient-to-b from-jungle-deep via-[#0c1713] to-black text-white scroll-smooth">
       <SmoothScrollAnchors />
-      <div className="container mx-auto px-4 pb-16">
+      <div className="container mx-auto px-4 pb-16 pt-14 md:pt-16">
+        <div className="mb-6 flex justify-start">
+          <BackButton fallbackHref="/" label="חזרה" />
+        </div>
         {/* Header Section */}
         <div className="max-w-6xl mx-auto text-center mb-12">
           <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-jungle-surface/80 via-emerald-900/35 to-jungle-deep/70 px-6 py-10 shadow-[0_15px_60px_rgba(0,0,0,0.35)]">

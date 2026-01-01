@@ -1,4 +1,4 @@
-import React from 'react';
+import Image from "next/image";
 import Link from 'next/link';
 import { articles } from '../../data/articles'; 
 import { BASE_URL } from '../../data/constants';
@@ -30,27 +30,32 @@ export default function ArticlesIndexPage() {
             key={article.slug} 
             className="bg-jungle-surface rounded-xl overflow-hidden border border-wood-brown/30 hover:border-jungle-accent transition-all duration-300 flex flex-col"
           >
-            <Link href={`/articles/${article.slug}`} className="block h-48 overflow-hidden">
-              <img
+            <Link
+              href={`/articles/${encodeURIComponent(article.slug)}`}
+              className="relative block h-48 overflow-hidden" 
+            >
+              <Image
                 src={article.imageUrl}
                 alt={article.title}
-                loading={index < 3 ? "eager" : "lazy"}
-                decoding="async"
-                className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                quality={40}
+                priority={index < 3}
+                className="object-cover transition-transform duration-500 hover:scale-105"
               />
             </Link>
 
             <div className="p-6 flex flex-col flex-grow">
               <h2 className="text-xl font-display text-white mb-3">
-                <Link href={`/articles/${article.slug}`} className="hover:text-jungle-accent transition-colors">
+                <Link href={`/articles/${encodeURIComponent(article.slug)}`} className="hover:text-jungle-accent transition-colors">
                   {article.title}
                 </Link>
               </h2>
               <p className="text-jungle-text/80 text-sm mb-4 line-clamp-3">
                 {article.summary}
               </p>
-              <Link 
-                href={`/articles/${article.slug}`}
+              <Link
+                href={`/articles/${encodeURIComponent(article.slug)}`}
                 className="inline-block text-jungle-accent font-semibold hover:text-white transition-colors mt-auto"
               >
                 קרא עוד &larr;

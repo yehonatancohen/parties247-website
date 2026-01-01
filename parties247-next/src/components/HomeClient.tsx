@@ -22,14 +22,21 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
       initialCarousels
         .map((carousel) => {
           const targetIds = carousel.partyIds.map((_id: any) => String(_id));
-          
-          const carouselParties = initialParties.filter((p) => 
+
+          const carouselParties = initialParties.filter((p) =>
             targetIds.includes(String(p.id))
           );
 
+          const fillerParties = initialParties
+            .filter((p) => !targetIds.includes(String(p.id)))
+            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+            .slice(0, Math.max(0, 12 - carouselParties.length));
+
+          const hydratedParties = [...carouselParties, ...fillerParties];
+
           return {
             ...carousel,
-            parties: carouselParties,
+            parties: hydratedParties,
             viewAllLink: `/carousels/${createCarouselSlug(carousel.title)}`,
           };
         })
@@ -136,13 +143,27 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
             >
               <span>צפו בכל האירועים</span>
             </Link>
+            <Link
+              href="#hot-now-carousels"
+              className="inline-flex items-center gap-2 rounded-full border border-white/20 text-white/80 px-4 py-2 text-sm backdrop-blur hover:text-white hover:border-jungle-accent transition"
+              scroll={false}
+              onClick={(event) => {
+                event.preventDefault();
+                const target = document.getElementById("hot-now-carousels");
+                if (target) {
+                  target.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+              }}
+            >
+              <span>למסיבות החמות</span>
+            </Link>
           </div>
         </div>
       </section>
 
       {/* Carousels Section */}
-      <div className="space-y-16">
-        
+      <div id="hot-now-carousels" className="space-y-16 scroll-mt-28">
+
         {carouselsWithParties.map((carousel, index) => (
           <React.Fragment key={carousel.id}>
             {/* Render ALL carousels with SSR. 

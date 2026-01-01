@@ -22,9 +22,14 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'i.ibb.co',
+      },
+      {
+        protocol: 'https',
         hostname: 'static.vecteezy.com',
       }
     ],
+    qualities: [25, 40, 50, 75],
   },
 
   // 2. Configure Hebrew URL Rewrites
