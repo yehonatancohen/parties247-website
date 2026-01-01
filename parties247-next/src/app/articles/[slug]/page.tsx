@@ -31,8 +31,8 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const { slug } = await params;
-  const article = articles.find((entry) => entry.slug === slug);
+  const decodedSlug = decodeURIComponent(params.slug);
+  const article = articles.find((entry) => entry.slug === decodedSlug);
 
   if (!article) {
     return {
@@ -56,8 +56,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 export default async function ArticlePage({ params }: { params: { slug: string } }) {
-  const { slug } = await params;
-  const article = articles.find((entry) => entry.slug === slug);
+  const decodedSlug = decodeURIComponent(params.slug);
+  const article = articles.find((entry) => entry.slug === decodedSlug);
 
   if (!article) {
     notFound();

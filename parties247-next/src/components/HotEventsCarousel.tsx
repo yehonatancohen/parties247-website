@@ -16,7 +16,7 @@ const SSR_SWIPER_STYLES = `
     max-width: none;
     margin: 0;
     overflow: hidden;
-    padding: 0.75rem clamp(0.5rem, 3vw, 1.5rem) 1.5rem;
+    padding: 1.25rem clamp(0.25rem, 2vw, 1rem) 2rem;
     box-sizing: border-box;
   }
 
@@ -27,30 +27,30 @@ const SSR_SWIPER_STYLES = `
     }
   }
 
-  swiper-slide {
-    display: block;
-    flex-shrink: 0;
-    height: auto;
-    width: 78%;
-    margin-inline-end: 14px;
-    backface-visibility: hidden;
-    transform: translate3d(0,0,0);
-  }
+    swiper-slide {
+      display: block;
+      flex-shrink: 0;
+      height: auto;
+      width: 88%;
+      margin-inline-end: 14px;
+      backface-visibility: hidden;
+      transform: translate3d(0,0,0);
+    }
 
   @media (min-width: 480px) {
-    swiper-slide { width: 62%; }
+    swiper-slide { width: 70%; }
   }
 
   @media (min-width: 640px) {
-    swiper-slide { width: 38%; }
+    swiper-slide { width: 52%; }
   }
 
   @media (min-width: 768px) {
-    swiper-slide { width: 32%; }
+    swiper-slide { width: 46%; }
   }
 
   @media (min-width: 1024px) {
-    swiper-slide { width: 28%; }
+    swiper-slide { width: 38%; }
   }
 `;
 
@@ -159,39 +159,42 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
     setMounted(true);
   }, []);
 
-  const upcomingParties = useMemo(() => 
-      parties
-      .filter(p => new Date(p.date) >= new Date())
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
+  const sortedParties = useMemo(() =>
+    [...parties].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
   [parties]);
 
+  const upcomingParties = useMemo(() =>
+    sortedParties.filter((p) => new Date(p.date) >= new Date()),
+  [sortedParties]);
+
   const slides = useMemo(() => {
-     if (upcomingParties.length === 0) return [];
+     const source = upcomingParties.length > 0 ? upcomingParties : sortedParties;
+     if (source.length === 0) return [];
      const minSlides = variant === 'coverflow' ? 8 : 12;
-     const repetitions = Math.ceil(minSlides / upcomingParties.length);
-     const duplicated = Array.from({ length: repetitions }, () => upcomingParties).flat();
-     return duplicated.slice(0, Math.max(minSlides, upcomingParties.length * 2));
-  }, [upcomingParties, variant]);
+     const repetitions = Math.ceil(minSlides / source.length);
+     const duplicated = Array.from({ length: repetitions }, () => source).flat();
+     return duplicated.slice(0, Math.max(minSlides, source.length * 2));
+  }, [upcomingParties, sortedParties, variant]);
 
   const BREAKPOINTS = useMemo(() => (
     variant === 'coverflow'
       ? {
-          0:    { slidesPerView: 1.15 },
-          360:  { slidesPerView: 1.3 },
-          480:  { slidesPerView: 1.6 },
-          640:  { slidesPerView: 2.4 },
-          768:  { slidesPerView: 2.9 },
-          1024: { slidesPerView: 3.3 },
-          1440: { slidesPerView: 3.7 },
+          0:    { slidesPerView: 1.05 },
+          360:  { slidesPerView: 1.2 },
+          480:  { slidesPerView: 1.45 },
+          640:  { slidesPerView: 2.1 },
+          768:  { slidesPerView: 2.5 },
+          1024: { slidesPerView: 3.0 },
+          1440: { slidesPerView: 3.4 },
         }
       : {
-          0:    { slidesPerView: 1.8 },
-          360:  { slidesPerView: 2.2 },
-          420:  { slidesPerView: 2.6 },
-          640:  { slidesPerView: 3.2 },
-          768:  { slidesPerView: 4.0 },
-          1024: { slidesPerView: 5.0 },
-          1280: { slidesPerView: 6.0 },
+          0:    { slidesPerView: 1.4 },
+          360:  { slidesPerView: 1.8 },
+          420:  { slidesPerView: 2.2 },
+          640:  { slidesPerView: 2.8 },
+          768:  { slidesPerView: 3.4 },
+          1024: { slidesPerView: 4.0 },
+          1280: { slidesPerView: 4.6 },
         }
   ), [variant]);
 

@@ -139,6 +139,14 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
             <Link
               href="#hot-now-carousels"
               className="inline-flex items-center gap-2 rounded-full border border-white/20 text-white/80 px-4 py-2 text-sm backdrop-blur hover:text-white hover:border-jungle-accent transition"
+              scroll={false}
+              onClick={(event) => {
+                event.preventDefault();
+                const target = document.getElementById("hot-now-carousels");
+                if (target) {
+                  target.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+              }}
             >
               <span>למסיבות החמות</span>
             </Link>
