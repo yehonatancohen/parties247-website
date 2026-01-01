@@ -36,6 +36,11 @@ export const metadata: Metadata = {
   },
   description: "Find parties and nightlife events in Israel.",
   metadataBase: new URL("https://www.parties247.co.il"),
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
