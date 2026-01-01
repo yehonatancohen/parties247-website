@@ -4,6 +4,7 @@ import "../styles/tailwind.css"; // Ensure this path is correct
 import Providers from "./providers";
 import SwiperRegister from "../components/SwiperRegister";
 import { Assistant, Rubik } from "next/font/google";
+import { BASE_URL, BRAND_LOGO_URL } from "@/data/constants";
 
 // Component Imports
 import Header from '../components/Header';
@@ -35,11 +36,21 @@ export const metadata: Metadata = {
     template: "%s | Parties247",
   },
   description: "Find parties and nightlife events in Israel.",
-  metadataBase: new URL("https://www.parties247.co.il"),
+  metadataBase: new URL(BASE_URL),
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
     apple: "/favicon.svg",
+  },
+  openGraph: {
+    siteName: "Parties 24/7",
+    type: "website",
+    images: [
+      {
+        url: BRAND_LOGO_URL,
+        alt: "Parties 24/7 logo",
+      },
+    ],
   },
 };
 
