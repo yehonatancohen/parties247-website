@@ -1,16 +1,13 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    './index.html',
-    './index.tsx',
-    './App.tsx',
-    './components/**/*.{ts,tsx}',
-    './pages/**/*.{ts,tsx}',
-    './hooks/**/*.{ts,tsx}',
-    './lib/**/*.{ts,tsx}',
-    './data/**/*.{ts,tsx}',
-    './services/**/*.{ts,tsx}',
-    './static-render/**/*.{ts,tsx}',
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}", 
+    "./src/hooks/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/lib/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/data/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/services/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
@@ -23,8 +20,8 @@ module.exports = {
         'wood-brown': '#4d3b2a',
       },
       fontFamily: {
-        sans: ['"Assistant"', 'sans-serif'],
-        display: ['"Secular One"', 'sans-serif'],
+        sans: ['var(--font-assistant)', '"Assistant"', 'sans-serif'],
+        display: ['var(--font-rubik)', '"Rubik"', 'sans-serif'],
       },
       boxShadow: {
         'jungle-glow':
