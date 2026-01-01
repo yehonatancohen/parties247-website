@@ -1,30 +1,52 @@
 import { notFound } from 'next/navigation';
+import { Metadata } from 'next';
 
 type Props = {
   params: Promise<{ path: string[] }>;
 };
 
-export async function generateMetadata({ params }: Props) {
+const SITE_NAME = "Parties 24/7";
+const DEFAULT_TITLE = "כרטיסים למסיבות ופסטיבלים";
+const DEFAULT_DESCRIPTION = "פורטל המסיבות והבילויים הגדול בישראל. הזמנת כרטיסים לאירועים הכי שווים.";
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const slug = ((await params).path ?? []).join('/');
 
-  const res = await fetch(
-    `${process.env.API_URL}/seo?path=${slug}`,
-    { cache: 'no-store' }
-  );
+  try {
+    const res = await fetch(
+      `${process.env.API_URL}/page?path=${slug}`,
+      { cache: 'no-store' } 
+    );
 
-  if (!res.ok) return {};
+    if (!res.ok) {
+      return {
+        title: `${DEFAULT_TITLE} | ${SITE_NAME}`,
+        description: DEFAULT_DESCRIPTION,
+      };
+    }
 
-  const seo = await res.json();
+    const data = await res.json();
 
-  return {
-    title: seo.title,
-    description: seo.description,
-    openGraph: {
-      title: seo.title,
-      description: seo.description,
-      images: [seo.image],
-    },
-  };
+    const pageTitle = data.h1 ? `${data.h1} | ${SITE_NAME}` : `${DEFAULT_TITLE} | ${SITE_NAME}`;
+
+    return {
+      title: pageTitle,
+      description: DEFAULT_DESCRIPTION,
+      openGraph: {
+        title: pageTitle,
+        description: DEFAULT_DESCRIPTION,
+        url: `https://www.parties247.co.il/${slug}`,
+        siteName: SITE_NAME,
+        locale: 'he_IL',
+        type: 'website',
+      },
+    };
+  } catch (error) {
+    return {
+      title: `${DEFAULT_TITLE} | ${SITE_NAME}`,
+      description: DEFAULT_DESCRIPTION,
+    };
+  }
 }
 
 export default async function Page({ params }: Props) {
