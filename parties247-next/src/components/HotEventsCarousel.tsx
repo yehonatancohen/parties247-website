@@ -12,37 +12,28 @@ import { trackPartyRedirect } from '../lib/analytics';
 const SSR_SWIPER_STYLES = `
   swiper-container {
     display: flex;
-    width: 100%;
-    max-width: min(1800px, 96vw);
+    width: min(2200px, calc(100vw - clamp(1rem, 4vw, 3rem)));
     margin: 0 auto;
     overflow: hidden;
-    padding: 0.75rem clamp(0.5rem, 4vw, 2rem) 1.5rem;
+    padding: clamp(0.5rem, 2vw, 1.25rem) clamp(0.5rem, 3vw, 2.5rem) clamp(1rem, 3vw, 2rem);
   }
 
   swiper-slide {
     display: block;
     flex-shrink: 0;
     height: auto;
-    width: 78%;
-    margin-inline-end: 14px;
+    width: clamp(280px, 32vw, 420px);
+    margin-inline-end: 18px;
     backface-visibility: hidden;
     transform: translate3d(0,0,0);
   }
 
-  @media (min-width: 480px) {
-    swiper-slide { width: 62%; }
-  }
-
-  @media (min-width: 640px) {
-    swiper-slide { width: 38%; }
-  }
-
   @media (min-width: 768px) {
-    swiper-slide { width: 32%; }
+    swiper-slide { width: clamp(260px, 24vw, 360px); }
   }
 
-  @media (min-width: 1024px) {
-    swiper-slide { width: 28%; }
+  @media (min-width: 1280px) {
+    swiper-slide { width: clamp(260px, 20vw, 340px); }
   }
 `;
 
@@ -134,36 +125,42 @@ interface PartyCarouselProps {
   priority?: boolean;
 }
 
-const PartyCarousel: React.FC<PartyCarouselProps> = ({ 
-    title, 
-    parties, 
-    viewAllLink, 
+const PartyCarousel: React.FC<PartyCarouselProps> = ({
+    title,
+    parties,
+    viewAllLink,
     variant = 'coverflow',
-    priority = false 
+    priority = false
 }) => {
   const swiperElRef = useRef<any>(null);
-  const rawId = useId(); 
-  const uniqueId = `carousel-${rawId.replace(/:/g, '')}`; 
+  const rawId = useId();
+  const uniqueId = `carousel-${rawId.replace(/:/g, '')}`;
   const [mounted, setMounted] = useState(false);
+  const hasRegistered = useRef(false);
 
   useEffect(() => {
-    register();
+    if (!hasRegistered.current) {
+      register();
+      hasRegistered.current = true;
+    }
     setMounted(true);
   }, []);
 
-  const upcomingParties = useMemo(() => 
-      parties
-      .filter(p => new Date(p.date) >= new Date())
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
-  [parties]);
+  const sortedParties = useMemo(
+    () =>
+      [...parties].sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+      ),
+    [parties]
+  );
 
   const slides = useMemo(() => {
-     if (upcomingParties.length === 0) return [];
+     if (sortedParties.length === 0) return [];
      const minSlides = variant === 'coverflow' ? 8 : 12;
-     const repetitions = Math.ceil(minSlides / upcomingParties.length);
-     const duplicated = Array.from({ length: repetitions }, () => upcomingParties).flat();
-     return duplicated.slice(0, Math.max(minSlides, upcomingParties.length * 2));
-  }, [upcomingParties, variant]);
+     const repetitions = Math.ceil(minSlides / sortedParties.length);
+     const duplicated = Array.from({ length: repetitions }, () => sortedParties).flat();
+     return duplicated.slice(0, Math.max(minSlides, sortedParties.length * 2));
+  }, [sortedParties, variant]);
 
   const BREAKPOINTS = useMemo(() => (
     variant === 'coverflow'
@@ -193,11 +190,11 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
     
     const commonParams = {
       breakpoints: BREAKPOINTS,
-      spaceBetween: 12,
-      loop: true,
+      spaceBetween: 16,
+      loop: slides.length > 2,
       observer: true,
       observeParents: true,
-      loopAdditionalSlides: 4,
+      loopAdditionalSlides: Math.min(slides.length, 8),
       
       // FIX 2: Prevent pixelated text during 3D transform
       roundLengths: true,
@@ -245,8 +242,8 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
   return (
     <div className="py-4">
       <style>{SSR_SWIPER_STYLES}</style>
-      
-      <div className="container mx-auto px-4">
+
+      <div className="mx-auto w-full max-w-[min(2200px,calc(100vw-1.25rem))] px-4 sm:px-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-3xl font-display text-white">{title}</h2>
           <div className="flex items-center gap-4">
@@ -259,7 +256,7 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
         </div>
       </div>
       
-      <div className={carouselClasses}>
+      <div className={`${carouselClasses} mx-auto w-full max-w-[min(2200px,calc(100vw-1.25rem))]`}>
         {React.createElement(
           'swiper-container',
           { ref: swiperElRef, init: 'false' },
