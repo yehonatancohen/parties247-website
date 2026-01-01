@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import PartyGrid from "@/components/PartyGrid";
 import { createCarouselSlug } from "@/lib/carousels";
 import { getCarousels, getParties } from "@/services/api";
+import BackButton from "@/components/BackButton";
 
 export const revalidate = 300;
 
@@ -50,6 +51,10 @@ export default async function CityPage({ params }: { params: { city: string } })
 
   return (
     <div className="space-y-10">
+      <div className="container mx-auto px-4 pt-6 md:pt-8">
+        <BackButton fallbackHref="/party-discovery" label="חזרה לעמוד החיפוש" />
+      </div>
+
       <PartyGrid
         parties={cityParties}
         hotPartyIds={Array.from(new Set(hotNowCarousel?.partyIds || []))}

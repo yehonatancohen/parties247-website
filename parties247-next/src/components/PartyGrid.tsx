@@ -111,7 +111,7 @@ export default function PartyGrid({
   };
 
   return (
-    <div id="party-grid-container" className="container mx-auto px-4">
+    <div id="party-grid-container" className="container mx-auto px-4 pt-10 md:pt-14">
       {(title || description) && (
         <div className="text-center mb-6">
           {title && <h1 className="text-3xl md:text-4xl font-display text-white mb-2">{title}</h1>}

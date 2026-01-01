@@ -13,10 +13,18 @@ const SSR_SWIPER_STYLES = `
   swiper-container {
     display: flex;
     width: 100%;
-    max-width: min(1800px, 96vw);
-    margin: 0 auto;
+    max-width: none;
+    margin: 0;
     overflow: hidden;
-    padding: 0.75rem clamp(0.5rem, 4vw, 2rem) 1.5rem;
+    padding: 0.75rem clamp(0.5rem, 3vw, 1.5rem) 1.5rem;
+    box-sizing: border-box;
+  }
+
+  @media (min-width: 768px) {
+    swiper-container {
+      width: 100vw;
+      margin-left: calc(50% - 50vw);
+    }
   }
 
   swiper-slide {

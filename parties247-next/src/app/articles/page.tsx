@@ -30,7 +30,7 @@ export default function ArticlesIndexPage() {
             key={article.slug} 
             className="bg-jungle-surface rounded-xl overflow-hidden border border-wood-brown/30 hover:border-jungle-accent transition-all duration-300 flex flex-col"
           >
-            <Link href={`/articles/${article.slug}`} className="block h-48 overflow-hidden">
+            <Link href={`/articles/${encodeURIComponent(article.slug)}`} className="block h-48 overflow-hidden">
               <img
                 src={article.imageUrl}
                 alt={article.title}
@@ -42,15 +42,15 @@ export default function ArticlesIndexPage() {
 
             <div className="p-6 flex flex-col flex-grow">
               <h2 className="text-xl font-display text-white mb-3">
-                <Link href={`/articles/${article.slug}`} className="hover:text-jungle-accent transition-colors">
+                <Link href={`/articles/${encodeURIComponent(article.slug)}`} className="hover:text-jungle-accent transition-colors">
                   {article.title}
                 </Link>
               </h2>
               <p className="text-jungle-text/80 text-sm mb-4 line-clamp-3">
                 {article.summary}
               </p>
-              <Link 
-                href={`/articles/${article.slug}`}
+              <Link
+                href={`/articles/${encodeURIComponent(article.slug)}`}
                 className="inline-block text-jungle-accent font-semibold hover:text-white transition-colors mt-auto"
               >
                 קרא עוד &larr;

@@ -136,13 +136,19 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
             >
               <span>צפו בכל האירועים</span>
             </Link>
+            <Link
+              href="#hot-now-carousels"
+              className="inline-flex items-center gap-2 rounded-full border border-white/20 text-white/80 px-4 py-2 text-sm backdrop-blur hover:text-white hover:border-jungle-accent transition"
+            >
+              <span>למסיבות החמות</span>
+            </Link>
           </div>
         </div>
       </section>
 
       {/* Carousels Section */}
-      <div className="space-y-16">
-        
+      <div id="hot-now-carousels" className="space-y-16 scroll-mt-28">
+
         {carouselsWithParties.map((carousel, index) => (
           <React.Fragment key={carousel.id}>
             {/* Render ALL carousels with SSR. 
