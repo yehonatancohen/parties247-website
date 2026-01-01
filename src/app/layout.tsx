@@ -37,12 +37,9 @@ export const metadata: Metadata = {
   description: "Find parties and nightlife events in Israel.",
   metadataBase: new URL("https://www.parties247.co.il"),
   icons: {
-    icon: [
-      {
-        url: "https://vjkiztnx7gionfos.public.blob.vercel-storage.com/Partieslogo.PNG",
-        type: "image/png",
-      },
-    ],
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
   },
 };
 
