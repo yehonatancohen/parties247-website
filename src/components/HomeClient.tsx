@@ -17,6 +17,17 @@ interface HomeClientProps {
 
 // --- Main Component ---
 export default function HomeClient({ initialParties = [], initialCarousels = [] }: HomeClientProps) {
+  const ensureMinimumParties = (parties: any[], minimum = 12) => {
+    if (parties.length === 0) return parties;
+
+    const duplicated = [...parties];
+    while (duplicated.length < minimum) {
+      duplicated.push(...parties.slice(0, minimum - duplicated.length));
+    }
+
+    return duplicated;
+  };
+
   const carouselsWithParties = useMemo(
     () =>
       initialCarousels
@@ -32,7 +43,10 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
             .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
             .slice(0, Math.max(0, 12 - carouselParties.length));
 
-          const hydratedParties = [...carouselParties, ...fillerParties];
+          const hydratedParties = ensureMinimumParties(
+            [...carouselParties, ...fillerParties],
+            12
+          );
 
           return {
             ...carousel,
