@@ -161,6 +161,11 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
   useEffect(() => {
     const swiperEl = swiperElRef.current;
     if (!swiperEl || !mounted || slides.length === 0) return;
+
+    // Keep a generous buffer of cloned slides so the loop never shows gaps
+    // or removes the trailing card before it fully exits the viewport.
+    const loopedSlides = Math.max(slides.length, variant === 'coverflow' ? 12 : 16);
+    const initialSlide = Math.max(0, Math.floor(slides.length / 2) - 1);
     
     const commonParams = {
       breakpoints: BREAKPOINTS,
@@ -168,7 +173,9 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
       loop: true,
       observer: true,
       observeParents: true,
-      loopAdditionalSlides: Math.min(slides.length, 8),
+      loopAdditionalSlides: loopedSlides,
+      loopedSlides,
+      initialSlide,
       roundLengths: true, // Crucial for clear text
       
       navigation: {
