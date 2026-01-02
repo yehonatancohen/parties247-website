@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Metadata } from 'next';
 import PartyGrid from '@/components/PartyGrid'; // Ensure this path is correct
 import { BASE_URL } from '@/data/constants';
-import { findCarouselBySlug, createCarouselSlug } from '@/lib/carousels';
+import { findCarouselBySlug, createCarouselSlug, filterUpcomingParties } from '@/lib/carousels';
 import * as api from '@/services/api'; // Assumption: You have an API service
 
 // Types for the Page Props
@@ -26,7 +26,7 @@ async function getCarouselData(slug: string) {
 
     if (!carousel) return null;
 
-    const carouselParties = parties.filter(party => 
+    const carouselParties = filterUpcomingParties(parties).filter(party =>
       carousel.partyIds.includes(party.id)
     );
 

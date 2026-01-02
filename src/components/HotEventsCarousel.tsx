@@ -139,22 +139,22 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
   const BREAKPOINTS = useMemo(() => (
     variant === 'coverflow'
       ? {
-          0:    { slidesPerView: 1.6 },
-          360:  { slidesPerView: 1.9 },
-          420:  { slidesPerView: 2.2 },
-          640:  { slidesPerView: 2.8 },
-          768:  { slidesPerView: 3.0 },
-          1024: { slidesPerView: 3.4 },
-          1440: { slidesPerView: 3.8 },
+          0:    { slidesPerView: 2.1 },
+          360:  { slidesPerView: 2.6 },
+          420:  { slidesPerView: 3.0 },
+          640:  { slidesPerView: 3.6 },
+          768:  { slidesPerView: 4.0 },
+          1024: { slidesPerView: 4.6 },
+          1440: { slidesPerView: 5.4 },
         }
       : {
-          0:    { slidesPerView: 1.8 },
-          360:  { slidesPerView: 2.2 },
-          420:  { slidesPerView: 2.6 },
-          640:  { slidesPerView: 3.2 },
-          768:  { slidesPerView: 4.0 },
-          1024: { slidesPerView: 5.0 },
-          1280: { slidesPerView: 6.0 },
+          0:    { slidesPerView: 2.2 },
+          360:  { slidesPerView: 2.8 },
+          420:  { slidesPerView: 3.2 },
+          640:  { slidesPerView: 4.0 },
+          768:  { slidesPerView: 4.8 },
+          1024: { slidesPerView: 5.8 },
+          1280: { slidesPerView: 6.8 },
         }
   ), [variant]);
 
