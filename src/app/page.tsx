@@ -22,9 +22,18 @@ async function getData() {
 
     let rawParties = await partiesRes.json();
     const carousels = await carouselsRes.json();
-    const parties = Array.isArray(rawParties) 
-      ? rawParties.map(p => ({ ...p, id: p._id })) 
+
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+
+    const upcomingParties = Array.isArray(rawParties)
+      ? rawParties.filter((party) => {
+          const partyDate = new Date(party.date);
+          return !isNaN(partyDate.getTime()) && partyDate >= now;
+        })
       : [];
+
+    const parties = upcomingParties.map(p => ({ ...p, id: p._id }));
 
     return { 
       parties: Array.isArray(parties) ? parties : [], 
