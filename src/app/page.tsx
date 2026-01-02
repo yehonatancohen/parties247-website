@@ -1,40 +1,18 @@
 import { Metadata } from 'next';
 import HomeClient from '../components/HomeClient';
 import { BASE_URL } from '@/data/constants';
+import { getCarouselsData, getPartiesData } from '@/lib/api/parties';
 
 async function getData() {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://parties247-backend.onrender.com/';
+  const [parties, carousels] = await Promise.all([
+    getPartiesData(),
+    getCarouselsData(),
+  ]);
 
-  try {
-    const partiesRes = await fetch(`${apiUrl}/api/parties`, { 
-      next: { revalidate: 60 } 
-    });
-
-    const carouselsRes = await fetch(`${apiUrl}/api/carousels`, { 
-      next: { revalidate: 60 } 
-    });
-
-    // Check if both succeeded
-    if (!partiesRes.ok || !carouselsRes.ok) {
-        console.error("Failed to fetch one of the endpoints");
-        return { parties: [], carousels: [] };
-    }
-
-    let rawParties = await partiesRes.json();
-    const carousels = await carouselsRes.json();
-    const parties = Array.isArray(rawParties) 
-      ? rawParties.map(p => ({ ...p, id: p._id })) 
-      : [];
-
-    return { 
-      parties: Array.isArray(parties) ? parties : [], 
-      carousels: Array.isArray(carousels) ? carousels : [] 
-    };
-
-  } catch (error) {
-    console.error("Data fetch error:", error);
-    return { parties: [], carousels: [] };
-  }
+  return {
+    parties,
+    carousels,
+  };
 }
 
 export const metadata: Metadata = {

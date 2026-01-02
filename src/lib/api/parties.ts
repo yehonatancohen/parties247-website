@@ -5,6 +5,44 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://parties247-backend.o
 
 // --- Shared Helpers (Preserved from your original code) ---
 
+const slugify = (value: string): string => {
+  return value
+    .toString()
+    .normalize('NFKD')
+    .replace(/['"]/g, '')
+    .replace(/[^\p{L}\p{N}]+/gu, '-')
+    .replace(/-{2,}/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .toLowerCase();
+};
+
+const deriveSlug = (backendParty: any, partyName: string): string => {
+  const urlForSlug = backendParty.goOutUrl || backendParty.originalUrl;
+  const rawSlug =
+    typeof backendParty.slug === 'string' && backendParty.slug
+      ? backendParty.slug
+      : typeof urlForSlug === 'string'
+        ? (() => {
+            const match = urlForSlug.match(/\/event\/([^/?#]+)/);
+            return match?.[1];
+          })()
+        : '';
+
+  const normalizedExisting = rawSlug ? slugify(rawSlug) : '';
+  const containsLetters = /[a-zA-Z\u0590-\u05FF]/.test(normalizedExisting);
+
+  if (normalizedExisting && containsLetters) {
+    return normalizedExisting;
+  }
+
+  const normalizedFromName = partyName ? slugify(partyName) : '';
+  if (normalizedFromName) {
+    return normalizedFromName;
+  }
+
+  return backendParty._id || 'party';
+};
+
 /**
  * Maps a party object from the backend schema to the frontend schema.
  * This logic is identical to your original service to ensure consistency.
@@ -13,22 +51,7 @@ const mapPartyToFrontend = (backendParty: any): Party => {
   if (!backendParty) {
     throw new Error("Received invalid party data from backend.");
   }
-    
-  let slug = backendParty.slug;
-  const urlForSlug = backendParty.goOutUrl || backendParty.originalUrl;
 
-  // Fallback for missing slug
-  if (!slug && urlForSlug && typeof urlForSlug === 'string') {
-    try {
-      const match = urlForSlug.match(/\/event\/([^/?#]+)/);
-      if (match && match[1]) {
-        slug = match[1];
-      }
-    } catch (e) {
-      console.error('Could not parse URL to derive slug:', urlForSlug);
-    }
-  }
-  
   const name = (typeof backendParty.title === 'object' && backendParty.title?.he) ? backendParty.title.he : backendParty.name;
   
   const description = (typeof backendParty.description === 'object' && backendParty.description?.he) 
@@ -37,10 +60,10 @@ const mapPartyToFrontend = (backendParty: any): Party => {
                         ? backendParty.summary.he
                         : backendParty.description;
 
-  const locationName = backendParty.geo?.address 
+  const locationName = backendParty.geo?.address
                        || (backendParty.venue && typeof backendParty.venue === 'object' ? backendParty.venue?.name?.he : backendParty.venue)
                        || (backendParty.city && typeof backendParty.city === 'object' ? backendParty.city?.name?.he : backendParty.city)
-                       || (backendParty.location && typeof backendParty.location === 'string' ? backendParty.location : backendParty.location?.name) 
+                       || (backendParty.location && typeof backendParty.location === 'string' ? backendParty.location : backendParty.location?.name)
                        || 'Location not specified';
 
   const locationAddress = backendParty.geo?.address 
@@ -71,6 +94,8 @@ const mapPartyToFrontend = (backendParty: any): Party => {
           case 'rescheduled': eventStatus = 'EventRescheduled'; break;
       }
   }
+
+  const slug = deriveSlug(backendParty, name || '');
 
   return {
     id: backendParty._id,
