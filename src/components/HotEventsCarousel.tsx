@@ -124,14 +124,18 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
   );
 
   const slides = useMemo(() => {
-     if (sortedParties.length === 0) return [];
-     
-     // Matches the loop logic from the previous efficient version
-     const minSlides = variant === 'coverflow' ? 12 : 16;
-     const repetitions = Math.ceil(minSlides / sortedParties.length);
-     const duplicated = Array.from({ length: repetitions }, () => sortedParties).flat();
-     
-     return duplicated.slice(0, Math.max(minSlides, sortedParties.length * 2));
+    if (sortedParties.length === 0) return [];
+
+    const minimumSlides = variant === 'coverflow' ? 12 : 16;
+    // Add a buffer so Swiper's loop cloning has enough slides to work with.
+    const desiredSlides = Math.max(minimumSlides, sortedParties.length * 3);
+
+    const duplicated: Party[] = [];
+    while (duplicated.length < desiredSlides) {
+      duplicated.push(...sortedParties.slice(0, desiredSlides - duplicated.length));
+    }
+
+    return duplicated;
   }, [sortedParties, variant]);
 
   // --- RESTORED VITE BREAKPOINTS ---
