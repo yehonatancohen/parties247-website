@@ -1,5 +1,6 @@
 // lib/api/parties.ts
 import { Party, Carousel } from '../../data/types'; // Adjust path based on your folder structure
+import { derivePartySlug } from '../slug';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://parties247-backend.onrender.com/api';
 
@@ -14,22 +15,15 @@ const mapPartyToFrontend = (backendParty: any): Party => {
     throw new Error("Received invalid party data from backend.");
   }
     
-  let slug = backendParty.slug;
-  const urlForSlug = backendParty.goOutUrl || backendParty.originalUrl;
-
-  // Fallback for missing slug
-  if (!slug && urlForSlug && typeof urlForSlug === 'string') {
-    try {
-      const match = urlForSlug.match(/\/event\/([^/?#]+)/);
-      if (match && match[1]) {
-        slug = match[1];
-      }
-    } catch (e) {
-      console.error('Could not parse URL to derive slug:', urlForSlug);
-    }
-  }
-  
   const name = (typeof backendParty.title === 'object' && backendParty.title?.he) ? backendParty.title.he : backendParty.name;
+
+  const slug = derivePartySlug({
+    slug: backendParty.slug,
+    title: backendParty.title,
+    name,
+    goOutUrl: backendParty.goOutUrl,
+    originalUrl: backendParty.originalUrl,
+  });
   
   const description = (typeof backendParty.description === 'object' && backendParty.description?.he) 
                       ? backendParty.description.he 
