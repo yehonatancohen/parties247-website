@@ -16,27 +16,51 @@ const staticPages: MetadataRoute.Sitemap = [
   {
     url: `${BASE_URL}/`,
     lastModified: new Date(),
-    priority: 1,
+    priority: 1.0, // Only Home is 1.0
   },
   {
     url: `${BASE_URL}/about`,
     lastModified: new Date(),
-    priority: 1,
+    priority: 0.5, // Standard pages are lower
   },
   {
     url: `${BASE_URL}/contact`,
     lastModified: new Date(),
-    priority: 1,
+    priority: 0.5,
+  },
+  // Add policies if you want them indexed, otherwise leave them out
+  {
+    url: `${BASE_URL}/terms`,
+    lastModified: new Date(),
+    priority: 0.3,
   },
 ];
 
 const categoryPaths = [
+  // Cities
   '/city/tel-aviv',
-  '/genre/techno-music',
+  '/city/haifa',
+  '/city/jerusalem',
+  '/city/eilat',
+  '/city/beer-sheva',
+  
+  // Audiences
   '/audience/student-parties',
+  '/audience/teenage-parties',
+  '/audience/soldier-parties',
+  
+  // Genres
+  '/genre/techno-music',
+  '/genre/trance',
+  
+  // Days
   '/friday-parties',
   '/saturday-parties',
   '/weekend-parties',
+  '/thursday-parties',
+  '/day/today',
+  
+  // Discovery
   '/party-discovery',
   '/all-parties',
 ];
