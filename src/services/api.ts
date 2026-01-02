@@ -113,6 +113,15 @@ const mapPartyToFrontend = (backendParty: any): Party => {
   };
 };
 
+const isUpcomingParty = (party: Party): boolean => {
+  const eventDate = new Date(party.date).getTime();
+  const now = Date.now();
+
+  if (!Number.isFinite(eventDate)) return false;
+
+  return eventDate >= now;
+};
+
 /**
  * Maps a carousel object from the backend schema to the frontend schema.
  * @param backendCarousel - The carousel object received from the API.
@@ -139,14 +148,17 @@ export const getParties = async (): Promise<Party[]> => {
     throw new Error('Failed to fetch parties');
   }
   const data = await response.json();
-  // Filter out parties that lack a slug to prevent generating broken links.
-  return data.map(mapPartyToFrontend).filter((party: Party) => { // <--- Add type here
-    if (!party.slug) {
-      console.warn('Party data from API is missing a slug, filtering it out:', party);
-      return false;
-    }
-    return true;
-  });
+  // Filter out parties that lack a slug or are already in the past.
+  return data
+    .map(mapPartyToFrontend)
+    .filter((party: Party) => {
+      if (!party.slug) {
+        console.warn('Party data from API is missing a slug, filtering it out:', party);
+        return false;
+      }
+      return true;
+    })
+    .filter(isUpcomingParty);
 };
 
 /**

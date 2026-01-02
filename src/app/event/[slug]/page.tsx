@@ -1,6 +1,6 @@
 import { Metadata, ResolvingMetadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getPartyBySlug, getParties } from "@/services/api"; // Ensure getParties is exported
 import { Party } from "@/data/types";
 import { BRAND_LOGO_URL } from "@/data/constants";
@@ -48,21 +48,25 @@ const getReferralUrl = (originalUrl: string, partyReferral?: string, defaultRefe
 async function fetchPartyData(slug: string) {
   try {
     // Parallel fetch: Get specific party AND all parties (for related logic + image merging)
-    const [partyFromApi, allParties] = await Promise.all([
+    const [partyResult, partiesResult] = await Promise.allSettled([
       getPartyBySlug(slug),
-      getParties().catch(() => []) // Fallback to empty array if this fails
+      getParties(),
     ]);
 
-    if (!partyFromApi) return null;
+    const partyFromApi = partyResult.status === 'fulfilled' ? partyResult.value : null;
+    const allParties = partiesResult.status === 'fulfilled' ? partiesResult.value : [];
 
-    // Merge logic from your Vite App (fixing missing images using the list)
-    const partyFromList = allParties.find((p: Party) => p.slug === slug);
-    
+    const slugToMatch = partyFromApi?.slug || slug;
+    const partyFromList = allParties.find((p: Party) => p.slug === slugToMatch);
+
+    if (!partyFromApi && !partyFromList) return null;
+
     const finalParty: Party = {
-       ...partyFromApi,
-       imageUrl: partyFromApi.imageUrl || partyFromList?.imageUrl || '',
-       id: partyFromApi.id || partyFromList?.id || '',
-    };
+      ...(partyFromList || {}),
+      ...(partyFromApi || {}),
+      imageUrl: (partyFromApi || partyFromList)?.imageUrl || '',
+      id: (partyFromApi || partyFromList)?.id || '',
+    } as Party;
 
     // Calculate Related Parties
     const relatedParties = allParties.filter((p: Party) => {
@@ -120,6 +124,10 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
   }
 
   const { party, relatedParties } = data;
+
+  if (slug !== party.slug) {
+    redirect(`/event/${party.slug}`);
+  }
 
   // Formatting dates
   const partyDate = new Date(party.date);

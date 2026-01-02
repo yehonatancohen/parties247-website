@@ -102,6 +102,15 @@ const mapCarouselToFrontend = (backendCarousel: any): Carousel => {
   };
 };
 
+const isUpcomingParty = (party: Party): boolean => {
+  const eventDate = new Date(party.date).getTime();
+  const now = Date.now();
+
+  if (!Number.isFinite(eventDate)) return false;
+
+  return eventDate >= now;
+};
+
 // --- Server-Side Fetching Functions ---
 
 /**
@@ -141,7 +150,10 @@ export async function getPartiesData(): Promise<Party[]> {
     const data = await response.json();
     
     // Use the same filtering logic as your original code
-    return data.map(mapPartyToFrontend).filter((party: Party) => Boolean(party.slug));
+    return data
+      .map(mapPartyToFrontend)
+      .filter((party: Party) => Boolean(party.slug))
+      .filter(isUpcomingParty);
   } catch (error) {
     console.error('Failed to fetch parties:', error);
     return [];
