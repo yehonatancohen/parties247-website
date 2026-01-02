@@ -18,3 +18,15 @@ export const findCarouselBySlug = <T extends { title: string }>(
     carousel => createCarouselSlug(carousel.title) === normalizedSlug
   );
 };
+
+export const filterUpcomingParties = <T extends { date: string | number | Date }>(
+  parties: T[]
+) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  return parties.filter((party) => {
+    const partyDate = new Date(party.date);
+    return !Number.isNaN(partyDate.getTime()) && partyDate >= today;
+  });
+};

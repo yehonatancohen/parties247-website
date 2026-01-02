@@ -3,7 +3,7 @@
 import React, { useMemo } from "react";
 import Link from "next/link";
 import SocialsCta from "@/components/SocialsCta";
-import { createCarouselSlug } from "@/lib/carousels";
+import { createCarouselSlug, filterUpcomingParties } from "@/lib/carousels";
 // We use the SSR component for ALL carousels now
 import PartyCarousel from "@/components/HotEventsCarousel";
 
@@ -17,17 +17,22 @@ interface HomeClientProps {
 
 // --- Main Component ---
 export default function HomeClient({ initialParties = [], initialCarousels = [] }: HomeClientProps) {
+  const upcomingParties = useMemo(
+    () => filterUpcomingParties(initialParties),
+    [initialParties]
+  );
+
   const carouselsWithParties = useMemo(
     () =>
       initialCarousels
         .map((carousel) => {
           const targetIds = carousel.partyIds.map((_id: any) => String(_id));
 
-          const carouselParties = initialParties.filter((p) =>
+          const carouselParties = upcomingParties.filter((p) =>
             targetIds.includes(String(p.id))
           );
 
-          const fillerParties = initialParties
+          const fillerParties = upcomingParties
             .filter((p) => !targetIds.includes(String(p.id)))
             .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
             .slice(0, Math.max(0, 12 - carouselParties.length));
@@ -41,7 +46,7 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
           };
         })
         .filter((c) => c.parties.length > 0),
-    [initialCarousels, initialParties]
+    [initialCarousels, upcomingParties]
   );
 
   const stats = useMemo(() => {
