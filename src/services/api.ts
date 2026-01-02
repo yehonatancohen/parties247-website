@@ -41,6 +41,7 @@ const mapPartyToFrontend = (backendParty: any): Party => {
     name,
     goOutUrl: backendParty.goOutUrl,
     originalUrl: backendParty.originalUrl,
+    fallbackId: backendParty._id,
   });
   
   const description = (typeof backendParty.description === 'object' && backendParty.description?.he) 

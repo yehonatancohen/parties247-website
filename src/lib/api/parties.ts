@@ -23,6 +23,7 @@ const mapPartyToFrontend = (backendParty: any): Party => {
     name,
     goOutUrl: backendParty.goOutUrl,
     originalUrl: backendParty.originalUrl,
+    fallbackId: backendParty._id,
   });
   
   const description = (typeof backendParty.description === 'object' && backendParty.description?.he) 
@@ -140,12 +141,7 @@ export async function getPartiesData(): Promise<Party[]> {
     const data = await response.json();
     
     // Use the same filtering logic as your original code
-    return data.map(mapPartyToFrontend).filter((party: Party) => {
-      if (!party.slug) {
-        return false;
-      }
-      return true;
-    });
+    return data.map(mapPartyToFrontend).filter((party: Party) => Boolean(party.slug));
   } catch (error) {
     console.error('Failed to fetch parties:', error);
     return [];

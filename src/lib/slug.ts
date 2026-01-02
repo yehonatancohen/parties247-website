@@ -34,8 +34,15 @@ export const derivePartySlug = (params: {
   name?: string;
   goOutUrl?: string;
   originalUrl?: string;
+  fallbackId?: string;
 }): string => {
   const providedSlug = normalizeSlugValue(params.slug);
+
+  // If the backend already has a slug, always trust it so route lookups stay in sync.
+  if (providedSlug) {
+    return providedSlug;
+  }
+
   const urlSlug = extractSlugFromUrl(params.goOutUrl || params.originalUrl);
 
   const titleValue =
@@ -45,20 +52,12 @@ export const derivePartySlug = (params: {
   const nameForSlug = titleValue || params.name || '';
   const titleSlug = normalizeSlugValue(nameForSlug);
 
-  const isNumericSlug = (value: string) => /^[0-9-]+$/.test(value);
-
-  if (providedSlug && !isNumericSlug(providedSlug)) {
-    return providedSlug;
-  }
-
-  if (titleSlug && (providedSlug || urlSlug)) {
-    const suffix = providedSlug || urlSlug;
-    return `${titleSlug}${suffix ? `-${suffix}` : ''}`;
-  }
-
-  if (titleSlug) return titleSlug;
+  // Prefer URL slug (most accurate), then title, then a stable fallback id
   if (urlSlug) return urlSlug;
-  return providedSlug || '';
+  if (titleSlug) return titleSlug;
+  if (params.fallbackId) return normalizeSlugValue(params.fallbackId);
+
+  return '';
 };
 
 export { normalizeSlugValue as createPartySlug };
