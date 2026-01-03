@@ -125,13 +125,19 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
 
   const slides = useMemo(() => {
      if (sortedParties.length === 0) return [];
-     
-     // Matches the loop logic from the previous efficient version
-     const minSlides = variant === 'coverflow' ? 12 : 16;
-     const repetitions = Math.ceil(minSlides / sortedParties.length);
+
+     // Heavier duplication when we have only 1-2 parties so the carousel is visually full
+     const baseMinSlides = variant === 'coverflow' ? 12 : 16;
+     const needsExtraDensity = sortedParties.length <= 2;
+
+     const minSlides = needsExtraDensity ? baseMinSlides * 2 : baseMinSlides;
+     const duplicationFactor = needsExtraDensity ? 6 : 2;
+
+     const targetLength = Math.max(minSlides, sortedParties.length * duplicationFactor);
+     const repetitions = Math.ceil(targetLength / sortedParties.length);
      const duplicated = Array.from({ length: repetitions }, () => sortedParties).flat();
-     
-     return duplicated.slice(0, Math.max(minSlides, sortedParties.length * 2));
+
+     return duplicated.slice(0, targetLength);
   }, [sortedParties, variant]);
 
   // --- RESTORED VITE BREAKPOINTS ---
