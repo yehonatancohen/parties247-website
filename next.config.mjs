@@ -30,6 +30,7 @@ const nextConfig = {
       }
     ],
     qualities: [25, 40, 50, 75],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920]
   },
 
   // 2. Configure Hebrew URL Rewrites

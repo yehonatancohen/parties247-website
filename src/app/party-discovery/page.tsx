@@ -49,8 +49,8 @@ const audienceLinks = [
 ];
 
 const cityLinks = [
-  { title: 'מסיבות תל אביב', to: '/city/tel-aviv', blurb: 'טכנו בדרום, גגות במרכז והכל בעדכון יומיומי.' },
-  { title: 'מסיבות חיפה', to: '/city/haifa', blurb: 'חוף, כרמל ושוק תלפיות – כל הוייבים בדף אחד.' },
+  { title: 'מסיבות תל אביב', to: '/cities/tel-aviv', blurb: 'טכנו בדרום, גגות במרכז והכל בעדכון יומיומי.' },
+  { title: 'מסיבות חיפה', to: '/cities/haifa', blurb: 'חוף, כרמל ושוק תלפיות – כל הוייבים בדף אחד.' },
 ];
 
 const styleLinks = [
@@ -95,7 +95,7 @@ const impulseLinks = [
   },
   {
     title: 'חברים באים?',
-    to: '/carousels/hot-groups',
+    to: '/carousels/חם-עכשיו',
     anchor: 'impulse-groups',
     badge: '✨ וייב חברתי',
     blurb: 'אוספים עם רחבות ענק, חבילות שולחן וסטים של הדיג׳יים המדוברים.',
@@ -284,7 +284,6 @@ export default async function PartyDiscoveryPage() {
       <section id="audiences" className="mb-12 scroll-mt-24">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-3xl font-display text-white">לפי קהל יעד</h2>
-          <Link href="/קהל" prefetch={false} className="text-jungle-accent hover:text-white text-sm">ראו את כל קהלי היעד</Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {audienceLinks.map((item) => (
@@ -305,7 +304,6 @@ export default async function PartyDiscoveryPage() {
       <section id="cities" className="mb-12 scroll-mt-24">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-3xl font-display text-white">לפי עיר</h2>
-          <Link href="/ערים" prefetch={false} className="text-jungle-accent hover:text-white text-sm">כל הערים</Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {cityLinks.map((item) => (
@@ -326,7 +324,6 @@ export default async function PartyDiscoveryPage() {
       <section id="styles" className="mb-12 scroll-mt-24">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-3xl font-display text-white">לפי סגנון</h2>
-          <Link href="/זאנרים" prefetch={false} className="text-jungle-accent hover:text-white text-sm">כל הסגנונות</Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {styleLinks.map((item) => (

@@ -2,6 +2,7 @@
 
 import React, { useRef, useEffect, useMemo, FC, useId, useState } from 'react';
 import Link from "next/link";
+import Image from "next/image";
 import { register } from 'swiper/element/bundle';
 
 import { Party } from '../data/types';
@@ -54,12 +55,14 @@ const CarouselPartyCard: FC<{ party: Party; directUrl: string; priority: boolean
       */}
       <div className="relative rounded-xl overflow-hidden shadow-lg transition-all duration-500 ease-in-out border border-wood-brown/50 transform-gpu subpixel-antialiased">
         
-        <img
+        <Image
           src={party.imageUrl}
           alt={party.name}
           loading={priority ? "eager" : "lazy"}
           className="w-full aspect-[2/3] object-cover"
           draggable="false"
+          width={400}
+          height={600}
         />
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>

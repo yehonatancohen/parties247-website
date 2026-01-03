@@ -38,11 +38,11 @@ const staticPages: MetadataRoute.Sitemap = [
 
 const categoryPaths = [
   // Cities
-  '/city/tel-aviv',
-  '/city/haifa',
-  '/city/jerusalem',
-  '/city/eilat',
-  '/city/beer-sheva',
+  '/cities/tel-aviv',
+  '/cities/haifa',
+  '/cities/jerusalem',
+  '/cities/eilat',
+  '/cities/beer-sheva',
   
   // Audiences
   '/audience/student-parties',

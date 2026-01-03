@@ -370,7 +370,7 @@ export const genres: TaxonomyConfig[] = [
     ogImage: 'https://images.unsplash.com/photo-1507874457470-272b3c8d8ee2?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
       { label: 'מסיבות 25+', path: '/קהל/25-פלוס' },
-      { label: 'תל אביב האוס', path: '/city/tel-aviv' },
+      { label: 'תל אביב האוס', path: '/cities/tel-aviv' },
     ],
   },
 ];
@@ -474,38 +474,6 @@ export const audiences: TaxonomyConfig[] = [
   },
   {
     type: 'audience',
-    slug: 'מסיבות-להטב',
-    path: '/קהל/מסיבות-להטב',
-    label: 'מסיבות להט"ב',
-    title: 'מסיבות להט״ב – ליינים קוויריים, דרג ושלל רחבות',
-    description: 'מסיבות להט"ב וקוויריות בכל הארץ: ערבי דרג, ליינים ייעודיים בתל אביב, חיפה וירושלים ומסיבות חגים מיוחדות.',
-    intro:
-      'קהילת הלהט״ב בישראל חוגגת באינספור ליינים: פאג, ביף, ליינים נשיים, מסיבות דראג ייחודיות ואירועי Pride ברחבי השנה. אנו מרכזים את הליינים הקבועים של תל אביב, ההפקות הקוויריות הירושלמיות והאירועים הגדולים בצפון. לכל מסיבה תמצאו טווח גילאים, מדיניות כניסה ולבוש ופרטים על המלצות הבטיחות של המארגנים.',
-    faq: [
-      {
-        question: 'האם יש מסיבות להט"ב גם מחוץ לתל אביב?',
-        answer:
-          'בהחלט. חיפה וירושלים מארחות ליינים קבועים, ובקיץ מתקיימים אירועים מיוחדים בבאר שבע ובאשדוד. אנו מעדכנים ברגע שליין חדש נפתח.',
-      },
-      {
-        question: 'מה קוד הלבוש בליינים קוויריים?',
-        answer:
-          'רוב האירועים מעודדים ביטוי עצמי חופשי. חלקם מפרסמים קוד לבוש נושא – נעדכן בכל עמוד אירוע כדי שתוכלו להגיע מוכנים.',
-      },
-    ],
-    breadcrumbs: [
-      { label: 'בית', path: '/' },
-      { label: 'קהל יעד', path: '/קהל' },
-      { label: 'מסיבות להט"ב' },
-    ],
-    ogImage: 'https://images.unsplash.com/photo-1529158062015-cad636e69505?auto=format&fit=crop&w=1200&q=80',
-    relatedPaths: [
-      { label: 'תל אביב להט"ב', path: '/ערים/תל-אביב/מסיבות-להטב' },
-      { label: 'ליינים נשיים', path: '/ערים/תל-אביב/מסיבות-להטב/עמוד/2' },
-    ],
-  },
-  {
-    type: 'audience',
     slug: 'מסיבות-25-פלוס',
     path: '/קהל/25-פלוס',
     label: 'מסיבות 25+',
@@ -535,7 +503,7 @@ export const audiences: TaxonomyConfig[] = [
     ogImage: 'https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
       { label: 'האוס וגרוב', path: '/זאנרים/האוס' },
-      { label: 'מסיבות תל אביב', path: '/city/tel-aviv' },
+      { label: 'מסיבות תל אביב', path: '/cities/tel-aviv' },
     ],
   },
 ];
@@ -776,7 +744,7 @@ export const holidayIntents: TaxonomyConfig[] = [
     ogImage: 'https://images.unsplash.com/photo-1521579971123-1192931a1452?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
       { label: 'מסיבות נוער', path: '/קהל/מסיבות-נוער' },
-      { label: 'מסיבות להט"ב', path: '/קהל/מסיבות-להטב' },
+      { label: 'מסיבות חמות', path: '/carousels/חם-עכשיו' },
     ],
   },
 ];
@@ -824,7 +792,7 @@ const englishFriendlyTaxonomies: TaxonomyConfig[] = [
   {
     type: 'city',
     slug: 'תל-אביב',
-    path: '/city/tel-aviv',
+    path: '/cities/tel-aviv',
     label: 'Tel Aviv Parties',
     title: 'Tel Aviv Parties – מדריך המסיבות הרשמי של העיר ללא הפסקה',
     description: 'ריכוז מסיבות בתל אביב עם חלוקה לפי שכונות, ליינים חמים וקישורים מהירים לרכישת כרטיסים.',
@@ -851,7 +819,7 @@ const englishFriendlyTaxonomies: TaxonomyConfig[] = [
   {
     type: 'city',
     slug: 'חיפה',
-    path: '/city/haifa',
+    path: '/cities/haifa',
     label: 'Haifa Parties',
     title: 'Haifa Parties – מסיבות בין ההר לים',
     description: 'עמוד מסיבות חיפה כולל רייבי חוף, ברים עם סטים חיים ושאטלים לסטודנטים בקריות.',
@@ -896,7 +864,7 @@ const englishFriendlyTaxonomies: TaxonomyConfig[] = [
     ],
     ogImage: 'https://images.unsplash.com/photo-1464375117522-1311d6a5b81e?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
-      { label: 'טכנו תל אביב', path: '/city/tel-aviv' },
+      { label: 'טכנו תל אביב', path: '/cities/tel-aviv' },
       { label: 'רייבי טראנס', path: '/זאנרים/טראנס' },
     ],
   },
@@ -1053,7 +1021,7 @@ const englishFriendlyTaxonomies: TaxonomyConfig[] = [
     ogImage: 'https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
       { label: 'House & Groove', path: '/genre/house-music' },
-      { label: 'מסיבות תל אביב', path: '/city/tel-aviv' },
+      { label: 'מסיבות תל אביב', path: '/cities/tel-aviv' },
     ],
   },
   {
@@ -1499,8 +1467,6 @@ const filterByAudience = (parties: Party[], slug: string) => {
       return parties.filter((party) => party.tags.includes('סטודנטים'));
     case 'מסיבות-חיילים':
       return parties.filter((party) => party.tags.includes('חיילים'));
-    case 'מסיבות-להטב':
-      return parties.filter((party) => party.tags.some((tag) => tag.includes('להט"ב') || tag.toLowerCase().includes('lgbt')));
     case 'מסיבות-25-פלוס':
       return parties.filter((party) =>
         party.tags.some((tag) => tag.includes('25') || tag.includes('בוגרים')) ||

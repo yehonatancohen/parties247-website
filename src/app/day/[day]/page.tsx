@@ -15,19 +15,19 @@ type DayConfig = {
 
 const getDayConfig = (todayString: string, todayWeekday: number): Record<string, DayConfig> => ({
   thursday: {
-    title: "מסיבות חמישי",
+    title: "מסיבות ביום חמישי הקרוב",
     description: "רחבות לפתיחת הסופ\"ש עם מיטב הסטים והאמנים.",
     basePath: "/day/thursday",
     filter: (party) => new Date(party.date).getDay() === 4,
   },
   friday: {
-    title: "מסיבות שישי",
+    title: "מסיבות ביום שישי הקרוב",
     description: "ליין-אפים לחמישי בלילה ולחגיגות הסופ\"ש המרכזיות.",
     basePath: "/day/friday",
     filter: (party) => new Date(party.date).getDay() === 5,
   },
   weekend: {
-    title: "מסיבות סוף שבוע",
+    title: "מסיבות בסופ\"ש הקרוב",
     description: "חמישי, שישי ושבת – כל המסיבות של סוף השבוע במקום אחד.",
     basePath: "/day/weekend",
     filter: (party) => {

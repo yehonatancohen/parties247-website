@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link'
+import Image from "next/image"
 import { Party } from '../data/types';
 import { CalendarIcon, LocationIcon } from './Icons';
 
@@ -21,13 +22,13 @@ const RelatedPartyCard: React.FC<RelatedPartyCardProps> = ({ party }) => {
       className="bg-jungle-deep rounded-lg overflow-hidden shadow-lg hover:shadow-jungle-glow/30 transition-all duration-300 flex flex-col group transform hover:-translate-y-1 border border-wood-brown/30"
     >
         <div className="relative">
-          <img 
+          <Image 
             src={party.imageUrl} 
             alt={party.name} 
             className="w-full aspect-[4/3] object-cover" 
             loading="lazy"
-            width="400"
-            height="300"
+            width={"400"}
+            height={"300"}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
         </div>

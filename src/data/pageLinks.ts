@@ -25,12 +25,6 @@ export const pageLinkOptions: PageLinkOption[] = [
     description: 'ליינים שמקבלים חוגר ומציעים כניסה מוזלת.',
   },
   {
-    label: 'מסיבות להט"ב',
-    path: '/audience/מסיבות-להטב',
-    tag: 'להט"ב',
-    description: 'אירועים וגאווה ברחבי הארץ עם אווירה מכילה.',
-  },
-  {
     label: 'מסיבות 24+',
     path: '/audience/24plus-parties',
     tag: '24 פלוס',
@@ -63,12 +57,12 @@ export const pageLinkOptions: PageLinkOption[] = [
   },
   {
     label: 'מסיבות בתל אביב',
-    path: '/city/tel-aviv',
+    path: '/cities/tel-aviv',
     description: 'אירועים בעיר שלא נרדמת – טכנו, גגות וחופים.',
   },
   {
     label: 'מסיבות בחיפה',
-    path: '/city/haifa',
+    path: '/cities/haifa',
     description: 'אירועים בעיר הצפונית עם אווירה מרהיבה.',
   }
 ];

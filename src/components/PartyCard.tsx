@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link'
+import Image from 'next/image'
 import { Party } from '../data/types';
 import { LAST_TICKETS_TAG } from '../data/constants';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
@@ -42,13 +43,13 @@ const PartyCard: React.FC<PartyCardProps> = ({ party, showDiscountCode = false }
     <div className="bg-jungle-surface rounded-xl overflow-hidden shadow-lg hover:shadow-jungle-glow/60 transition-all duration-300 flex flex-col group transform hover:-translate-y-1 border border-wood-brown/50">
       <Link href={`/event/${party.slug}`} className="block">
         <div className="relative">
-          <img 
+          <Image
             src={party.imageUrl} 
             alt={party.name} 
             className="w-full aspect-[3/4] object-cover" 
             loading="lazy"
-            width="300"
-            height="400"
+            width={"300"}
+            height={"400"}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
           <div className="absolute top-3 right-3 flex flex-col gap-2">

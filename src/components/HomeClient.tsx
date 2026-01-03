@@ -2,6 +2,7 @@
 
 import React, { useMemo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import SocialsCta from "@/components/SocialsCta";
 import { createCarouselSlug } from "@/lib/carousels";
 // We use the SSR component for ALL carousels now
@@ -76,7 +77,7 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
     {
       title: "מסיבות גגות וחופים",
       description: "שקיעות, בריזה ודרינקים קלילים. הלוקיישנים הכי יפים בתל אביב ובאזור המרכז.",
-      href: "/city/tel-aviv",
+      href: "/cities/tel-aviv",
     },
     {
       title: "חוויות בוטיק",
@@ -99,7 +100,7 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
       >
         <picture className="absolute inset-0">
           <source srcSet={`${HERO_IMAGE_URL}&fm=avif`} type="image/avif" />
-          <img
+          <Image
             src={HERO_IMAGE_URL}
             alt="קהל חוגג במסיבה לילית"
             loading="eager"
@@ -272,7 +273,7 @@ Parties 24/7 הוא המקום שבו חיי הלילה בישראל מתחבר�
               דף הטכנו
             </Link>
             , את{" "}
-            <Link href="/city/tel-aviv" className="text-jungle-accent hover:text-white">
+            <Link href="/cities/tel-aviv" className="text-jungle-accent hover:text-white">
               מדריך תל אביב
             </Link>{" "}
             או את{" "}

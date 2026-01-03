@@ -1,5 +1,6 @@
 import { Metadata, ResolvingMetadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getPartyBySlug, getParties } from "@/services/api"; // Ensure getParties is exported
 import { Party } from "@/data/types";
@@ -175,14 +176,14 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
             <div className="md:grid md:grid-cols-5 md:gap-8">
                 {/* Image Section */}
                 <div className="md:col-span-2">
-                    {/* Using standard img for behavior similar to Vite (loads after HTML paint) */}
-                    {/* You can also use Next/Image, but standard img ensures exact behavior you asked for */}
-                    <img
+                    <Image
                       src={party.imageUrl}
                       alt={party.name}
                       className="w-full h-64 md:h-full object-cover"
                       loading="lazy"
                       decoding="async"
+                      width={600}
+                      height={400}
                     />
                 </div>
 

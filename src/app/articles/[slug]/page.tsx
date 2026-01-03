@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from 'next/image';
 import { articles } from "@/data/articles";
 import { BASE_URL } from "@/data/constants";
 
@@ -27,7 +28,7 @@ const renderContent = (content: string) => {
 };
 
 export async function generateStaticParams() {
-  return articles.map((article) => ({ slug: encodeURIComponent(article.slug) }));
+  return articles.map((article) => ({ slug: article.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -82,12 +83,14 @@ export default async function ArticlePage({
 
       {article.imageUrl && (
         <div className="overflow-hidden rounded-2xl border border-white/10 shadow-xl">
-          <img
+          <Image
             src={article.imageUrl}
             alt={article.title}
             className="h-[320px] w-full object-cover"
             loading="eager"
             decoding="async"
+            width={800}
+            height={320}
           />
         </div>
       )}
