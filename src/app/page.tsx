@@ -10,8 +10,8 @@ async function getData() {
       next: { revalidate: 60 } 
     });
 
-    const carouselsRes = await fetch(`${apiUrl}/api/carousels`, { 
-      next: { revalidate: 60 } 
+    const carouselsRes = await fetch(`${apiUrl}/api/carousels`, {
+      cache: 'no-store'
     });
 
     // Check if both succeeded
