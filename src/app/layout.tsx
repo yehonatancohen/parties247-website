@@ -38,9 +38,9 @@ export const metadata: Metadata = {
   description: "Find parties and nightlife events in Israel.",
   metadataBase: new URL(BASE_URL),
   icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon.svg",
-    apple: "/favicon.svg",
+    icon: "/icon-192.png",
+    shortcut: "/icon-192.png",
+    apple: "/icon-192.png",
   },
   openGraph: {
     siteName: "Parties 24/7",
