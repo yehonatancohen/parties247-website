@@ -18,32 +18,29 @@ interface HomeClientProps {
 
 // --- Main Component ---
 export default function HomeClient({ initialParties = [], initialCarousels = [] }: HomeClientProps) {
-  const carouselsWithParties = useMemo(
-    () =>
-      initialCarousels
-        .map((carousel) => {
-          const targetIds = carousel.partyIds.map((_id: any) => String(_id));
+  const carouselsWithParties = useMemo(() => {
+    const partyMap = initialParties.reduce<Record<string, any>>((map, party) => {
+      map[String(party.id)] = party;
+      return map;
+    }, {});
 
-          const carouselParties = initialParties.filter((p) =>
-            targetIds.includes(String(p.id))
-          );
+    return initialCarousels
+      .map((carousel) => {
+        const targetIds = carousel.partyIds.map((_id: any) => String(_id));
 
-          const fillerParties = initialParties
-            .filter((p) => !targetIds.includes(String(p.id)))
-            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-            .slice(0, Math.max(0, 12 - carouselParties.length));
+        // Keep only parties that belong to the carousel and preserve their order
+        const carouselParties = targetIds
+          .map((id: string) => partyMap[id])
+          .filter(Boolean);
 
-          const hydratedParties = [...carouselParties, ...fillerParties];
-
-          return {
-            ...carousel,
-            parties: hydratedParties,
-            viewAllLink: `/carousels/${createCarouselSlug(carousel.title)}`,
-          };
-        })
-        .filter((c) => c.parties.length > 0),
-    [initialCarousels, initialParties]
-  );
+        return {
+          ...carousel,
+          parties: carouselParties,
+          viewAllLink: `/carousels/${createCarouselSlug(carousel.title)}`,
+        };
+      })
+      .filter((c) => c.parties.length > 0);
+  }, [initialCarousels, initialParties]);
 
   const stats = useMemo(() => {
     const uniqueCities = new Set(
