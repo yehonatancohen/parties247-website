@@ -139,7 +139,7 @@ const mapCarouselToFrontend = (backendCarousel: any): Carousel => {
  * Fetches all parties from the backend.
  */
 export const getParties = async (): Promise<Party[]> => {
-  const response = await fetch(`${API_URL}/parties`);
+  const response = await fetch(`${API_URL}/parties?upcoming=true`);
   if (!response.ok) {
     throw new Error('Failed to fetch parties');
   }
