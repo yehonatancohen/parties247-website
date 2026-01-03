@@ -137,7 +137,7 @@ export async function getCarouselsData(): Promise<Carousel[]> {
  */
 export async function getPartiesData(): Promise<Party[]> {
   try {
-    const response = await fetch(`${API_URL}/parties`, { cache: 'no-store' });
+    const response = await fetch(`${API_URL}/parties?upcoming=true`, { cache: 'no-store' });
     
     if (!response.ok) {
       throw new Error('Failed to fetch parties');
