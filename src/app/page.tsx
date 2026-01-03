@@ -6,7 +6,7 @@ async function getData() {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://parties247-backend.onrender.com/';
 
   try {
-    const partiesRes = await fetch(`${apiUrl}/api/parties`, { 
+    const partiesRes = await fetch(`${apiUrl}/api/parties?upcoming=true`, {
       next: { revalidate: 60 } 
     });
 
