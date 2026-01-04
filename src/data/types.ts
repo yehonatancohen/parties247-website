@@ -70,7 +70,7 @@ export interface PartyContextType {
   carousels: Carousel[];
   addParty: (url: string) => Promise<Party>;
   deleteParty: (partyId: string) => Promise<void>;
-  updateParty: (partyToUpdate: Party) => Promise<void>;
+  updateParty: (partyToUpdate: Party) => Promise<Party>;
   addCarousel: (title: string) => Promise<void>;
   deleteCarousel: (carouselId: string) => Promise<void>;
   updateCarousel: (carouselId: string, updates: { title?: string; order?: number }) => Promise<void>;

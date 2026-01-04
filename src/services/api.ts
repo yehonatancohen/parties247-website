@@ -221,17 +221,19 @@ export const deleteParty = async (partyId: string): Promise<void> => {
  * @param partyId - The ID of the party to update.
  * @param partyData - An object with all party fields (excluding id).
  */
-export const updateParty = async (partyId: string, partyData: Omit<Party, 'id'>): Promise<void> => {
-  // The backend's PartyUpdateSchema is very strict and rejects certain fields.
-  // We can only send fields that are explicitly intended for update.
-  // Fields like date ('startsAt') and location ('venue') are set during scraping and are not updatable via this endpoint.
+export const updateParty = async (partyId: string, partyData: Omit<Party, 'id'>): Promise<Party> => {
   const updatePayload = {
-    name: partyData.name,
-    description: partyData.description,
+    title: partyData.name,
+    slug: partyData.slug,
+    image: partyData.imageUrl,
+    url: partyData.originalUrl,
+    startsAt: partyData.date,
+    location: partyData.location?.name,
     tags: partyData.tags,
+    description: partyData.description,
     referralCode: partyData.referralCode,
   };
-  
+
   const response = await fetch(`${API_URL}/admin/update-party/${partyId}`, {
     method: 'PUT',
     headers: {
@@ -241,17 +243,20 @@ export const updateParty = async (partyId: string, partyData: Omit<Party, 'id'>)
     body: JSON.stringify(updatePayload),
   });
 
+  let responseData;
+  try {
+    responseData = await response.json();
+  } catch (e) {
+    const errorText = await response.text();
+    console.error("Server returned non-JSON response on update:", errorText);
+    throw new Error("Unexpected server response on update.");
+  }
+
   if (!response.ok) {
-    let responseData;
-    try {
-        responseData = await response.json();
-    } catch (e) {
-        const errorText = await response.text();
-        console.error("Server returned non-JSON response on update:", errorText);
-        throw new Error("Unexpected server response on update.");
-    }
     throw new Error(responseData.message || 'Failed to update party');
   }
+
+  return responseData.party ? mapPartyToFrontend(responseData.party) : { ...partyData, id: partyId };
 };
 
 /**
