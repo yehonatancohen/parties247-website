@@ -92,8 +92,9 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
   const updateParty = useCallback(async (partyToUpdate: Party) => {
     try {
         const { id, ...partyData } = partyToUpdate;
-        await api.updateParty(id, partyData);
-        setParties(prev => prev.map(p => p.id === id ? partyToUpdate : p));
+        const updatedParty = await api.updateParty(id, partyData);
+        setParties(prev => prev.map(p => p.id === id ? updatedParty : p));
+        return updatedParty;
     } catch (error) {
         console.error("Failed to update party:", error);
         const errorMessage = error instanceof Error ? error.message : "Could not update party.";
