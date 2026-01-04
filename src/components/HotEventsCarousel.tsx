@@ -47,12 +47,10 @@ const CarouselPartyCard: FC<{ party: Party; directUrl: string; priority: boolean
       href={directUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="group block outline-none select-none" // Added select-none to prevent dragging image ghost
+      className="group block outline-none select-none"
       onClick={() => trackPartyRedirect(party.id, party.slug)}
       draggable="false"
     >
-      {/* ADDED: 'subpixel-antialiased' and transform fix for clarity 
-      */}
       <div className="relative rounded-xl overflow-hidden shadow-lg transition-all duration-500 ease-in-out border border-wood-brown/50 transform-gpu subpixel-antialiased">
         
         <Image
@@ -129,8 +127,10 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
   const slides = useMemo(() => {
      if (sortedParties.length === 0) return [];
 
-     // Heavier duplication when we have only 1-2 parties so the carousel is visually full
-     const baseMinSlides = variant === 'coverflow' ? 12 : 16;
+     // FIX 1: INCREASED BUFFER SIZE 
+     // We drastically increased baseMinSlides (was 12 -> now 30).
+     // Coverflow loop needs a huge buffer of slides to ensure the left side is never empty.
+     const baseMinSlides = variant === 'coverflow' ? 30 : 20;
      const needsExtraDensity = sortedParties.length <= 2;
 
      const minSlides = needsExtraDensity ? baseMinSlides * 2 : baseMinSlides;
@@ -143,8 +143,6 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
      return duplicated.slice(0, targetLength);
   }, [sortedParties, variant]);
 
-  // --- RESTORED VITE BREAKPOINTS ---
-  // These allow for bigger slides (fewer slidesPerView) and better scaling
   const BREAKPOINTS = useMemo(() => (
     variant === 'coverflow'
       ? {
@@ -168,17 +166,28 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
   ), [variant]);
 
   useEffect(() => {
-    const swiperEl = swiperElRef.current;
-    if (!swiperEl || !mounted || slides.length === 0) return;
+    if (!mounted) return;
     
+    const swiperEl = swiperElRef.current;
+    if (!swiperEl || slides.length === 0) return;
+    
+    // Calculate offset to start safely in the middle of our duplicated list
+    const initialSlideIndex = sortedParties.length > 0 ? sortedParties.length : 0;
+
     const commonParams = {
       breakpoints: BREAKPOINTS,
-      spaceBetween: 12, // Matched Vite (was 18)
+      spaceBetween: 12,
       loop: true,
+      
+      // Start in the middle of the duplicates
+      initialSlide: initialSlideIndex,
+      
+      // We increased this to 10 to give coverflow plenty of room
+      loopedSlides: 10, 
       observer: true,
       observeParents: true,
-      loopAdditionalSlides: Math.min(slides.length, 8),
-      roundLengths: true, // Crucial for clear text
+      loopAdditionalSlides: Math.min(slides.length, 10),
+      roundLengths: true,
       
       navigation: {
         nextEl: `#next-${uniqueId}`,
@@ -187,22 +196,21 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
       watchOverflow: true,
     };
     
-    // --- RESTORED VITE COVERFLOW SETTINGS ---
     const variantParams = variant === 'coverflow' ? {
       effect: 'coverflow',
       centeredSlides: true,
       grabCursor: true,
       autoplay: {
-        delay: 6500, // Matched Vite (was 7200)
+        delay: 6500,
         disableOnInteraction: false,
         pauseOnMouseEnter: true,
       },
       coverflowEffect: {
         rotate: 0,
-        stretch: 36, // Matched Vite (was 28) - this makes slides overlap less/look bigger
-        depth: 90,   // Matched Vite (was 80)
+        stretch: 36,
+        depth: 90, 
         modifier: 1,
-        slideShadows: false, // Keep false for clarity
+        slideShadows: false,
       },
     } : {
       centeredSlides: false,
@@ -211,10 +219,24 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
     const params = { ...commonParams, ...variantParams };
     
     Object.assign(swiperEl, params);
-    swiperEl.initialize();
-    
-  }, [slides, variant, uniqueId, BREAKPOINTS, mounted]);
 
+    const timer = setTimeout(() => {
+      swiperEl.initialize();
+      
+      // FIX 2: FORCE LOOP FIX
+      // Immediately after init, force Swiper to recalculate the loop 
+      // and generate the missing ghost slides on the left.
+      if (swiperEl.swiper) {
+        swiperEl.swiper.loopFix(); 
+        swiperEl.swiper.update();
+      }
+    }, 50);
+
+    return () => clearTimeout(timer);
+    
+  }, [slides, variant, uniqueId, BREAKPOINTS, mounted, sortedParties.length]);
+
+  if (!mounted) return null;
   if (slides.length === 0) return null;
 
   const carouselClasses = `relative party-carousel ${variant === 'coverflow' ? 'party-carousel-coverflow' : 'party-carousel-standard'}`;
