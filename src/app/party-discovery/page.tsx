@@ -71,6 +71,24 @@ const helperLinks = [
   { title: 'הצהרת מקדמי אירועים', to: '/promoter-disclaimer', blurb: 'שקיפות מלאה מול מפיקים ושותפים.' },
 ];
 
+const subPageLinks = [
+  {
+    title: 'עמודי יום ממוקדים',
+    description: 'לדוגמה: "מסיבות היום בתל אביב" או "שישי בחיפה".',
+    to: '/party-discovery/day',
+  },
+  {
+    title: 'עמודי ז׳אנר ממוקדים',
+    description: 'לדוגמה: "מסיבות טכנו בתל אביב" או "האוס בגגות".',
+    to: '/party-discovery/genre',
+  },
+  {
+    title: 'עמודי קהל יעד',
+    description: 'לדוגמה: "מסיבות סטודנטים" או "מסיבות חיילים בסופ׳׳ש".',
+    to: '/party-discovery/audience',
+  },
+];
+
 const vibePills = [
   { label: 'מסיבת רגע אחרון', to: '/all-parties', gradient: 'from-pink-500/90 via-orange-400/90 to-yellow-300/80' },
   { label: 'וייב גג שקיעה', to: '/day/weekend', gradient: 'from-fuchsia-500/80 via-purple-500/80 to-blue-400/80' },
@@ -219,6 +237,29 @@ export default async function PartyDiscoveryPage() {
           </Link>
         ))}
       </div>
+
+      {/* Sub Pages CTA */}
+      <section className="mb-12">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-3xl font-display text-white">עמודי משנה חדשים</h2>
+          <p className="text-sm text-jungle-text/70">קישורי עומק למיקוד לפי יום, ז׳אנר או קהל.</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {subPageLinks.map((item) => (
+            <Link
+              key={item.to}
+              href={item.to}
+              prefetch={false}
+              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-jungle-surface/80 via-emerald-900/30 to-indigo-900/30 p-5 text-right shadow-lg transition hover:-translate-y-1 hover:shadow-jungle-glow"
+            >
+              <div className="absolute inset-0 opacity-0 transition group-hover:opacity-15 bg-[radial-gradient(circle_at_15%_20%,rgba(255,255,255,0.15),transparent_35%),radial-gradient(circle_at_80%_20%,rgba(0,191,165,0.12),transparent_32%)]" />
+              <h3 className="relative text-2xl font-display text-white mb-2">{item.title}</h3>
+              <p className="relative text-sm text-jungle-text/85 leading-relaxed">{item.description}</p>
+              <span className="relative inline-flex items-center gap-2 text-xs font-semibold text-jungle-lime mt-3">דפדפו בעמודי העומק <span aria-hidden="true">↗</span></span>
+            </Link>
+          ))}
+        </div>
+      </section>
 
       {/* Impulse Highlights */}
       <section className="mb-12">
