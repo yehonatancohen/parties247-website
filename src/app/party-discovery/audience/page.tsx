@@ -1,111 +1,62 @@
-import Link from 'next/link';
-import { Metadata } from 'next';
 import BackButton from '@/components/BackButton';
-import PartyGrid from '@/components/PartyGrid';
-import { Carousel, Party } from '@/data/types';
-import { createCarouselSlug } from '@/lib/carousels';
-import { getCarousels, getParties } from '@/services/api';
+import DiscoveryFilterGrid, { DiscoveryFilter } from '@/components/DiscoveryFilterGrid';
+import { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'עמודי קהל יעד | Parties 24/7',
-  description: 'מצאו מסיבות לפי קהל – סטודנטים, חיילים, נוער או 24+. קרוסלות מסוננות מראש לכל קבוצת גיל.',
+  description: 'דפי גיל וקהל שמתבססים על סינון מהבקאנד בלבד, כך שקל להוסיף עוד וריאציות.',
   alternates: { canonical: '/party-discovery/audience' },
 };
 
-const audienceDeepLinks = [
+const audienceSections: DiscoveryFilter[] = [
   {
-    title: 'מסיבות סטודנטים בתל אביב',
-    description: 'ליין אקדמי, דילים ושאטלים מקמפוסים.',
-    match: ['student', 'סטודנט'],
+    id: 'students',
+    title: 'מסיבות סטודנטים',
+    description: 'ליינים אקדמיים, הנחות ושאטלים מהקמפוסים.',
+    filters: { audience: 'students' },
+    basePath: '/audience/student-parties',
   },
   {
-    title: 'מסיבות חיילים בסופ׳׳ש',
+    id: 'soldiers',
+    title: 'מסיבות חיילים',
     description: 'הטבות שירות, שעות מאוחרות ושמירת ציוד.',
-    match: ['חייל', 'soldier'],
+    filters: { audience: 'soldiers' },
+    basePath: '/audience/soldier-parties',
   },
   {
+    id: 'teens',
     title: 'מסיבות נוער מפוקחות',
-    description: 'הורים בראש שקט עם גיל כניסה ושמירה.',
-    match: ['נוער', 'teen'],
+    description: 'גיל כניסה ברור ואבטחה במקום.',
+    filters: { audience: 'teens' },
+    basePath: '/audience/teenage-parties',
   },
   {
-    title: 'מסיבות 24+ בוטיקיות',
-    description: 'רחבות בוגרות עם קוקטיילים ודיוק בסאונד.',
-    match: ['24', 'מבוגרים'],
+    id: 'adults-24',
+    title: 'וייב 24+',
+    description: 'רחבות עם קהל בוגר וקוקטיילים.',
+    filters: { audience: '24plus' },
+    basePath: '/audience/24plus-parties',
   },
   {
-    title: 'מסיבות למשפחות וחברים',
-    description: 'אירועי צהריים, ימי הולדת ומסיבות קונספט.',
-    match: ['משפחה', 'משפחות'],
+    id: 'students-center',
+    title: 'סטודנטים בגוש דן',
+    description: 'סינון משולב של קהל ואזור המרכז.',
+    filters: { audience: 'students', area: 'tel-aviv' },
+    basePath: '/audience/student-parties',
   },
-  {
-    title: 'מסיבות קהילה וגאווה',
-    description: 'וייב פתוח ומרומם עם רשימות מוקדמות.',
-    match: ['קהילה', 'גאווה'],
-  },
-];
-
-const audienceCarouselKeywords = [
-  'student',
-  'סטודנט',
-  'campus',
-  'חייל',
-  'soldier',
-  'נוער',
-  'teen',
-  '24',
-  'מבוגרים',
-  'משפחה',
-  'משפחות',
-  'קהילה',
-  'גאווה',
 ];
 
 export default async function PartyDiscoveryAudienceLanding() {
-  let carousels: Carousel[] = [];
-  let parties: Party[] = [];
-
-  try {
-    [carousels, parties] = await Promise.all([getCarousels(), getParties()]);
-  } catch (error) {
-    console.error('Failed to fetch audience discovery data', error);
-  }
-
-  const enrichedCarousels = carousels
-    .map((carousel) => ({ ...carousel, slug: createCarouselSlug(carousel.title) }))
-    .sort((a, b) => a.order - b.order);
-
-  const filteredCarousels = enrichedCarousels.filter((carousel) =>
-    audienceCarouselKeywords.some((keyword) => carousel.slug.toLowerCase().includes(keyword)),
-  );
-
-  const deepLinkCards = audienceDeepLinks.map((item) => {
-    const matchedCarousel = enrichedCarousels.find((carousel) =>
-      item.match.some((keyword) => carousel.slug.toLowerCase().includes(keyword)),
-    );
-
-    return {
-      ...item,
-      slug: matchedCarousel ? matchedCarousel.slug : createCarouselSlug(item.title),
-      resolvedTitle: matchedCarousel?.title ?? item.title,
-    };
-  });
-
-  const partiesByCarousel = filteredCarousels.map((carousel) => ({
-    carousel,
-    parties: parties.filter((party) => carousel.partyIds?.includes(party.id)),
-  }));
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-jungle-deep via-[#0c1713] to-black text-white">
-      <div className="container mx-auto px-4 pb-16 pt-14 md:pt-16">
-        <div className="mb-6 flex justify-start">
+      <div className="container mx-auto px-4 pb-16 pt-14 md:pt-16 space-y-10">
+        <div className="flex justify-start">
           <BackButton fallbackHref="/party-discovery" label="חזרה" />
         </div>
 
-        <div className="mx-auto mb-12 max-w-5xl space-y-4 text-center">
+        <div className="mx-auto max-w-4xl space-y-4 text-center">
           <p className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-jungle-text/80">
             עמודי משנה • לפי קהל יעד
           </p>
@@ -113,60 +64,11 @@ export default async function PartyDiscoveryAudienceLanding() {
             מתאימים את המסיבה לקהל שלכם
           </h1>
           <p className="text-lg text-jungle-text/85 leading-relaxed">
-            קיצורי דרך למסיבות שמותאמות לקהל ספציפי – סטודנטים, חיילים, נוער או בוגרים. כל קישור מגיע לקרוסלה עם מסיבות שמתעדכנות לפי הצורך.
+            משתמשים באותם פרמטרים של בקאנד כדי להציג מסיבות לקהל נכון, ללא לוגיקה כפולה בפרונט.
           </p>
         </div>
 
-        <section className="mb-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {deepLinkCards.map((item) => (
-              <Link
-                key={item.slug}
-                href={`/carousels/${item.slug}`}
-                prefetch={false}
-                className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-jungle-surface/80 via-emerald-900/35 to-blue-900/30 p-5 text-right shadow-lg backdrop-blur transition hover:-translate-y-1 hover:shadow-jungle-glow"
-              >
-                <div className="absolute inset-0 opacity-0 transition group-hover:opacity-15 bg-[radial-gradient(circle_at_20%_15%,rgba(167,255,131,0.22),transparent_35%),radial-gradient(circle_at_75%_10%,rgba(255,255,255,0.16),transparent_32%)]" />
-                <h2 className="relative text-2xl font-display text-white group-hover:text-jungle-lime transition-colors">
-                  {item.resolvedTitle}
-                </h2>
-                <p className="relative text-sm text-jungle-text/85 leading-relaxed">{item.description}</p>
-                <span className="relative inline-flex items-center gap-2 text-xs font-semibold text-jungle-lime mt-3">לעמוד הקרוסלה <span aria-hidden="true">↗</span></span>
-              </Link>
-            ))}
-          </div>
-        </section>
-
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-3xl font-display text-white">קרוסלות לפי קהל יעד</h2>
-            <p className="text-sm text-jungle-text/70">מיון אוטומטי לפי מילות מפתח של קהל.</p>
-          </div>
-          {partiesByCarousel.length === 0 ? (
-            <p className="text-jungle-text/80">לא נמצאו קרוסלות רלוונטיות כרגע.</p>
-          ) : (
-            <div className="space-y-8">
-              {partiesByCarousel.map(({ carousel, parties: carouselParties }) => (
-                <div key={carousel.id} className="rounded-2xl border border-white/10 bg-jungle-surface/60 p-4 shadow-lg">
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <h3 className="text-2xl font-display text-white">{carousel.title}</h3>
-                      <p className="text-sm text-jungle-text/80">מוצג ישירות מהקרוסלה של הבקאנד.</p>
-                    </div>
-                    <Link
-                      href={`/carousels/${carousel.slug}`}
-                      prefetch={false}
-                      className="text-sm font-semibold text-jungle-lime hover:text-white"
-                    >
-                      לכל הקרוסלה ↗
-                    </Link>
-                  </div>
-                  <PartyGrid parties={carouselParties} showFilters={false} showSearch={false} />
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
+        <DiscoveryFilterGrid sections={audienceSections} />
       </div>
     </div>
   );

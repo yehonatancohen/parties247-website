@@ -87,6 +87,11 @@ const subPageLinks = [
     description: 'לדוגמה: "מסיבות סטודנטים" או "מסיבות חיילים בסופ׳׳ש".',
     to: '/party-discovery/audience',
   },
+  {
+    title: 'עמודי אזור',
+    description: 'לדוגמה: "מסיבות תל אביב" או "סופ״ש בצפון".',
+    to: '/party-discovery/area',
+  },
 ];
 
 const vibePills = [

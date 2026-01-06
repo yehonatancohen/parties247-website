@@ -135,11 +135,28 @@ const mapCarouselToFrontend = (backendCarousel: any): Carousel => {
 
 // --- API Functions ---
 
+type GetPartiesParams = {
+  upcoming?: boolean;
+  date?: string;
+  genre?: string;
+  audience?: string;
+  area?: string;
+};
+
 /**
- * Fetches all parties from the backend.
+ * Fetches parties from the backend with optional filtering.
  */
-export const getParties = async (): Promise<Party[]> => {
-  const response = await fetch(`${API_URL}/parties?upcoming=true`);
+export const getParties = async (params: GetPartiesParams = { upcoming: true }): Promise<Party[]> => {
+  const searchParams = new URLSearchParams();
+
+  if (params.upcoming !== undefined) searchParams.append('upcoming', String(params.upcoming));
+  if (params.date) searchParams.append('date', params.date);
+  if (params.genre) searchParams.append('genre', params.genre);
+  if (params.audience) searchParams.append('audience', params.audience);
+  if (params.area) searchParams.append('area', params.area);
+
+  const queryString = searchParams.toString();
+  const response = await fetch(`${API_URL}/parties${queryString ? `?${queryString}` : ''}`);
   if (!response.ok) {
     throw new Error('Failed to fetch parties');
   }
