@@ -7,43 +7,40 @@ import SocialsCta from "@/components/SocialsCta";
 import { createCarouselSlug } from "@/lib/carousels";
 // We use the SSR component for ALL carousels now
 import PartyCarousel from "@/components/HotEventsCarousel";
+import { Carousel, Party } from "@/data/types";
 
 const HERO_IMAGE_URL =
   "https://i.ibb.co/qMQXFTpr/Gemini-Generated-Image-a2279ca2279ca227.png";
 
+type DisplayParty = Party & { _id?: string; city?: string };
+
 interface HomeClientProps {
-  initialParties: any[];
-  initialCarousels: any[];
+  initialParties: DisplayParty[];
+  initialCarousels: Carousel[];
 }
 
 // --- Main Component ---
 export default function HomeClient({ initialParties = [], initialCarousels = [] }: HomeClientProps) {
-  const carouselsWithParties = useMemo(
-    () =>
-      initialCarousels
-        .map((carousel) => {
-          const targetIds = carousel.partyIds.map((_id: any) => String(_id));
+  const carouselsWithParties = useMemo(() => {
+    const partyLookup = new Map(
+      initialParties.map((party) => [String(party.id ?? party._id), party])
+    );
 
-          const carouselParties = initialParties.filter((p) =>
-            targetIds.includes(String(p.id))
-          );
+    return initialCarousels
+      .map((carousel) => {
+        const targetIds = (carousel.partyIds ?? []).map((id) => String(id));
+        const carouselParties = targetIds
+          .map((id: string) => partyLookup.get(id))
+          .filter((party): party is DisplayParty => Boolean(party));
 
-          const fillerParties = initialParties
-            .filter((p) => !targetIds.includes(String(p.id)))
-            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-            .slice(0, Math.max(0, 12 - carouselParties.length));
-
-          const hydratedParties = [...carouselParties, ...fillerParties];
-
-          return {
-            ...carousel,
-            parties: hydratedParties,
-            viewAllLink: `/carousels/${createCarouselSlug(carousel.title)}`,
-          };
-        })
-        .filter((c) => c.parties.length > 0),
-    [initialCarousels, initialParties]
-  );
+        return {
+          ...carousel,
+          parties: carouselParties,
+          viewAllLink: `/carousels/${createCarouselSlug(carousel.title)}`,
+        };
+      })
+      .filter((c) => c.parties.length > 0);
+  }, [initialCarousels, initialParties]);
 
   const stats = useMemo(() => {
     const uniqueCities = new Set(
