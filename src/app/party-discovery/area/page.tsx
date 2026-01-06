@@ -1,6 +1,7 @@
 import BackButton from '@/components/BackButton';
-import DiscoveryFilterGrid, { DiscoveryFilter } from '@/components/DiscoveryFilterGrid';
+import DiscoveryFilterGrid from '@/components/DiscoveryFilterGrid';
 import { Metadata } from 'next';
+import { areaSections } from '../filters';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,44 +10,6 @@ export const metadata: Metadata = {
   description: 'דפי אזור שמסתמכים על פרמטר area של הבקאנד כדי להחזיר רק מסיבות רלוונטיות.',
   alternates: { canonical: '/party-discovery/area' },
 };
-
-const areaSections: DiscoveryFilter[] = [
-  {
-    id: 'tel-aviv',
-    title: 'מסיבות תל אביב',
-    description: 'טכנו, מיינסטרים ובר הופעות במרכז.',
-    filters: { area: 'tel-aviv' },
-    basePath: '/cities/tel-aviv',
-  },
-  {
-    id: 'haifa',
-    title: 'מסיבות חיפה',
-    description: 'חופים, כרמל ושוק תלפיות.',
-    filters: { area: 'haifa' },
-    basePath: '/cities/haifa',
-  },
-  {
-    id: 'center',
-    title: 'גוש דן והמרכז',
-    description: 'בר-קלאבים, גגות והאוס וגרוב.',
-    filters: { area: 'center' },
-    basePath: '/all-parties',
-  },
-  {
-    id: 'north',
-    title: 'צפון והעמקים',
-    description: 'טבע, טראנס ומסיבות קיץ.',
-    filters: { area: 'north' },
-    basePath: '/cities/haifa',
-  },
-  {
-    id: 'south',
-    title: 'דרום ומדבר',
-    description: 'רייבי מחסנים ובמות פתוחות.',
-    filters: { area: 'south' },
-    basePath: '/all-parties',
-  },
-];
 
 export default async function PartyDiscoveryAreaLanding() {
   return (
@@ -64,11 +27,11 @@ export default async function PartyDiscoveryAreaLanding() {
             בוחרים מסיבות לפי אזור בארץ
           </h1>
           <p className="text-lg text-jungle-text/85 leading-relaxed">
-            כל מקטע מושך נתונים עם פרמטר area, כך שאפשר להרחיב לעוד ערים או מחוזות על ידי הוספת אובייקט חדש בלבד.
+            כל קלף יפתח עמוד נפרד שמושך את המסיבות הרלוונטיות עם פרמטר area מהבקאנד.
           </p>
         </div>
 
-        <DiscoveryFilterGrid sections={areaSections} />
+        <DiscoveryFilterGrid sections={areaSections} detailBasePath="/party-discovery/area" />
       </div>
     </div>
   );

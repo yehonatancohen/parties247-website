@@ -1,6 +1,7 @@
 import BackButton from '@/components/BackButton';
-import DiscoveryFilterGrid, { DiscoveryFilter } from '@/components/DiscoveryFilterGrid';
+import DiscoveryFilterGrid from '@/components/DiscoveryFilterGrid';
 import { Metadata } from 'next';
+import { genreSections } from '../filters';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,44 +10,6 @@ export const metadata: Metadata = {
   description: 'מסננים מסיבות לפי ז׳אנר ישירות מהבקאנד – טכנו, האוס, טראנס או מיינסטרים.',
   alternates: { canonical: '/party-discovery/genre' },
 };
-
-const genreSections: DiscoveryFilter[] = [
-  {
-    id: 'techno-tel-aviv',
-    title: 'מסיבות טכנו בתל אביב',
-    description: 'רייבי מחסנים ומועדונים בדרום העיר עם סאונד כבד.',
-    filters: { genre: 'techno', area: 'tel-aviv' },
-    basePath: '/genre/techno-music',
-  },
-  {
-    id: 'techno-north',
-    title: 'טכנו בצפון והסביבה',
-    description: 'אפטרים וסטים מלודיים בחיפה והגליל.',
-    filters: { genre: 'techno', area: 'north' },
-    basePath: '/genre/techno-music',
-  },
-  {
-    id: 'house-sunsets',
-    title: 'האוס וגרוב בשקיעות',
-    description: 'גגות, ברים פתוחים ומסיבות בין ערביים.',
-    filters: { genre: 'house' },
-    basePath: '/genre/house-music',
-  },
-  {
-    id: 'mainstream-city',
-    title: 'מיינסטרים ופופ בעיר',
-    description: 'להיטים, רגאטון וקריוקי למסיבות גדולות.',
-    filters: { genre: 'mainstream', area: 'tel-aviv' },
-    basePath: '/genre/mainstream-music',
-  },
-  {
-    id: 'trance-open-air',
-    title: 'מסיבות טראנס פתוחות',
-    description: 'טראנס וטבע עם מרחבים פתוחים.',
-    filters: { genre: 'trance' },
-    basePath: '/genre/trance-music',
-  },
-];
 
 export default async function PartyDiscoveryGenreLanding() {
   return (
@@ -64,11 +27,11 @@ export default async function PartyDiscoveryGenreLanding() {
             מוצאים את הז׳אנר שמדליק אתכם
           </h1>
           <p className="text-lg text-jungle-text/85 leading-relaxed">
-            כל כרטיס מסנן ישירות מהבקאנד לפי ז׳אנר ואזור, כך שקל להוסיף עמודים חדשים בלי קוד נוסף.
+            בוחרים קלף, עוברים לעמוד ייעודי שמושך את המסיבות החיות מהבקאנד עם פילטרים מוכנים.
           </p>
         </div>
 
-        <DiscoveryFilterGrid sections={genreSections} />
+        <DiscoveryFilterGrid sections={genreSections} detailBasePath="/party-discovery/genre" />
       </div>
     </div>
   );

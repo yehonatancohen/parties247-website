@@ -1,6 +1,7 @@
 import BackButton from '@/components/BackButton';
-import DiscoveryFilterGrid, { DiscoveryFilter } from '@/components/DiscoveryFilterGrid';
+import DiscoveryFilterGrid from '@/components/DiscoveryFilterGrid';
 import { Metadata } from 'next';
+import { audienceSections } from '../filters';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,44 +10,6 @@ export const metadata: Metadata = {
   description: 'דפי גיל וקהל שמתבססים על סינון מהבקאנד בלבד, כך שקל להוסיף עוד וריאציות.',
   alternates: { canonical: '/party-discovery/audience' },
 };
-
-const audienceSections: DiscoveryFilter[] = [
-  {
-    id: 'students',
-    title: 'מסיבות סטודנטים',
-    description: 'ליינים אקדמיים, הנחות ושאטלים מהקמפוסים.',
-    filters: { audience: 'students' },
-    basePath: '/audience/student-parties',
-  },
-  {
-    id: 'soldiers',
-    title: 'מסיבות חיילים',
-    description: 'הטבות שירות, שעות מאוחרות ושמירת ציוד.',
-    filters: { audience: 'soldiers' },
-    basePath: '/audience/soldier-parties',
-  },
-  {
-    id: 'teens',
-    title: 'מסיבות נוער מפוקחות',
-    description: 'גיל כניסה ברור ואבטחה במקום.',
-    filters: { audience: 'teens' },
-    basePath: '/audience/teenage-parties',
-  },
-  {
-    id: 'adults-24',
-    title: 'וייב 24+',
-    description: 'רחבות עם קהל בוגר וקוקטיילים.',
-    filters: { audience: '24plus' },
-    basePath: '/audience/24plus-parties',
-  },
-  {
-    id: 'students-center',
-    title: 'סטודנטים בגוש דן',
-    description: 'סינון משולב של קהל ואזור המרכז.',
-    filters: { audience: 'students', area: 'tel-aviv' },
-    basePath: '/audience/student-parties',
-  },
-];
 
 export default async function PartyDiscoveryAudienceLanding() {
   return (
@@ -64,11 +27,11 @@ export default async function PartyDiscoveryAudienceLanding() {
             מתאימים את המסיבה לקהל שלכם
           </h1>
           <p className="text-lg text-jungle-text/85 leading-relaxed">
-            משתמשים באותם פרמטרים של בקאנד כדי להציג מסיבות לקהל נכון, ללא לוגיקה כפולה בפרונט.
+            כל קלף מקשר לעמוד נפרד שמושך את המסיבות החיות עם פרמטרי audience ו-area מוכנים.
           </p>
         </div>
 
-        <DiscoveryFilterGrid sections={audienceSections} />
+        <DiscoveryFilterGrid sections={audienceSections} detailBasePath="/party-discovery/audience" />
       </div>
     </div>
   );
