@@ -1,9 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
-import { Carousel } from '@/data/types'; // Ensure this path is correct
 import { Metadata } from 'next';
-import { createCarouselSlug } from '@/lib/carousels';
-import { getCarousels } from '@/services/api';
+import { areaSections, audienceSections, genreSections } from './filters';
 import SmoothScrollAnchors from '@/components/SmoothScrollAnchors';
 import BackButton from '@/components/BackButton';
 
@@ -118,11 +116,17 @@ const impulseLinks = [
   },
   {
     title: 'חברים באים?',
-    to: '/carousels/חם-עכשיו',
+    to: '/party-discovery/area/tel-aviv',
     anchor: 'impulse-groups',
     badge: '✨ וייב חברתי',
     blurb: 'אוספים עם רחבות ענק, חבילות שולחן וסטים של הדיג׳יים המדוברים.',
   },
+];
+
+const highlightedFilters = [
+  { ...genreSections[0], type: 'genre' as const },
+  { ...audienceSections[0], type: 'audience' as const },
+  { ...areaSections[0], type: 'area' as const },
 ];
 
 export const metadata: Metadata = {
@@ -135,26 +139,6 @@ export const metadata: Metadata = {
 
 // --- Main Server Component ---
 export default async function PartyDiscoveryPage() {
-  // SSR Data Fetching
-  let carousels: Carousel[] = [];
-  try {
-     const data = await getCarousels();
-     // 2. Safeguard Data: Ensure we actually have an array to prevent sort() crashing
-     if (Array.isArray(data)) {
-        carousels = data;
-     }
-  } catch (error) {
-     console.error("Failed to fetch carousels for SSR", error);
-     // We intentionally continue rendering the rest of the page even if carousels fail
-  }
-
-  const carouselLinks = carousels
-    .sort((a: any, b: any) => a.order - b.order)
-    .map((carousel: any) => ({
-      title: carousel.title,
-      to: `/carousels/${createCarouselSlug(carousel.title)}`,
-    }));
-
   return (
     <div id="top" className="min-h-screen bg-gradient-to-b from-jungle-deep via-[#0c1713] to-black text-white scroll-smooth">
       <SmoothScrollAnchors />
@@ -406,27 +390,26 @@ export default async function PartyDiscoveryPage() {
         </div>
       </section>
 
-      {/* Dynamic Carousels Section */}
-      {carouselLinks.length > 0 && (
-        <section id="carousels" className="mb-12">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-3xl font-display text-white">קרוסלות נבחרות</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {carouselLinks.map((item) => (
-              <Link
-                key={item.to}
-                href={item.to}
-                prefetch={false}
-                className="rounded-2xl border border-white/10 bg-gradient-to-r from-jungle-surface/80 via-cyan-900/30 to-purple-900/30 p-5 shadow-md transition hover:-translate-y-1 hover:border-jungle-lime/60 hover:shadow-jungle-glow"
-              >
-                <h3 className="text-2xl font-display text-white mb-2">{item.title}</h3>
-                <p className="text-jungle-text/75 leading-relaxed">כל הליינים החמים בקרוסלה אחת.</p>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
+      {/* Highlighted Party Pages Section */}
+      <section id="featured-filters" className="mb-12">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-3xl font-display text-white">עמודי מסיבות מובילים</h2>
+          <p className="text-sm text-jungle-text/70">קפיצה מהירה לעמודי המסיבות החדשים והמתעדכנים.</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {highlightedFilters.map((item) => (
+            <Link
+              key={item.id}
+              href={`/party-discovery/${item.type}/${item.id}`}
+              prefetch={false}
+              className="rounded-2xl border border-white/10 bg-gradient-to-r from-jungle-surface/80 via-cyan-900/30 to-purple-900/30 p-5 shadow-md transition hover:-translate-y-1 hover:border-jungle-lime/60 hover:shadow-jungle-glow"
+            >
+              <h3 className="text-2xl font-display text-white mb-2">{item.title}</h3>
+              <p className="text-jungle-text/75 leading-relaxed">{item.description}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
 
       {/* Helper Links Section */}
       <section className="mb-16">
