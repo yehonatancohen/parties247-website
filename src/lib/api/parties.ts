@@ -83,6 +83,7 @@ const mapPartyToFrontend = (backendParty: any): Party => {
       address: locationAddress,
       geo: geo,
     },
+    musicGenres: backendParty.musicGenres || 'אחר',
     description: description || 'No description available.',
     originalUrl: backendParty.purchaseUrl || backendParty.originalUrl || backendParty.goOutUrl,
     region: backendParty.region || 'לא ידוע',
