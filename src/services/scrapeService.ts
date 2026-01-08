@@ -129,7 +129,7 @@ export const scrapePartyDetails = async (url: string): Promise<ScrapedPartyDetai
       name: eventData.Title,
       imageUrl: imageUrl,
       date: eventData.StartingDate,
-      // FIX: Format location as an object to match the Party type.
+      musicGenres: eventData.MusicGenres || 'אחר',
       location: { name: eventData.Adress },
       description: description || 'No description available.',
       region: getRegion(eventData.Adress),
