@@ -5,6 +5,7 @@ export interface Party {
   name: string;
   imageUrl: string;
   date: string; // ISO 8601 format
+  musicGenres: string;
   location: {
     name: string;
     address?: string;

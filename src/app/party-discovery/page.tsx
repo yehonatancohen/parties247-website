@@ -8,8 +8,6 @@ import SmoothScrollAnchors from '@/components/SmoothScrollAnchors';
 import BackButton from '@/components/BackButton';
 
 // 1. Force Dynamic Rendering
-// This ensures the server builds this page fresh on every request, 
-// preventing hydration/static generation mismatches that can cause loops.
 export const dynamic = 'force-dynamic';
 
 // --- Static Data Definitions ---
@@ -71,21 +69,13 @@ const helperLinks = [
   { title: 'הצהרת מקדמי אירועים', to: '/promoter-disclaimer', blurb: 'שקיפות מלאה מול מפיקים ושותפים.' },
 ];
 
+// --- UPDATED SECTION: Only 1 link to the Specific Parties Hub ---
 const subPageLinks = [
   {
-    title: 'עמודי יום ממוקדים',
-    description: 'לדוגמה: "מסיבות היום בתל אביב" או "שישי בחיפה".',
-    to: '/party-discovery/day',
-  },
-  {
-    title: 'עמודי ז׳אנר ממוקדים',
-    description: 'לדוגמה: "מסיבות טכנו בתל אביב" או "האוס בגגות".',
-    to: '/party-discovery/genre',
-  },
-  {
-    title: 'עמודי קהל יעד',
-    description: 'לדוגמה: "מסיבות סטודנטים" או "מסיבות חיילים בסופ׳׳ש".',
-    to: '/party-discovery/audience',
+    title: 'חיפוש ממוקד וקטגוריות מיוחדות',
+    description: 'מסיבות טכנו בתל אביב, 18+ עם אלכוהול חופשי, מסיבות לחיילים, סופ"ש בצפון ועוד – כל השילובים הספציפיים במקום אחד.',
+    // Update this to the exact route where you placed the component from the previous step
+    to: '/parties', 
   },
 ];
 
@@ -134,13 +124,12 @@ export default async function PartyDiscoveryPage() {
   let carousels: Carousel[] = [];
   try {
      const data = await getCarousels();
-     // 2. Safeguard Data: Ensure we actually have an array to prevent sort() crashing
+     // 2. Safeguard Data
      if (Array.isArray(data)) {
         carousels = data;
      }
   } catch (error) {
      console.error("Failed to fetch carousels for SSR", error);
-     // We intentionally continue rendering the rest of the page even if carousels fail
   }
 
   const carouselLinks = carousels
@@ -206,7 +195,7 @@ export default async function PartyDiscoveryPage() {
               </Link>
             </div>
 
-            {/* Hash Links - Standard <a> tags are perfect for anchors */}
+            {/* Hash Links */}
             <div className="flex flex-wrap justify-center gap-3 text-sm text-jungle-accent/90 pt-2">
               <a href="#audiences" className="rounded-full border border-white/10 px-3 py-1 hover:border-jungle-lime hover:text-white">קהל יעד</a>
               <a href="#cities" className="rounded-full border border-white/10 px-3 py-1 hover:border-jungle-lime hover:text-white">ערים</a>
@@ -223,7 +212,7 @@ export default async function PartyDiscoveryPage() {
           <Link
             key={item.to}
             href={item.to}
-            prefetch={false} // 3. Disable prefetch for stability without JS
+            prefetch={false}
             className="group overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-jungle-surface/80 via-emerald-900/30 to-slate-900/40 p-5 text-right shadow-lg backdrop-blur transition hover:-translate-y-1 hover:shadow-jungle-glow"
           >
             <div className="absolute inset-0 opacity-0 transition group-hover:opacity-15 bg-[radial-gradient(circle_at_20%_20%,rgba(167,255,131,0.25),transparent_35%),radial-gradient(circle_at_80%_10%,rgba(255,255,255,0.18),transparent_32%)]" />
@@ -238,24 +227,27 @@ export default async function PartyDiscoveryPage() {
         ))}
       </div>
 
-      {/* Sub Pages CTA */}
+      {/* Sub Pages CTA - UPDATED to Single Column Grid */}
       <section className="mb-12">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-3xl font-display text-white">עמודי משנה חדשים</h2>
-          <p className="text-sm text-jungle-text/70">קישורי עומק למיקוד לפי יום, ז׳אנר או קהל.</p>
+          <h2 className="text-3xl font-display text-white">חיפוש ממוקד</h2>
+          <p className="text-sm text-jungle-text/70">הדרך המדויקת למצוא את המסיבה שלכם.</p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Changed grid-cols-1 to make the single item span full width */}
+        <div className="grid grid-cols-1 gap-4">
           {subPageLinks.map((item) => (
             <Link
               key={item.to}
               href={item.to}
               prefetch={false}
-              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-jungle-surface/80 via-emerald-900/30 to-indigo-900/30 p-5 text-right shadow-lg transition hover:-translate-y-1 hover:shadow-jungle-glow"
+              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-jungle-surface/80 via-emerald-900/30 to-indigo-900/30 p-8 text-right shadow-lg transition hover:-translate-y-1 hover:shadow-jungle-glow"
             >
               <div className="absolute inset-0 opacity-0 transition group-hover:opacity-15 bg-[radial-gradient(circle_at_15%_20%,rgba(255,255,255,0.15),transparent_35%),radial-gradient(circle_at_80%_20%,rgba(0,191,165,0.12),transparent_32%)]" />
-              <h3 className="relative text-2xl font-display text-white mb-2">{item.title}</h3>
-              <p className="relative text-sm text-jungle-text/85 leading-relaxed">{item.description}</p>
-              <span className="relative inline-flex items-center gap-2 text-xs font-semibold text-jungle-lime mt-3">דפדפו בעמודי העומק <span aria-hidden="true">↗</span></span>
+              <h3 className="relative text-3xl font-display text-white mb-2 text-jungle-lime">{item.title}</h3>
+              <p className="relative text-base text-jungle-text/85 leading-relaxed max-w-3xl">{item.description}</p>
+              <span className="relative inline-flex items-center gap-2 text-sm font-semibold text-white mt-4 bg-white/10 px-4 py-2 rounded-full group-hover:bg-jungle-lime group-hover:text-black transition-colors">
+                 מעבר לקטגוריות המיוחדות <span aria-hidden="true">↗</span>
+              </span>
             </Link>
           ))}
         </div>
