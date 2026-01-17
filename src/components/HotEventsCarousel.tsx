@@ -8,6 +8,7 @@ import { register } from 'swiper/element/bundle';
 import { Party } from '../data/types';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
 import { trackPartyRedirect } from '../lib/analytics';
+import { getWeeklyCoverImageUrl } from '../lib/partyImages';
 
 const ArrowLeft: FC<{ className?: string }> = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
@@ -54,7 +55,7 @@ const CarouselPartyCard: FC<{ party: Party; directUrl: string; priority: boolean
       <div className="relative rounded-xl overflow-hidden shadow-lg transition-all duration-500 ease-in-out border border-wood-brown/50 transform-gpu subpixel-antialiased">
         
         <Image
-          src={party.imageUrl}
+          src={getWeeklyCoverImageUrl(party.imageUrl, party.date)}
           alt={party.name}
           loading={priority ? "eager" : "lazy"}
           className="w-full aspect-[2/3] object-cover"
