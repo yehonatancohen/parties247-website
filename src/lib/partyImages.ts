@@ -45,7 +45,7 @@ export const fetchGoOutCoverImage = async (eventUrl: string): Promise<string | n
       const htmlText = await response.text();
       if (!htmlText) return null;
 
-      const nextDataMatch = htmlText.match(/<script[^>]*id=\"__NEXT_DATA__\"[^>]*>(.*?)<\\/script>/s);
+      const nextDataMatch = htmlText.match(/<script[^>]*id=["']__NEXT_DATA__["'][^>]*>([\s\S]*?)<\\/script>/);
       if (nextDataMatch?.[1]) {
         const jsonData = JSON.parse(nextDataMatch[1]);
         const eventData = jsonData?.props?.pageProps?.event;
