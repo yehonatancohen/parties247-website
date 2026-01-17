@@ -1,5 +1,6 @@
 import { Party, Carousel, AnalyticsSummary, AnalyticsSummaryParty } from '../data/types';
 import { SeoPageConfig } from '../lib/seoparties';
+import { fetchGoOutCoverImage } from '../lib/partyImages';
 
 const API_URL = 'https://parties247-backend.onrender.com/api';
 const ANALYTICS_API_BASE = `${API_URL}/%61nalytics`;
@@ -23,6 +24,33 @@ const isDateToday = (dateString: string) => {
   const partyDate = new Date(dateString).setHours(0, 0, 0, 0);
   const today = new Date().setHours(0, 0, 0, 0);
   return partyDate === today;
+};
+
+const isUpcomingParty = (dateString?: string): boolean => {
+  if (!dateString) return true;
+  const eventDate = new Date(dateString);
+  if (Number.isNaN(eventDate.getTime())) return true;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return eventDate >= today;
+};
+
+const refreshGoOutCoverImages = async (parties: Party[]): Promise<Party[]> => {
+  if (typeof window !== 'undefined') return parties;
+
+  const refreshed = await Promise.all(
+    parties.map(async (party) => {
+      if (!party.originalUrl || !party.originalUrl.includes('go-out.co')) return party;
+      if (!isUpcomingParty(party.date)) return party;
+
+      const coverImageUrl = await fetchGoOutCoverImage(party.originalUrl);
+      if (!coverImageUrl) return party;
+
+      return { ...party, imageUrl: coverImageUrl };
+    })
+  );
+
+  return refreshed;
 };
 
 type PartyAnalyticsPayload = {
@@ -185,7 +213,7 @@ export const getParties = async (filters?: SeoPageConfig["apiFilters"]): Promise
     });
   }
 
-  return parties;
+  return refreshGoOutCoverImages(parties);
 };
 
 // ... (Rest of the file: getPartyBySlug, addParty, etc. remains exactly as you provided) ...

@@ -16,6 +16,61 @@ const isActivePartyDate = (partyDate?: string): boolean => {
   return eventDate >= today;
 };
 
+const goOutCoverCache = new Map<string, Promise<string | null>>();
+
+const normalizeGoOutImageUrl = (imagePath: string): string => {
+  const normalizedPath = imagePath.replace('_whatsappImage.jpg', '_coverImage.jpg');
+  if (normalizedPath.startsWith('http')) {
+    return normalizedPath;
+  }
+  const cleanedPath = normalizedPath.startsWith('/') ? normalizedPath.slice(1) : normalizedPath;
+  return `https://d15q6k8l9pfut7.cloudfront.net/${cleanedPath}`;
+};
+
+export const fetchGoOutCoverImage = async (eventUrl: string): Promise<string | null> => {
+  if (!eventUrl || !eventUrl.includes('go-out.co')) return null;
+
+  const cacheKey = `${eventUrl}|${getWeekCacheKey()}`;
+  const cached = goOutCoverCache.get(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  const fetchPromise = (async () => {
+    try {
+      const response = await fetch(eventUrl, {
+        next: { revalidate: 60 * 60 * 24 * 7 },
+      });
+      if (!response.ok) return null;
+      const htmlText = await response.text();
+      if (!htmlText) return null;
+
+      const nextDataMatch = htmlText.match(/<script[^>]*id=\"__NEXT_DATA__\"[^>]*>(.*?)<\\/script>/s);
+      if (nextDataMatch?.[1]) {
+        const jsonData = JSON.parse(nextDataMatch[1]);
+        const eventData = jsonData?.props?.pageProps?.event;
+        const imagePath = eventData?.CoverImage?.Url || eventData?.WhatsappImage?.Url || '';
+        if (imagePath) {
+          return normalizeGoOutImageUrl(imagePath);
+        }
+      }
+
+      const ogImageMatch = htmlText.match(/<meta[^>]+property=[\"']og:image[\"'][^>]+content=[\"']([^\"']+)[\"'][^>]*>/i);
+      if (ogImageMatch?.[1]) {
+        return normalizeGoOutImageUrl(ogImageMatch[1]);
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Failed to fetch go-out cover image:', error);
+      return null;
+    }
+  })();
+
+  goOutCoverCache.set(cacheKey, fetchPromise);
+  return fetchPromise;
+};
+
 export const getWeeklyCoverImageUrl = (imageUrl: string, partyDate?: string): string => {
   if (!imageUrl) return imageUrl;
   if (!isActivePartyDate(partyDate)) return imageUrl;
