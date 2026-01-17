@@ -11,6 +11,7 @@ import DiscountCodeReveal from "@/components/DiscountCodeReveal"; // Ensure this
 import RelatedPartyCard from "@/components/RelatedPartyCard"; 
 import PurchaseButton from "@/components/PurchaseButton"; 
 import { BASE_URL, LAST_TICKETS_TAG } from "@/data/constants";
+import { getWeeklyCoverImageUrl } from "@/lib/partyImages";
 
 // Force dynamic rendering if API data changes often, or use revalidate
 export const revalidate = 60;
@@ -98,7 +99,8 @@ export async function generateMetadata(
   
   if (!data?.party) return { title: "אירוע לא נמצא" };
   const { party } = data;
-  const ogImage = getWhatsappOgImage(party.imageUrl);
+  const coverImageUrl = getWeeklyCoverImageUrl(party.imageUrl, party.date);
+  const ogImage = getWhatsappOgImage(coverImageUrl);
 
   return {
     title: `${party.name} | Parties 24/7`,
@@ -130,6 +132,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
   const referralUrl = getReferralUrl(party.originalUrl, party.referralCode);
   const hasLastTickets = party.tags.includes(LAST_TICKETS_TAG);
   const partyPageUrl = `${BASE_URL}/event/${party.slug}`;
+  const coverImageUrl = getWeeklyCoverImageUrl(party.imageUrl, party.date);
   const whatsappMessage = encodeURIComponent(`היי, אשמח לשמור כרטיסים ל"${party.name}" ב-${formattedDate}. ${partyPageUrl}`);
   const whatsappHref = `https://wa.me/?text=${whatsappMessage}`;
   // Note: hotNow logic requires fetching carousels. Passing false for now.
@@ -146,7 +149,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
       'name': party.location.name,
       'address': party.location.address || party.location.name,
     },
-    'image': [party.imageUrl],
+    'image': [coverImageUrl],
     'description': party.description,
     'offers': {
       '@type': 'Offer',
@@ -177,7 +180,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
                 {/* Image Section */}
                 <div className="md:col-span-2">
                     <Image
-                      src={party.imageUrl}
+                      src={coverImageUrl}
                       alt={party.name}
                       className="w-full h-64 md:h-full object-cover"
                       loading="lazy"
