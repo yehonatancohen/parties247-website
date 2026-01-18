@@ -6,6 +6,7 @@ import LoadingSpinner from './LoadingSpinner';
 import { BASE_URL, LAST_TICKETS_TAG } from '../data/constants';
 import { SearchIcon, EditIcon, ChevronDownIcon, ArrowUpIcon, ArrowDownIcon, MegaphoneIcon, ShareIcon } from './Icons';
 import { pageLinkOptions } from '../data/pageLinks';
+import { scrapePartyDetails } from '../services/scrapeService';
 
 const sanitizeGoOutUrl = (input: string): string => {
   if (!input) {
@@ -189,6 +190,8 @@ const AdminDashboard: React.FC = () => {
   const [partySort, setPartySort] = useState<{key: 'date' | 'name', direction: 'asc' | 'desc'}>({ key: 'date', direction: 'asc' });
 
   const [promotionMessages, setPromotionMessages] = useState<Record<string, PromotionMessage>>({});
+  const [isRefreshingCovers, setIsRefreshingCovers] = useState(false);
+  const [coverRefreshStatus, setCoverRefreshStatus] = useState<string | null>(null);
 
   const [editingCarouselId, setEditingCarouselId] = useState<string | null>(null);
   const [editingCarouselTitle, setEditingCarouselTitle] = useState('');
@@ -258,6 +261,40 @@ const AdminDashboard: React.FC = () => {
       // Error is handled in the context provider
     }
   };
+
+  const handleRefreshAllCoverImages = useCallback(async () => {
+    setCoverRefreshStatus(null);
+    setIsRefreshingCovers(true);
+
+    const targets = activeParties.filter((party) => party.originalUrl?.includes('go-out.co'));
+    if (targets.length === 0) {
+      setCoverRefreshStatus('No active go-out.co parties found.');
+      setIsRefreshingCovers(false);
+      return;
+    }
+
+    let updatedCount = 0;
+    let failedCount = 0;
+
+    for (const party of targets) {
+      try {
+        const scraped = await scrapePartyDetails(party.originalUrl);
+        if (scraped.imageUrl && scraped.imageUrl !== party.imageUrl) {
+          await updateParty({ ...party, imageUrl: scraped.imageUrl });
+          updatedCount += 1;
+        }
+      } catch (error) {
+        failedCount += 1;
+        console.error('Failed to refresh cover image for party', party.id, error);
+      }
+    }
+
+    setCoverRefreshStatus(
+      `Updated ${updatedCount} cover image${updatedCount === 1 ? '' : 's'}.` +
+        (failedCount ? ` ${failedCount} failed.` : '')
+    );
+    setIsRefreshingCovers(false);
+  }, [activeParties, updateParty]);
   
   const handleSaveParty = async (updatedParty: Party) => {
     await updateParty(updatedParty);
@@ -603,6 +640,18 @@ const AdminDashboard: React.FC = () => {
               className="flex-grow bg-jungle-surface text-white p-2 rounded-md border border-wood-brown focus:ring-2 focus:ring-jungle-lime focus:outline-none"
             />
             <button onClick={handleSaveDefaultReferral} className="bg-jungle-accent text-jungle-deep font-bold py-2 px-4 rounded-md hover:bg-opacity-80">Save</button>
+        </div>
+        <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-2">
+          <button
+            onClick={handleRefreshAllCoverImages}
+            disabled={isRefreshingCovers}
+            className="bg-jungle-lime text-jungle-deep font-bold py-2 px-4 rounded-md hover:bg-opacity-80 disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            {isRefreshingCovers ? <LoadingSpinner /> : 'Refresh all cover images'}
+          </button>
+          {coverRefreshStatus && (
+            <span className="text-sm text-jungle-text/80">{coverRefreshStatus}</span>
+          )}
         </div>
       </div>
 
