@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Image from "next/image"
 import { Party } from '../data/types';
 import { CalendarIcon, LocationIcon } from './Icons';
+import { getWeeklyCoverImageUrl } from '../lib/partyImages';
 
 interface RelatedPartyCardProps {
   party: Party;
@@ -23,7 +24,7 @@ const RelatedPartyCard: React.FC<RelatedPartyCardProps> = ({ party }) => {
     >
         <div className="relative">
           <Image 
-            src={party.imageUrl} 
+            src={getWeeklyCoverImageUrl(party.imageUrl, party.date)} 
             alt={party.name} 
             className="w-full aspect-[4/3] object-cover" 
             loading="lazy"

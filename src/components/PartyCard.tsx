@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Party } from '../data/types';
 import { LAST_TICKETS_TAG } from '../data/constants';
+import { getWeeklyCoverImageUrl } from '../lib/partyImages';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
 import DiscountCodeReveal from './DiscountCodeReveal';
 
@@ -44,7 +45,7 @@ const PartyCard: React.FC<PartyCardProps> = ({ party, showDiscountCode = false }
       <Link href={`/event/${party.slug}`} className="block">
         <div className="relative">
           <Image
-            src={party.imageUrl} 
+            src={getWeeklyCoverImageUrl(party.imageUrl, party.date)} 
             alt={party.name} 
             className="w-full aspect-[3/4] object-cover" 
             loading="lazy"
