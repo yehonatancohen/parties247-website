@@ -2,6 +2,7 @@ import React from 'react';
 import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Party } from "@/data/types";
 import PartyGrid from '@/components/PartyGrid';
 import JungleDecorations from '@/components/JungleDecorations';
 import * as api from '@/services/api';
@@ -43,7 +44,7 @@ async function getPurimData() {
             c.title.includes('פורים') || c.title.toLowerCase().includes('purim')
         );
 
-        let purimParties = [];
+        let purimParties: Party[] = [];
 
         if (purimCarousel) {
             // If we have a carousel, prioritize its logic
