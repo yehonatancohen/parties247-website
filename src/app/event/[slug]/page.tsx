@@ -124,8 +124,8 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
 
   // Formatting dates
   const partyDate = new Date(party.date);
-  const formattedDate = new Intl.DateTimeFormat('he-IL', { dateStyle: 'full', timeZone: 'Asia/Jerusalem' }).format(partyDate);
-  const formattedTime = new Intl.DateTimeFormat('he-IL', { timeStyle: 'short', timeZone: 'Asia/Jerusalem' }).format(partyDate);
+  const formattedDate = new Intl.DateTimeFormat('he-IL', { dateStyle: 'full', timeZone: 'UTC' }).format(partyDate);
+  const formattedTime = new Intl.DateTimeFormat('he-IL', { timeStyle: 'short', timeZone: 'UTC' }).format(partyDate);
 
   const referralUrl = getReferralUrl(party.originalUrl, party.referralCode);
   const hasLastTickets = party.tags.includes(LAST_TICKETS_TAG);

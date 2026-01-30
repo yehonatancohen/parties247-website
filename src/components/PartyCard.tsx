@@ -20,13 +20,13 @@ const PartyCard: React.FC<PartyCardProps> = ({ party, showDiscountCode = false }
     weekday: 'long',
     day: '2-digit',
     month: '2-digit',
-    timeZone: 'Asia/Jerusalem',
+    timeZone: 'UTC',
   }).format(partyDate);
 
   const formattedTime = new Intl.DateTimeFormat('he-IL', {
     timeStyle: 'short',
     hour12: false,
-    timeZone: 'Asia/Jerusalem',
+    timeZone: 'UTC',
   }).format(partyDate);
 
   const getTagColor = (tag: string) => {
