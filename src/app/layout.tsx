@@ -38,7 +38,18 @@ export const metadata: Metadata = {
   description: "Find parties and nightlife events in Israel.",
   metadataBase: new URL(BASE_URL),
   icons: {
-    icon: "/icon-192.png",
+    icon: [
+      {
+        url: "/icon-192-favicon.png",
+        sizes: "32x32",
+        type: "image/png",
+      },
+      {
+        url: "/icon-192.png", 
+        sizes: "192x192",
+        type: "image/png",
+      },
+    ],
     shortcut: "/icon-192.png",
     apple: "/icon-192.png",
   },
