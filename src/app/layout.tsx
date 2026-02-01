@@ -15,6 +15,7 @@ import CookieBanner from '../components/CookieBanner';
 import ScrollToTop from '../components/ScrollToTop';
 import PrefetchLinks from '../components/PrefetchLinks';
 import PageCrossLinks from '../components/PageCrossLinks';
+import ChatWidget from '../components/ChatWidget';
 
 const assistant = Assistant({
   subsets: ["latin", "hebrew"],
@@ -45,7 +46,7 @@ export const metadata: Metadata = {
         type: "image/png",
       },
       {
-        url: "/icon-192.png", 
+        url: "/icon-192.png",
         sizes: "192x192",
         type: "image/png",
       },
@@ -79,7 +80,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {/* Main Layout Structure */}
           <div className="min-h-screen flex flex-col relative z-10">
             <Header />
-            
+
             <main className="flex-grow pb-8">
               {/* Page Transition Wrapper */}
               <div className="page-transition">
@@ -93,6 +94,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
           {/* Global Modals/Overlays */}
           <CommunityPopup />
+          <ChatWidget />
           <CookieBanner />
         </Providers>
       </body>
