@@ -13,39 +13,70 @@ type DayConfig = {
   filter: (party: any, todayString: string, todayWeekday: number) => boolean;
 };
 
-const getDayConfig = (todayString: string, todayWeekday: number): Record<string, DayConfig> => ({
-  thursday: {
-    title: "מסיבות ביום חמישי הקרוב",
-    description: "רחבות לפתיחת הסופ\"ש עם מיטב הסטים והאמנים.",
-    basePath: "/day/thursday",
-    filter: (party) => new Date(party.date).getDay() === 4,
-  },
-  friday: {
-    title: "מסיבות ביום שישי הקרוב",
-    description: "ליין-אפים לחמישי בלילה ולחגיגות הסופ\"ש המרכזיות.",
-    basePath: "/day/friday",
-    filter: (party) => new Date(party.date).getDay() === 5,
-  },
-  weekend: {
-    title: "מסיבות בסופ\"ש הקרוב",
-    description: "חמישי, שישי ושבת – כל המסיבות של סוף השבוע במקום אחד.",
-    basePath: "/day/weekend",
-    filter: (party) => {
-      const weekday = new Date(party.date).getDay();
-      return weekday === 4 || weekday === 5 || weekday === 6;
+const getDayConfig = (todayString: string, todayWeekday: number): Record<string, DayConfig> => {
+  const today = new Date();
+
+  // Calculate next Thursday
+  const thursday = new Date(today);
+  thursday.setDate(today.getDate() + ((4 + 7 - today.getDay()) % 7));
+  if (today.getDay() === 4) { thursday.setDate(today.getDate()); } // if today is thursday
+  thursday.setHours(0, 0, 0, 0);
+  const thursdayEnd = new Date(thursday);
+  thursdayEnd.setHours(23, 59, 59, 999);
+
+  // Calculate next Friday
+  const friday = new Date(today);
+  friday.setDate(today.getDate() + ((5 + 7 - today.getDay()) % 7));
+  if (today.getDay() === 5) { friday.setDate(today.getDate()); } // if today is friday
+  friday.setHours(0, 0, 0, 0);
+  const fridayEnd = new Date(friday);
+  fridayEnd.setHours(23, 59, 59, 999);
+
+  // Calculate this/upcoming weekend (Thu-Sat)
+  const weekendStart = new Date(thursday);
+  const weekendEnd = new Date(thursday);
+  weekendEnd.setDate(weekendEnd.getDate() + 2); // Thu -> Sat
+  weekendEnd.setHours(23, 59, 59, 999);
+
+  return {
+    thursday: {
+      title: "מסיבות ביום חמישי הקרוב",
+      description: "רחבות לפתיחת הסופ\"ש עם מיטב הסטים והאמנים.",
+      basePath: "/day/thursday",
+      filter: (party) => {
+        const pDate = new Date(party.date);
+        return pDate >= thursday && pDate <= thursdayEnd;
+      },
     },
-  },
-  today: {
-    title: "מסיבות היום",
-    description: "מה שקורה ממש הערב – מסיבות נבחרות שמתעדכנות בזמן אמת.",
-    basePath: "/day/today",
-    filter: (party, normalizedToday, weekday) => {
-      const partyDate = new Date(party.date);
-      const sameDate = partyDate.toISOString().slice(0, 10) === normalizedToday;
-      return sameDate || partyDate.getDay() === weekday;
+    friday: {
+      title: "מסיבות ביום שישי הקרוב",
+      description: "ליין-אפים לחמישי בלילה ולחגיגות הסופ\"ש המרכזיות.",
+      basePath: "/day/friday",
+      filter: (party) => {
+        const pDate = new Date(party.date);
+        return pDate >= friday && pDate <= fridayEnd;
+      },
     },
-  },
-});
+    weekend: {
+      title: "מסיבות בסופ\"ש הקרוב",
+      description: "חמישי, שישי ושבת – כל המסיבות של סוף השבוע במקום אחד.",
+      basePath: "/day/weekend",
+      filter: (party) => {
+        const pDate = new Date(party.date);
+        return pDate >= weekendStart && pDate <= weekendEnd;
+      },
+    },
+    today: {
+      title: "מסיבות היום",
+      description: "מה שקורה ממש הערב – מסיבות נבחרות שמתעדכנות בזמן אמת.",
+      basePath: "/day/today",
+      filter: (party, normalizedToday) => {
+        const partyDate = new Date(party.date);
+        return partyDate.toISOString().slice(0, 10) === normalizedToday;
+      },
+    },
+  };
+};
 
 const dayBodies: Record<string, string> = {
   thursday:
