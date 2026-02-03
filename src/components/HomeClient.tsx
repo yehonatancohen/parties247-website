@@ -7,7 +7,9 @@ import SocialsCta from "@/components/SocialsCta";
 import { createCarouselSlug } from "@/lib/carousels";
 // We use the SSR component for ALL carousels now
 import PartyCarousel from "@/components/HotEventsCarousel";
+import PartyCard from "@/components/PartyCard";
 import { Carousel, Party } from "@/data/types";
+import HeroAISearch from "@/components/HeroAISearch";
 
 const HERO_IMAGE_URL =
   "https://i.ibb.co/qMQXFTpr/Gemini-Generated-Image-a2279ca2279ca227.png";
@@ -21,6 +23,8 @@ interface HomeClientProps {
 
 // --- Main Component ---
 export default function HomeClient({ initialParties = [], initialCarousels = [] }: HomeClientProps) {
+  const [searchResults, setSearchResults] = React.useState<{ parties: DisplayParty[], query: string } | null>(null);
+
   const carouselsWithParties = useMemo(() => {
     const partyLookup = new Map(
       initialParties.map((party) => [String(party.id ?? party._id), party])
@@ -84,7 +88,17 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
     },
   ];
 
+  const handleSearchResults = (parties: any[], query: string) => {
+    setSearchResults({ parties: parties as DisplayParty[], query });
+    // Scroll to results
+    setTimeout(() => {
+      document.getElementById('ai-search-results')?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
 
+  const searchResultParties = useMemo(() => {
+    return searchResults?.parties || [];
+  }, [searchResults]);
 
   return (
     <>
@@ -118,7 +132,7 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
           <div className="absolute inset-x-[-20%] bottom-[-10%] h-[40vh] sm:h-[45vh] bg-gradient-to-t from-jungle-deep via-black/60 to-transparent" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(167,255,131,0.12),transparent_32%),radial-gradient(circle_at_80%_20%,rgba(255,255,255,0.12),transparent_30%)]" />
         </div>
-        <div className="relative z-10 p-6 max-w-6xl mx-auto flex flex-col items-center gap-6">
+        <div className="relative z-10 p-6 max-w-6xl mx-auto flex flex-col items-center gap-8">
           <h1
             className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl mb-2 text-white drop-shadow-xl"
             style={{ textShadow: "3px 3px 8px rgba(0,0,0,0.7)" }}
@@ -126,39 +140,65 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
             איפה תהיה המסיבה הבאה שלך?
           </h1>
           <p className="text-lg sm:text-xl text-jungle-text max-w-3xl">
-            Parties 24/7 מחבר אתכם לאירועים הכי חמים בכל הארץ – ממועדוני ענק ועד ליינים אינטימיים. מצאו את הוייב שמתאים לכם.
+            השתמשו בחיפוש החכם שלנו כדי למצוא את האירוע המושלם – פשוט תאמרו לנו מה אתם מחפשים
           </p>
-          <div className="flex flex-wrap justify-center gap-3">
-            <Link
-              href="/party-discovery"
-              className="inline-flex items-center gap-2 rounded-full bg-jungle-accent text-black font-semibold px-6 py-3 shadow-lg shadow-jungle-accent/40 hover:-translate-y-0.5 hover:shadow-xl hover:bg-white transition"
-            >
-              <span>לעמוד החיפוש</span>
-              <span aria-hidden="true">↗</span>
-            </Link>
-            <Link
-              href="/all-parties"
-              className="inline-flex items-center gap-2 rounded-full border border-white/40 text-white px-6 py-3 font-semibold backdrop-blur hover:bg-white/10 hover:-translate-y-0.5 transition"
-            >
-              <span>צפו בכל האירועים</span>
-            </Link>
-            <Link
-              href="#hot-now-carousels"
-              className="inline-flex items-center gap-2 rounded-full border border-white/20 text-white/80 px-4 py-2 text-sm backdrop-blur hover:text-white hover:border-jungle-accent transition"
-              scroll={false}
-              onClick={(event) => {
-                event.preventDefault();
-                const target = document.getElementById("hot-now-carousels");
-                if (target) {
-                  target.scrollIntoView({ behavior: "smooth", block: "start" });
-                }
-              }}
-            >
-              <span>למסיבות החמות</span>
-            </Link>
-          </div>
+
+          {/* AI Search Box */}
+          <HeroAISearch onSearchResults={handleSearchResults} />
         </div>
       </section>
+
+      {/* AI Search Results Section */}
+      {searchResults && (
+        <div id="ai-search-results" className="container mx-auto px-4 mb-16 scroll-mt-28">
+          <div className="bg-gradient-to-r from-jungle-surface/80 to-jungle-deep/80 border-2 border-jungle-accent/50 rounded-2xl p-6 backdrop-blur">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-jungle-accent to-jungle-lime flex items-center justify-center flex-shrink-0">
+                  <svg className="w-6 h-6 text-jungle-deep" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-jungle-accent font-bold text-lg">חיפוש AI</p>
+                  <p className="text-jungle-text/90 text-sm">
+                    נמצאו {searchResultParties.length} מסיבות עבור: <span className="text-white font-semibold">"{searchResults.query}"</span>
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSearchResults(null)}
+                className="px-4 py-2 bg-jungle-surface/60 hover:bg-jungle-surface border border-jungle-accent/30 hover:border-jungle-accent text-jungle-accent rounded-lg text-sm transition-all"
+              >
+                נקה חיפוש
+              </button>
+            </div>
+
+            {searchResultParties.length > 0 ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+                {searchResultParties.map((party) => (
+                  <PartyCard
+                    key={party.id}
+                    party={party}
+                    showDiscountCode={false}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-jungle-text/80 text-lg mb-2">לא נמצאו מסיבות שתואמות את החיפוש</p>
+                <p className="text-jungle-text/60 text-sm">נסו לחפש משהו אחר או בדקו את כל האירועים</p>
+                <Link
+                  href="/all-parties"
+                  className="inline-block mt-4 px-6 py-2 bg-jungle-accent text-jungle-deep rounded-full font-semibold hover:scale-105 transition-transform"
+                >
+                  כל האירועים
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Carousels Section */}
       <div id="hot-now-carousels" className="space-y-16 scroll-mt-28">
@@ -176,52 +216,7 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
               priority={index === 0}
             />
 
-            {/* Render the Quick Search section ONLY after the first carousel */}
-            {index === 0 && (
-              <section className="bg-gradient-to-r from-jungle-surface/80 via-jungle-deep/85 to-jungle-surface/80 border-y border-wood-brown/50 shadow-[0_10px_40px_rgba(0,0,0,0.35)]">
-                <div className="container mx-auto px-4 py-10 grid lg:grid-cols-3 gap-8 items-center">
-                  <div className="lg:col-span-2 text-center lg:text-right space-y-3">
-                    <p className="text-xs uppercase tracking-[0.2em] text-jungle-accent/80">חיפוש מהיר</p>
-                    <h2 className="text-3xl md:text-4xl font-display text-white">מצאו את המסיבה המושלמת בשבילכם</h2>
-                    <p className="text-jungle-text/80 max-w-4xl lg:ml-auto lg:pl-10">
-                      מסננים לפי עיר, וייב, מועדון או תאריך ומקבלים רשימה מתעדכנת של כל האירועים הקרובים. התחילו עם המסננים הפופולריים או גללו עוד כדי לראות השראות.
-                    </p>
-                    <div className="flex flex-wrap justify-center lg:justify-start gap-2 mt-4">
-                      {quickLinks.map((link) => (
-                        <Link
-                          key={link.href}
-                          href={link.href}
-                          className="inline-flex items-center gap-2 rounded-full border border-jungle-accent/50 text-jungle-accent bg-black/20 px-4 py-2 text-sm hover:bg-jungle-accent hover:text-black transition"
-                        >
-                          <span>{link.label}</span>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="bg-black/20 border border-white/10 rounded-2xl p-6 shadow-2xl backdrop-blur space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-jungle-accent/90 flex items-center justify-center text-black text-xl font-bold shadow-lg">✨</div>
-                      <div>
-                        <p className="text-sm text-jungle-text/80">חסכו זמן</p>
-                        <p className="text-lg text-white font-semibold">מסלול אישי תוך שניות</p>
-                      </div>
-                    </div>
-                    <div className="space-y-2 text-jungle-text/80 text-sm">
-                      <p>• סינון לפי עיר, וייב, קהל יעד ומועדון.</p>
-                      <p>• חיווי על אירועים חמים ומקומות שנשארו.</p>
-                      <p>• קישורים ישירים לרכישת כרטיסים או הרשמה.</p>
-                    </div>
-                    <Link
-                      href="/party-discovery"
-                      className="inline-flex w-full justify-center items-center gap-2 rounded-xl bg-jungle-accent text-black font-semibold px-4 py-3 shadow-lg shadow-jungle-accent/40 hover:-translate-y-0.5 hover:shadow-xl hover:bg-white transition"
-                    >
-                      <span>פתחו את המסנן</span>
-                      <span aria-hidden="true">↗</span>
-                    </Link>
-                  </div>
-                </div>
-              </section>
-            )}
+            {/* Quick Search section removed */}
           </React.Fragment>
         ))}
 
