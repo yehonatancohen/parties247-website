@@ -91,16 +91,16 @@ export default function HeroAISearch({ onSearchResults }: HeroAISearchProps) {
     return (
         <div className="w-full max-w-3xl mx-auto space-y-4 sm:space-y-6">
             {/* Main Search Box */}
-            <div
-                className={`relative group transition-all duration-300 ${isFocused ? 'scale-[1.02]' : ''
-                    }`}
-            >
+            <div className="relative group z-10">
                 {/* Glow effect */}
-                <div className="absolute -inset-1 bg-gradient-to-r from-jungle-accent via-jungle-lime to-jungle-accent rounded-2xl opacity-40 blur-xl group-hover:opacity-60 transition-opacity" />
+                <div
+                    className={`absolute -inset-0.5 bg-gradient-to-r from-jungle-accent via-jungle-lime to-jungle-accent rounded-full opacity-30 blur-lg transition-all duration-500 ${isFocused ? 'opacity-70 blur-xl inset-[-3px]' : 'group-hover:opacity-50'
+                        }`}
+                />
 
                 {/* Search Box */}
                 <form onSubmit={handleSubmit} className="relative">
-                    <div className="relative flex items-center bg-jungle-surface/90 backdrop-blur-xl rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden border-2 border-jungle-accent/50 hover:border-jungle-accent/80 transition-all">
+                    <div className="relative flex items-center bg-jungle-surface/95 backdrop-blur-xl rounded-full shadow-2xl overflow-hidden border-2 border-jungle-accent/50 hover:border-jungle-accent/80 transition-all">
 
                         {/* AI Badge */}
                         <div className="absolute right-2 sm:right-4 flex items-center gap-1 sm:gap-1.5 px-2 py-1 sm:px-3 sm:py-1.5 bg-gradient-to-r from-jungle-accent to-jungle-lime rounded-full shadow-lg pointer-events-none z-10">
@@ -117,7 +117,7 @@ export default function HeroAISearch({ onSearchResults }: HeroAISearchProps) {
                             onBlur={() => setIsFocused(false)}
                             placeholder="למשל: מסיבות טכנו בתל אביב..."
                             disabled={isLoading}
-                            className="flex-1 pl-4 pr-16 sm:pr-24 py-3 sm:py-5 text-base sm:text-lg text-white placeholder-jungle-text/60 bg-transparent focus:outline-none disabled:opacity-50"
+                            className="flex-1 pl-4 pr-16 sm:pr-28 py-3 sm:py-4 text-base sm:text-lg text-white placeholder-jungle-text/60 bg-transparent focus:outline-none disabled:opacity-50"
                             dir="rtl"
                         />
 
@@ -125,7 +125,7 @@ export default function HeroAISearch({ onSearchResults }: HeroAISearchProps) {
                         <button
                             type="submit"
                             disabled={isLoading || !query.trim()}
-                            className="m-1 sm:m-2 px-4 py-2 sm:px-6 sm:py-3 bg-gradient-to-r from-jungle-accent to-jungle-lime text-jungle-deep rounded-lg sm:rounded-xl font-bold hover:scale-105 transition-transform shadow-lg hover:shadow-jungle-glow flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex-shrink-0"
+                            className="m-1 sm:m-1.5 px-4 py-2 sm:px-6 sm:py-2.5 bg-gradient-to-r from-jungle-accent to-jungle-lime text-jungle-deep rounded-full font-bold hover:scale-105 transition-transform shadow-lg hover:shadow-jungle-glow flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex-shrink-0"
                         >
                             {isLoading ? (
                                 <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-jungle-deep border-t-transparent rounded-full animate-spin" />
@@ -138,7 +138,7 @@ export default function HeroAISearch({ onSearchResults }: HeroAISearchProps) {
                 </form>
 
                 {/* AI Helper Text */}
-                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-3 py-0.5 sm:px-4 sm:py-1 bg-jungle-deep/90 backdrop-blur-sm rounded-full text-[10px] sm:text-xs text-jungle-accent whitespace-nowrap border border-jungle-accent/30 shadow-sm">
+                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-3 py-0.5 sm:px-4 sm:py-1 bg-jungle-deep/90 backdrop-blur-sm rounded-full text-[10px] sm:text-xs text-jungle-accent whitespace-nowrap border border-jungle-accent/30 shadow-sm z-20">
                     💡 חיפוש חכם מופעל ע״י AI
                 </div>
             </div>
