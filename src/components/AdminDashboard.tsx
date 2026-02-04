@@ -195,6 +195,9 @@ const AdminDashboard: React.FC = () => {
 
   const [refreshingPartyIds, setRefreshingPartyIds] = useState<string[]>([]);
 
+  const [isRefreshingAllParses, setIsRefreshingAllParses] = useState(false);
+  const [refreshAllParsesStatus, setRefreshAllParsesStatus] = useState<string | null>(null);
+
   const [editingCarouselId, setEditingCarouselId] = useState<string | null>(null);
   const [editingCarouselTitle, setEditingCarouselTitle] = useState('');
 
@@ -329,7 +332,51 @@ const AdminDashboard: React.FC = () => {
       `Updated ${updatedCount} cover image${updatedCount === 1 ? '' : 's'}.` +
       (failedCount ? ` ${failedCount} failed.` : '')
     );
+    setCoverRefreshStatus(
+      `Updated ${updatedCount} cover image${updatedCount === 1 ? '' : 's'}.` +
+      (failedCount ? ` ${failedCount} failed.` : '')
+    );
     setIsRefreshingCovers(false);
+  }, [activeParties, updateParty]);
+
+  const handleRefreshAllPartyData = useCallback(async () => {
+    setRefreshAllParsesStatus(null);
+    setIsRefreshingAllParses(true);
+
+    const targets = activeParties.filter((party) => party.originalUrl?.includes('go-out.co'));
+    if (targets.length === 0) {
+      setRefreshAllParsesStatus('No active go-out.co parties found.');
+      setIsRefreshingAllParses(false);
+      return;
+    }
+
+    let updatedCount = 0;
+    let failedCount = 0;
+
+    for (const party of targets) {
+      try {
+        const scraped = await scrapePartyDetails(party.originalUrl);
+        // Exclude slug to prevent overwriting
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { slug, ...scrapedWithoutSlug } = scraped;
+
+        await updateParty({
+          ...party,
+          ...scrapedWithoutSlug,
+          tags: Array.from(new Set([...party.tags, ...scraped.tags]))
+        });
+        updatedCount += 1;
+      } catch (error) {
+        failedCount += 1;
+        console.error('Failed to refresh data for party', party.name, error);
+      }
+    }
+
+    setRefreshAllParsesStatus(
+      `Refreshed data for ${updatedCount} parties.` +
+      (failedCount ? ` ${failedCount} failed.` : '')
+    );
+    setIsRefreshingAllParses(false);
   }, [activeParties, updateParty]);
 
   const handleSaveParty = async (updatedParty: Party) => {
@@ -686,13 +733,27 @@ const AdminDashboard: React.FC = () => {
         <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-2">
           <button
             onClick={handleRefreshAllCoverImages}
-            disabled={isRefreshingCovers}
+            disabled={isRefreshingCovers || isRefreshingAllParses}
             className="bg-jungle-lime text-jungle-deep font-bold py-2 px-4 rounded-md hover:bg-opacity-80 disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isRefreshingCovers ? <LoadingSpinner /> : 'Refresh all cover images'}
           </button>
+
+          <button
+            onClick={handleRefreshAllPartyData}
+            disabled={isRefreshingCovers || isRefreshingAllParses}
+            className="bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-opacity-80 disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            {isRefreshingAllParses ? <LoadingSpinner /> : 'Refresh ALL Data'}
+          </button>
+
+        </div>
+        <div className="mt-2">
           {coverRefreshStatus && (
-            <span className="text-sm text-jungle-text/80">{coverRefreshStatus}</span>
+            <p className="text-sm text-jungle-text/80">{coverRefreshStatus}</p>
+          )}
+          {refreshAllParsesStatus && (
+            <p className="text-sm text-jungle-text/80">{refreshAllParsesStatus}</p>
           )}
         </div>
       </div>

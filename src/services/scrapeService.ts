@@ -15,7 +15,33 @@ const getRegion = (location: string): Party['region'] => {
   if (southKeywords.some(k => loc.includes(k))) return 'דרום';
   if (northKeywords.some(k => loc.includes(k))) return 'צפון';
   if (centerKeywords.some(k => loc.includes(k))) return 'מרכז';
+
   return 'לא ידוע';
+};
+
+const translateLocation = (location: string): string => {
+  let loc = location;
+  const cityMap: Record<string, string> = {
+    'Tel Aviv': 'תל אביב',
+    'Tel-Aviv': 'תל אביב',
+    'Tel aviv': 'תל אביב',
+    'Eilat': 'אילת',
+    'Haifa': 'חיפה',
+    'Jerusalem': 'ירושלים',
+    'Rishon Lezion': 'ראשון לציון',
+    'Herzliya': 'הרצליה',
+    'Beer Sheva': 'באר שבע',
+    'Ashdod': 'אשדוד',
+    'Ashkelon': 'אשקלון',
+    'Netanya': 'נתניה',
+  };
+
+  Object.entries(cityMap).forEach(([eng, heb]) => {
+    // Replace exact city name or city name at end of string
+    const regex = new RegExp(`\\b${eng}\\b`, 'gi');
+    loc = loc.replace(regex, heb);
+  });
+  return loc;
 };
 
 const getMusicType = (text: string): Party['musicType'] => {
@@ -183,44 +209,198 @@ export const scrapePartyDetails = async (url: string): Promise<ScrapedPartyDetai
       tags: getTags(fullText, eventData.Adress),
     };
 
-    // --- ENHANCEMENT STEP ---
+    // --- MANUAL ENHANCEMENT STEP (No AI) ---
+
+    // 1. Clean Location
+    let cleanLocation = eventData.Adress || '';
+    // Remove "Israel", "Israël", "ישראל" case insensitive
+    cleanLocation = cleanLocation
+      .replace(/,?\s*Israël/gi, '')
+      .replace(/,?\s*Israel/gi, '')
+      .replace(/,?\s*ישראל/gi, '');
+
+    cleanLocation = cleanLocation.replace(/Boulevard/gi, 'שדרות');
+    cleanLocation = cleanLocation.trim();
+    // Remove duplication if city appears at end (e.g. "Tel-Aviv, Tel-Aviv")
+    const cityMatch = cleanLocation.match(/,\s*([^,]+)$/);
+    if (cityMatch) {
+      const city = cityMatch[1];
+      const rest = cleanLocation.substring(0, cleanLocation.lastIndexOf(','));
+      if (rest.trim().endsWith(city.trim())) {
+        cleanLocation = rest.trim();
+      }
+    }
+
+    partyDetails.location.name = translateLocation(cleanLocation);
+    partyDetails.region = getRegion(partyDetails.location.name);
+
+    // 2. Format Description & extract details
+    let rawDescription = eventData.Description || '';
+
+    // 2.1 Basic cleanup - decode HTML entities first!
+    rawDescription = rawDescription
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/&quot;/g, '"')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/Empty heading/gi, '')
+      .replace(/\u00A0/g, ' ')
+      .replace(/[ \t]+/g, ' ');
+
+    const lines = rawDescription.split('\n').map(l => l.trim());
+
+    // Keywords to detect sections
+    const lineupKeywords = ['LINE UP', 'LINE-UP', 'על העמדה', 'ליינאפ'];
+    const adminKeywords = [
+      'דגשים', 'חשוב', 'מנהלות', 'כניסה', 'תעודת זהות', 'הפקה', 'מזמין כרטיס',
+      'קוד לבוש', 'גילאים', 'פיקוד העורף', 'לאינסטגרם', 'ווצאפ', 'וואצפ', 'וואטסאפ',
+      'whatsapp', 'instagram', 'קישור', 'הצטרפות', 'לפרטים', 'כרטיסים',
+      'מוזמנים בלבד', 'אירוע חברי', 'זמינים לכם', '052', '050', '054', '053'
+    ];
+
+    // Garbage heuristics for headers (e.g. "THURSDAY ...")
+    // If a line is all UPPERCASE English, it's likely a generic header. 
+    // Or if it contains specific spammy content from the platform.
+    const garbageKeywords = ['THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'JIMMY WHO'];
+
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const phoneRegex = /(\d{3}[-\s]?\d{7}|\d{2}[-\s]?\d{7}|\*[\d]{3,5})/;
+
+    const capturedBody: string[] = [];
+    const capturedLineup: string[] = [];
+    let isLineup = false;
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      if (!line || line.length < 2) continue;
+
+      // Skip separator lines
+      if (line.match(/^[-—_]+$/)) continue;
+
+      // Skip lines with URLs
+      if (urlRegex.test(line)) continue;
+
+      // Explicit phone check
+      if (phoneRegex.test(line)) continue;
+
+      const lowerLine = line.toLowerCase();
+
+      // Check for Lineup Header
+      if (lineupKeywords.some(k => lowerLine.includes(k.toLowerCase()))) {
+        isLineup = true;
+        capturedLineup.push("Line Up"); // Normalized header
+        continue;
+      }
+
+      if (isLineup) {
+        // Stop if we hit admin keywords or significant Hebrew text that looks like a new paragraph
+        if (adminKeywords.some(k => lowerLine.includes(k)) || line.length > 60) {
+          isLineup = false;
+        } else {
+          capturedLineup.push(line);
+          continue;
+        }
+      }
+
+      // Body Processing
+      if (adminKeywords.some(k => lowerLine.includes(k))) {
+        continue;
+      }
+
+      // Garbage Filter
+      if (garbageKeywords.some(k => line.includes(k))) {
+        // If the line is short or mostly english/symbols, skip it.
+        // But if it has Hebrew, keep it.
+        const hasHebrew = /[\u0590-\u05FF]/.test(line);
+        if (!hasHebrew) continue;
+      }
+
+      const isHebrew = /[\u0590-\u05FF]/.test(line);
+
+      // Keep Hebrew lines that are not admin
+      if (isHebrew) {
+        capturedBody.push(line);
+      } else {
+        // Include English lines if they are substantial (likely content)
+        // Reduced threshold to 30 to be safer
+        if (line.length > 30) {
+          capturedBody.push(line);
+        }
+      }
+    }
+
+    // Format Date nicely
+    const dateObj = new Date(eventData.StartingDate);
+    const dateStr = dateObj.toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long' });
+    const timeStr = dateObj.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
+
+    let intro = capturedBody.join('\n\n').trim();
+
+    // Fallback: If "Smart" parsing failed to find any body text, revert to a simpler extraction
+    if (!intro) {
+      const fallbackLines = lines.filter(l =>
+        l.length > 0 &&
+        !l.match(/^[-—_]+$/) &&
+        !urlRegex.test(l) &&
+        !adminKeywords.some(k => l.toLowerCase().includes(k))
+      );
+      // Take first 5 non-empty, non-admin lines
+      intro = fallbackLines.slice(0, 5).join('\n\n').trim();
+    }
+
+    if (!intro) intro = "לפרטים נוספים כנסו ללינק הכרטיסים";
+
+    let enhancedDescription = `${intro}
+
+📍 מיקום: ${partyDetails.location.name}
+⏰ מתי: ${dateStr}, ${timeStr}`;
+
+    if (capturedLineup.length > 0) {
+      // Check if "Line Up" is the first item, if so use a nice header
+      const hasHeader = capturedLineup[0] === "Line Up";
+      const lineupList = hasHeader ? capturedLineup.slice(1).join('\n') : capturedLineup.join('\n');
+
+      enhancedDescription += `\n\n🎧 ${hasHeader ? 'Line Up' : 'על העמדה'}:\n${lineupList}`;
+    }
+
+    partyDetails.description = enhancedDescription;
+
+    // ----------------------------------------
+    // AI ENHANCEMENT STEP (Call the API)
+    // ----------------------------------------
     try {
-      // Only run enhancement if we are in environment where we can fetch relative URL (client-side usually)
-      // or if we have absolute URL. Since this runs on client (triggered by user), relative URL '/api/...' works.
-      const enhanceResponse = await fetch('/api/enhance-party-data', {
+      const response = await fetch('/api/enhance-party-data', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
           description: partyDetails.description,
-          location: partyDetails.location.name
+          location: partyDetails.location.name,
+          date: partyDetails.date,
+          name: partyDetails.name,
         }),
       });
 
-      if (enhanceResponse.ok) {
-        const enhancedData = await enhanceResponse.json();
-
-        if (enhancedData.description) {
-          partyDetails.description = enhancedData.description;
+      if (response.ok) {
+        const aiData = await response.json();
+        if (aiData.description) {
+          partyDetails.description = aiData.description;
         }
-
-        if (enhancedData.location?.name) {
-          partyDetails.location.name = enhancedData.location.name;
-          // Re-evaluate region based on improved location
-          partyDetails.region = getRegion(partyDetails.location.name);
+        if (aiData.location?.name) {
+          partyDetails.location.name = aiData.location.name;
+          partyDetails.region = getRegion(partyDetails.location.name); // Re-calculate region
         }
-
-        // Re-evaluate tags based on new content
-        const newFullText = `${partyDetails.name} ${partyDetails.description}`;
+        // Re-evaluate tags based on new content from AI
+        const newFullText = `${partyDetails.name} ${partyDetails.description} ${partyDetails.location.name}`;
         partyDetails.tags = getTags(newFullText, partyDetails.location.name);
-
       } else {
-        console.warn('Enhance API returned error:', enhanceResponse.status);
+        console.warn("AI Enhancement API failed, keeping original data.");
       }
-    } catch (enhanceError) {
-      console.warn('Failed to enhance party data:', enhanceError);
-      // Fallback to original scraped data is automatic since we just didn't update partyDetails
+    } catch (apiError) {
+      console.warn("Retrying AI Enhancement failed:", apiError);
     }
-    // ------------------------
 
     if (!partyDetails.slug || !partyDetails.name || !partyDetails.date || !partyDetails.location.name) {
       throw new Error("Scraped data is missing critical fields (slug, name, date, or location).");
