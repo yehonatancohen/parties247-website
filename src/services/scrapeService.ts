@@ -248,7 +248,7 @@ export const scrapePartyDetails = async (url: string): Promise<ScrapedPartyDetai
       .replace(/\u00A0/g, ' ')
       .replace(/[ \t]+/g, ' ');
 
-    const lines = rawDescription.split('\n').map(l => l.trim());
+    const lines = rawDescription.split('\n').map((l: string) => l.trim());
 
     // Keywords to detect sections
     const lineupKeywords = ['LINE UP', 'LINE-UP', 'על העמדה', 'ליינאפ'];
@@ -335,18 +335,18 @@ export const scrapePartyDetails = async (url: string): Promise<ScrapedPartyDetai
     const dateStr = dateObj.toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long' });
     const timeStr = dateObj.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
 
-    let intro = capturedBody.join('\n\n').trim();
+    let intro = capturedBody.join('\n').trim();
 
     // Fallback: If "Smart" parsing failed to find any body text, revert to a simpler extraction
     if (!intro) {
-      const fallbackLines = lines.filter(l =>
+      const fallbackLines = lines.filter((l: string) =>
         l.length > 0 &&
         !l.match(/^[-—_]+$/) &&
         !urlRegex.test(l) &&
         !adminKeywords.some(k => l.toLowerCase().includes(k))
       );
       // Take first 5 non-empty, non-admin lines
-      intro = fallbackLines.slice(0, 5).join('\n\n').trim();
+      intro = fallbackLines.slice(0, 5).join('\n').trim();
     }
 
     if (!intro) intro = "לפרטים נוספים כנסו ללינק הכרטיסים";
@@ -361,7 +361,9 @@ export const scrapePartyDetails = async (url: string): Promise<ScrapedPartyDetai
       const hasHeader = capturedLineup[0] === "Line Up";
       const lineupList = hasHeader ? capturedLineup.slice(1).join('\n') : capturedLineup.join('\n');
 
-      enhancedDescription += `\n\n🎧 ${hasHeader ? 'Line Up' : 'על העמדה'}:\n${lineupList}`;
+      if (lineupList.trim().length > 0) {
+        enhancedDescription += `\n🎧 ${hasHeader ? 'Line Up' : 'על העמדה'}:\n${lineupList}`;
+      }
     }
 
     partyDetails.description = enhancedDescription;
