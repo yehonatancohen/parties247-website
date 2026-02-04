@@ -71,15 +71,59 @@ const getTags = (text: string, location: string): string[] => {
 // --- Main Scraping Function ---
 
 export const scrapePartyDetails = async (url: string): Promise<ScrapedPartyDetails> => {
-  const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+  // List of CORS proxy services to try in order
+  const proxyConfigs = [
+    {
+      name: 'AllOrigins',
+      getUrl: (targetUrl: string) => `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
+      parseResponse: async (response: Response) => await response.text()
+    },
+    {
+      name: 'proxy.cors.sh',
+      getUrl: (targetUrl: string) => `https://proxy.cors.sh/${targetUrl}`,
+      parseResponse: async (response: Response) => await response.text()
+    },
+    {
+      name: 'corsproxy.io',
+      getUrl: (targetUrl: string) => `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+      parseResponse: async (response: Response) => await response.text()
+    }
+  ];
+
+  let lastError: Error | null = null;
+  let htmlText = '';
+
+  // Try each proxy in sequence until one succeeds
+  for (const proxy of proxyConfigs) {
+    try {
+      const proxyUrl = proxy.getUrl(url);
+      console.log(`Attempting to fetch via ${proxy.name}...`);
+      
+      const response = await fetch(proxyUrl);
+      if (!response.ok) {
+        throw new Error(`${proxy.name} returned status ${response.status}: ${response.statusText}`);
+      }
+      
+      htmlText = await proxy.parseResponse(response);
+      if (!htmlText || htmlText.trim().length === 0) {
+        throw new Error(`${proxy.name} returned empty content`);
+      }
+
+      console.log(`Successfully fetched via ${proxy.name}`);
+      break; // Success, exit the loop
+    } catch (error) {
+      console.warn(`Failed to fetch via ${proxy.name}:`, error);
+      lastError = error instanceof Error ? error : new Error(String(error));
+      // Continue to next proxy
+    }
+  }
+
+  // If all proxies failed, throw the last error
+  if (!htmlText) {
+    throw new Error(`All proxy services failed. Last error: ${lastError?.message || 'Unknown error'}`);
+  }
 
   try {
-    const response = await fetch(proxyUrl);
-    if (!response.ok) throw new Error(`Failed to fetch from proxy: ${response.statusText}`);
-    
-    const htmlText: string = await response.text();
-    if (!htmlText) throw new Error("CORS proxy did not return content.");
-
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlText, 'text/html');
 

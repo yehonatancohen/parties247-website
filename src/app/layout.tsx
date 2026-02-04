@@ -15,7 +15,6 @@ import CookieBanner from '../components/CookieBanner';
 import ScrollToTop from '../components/ScrollToTop';
 import PrefetchLinks from '../components/PrefetchLinks';
 import PageCrossLinks from '../components/PageCrossLinks';
-import ChatWidget from '../components/ChatWidget';
 
 const assistant = Assistant({
   subsets: ["latin", "hebrew"],
@@ -94,7 +93,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
           {/* Global Modals/Overlays */}
           <CommunityPopup />
-          <ChatWidget />
           <CookieBanner />
         </Providers>
       </body>

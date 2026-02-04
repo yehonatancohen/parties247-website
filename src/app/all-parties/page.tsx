@@ -26,9 +26,9 @@ async function getPageData() {
       );
     });
 
-    return { 
-      parties: futureParties, 
-      hotPartyIds: hotNowCarousel?.partyIds || [] 
+    return {
+      parties: futureParties,
+      hotPartyIds: hotNowCarousel?.partyIds || []
     };
   } catch (error) {
     console.error("Failed to fetch parties:", error);
@@ -42,9 +42,9 @@ export const metadata: Metadata = {
   alternates: { canonical: '/all-parties' }
 };
 
-export default async function AllPartiesPage({ searchParams }: { searchParams: { query?: string } }) {
+export default async function AllPartiesPage({ searchParams }: { searchParams: { query?: string; ai_filter?: string } }) {
   const data = await getPageData();
-  const { query } = await searchParams;
+  const { query, ai_filter } = await searchParams;
 
   if (!data) return <div className="text-center text-white p-10">Error loading parties</div>;
 
@@ -56,6 +56,8 @@ export default async function AllPartiesPage({ searchParams }: { searchParams: {
       description="מצאו את הבילוי הבא שלכם בג'ונגל העירוני"
       syncNavigation
       basePath="/all-parties"
+      aiFilterIds={ai_filter ? ai_filter.split(',') : undefined}
+      aiQuery={query}
     />
   );
 }
