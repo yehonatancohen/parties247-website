@@ -10,7 +10,7 @@ import { BASE_URL, BRAND_LOGO_URL } from "@/data/constants";
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import JungleDecorations from '../components/JungleDecorations';
-import CommunityPopup from '../components/CommunityPopup';
+
 import CookieBanner from '../components/CookieBanner';
 import ScrollToTop from '../components/ScrollToTop';
 import PrefetchLinks from '../components/PrefetchLinks';
@@ -40,18 +40,13 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: "/icon-192-favicon.png",
-        sizes: "32x32",
+        url: "/icon-144-favicon.png",
+        sizes: "144x144",
         type: "image/png",
-      },
-      {
-        url: "/icon-192.png",
-        sizes: "192x192",
-        type: "image/png",
-      },
+      }
     ],
-    shortcut: "/icon-192.png",
-    apple: "/icon-192.png",
+    shortcut: "/icon-144-favicon.png",
+    apple: "/icon-144-favicon.png",
   },
   openGraph: {
     siteName: "Parties 24/7",
@@ -92,7 +87,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
 
           {/* Global Modals/Overlays */}
-          <CommunityPopup />
+
           <CookieBanner />
         </Providers>
       </body>
