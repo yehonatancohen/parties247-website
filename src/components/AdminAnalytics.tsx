@@ -88,7 +88,7 @@ const AdminAnalytics: React.FC = () => {
     setIsLoadingChart(true);
     try {
       const range = timeFilter === 'daily' ? '7d' : '24h';
-      const interval = timeFilter === 'daily' ? 'day' : 'hour';
+      const interval = 'hour'; // Always fetch hourly to show peaks
       const data = await getDetailedAnalytics(range, interval);
       setDetailedData(data);
     } catch (err) {
@@ -135,21 +135,22 @@ const AdminAnalytics: React.FC = () => {
     return detailedData.data.map(item => {
       // Format timestamp based on interval
       let label = item.timestamp;
-      if (detailedData.interval === 'hour') {
-        // For hourly, show just the hour (e.g., "14:00")
-        const date = new Date(item.timestamp);
+
+      const date = new Date(item.timestamp);
+      if (detailedData.range === '24h') {
+        // For 24h, show just the hour (e.g., "14:00")
         label = `${date.getHours()}:00`;
-      } else if (detailedData.interval === 'day') {
-        // For daily, show day name or date
-        const date = new Date(item.timestamp);
+      } else {
+        // For 7d (hourly), show Day + Hour (e.g. "Mon 14:00") but logic handled in render for density
         const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        label = days[date.getDay()];
+        label = `${days[date.getDay()]} ${date.getHours()}:00`;
       }
 
       return {
         label,
         views: item.partyViews,
-        clicks: item.purchases
+        clicks: item.purchases,
+        visits: item.visits
       };
     });
   }, [detailedData]);
@@ -158,7 +159,7 @@ const AdminAnalytics: React.FC = () => {
   if (error) return <div className="p-6 bg-red-900/20 text-red-200 rounded-xl border border-red-500/30">{error}</div>;
   if (!summary || !stats) return null;
 
-  const maxChartValue = Math.max(...chartData.map(d => d.views), 1);
+  const maxChartValue = Math.max(...chartData.map(d => Math.max(d.views, d.visits || 0)), 1);
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -221,7 +222,7 @@ const AdminAnalytics: React.FC = () => {
               disabled={isLoadingChart}
               className={`px-3 py-1 text-sm rounded-md transition-all ${timeFilter === 'daily' ? 'bg-white/10 text-white font-medium shadow-sm' : 'text-gray-400 hover:text-white'} disabled:opacity-50`}
             >
-              יומי (7 ימים)
+              7 ימים (לפי שעה)
             </button>
             <button
               onClick={() => setTimeFilter('hourly')}
@@ -243,31 +244,109 @@ const AdminAnalytics: React.FC = () => {
             אין נתונים זמינים
           </div>
         ) : (
-          <div className="h-64 flex items-end justify-between gap-1 overflow-x-auto pb-2">
-            {chartData.map((d, i) => (
-              <div key={i} className="flex flex-col items-center gap-2 group min-w-[30px] flex-1">
-                <div className="w-full max-w-[40px] flex flex-col items-center justify-end h-full relative">
-                  {/* Tooltip */}
-                  <div className="absolute bottom-full mb-2 bg-gray-800 text-white text-xs p-2 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none transform translate-y-2 group-hover:translate-y-0 whitespace-nowrap z-20">
-                    <p className="font-bold">{d.label}</p>
-                    <p>{d.views} צפיות</p>
-                    <p>{d.clicks} רכישות</p>
-                  </div>
+          <div className="relative h-64 w-full" dir="ltr">
+            {/* SVG Layer */}
+            <div className="absolute inset-0 bottom-6 left-0 right-0">
+              <svg className="w-full h-full" viewBox={`0 0 ${chartData.length - 1} 100`} preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="grad-visits" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#a855f7" stopOpacity="0.4" />
+                    <stop offset="100%" stopColor="#a855f7" stopOpacity="0" />
+                  </linearGradient>
+                  <linearGradient id="grad-views" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.5" />
+                    <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
+                  </linearGradient>
+                  <linearGradient id="grad-clicks" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#84cc16" stopOpacity="0.6" />
+                    <stop offset="100%" stopColor="#84cc16" stopOpacity="0" />
+                  </linearGradient>
+                </defs>
 
-                  {/* Clicks Bar (Stacked/Overlay) */}
-                  <div
-                    className="w-full bg-jungle-lime/80 rounded-t-sm absolute bottom-0 z-10 hover:bg-jungle-lime transition-colors"
-                    style={{ height: `${maxChartValue > 0 ? (d.clicks / maxChartValue) * 100 : 0}%` }}
-                  />
-                  {/* Views Bar */}
-                  <div
-                    className="w-full bg-blue-500/40 rounded-t-sm hover:bg-blue-500/60 transition-colors"
-                    style={{ height: `${maxChartValue > 0 ? (d.views / maxChartValue) * 100 : 0}%` }}
-                  />
-                </div>
-                <span className="text-[10px] text-gray-500 rotate-0 truncate w-full text-center">{d.label}</span>
-              </div>
-            ))}
+                {/* Visits (Purple) */}
+                <path
+                  d={`M ${chartData.map((d, i) => `${i},${maxChartValue > 0 ? 100 - (d.visits / maxChartValue * 100) : 100}`).join(' L ')} L ${chartData.length - 1},100 L 0,100 Z`}
+                  fill="url(#grad-visits)"
+                />
+                <path
+                  d={`M ${chartData.map((d, i) => `${i},${maxChartValue > 0 ? 100 - (d.visits / maxChartValue * 100) : 100}`).join(' L ')}`}
+                  fill="none"
+                  stroke="#a855f7"
+                  strokeWidth="2"
+                  vectorEffect="non-scaling-stroke"
+                  opacity="0.6"
+                />
+
+                {/* Views (Blue) */}
+                <path
+                  d={`M ${chartData.map((d, i) => `${i},${maxChartValue > 0 ? 100 - (d.views / maxChartValue * 100) : 100}`).join(' L ')} L ${chartData.length - 1},100 L 0,100 Z`}
+                  fill="url(#grad-views)"
+                />
+                <path
+                  d={`M ${chartData.map((d, i) => `${i},${maxChartValue > 0 ? 100 - (d.views / maxChartValue * 100) : 100}`).join(' L ')}`}
+                  fill="none"
+                  stroke="#3b82f6"
+                  strokeWidth="2"
+                  vectorEffect="non-scaling-stroke"
+                />
+
+                {/* Clicks (Green - Top Layer) */}
+                <path
+                  d={`M ${chartData.map((d, i) => `${i},${maxChartValue > 0 ? 100 - (d.clicks / maxChartValue * 100) : 100}`).join(' L ')} L ${chartData.length - 1},100 L 0,100 Z`}
+                  fill="url(#grad-clicks)"
+                />
+                <path
+                  d={`M ${chartData.map((d, i) => `${i},${maxChartValue > 0 ? 100 - (d.clicks / maxChartValue * 100) : 100}`).join(' L ')}`}
+                  fill="none"
+                  stroke="#84cc16"
+                  strokeWidth="3"
+                  vectorEffect="non-scaling-stroke"
+                />
+              </svg>
+            </div>
+
+            {/* Interaction Layer (Invisible columns for tooltips) */}
+            <div className="absolute inset-0 flex items-stretch justify-between z-10 w-full h-full pb-6">
+              {chartData.map((d, i) => {
+                const heightPercent = maxChartValue > 0 ? (d.visits / maxChartValue) * 100 : 0;
+                return (
+                  <div key={i} className="relative flex-1 group flex flex-col justify-end items-center cursor-pointer">
+                    {/* Hover Line Indicator */}
+                    <div className="absolute top-0 bottom-0 w-[1px] bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                    {/* Point Indicator on Line (Approximate) */}
+                    <div
+                      className="w-2 h-2 rounded-full bg-white opacity-0 group-hover:opacity-100 absolute transition-opacity shadow-[0_0_8px_rgba(255,255,255,0.5)]"
+                      style={{ bottom: `${heightPercent}%` }}
+                    />
+
+                    {/* Tooltip */}
+                    <div dir="rtl" className="absolute bottom-full mb-2 bg-gray-900/95 backdrop-blur border border-white/10 text-white text-xs p-3 rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-all pointer-events-none transform translate-y-2 group-hover:translate-y-0 whitespace-nowrap z-20 min-w-[120px]">
+                      <p className="font-bold text-sm mb-1 border-b border-white/10 pb-1 text-center">{d.label}</p>
+                      <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-right">
+                        <span className="text-purple-400">● ביקורים:</span>
+                        <span className="font-mono font-bold text-left">{d.visits}</span>
+
+                        <span className="text-blue-400">● צפיות:</span>
+                        <span className="font-mono font-bold text-left">{d.views}</span>
+
+                        <span className="text-jungle-lime">● רכישות:</span>
+                        <span className="font-mono font-bold text-left">{d.clicks}</span>
+                      </div>
+                    </div>
+
+                    {/* X-Axis Label - Only show sparse labels if many data points */}
+                    {(!detailedData || detailedData.range !== '7d' || i % 12 === 0) && (
+                      <div className="absolute -bottom-6 left-0 right-0 flex justify-center">
+                        <span className="text-[10px] text-gray-500 rotate-0 truncate px-1 whitespace-nowrap">
+                          {detailedData?.range === '7d' ? d.label.split(' ')[0] : d.label}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>
