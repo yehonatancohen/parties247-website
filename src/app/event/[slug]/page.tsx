@@ -297,7 +297,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
           </div>
         )}
 
-        <StickyPurchaseBar href={referralUrl} triggerId="main-purchase-button" />
+        <StickyPurchaseBar href={referralUrl} triggerId="main-purchase-button" partyId={party.id} slug={party.slug} />
         <RecentPurchaseToast />
       </div>
     </>

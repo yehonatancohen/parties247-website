@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { trackPartyRedirect } from "@/lib/analytics";
 import { FireIcon, TicketIcon } from "./Icons";
 
 // --- Fake Data for Purchasing Proof ---
@@ -80,7 +81,19 @@ export function RecentPurchaseToast() {
 
 // --- 3. Sticky Purchase Bar ---
 // --- 3. Sticky Purchase Bar ---
-export function StickyPurchaseBar({ href, priceLabel = "לרכישת כרטיסים", triggerId }: { href: string; priceLabel?: string; triggerId?: string }) {
+export function StickyPurchaseBar({
+    href,
+    priceLabel = "לרכישת כרטיסים",
+    triggerId,
+    partyId,
+    slug
+}: {
+    href: string;
+    priceLabel?: string;
+    triggerId?: string;
+    partyId: string;
+    slug: string;
+}) {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
@@ -134,6 +147,7 @@ export function StickyPurchaseBar({ href, priceLabel = "לרכישת כרטיס�
                     href={href}
                     target="_blank"
                     rel="nofollow noreferrer"
+                    onClick={() => trackPartyRedirect(partyId, slug)}
                     className="flex-1 sm:flex-none bg-gradient-to-r from-jungle-lime to-jungle-accent hover:from-jungle-lime/80 hover:to-jungle-accent/80 text-jungle-deep font-bold text-lg py-3 px-8 rounded-xl shadow-lg shadow-lime-900/20 transition transform hover:scale-105 active:scale-95 text-center flex items-center justify-center gap-2"
                 >
                     <TicketIcon className="w-5 h-5" />
