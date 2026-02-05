@@ -413,6 +413,16 @@ export const recordPartyRedirect = async (payload: PartyAnalyticsPayload): Promi
   if (!response.ok) throw new Error('Failed to record party redirect');
 };
 
+export const recordPartyView = async (payload: PartyAnalyticsPayload): Promise<void> => {
+  const response = await fetch(`${ANALYTICS_API_BASE}/party-view`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+    keepalive: true,
+  });
+  if (!response.ok) throw new Error('Failed to record party view');
+};
+
 export const getAnalyticsSummary = async (): Promise<AnalyticsSummary> => {
   const response = await fetch(`${ANALYTICS_API_BASE}/summary`);
   const data = await response.json().catch(() => ({}));

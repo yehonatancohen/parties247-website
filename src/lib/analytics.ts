@@ -1,4 +1,4 @@
-import { recordPartyRedirect, recordVisitor } from '../services/api';
+import { recordPartyRedirect, recordPartyView, recordVisitor } from '../services/api';
 
 export const COOKIE_CONSENT_KEY = 'cookieConsent_v2';
 export const ANALYTICS_CONSENT_EVENT = 'analytics:consentGranted';
@@ -126,6 +126,18 @@ export const trackPartyRedirect = (partyId: string, partySlug: string): boolean 
   initializeAnalytics();
   void recordPartyRedirect({ partyId, partySlug }).catch((error) => {
     console.debug('Failed to record party redirect', error);
+  });
+  return true;
+};
+
+export const trackPartyView = (partyId: string, partySlug: string): boolean => {
+  if (!partyId || !partySlug) {
+    return false;
+  }
+
+  initializeAnalytics();
+  recordPartyView({ partyId, partySlug }).catch((error) => {
+    console.debug('Failed to record party view', error);
   });
   return true;
 };

@@ -11,6 +11,7 @@ import DiscountCodeReveal from "@/components/DiscountCodeReveal"; // Ensure this
 import RelatedPartyCard from "@/components/RelatedPartyCard";
 import PurchaseButton from "@/components/PurchaseButton";
 import { PeopleWatching, RecentPurchaseToast, StickyPurchaseBar } from "@/components/UrgencyComponents";
+import PartyViewTracker from "@/components/PartyViewTracker";
 import { BASE_URL, LAST_TICKETS_TAG } from "@/data/constants";
 
 // Force dynamic rendering if API data changes often, or use revalidate
@@ -166,6 +167,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
       />
 
       <div className="container mx-auto px-4 py-6">
+        <PartyViewTracker partyId={party.id} slug={party.slug} />
         {/* Breadcrumb / Back Link */}
         <div className="mb-4">
           <Link className="text-lime-300 hover:text-white" href="/all-parties">
