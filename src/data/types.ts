@@ -34,7 +34,7 @@ export interface Party {
 }
 
 export interface Article {
-  id:string;
+  id: string;
   slug: string;
   title: string;
   summary: string;
@@ -57,13 +57,13 @@ export interface PartyProviderInitialState {
 }
 
 export type FilterState = {
-    region?: string;
-    musicType?: string;
-    eventType?: string;
-    age?: string;
-    tags: string[];
-    date?: string;
-    weekday?: number;
+  region?: string;
+  musicType?: string;
+  eventType?: string;
+  age?: string;
+  tags: string[];
+  date?: string;
+  weekday?: number;
 };
 
 export interface PartyContextType {
@@ -99,4 +99,18 @@ export interface AnalyticsSummary {
   generatedAt: string;
   uniqueVisitors24h: number;
   parties: AnalyticsSummaryParty[];
+}
+
+export interface DetailedAnalyticsDataPoint {
+  timestamp: string;
+  visits: number;
+  partyViews: number;
+  purchases: number;
+}
+
+export interface DetailedAnalyticsResponse {
+  data: DetailedAnalyticsDataPoint[];
+  range: string;
+  interval: 'day' | 'hour';
+  partyId: string | null;
 }
