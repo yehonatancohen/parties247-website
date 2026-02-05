@@ -149,7 +149,8 @@ const AdminAnalytics: React.FC = () => {
       return {
         label,
         views: item.partyViews,
-        clicks: item.purchases
+        clicks: item.purchases,
+        visits: item.visits
       };
     });
   }, [detailedData]);
@@ -158,7 +159,7 @@ const AdminAnalytics: React.FC = () => {
   if (error) return <div className="p-6 bg-red-900/20 text-red-200 rounded-xl border border-red-500/30">{error}</div>;
   if (!summary || !stats) return null;
 
-  const maxChartValue = Math.max(...chartData.map(d => d.views), 1);
+  const maxChartValue = Math.max(...chartData.map(d => Math.max(d.views, d.visits || 0)), 1);
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -250,19 +251,25 @@ const AdminAnalytics: React.FC = () => {
                   {/* Tooltip */}
                   <div className="absolute bottom-full mb-2 bg-gray-800 text-white text-xs p-2 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none transform translate-y-2 group-hover:translate-y-0 whitespace-nowrap z-20">
                     <p className="font-bold">{d.label}</p>
+                    <p>{d.visits} ביקורים</p>
                     <p>{d.views} צפיות</p>
                     <p>{d.clicks} רכישות</p>
                   </div>
 
                   {/* Clicks Bar (Stacked/Overlay) */}
                   <div
-                    className="w-full bg-jungle-lime/80 rounded-t-sm absolute bottom-0 z-10 hover:bg-jungle-lime transition-colors"
+                    className="w-full bg-jungle-lime/80 rounded-t-sm absolute bottom-0 z-30 hover:bg-jungle-lime transition-colors"
                     style={{ height: `${maxChartValue > 0 ? (d.clicks / maxChartValue) * 100 : 0}%` }}
                   />
                   {/* Views Bar */}
                   <div
-                    className="w-full bg-blue-500/40 rounded-t-sm hover:bg-blue-500/60 transition-colors"
+                    className="w-full bg-blue-500/40 rounded-t-sm absolute bottom-0 z-20 hover:bg-blue-500/60 transition-colors"
                     style={{ height: `${maxChartValue > 0 ? (d.views / maxChartValue) * 100 : 0}%` }}
+                  />
+                  {/* Visits Bar (Background/Context) */}
+                  <div
+                    className="w-full bg-purple-500/20 rounded-t-sm absolute bottom-0 z-10 hover:bg-purple-500/30 transition-colors"
+                    style={{ height: `${maxChartValue > 0 ? (d.visits / maxChartValue) * 100 : 0}%` }}
                   />
                 </div>
                 <span className="text-[10px] text-gray-500 rotate-0 truncate w-full text-center">{d.label}</span>
