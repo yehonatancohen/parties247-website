@@ -2,15 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import Groq from "groq-sdk";
 import { Party } from "@/data/types";
 
-// Initialize Keys
-const apiKeys = [process.env.GROQ_API_KEY].filter(Boolean);
+// Initialize Groq
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { message, parties } = body;
+        const { message, parties } = body as { message: string, parties: Party[] };
 
-        if (apiKeys.length === 0) {
+        if (!process.env.GROQ_API_KEY) {
             return NextResponse.json({
                 response: "חסר לי מפתח API כדי לפעול. אנא הוסף GROQ_API_KEY לקובץ .env.local",
                 suggested_party_ids: []
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Simplify party data to save tokens
-        const partiesContext = (parties as Party[]).map(p => ({
+        const partiesContext = parties.map(p => ({
             id: p.id,
             name: p.name,
             genre: p.musicGenres,
@@ -90,44 +90,32 @@ export async function POST(req: NextRequest) {
         If you don't find any parties, "suggested_party_ids" should be empty array [], and explain nicely.
         `;
 
-        const models = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"];
         let jsonResponse;
 
-        // Try keys sequentially
-        for (const apiKey of apiKeys) {
-            const currentGroq = new Groq({ apiKey });
+        try {
+            const completion = await groq.chat.completions.create({
+                messages: [
+                    { role: "system", content: systemPrompt },
+                    { role: "user", content: message } // Pass user message explicitly here
+                ],
+                model: "llama-3.3-70b-versatile",
+                temperature: 0.5,
+                max_tokens: 1024,
+                response_format: { type: "json_object" }, // Enforce JSON
+            });
 
-            // Try models sequentially for the current key
-            for (const model of models) {
-                try {
-                    const completion = await currentGroq.chat.completions.create({
-                        messages: [
-                            { role: "system", content: systemPrompt },
-                            { role: "user", content: message } // Pass user message explicitly here
-                        ],
-                        model: model,
-                        temperature: 0.5,
-                        max_tokens: 1024,
-                        response_format: { type: "json_object" }, // Enforce JSON
-                    });
-
-                    const responseText = completion.choices[0]?.message?.content || "{}";
-                    jsonResponse = JSON.parse(responseText);
-                    break; // Success! Break model loop
-                } catch (error: any) {
-                    // Log error but continue to next model/key
-                    console.warn(`Groq Chat API error (Key: ...${(apiKey as string).slice(-4)}, Model: ${model}):`, error.message || error);
-                }
-            }
-            if (jsonResponse) break; // Success! Break key loop
+            const responseText = completion.choices[0]?.message?.content || "{}";
+            jsonResponse = JSON.parse(responseText);
+        } catch (error: any) {
+            console.warn(`Groq Chat API error:`, error.message || error);
         }
 
         if (!jsonResponse) {
-            console.warn("All Groq attempts failed. Falling back to manual search.");
+            console.warn("Groq attempt failed. Falling back to manual search.");
 
             // Manual Search Logic
             const lowerMsg = message.toLowerCase();
-            let filtered = (parties as Party[]);
+            let filtered = parties;
             let dateFilterActive = false;
 
             // Date Filters
