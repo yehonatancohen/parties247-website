@@ -15,6 +15,7 @@ import CookieBanner from '../components/CookieBanner';
 import ScrollToTop from '../components/ScrollToTop';
 import PrefetchLinks from '../components/PrefetchLinks';
 import PageCrossLinks from '../components/PageCrossLinks';
+import AnalyticsTracker from '../components/AnalyticsTracker';
 
 const assistant = Assistant({
   subsets: ["latin", "hebrew"],
@@ -68,6 +69,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>
           {/* Global Decorations/Logic */}
           <PrefetchLinks />
+          <AnalyticsTracker />
           <ScrollToTop />
           <JungleDecorations />
 
