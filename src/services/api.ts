@@ -1,4 +1,4 @@
-import { Party, Carousel, AnalyticsSummary, AnalyticsSummaryParty } from '../data/types';
+import { Party, Carousel, AnalyticsSummary, AnalyticsSummaryParty, DetailedAnalyticsResponse } from '../data/types';
 import { SeoPageConfig } from '../lib/seoparties';
 
 const API_URL = 'https://parties247-backend.onrender.com/api';
@@ -32,7 +32,7 @@ type PartyAnalyticsPayload = {
 
 const mapPartyToFrontend = (backendParty: any): Party => {
   if (!backendParty) throw new Error("Received invalid party data from backend.");
-    
+
   let slug = backendParty.slug;
   const urlForSlug = backendParty.goOutUrl || backendParty.originalUrl;
 
@@ -44,51 +44,51 @@ const mapPartyToFrontend = (backendParty: any): Party => {
       console.error('Could not parse URL to derive slug:', urlForSlug);
     }
   }
-  
+
   const name = backendParty.title?.he || backendParty.name;
   const description = backendParty.description?.he || backendParty.summary?.he || backendParty.description;
 
-  const locationName = backendParty.geo?.address 
+  const locationName = backendParty.geo?.address
     || backendParty.venue?.name?.he || backendParty.venue
     || backendParty.city?.name?.he || backendParty.city
-    || backendParty.location?.name || backendParty.location 
+    || backendParty.location?.name || backendParty.location
     || 'Location not specified';
 
-  const locationAddress = backendParty.geo?.address 
-    || backendParty.venue?.geo?.address 
+  const locationAddress = backendParty.geo?.address
+    || backendParty.venue?.geo?.address
     || backendParty.location?.address;
 
   const locationGeo = backendParty.geo || backendParty.location?.geo;
-  const geo = locationGeo?.lat && locationGeo?.lon 
-      ? { latitude: String(locationGeo.lat), longitude: String(locationGeo.lon) } 
-      : undefined;
+  const geo = locationGeo?.lat && locationGeo?.lon
+    ? { latitude: String(locationGeo.lat), longitude: String(locationGeo.lon) }
+    : undefined;
 
   let finalImageUrl = backendParty.images?.[0]?.url || backendParty.images?.[0] || backendParty.imageUrl || '';
   if (finalImageUrl) {
-      finalImageUrl = finalImageUrl.replace('_whatsappImage.jpg', '_coverImage.jpg');
-      if (!finalImageUrl.startsWith('http')) {
-        finalImageUrl = `https://d15q6k8l9pfut7.cloudfront.net/${finalImageUrl.startsWith('/') ? finalImageUrl.substring(1) : finalImageUrl}`;
-      }
+    finalImageUrl = finalImageUrl.replace('_whatsappImage.jpg', '_coverImage.jpg');
+    if (!finalImageUrl.startsWith('http')) {
+      finalImageUrl = `https://d15q6k8l9pfut7.cloudfront.net/${finalImageUrl.startsWith('/') ? finalImageUrl.substring(1) : finalImageUrl}`;
+    }
   }
 
   // --- AGE EXTRACTION LOGIC ---
   // If 'age' field is missing, look for it in tags
   let age = backendParty.age;
   const tags = backendParty.tags || backendParty.genres || [];
-  
+
   if (!age || age === 'כל הגילאים') {
     const ageTag = tags.find((t: string) => t.includes('+') || t.includes('גיל') || t.includes('סטודנט'));
     if (ageTag) age = ageTag;
   }
 
   let eventStatus: Party['eventStatus'] = backendParty.eventStatus;
-  if(backendParty.status) {
-      switch(backendParty.status) {
-          case 'scheduled': eventStatus = 'EventScheduled'; break;
-          case 'cancelled': eventStatus = 'EventCancelled'; break;
-          case 'postponed': eventStatus = 'EventPostponed'; break;
-          case 'rescheduled': eventStatus = 'EventRescheduled'; break;
-      }
+  if (backendParty.status) {
+    switch (backendParty.status) {
+      case 'scheduled': eventStatus = 'EventScheduled'; break;
+      case 'cancelled': eventStatus = 'EventCancelled'; break;
+      case 'postponed': eventStatus = 'EventPostponed'; break;
+      case 'rescheduled': eventStatus = 'EventRescheduled'; break;
+    }
   }
 
   return {
@@ -176,9 +176,9 @@ export const getParties = async (filters?: SeoPageConfig["apiFilters"]): Promise
 
       // Date Range (Today vs Weekend)
       if (filters.dateRange === 'today') {
-         if (!isDateToday(party.date)) matches = false;
+        if (!isDateToday(party.date)) matches = false;
       } else if (filters.dateRange === 'weekend') {
-         if (!isDateInWeekend(party.date)) matches = false;
+        if (!isDateInWeekend(party.date)) matches = false;
       }
 
       return matches;
@@ -205,7 +205,7 @@ export const addParty = async (url: string): Promise<Party> => {
     body: JSON.stringify({ url }),
   });
   let responseData;
-  try { responseData = await response.json(); } 
+  try { responseData = await response.json(); }
   catch (e) { throw new Error("Unexpected server response."); }
   if (!response.ok) throw new Error(responseData.message || 'Failed to add party');
   return mapPartyToFrontend(responseData.party);
@@ -240,7 +240,7 @@ export const updateParty = async (partyId: string, partyData: Omit<Party, 'id'>)
     body: JSON.stringify(updatePayload),
   });
   let responseData;
-  try { responseData = await response.json(); } 
+  try { responseData = await response.json(); }
   catch (e) { throw new Error("Unexpected server response on update."); }
   if (!response.ok) throw new Error(responseData.message || 'Failed to update party');
   return responseData.party ? mapPartyToFrontend(responseData.party) : { ...partyData, id: partyId };
@@ -310,25 +310,25 @@ export const addCarousel = async (title: string): Promise<Carousel> => {
 };
 
 export const updateCarouselInfo = async (carouselId: string, data: { title: string, order: number }): Promise<Carousel> => {
-    const response = await fetch(`${API_URL}/admin/carousels/${carouselId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-        body: JSON.stringify(data),
-    });
-    const resData = await response.json();
-    if (!response.ok) throw new Error(resData.message || 'Failed to update carousel info');
-    return mapCarouselToFrontend(resData.carousel);
+  const response = await fetch(`${API_URL}/admin/carousels/${carouselId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    body: JSON.stringify(data),
+  });
+  const resData = await response.json();
+  if (!response.ok) throw new Error(resData.message || 'Failed to update carousel info');
+  return mapCarouselToFrontend(resData.carousel);
 };
 
 export const updateCarouselParties = async (carouselId: string, partyIds: string[]): Promise<Carousel> => {
-    const response = await fetch(`${API_URL}/admin/carousels/${carouselId}/parties`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-        body: JSON.stringify({ partyIds }),
-    });
-    const resData = await response.json();
-    if (!response.ok) throw new Error(resData.message || 'Failed to update carousel parties');
-    return mapCarouselToFrontend(resData.carousel);
+  const response = await fetch(`${API_URL}/admin/carousels/${carouselId}/parties`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    body: JSON.stringify({ partyIds }),
+  });
+  const resData = await response.json();
+  if (!response.ok) throw new Error(resData.message || 'Failed to update carousel parties');
+  return mapCarouselToFrontend(resData.carousel);
 };
 
 export const deleteCarousel = async (carouselId: string): Promise<void> => {
@@ -421,5 +421,33 @@ export const getAnalyticsSummary = async (): Promise<AnalyticsSummary> => {
     generatedAt: typeof data.generatedAt === 'string' ? data.generatedAt : new Date().toISOString(),
     uniqueVisitors24h: normalizeCount(data.uniqueVisitors24h),
     parties: Array.isArray(data.parties) ? data.parties.map(mapSummaryParty) : [],
+  };
+};
+
+export const getDetailedAnalytics = async (
+  range: '7d' | '24h' | '30d' = '7d',
+  interval: 'day' | 'hour' = 'day',
+  partyId?: string
+): Promise<DetailedAnalyticsResponse> => {
+  const params = new URLSearchParams({ range, interval });
+  if (partyId) params.append('partyId', partyId);
+
+  const response = await fetch(`${API_URL}/admin/analytics/detailed?${params.toString()}`, {
+    headers: { ...getAuthHeader() },
+  });
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.message || 'Failed to fetch detailed analytics');
+
+  return {
+    data: Array.isArray(data.data) ? data.data.map((item: any) => ({
+      timestamp: typeof item.timestamp === 'string' ? item.timestamp : '',
+      visits: normalizeCount(item.visits),
+      partyViews: normalizeCount(item.partyViews),
+      purchases: normalizeCount(item.purchases),
+    })) : [],
+    range: typeof data.range === 'string' ? data.range : range,
+    interval: data.interval === 'hour' || data.interval === 'day' ? data.interval : interval,
+    partyId: typeof data.partyId === 'string' ? data.partyId : null,
   };
 };
