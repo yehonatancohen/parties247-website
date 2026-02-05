@@ -8,7 +8,7 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { message, parties } = body;
+        const { message, parties } = body as { message: string, parties: Party[] };
 
         if (!process.env.GROQ_API_KEY) {
             return NextResponse.json({
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Simplify party data to save tokens
-        const partiesContext = (parties as Party[]).map(p => ({
+        const partiesContext = parties.map(p => ({
             id: p.id,
             name: p.name,
             genre: p.musicGenres,
@@ -90,28 +90,94 @@ export async function POST(req: NextRequest) {
         If you don't find any parties, "suggested_party_ids" should be empty array [], and explain nicely.
         `;
 
-        const completion = await groq.chat.completions.create({
-            messages: [
-                { role: "system", content: systemPrompt },
-                { role: "user", content: message } // Pass user message explicitly here
-            ],
-            model: "llama-3.3-70b-versatile", // Using Llama 3.3 70B (closest to 'oss 120b' intent)
-            temperature: 0.5,
-            max_tokens: 1024,
-            response_format: { type: "json_object" }, // Enforce JSON
-        });
-
-        const responseText = completion.choices[0]?.message?.content || "{}";
-
         let jsonResponse;
+
         try {
+            const completion = await groq.chat.completions.create({
+                messages: [
+                    { role: "system", content: systemPrompt },
+                    { role: "user", content: message } // Pass user message explicitly here
+                ],
+                model: "llama-3.3-70b-versatile",
+                temperature: 0.5,
+                max_tokens: 1024,
+                response_format: { type: "json_object" }, // Enforce JSON
+            });
+
+            const responseText = completion.choices[0]?.message?.content || "{}";
             jsonResponse = JSON.parse(responseText);
-        } catch (e) {
-            console.error("Failed to parse JSON response:", responseText);
-            jsonResponse = {
-                response: "אופס, קצת הסתבכתי עם המחשבות... 😵 נסה שוב?",
-                suggested_party_ids: []
-            };
+        } catch (error: any) {
+            console.warn(`Groq Chat API error:`, error.message || error);
+        }
+
+        if (!jsonResponse) {
+            console.warn("Groq attempt failed. Falling back to manual search.");
+
+            // Manual Search Logic
+            const lowerMsg = message.toLowerCase();
+            let filtered = parties;
+            let dateFilterActive = false;
+
+            // Date Filters
+            if (lowerMsg.includes('חמישי')) {
+                filtered = filtered.filter(p => p.date.startsWith(nextThursday));
+                dateFilterActive = true;
+            } else if (lowerMsg.includes('שישי')) {
+                filtered = filtered.filter(p => p.date.startsWith(nextFriday));
+                dateFilterActive = true;
+            } else if (lowerMsg.includes('שבת')) {
+                filtered = filtered.filter(p => p.date.startsWith(nextSaturday));
+                dateFilterActive = true;
+            } else if (lowerMsg.includes('היום')) {
+                const today = now.toISOString().split('T')[0];
+                filtered = filtered.filter(p => p.date.startsWith(today));
+                dateFilterActive = true;
+            } else if (lowerMsg.includes('מחר')) {
+                const tmrw = new Date(now);
+                tmrw.setDate(tmrw.getDate() + 1);
+                const tmrwStr = tmrw.toISOString().split('T')[0];
+                filtered = filtered.filter(p => p.date.startsWith(tmrwStr));
+                dateFilterActive = true;
+            } else if (lowerMsg.includes('סופ"ש') || lowerMsg.includes('סופש') || lowerMsg.includes('סוף שבוע')) {
+                filtered = filtered.filter(p =>
+                    p.date.startsWith(nextThursday) ||
+                    p.date.startsWith(nextFriday) ||
+                    p.date.startsWith(nextSaturday)
+                );
+                dateFilterActive = true;
+            }
+
+            // Content Filters (keywords)
+            const keywords = ['פורים', 'אלכוהול חופשי', 'טכנו', 'טראנס', 'האוס', 'מיינסטרים', 'תל אביב', 'חיפה', 'דרום', 'צפון', 'ירושלים'];
+            const queryKeywords = keywords.filter(k => lowerMsg.includes(k));
+
+            if (queryKeywords.length > 0) {
+                filtered = filtered.filter(p => {
+                    const text = `${p.name} ${p.description || ''} ${p.location.name} ${p.tags.join(' ')}`.toLowerCase();
+                    return queryKeywords.some(k => text.includes(k));
+                });
+            } else if (!dateFilterActive) {
+                // If no specific date or keyword detected, try generic word match on Name/Location
+                const words = lowerMsg.split(' ').filter(w => w.length > 2);
+                if (words.length > 0) {
+                    filtered = filtered.filter(p => {
+                        const text = `${p.name} ${p.location.name}`.toLowerCase();
+                        return words.some(w => text.includes(w));
+                    });
+                }
+            }
+
+            const top5 = filtered.slice(0, 5).map(p => p.id);
+
+            let fallbackResponse = "המוח המלאכותי שלי קצת עמוס כרגע 🤯, אבל עשיתי חיפוש זריז ומצאתי את המסיבות האלה שאולי יתאימו:";
+            if (top5.length === 0) {
+                fallbackResponse = "המוח המלאכותי שלי עמוס כרגע, וגם בחיפוש הידני לא הצלחתי למצוא בדיוק את מה שחיפשת... נסה לחדד את הבקשה (תאריך, עיר או סגנון). 🕵️‍♂️";
+            }
+
+            return NextResponse.json({
+                response: fallbackResponse,
+                suggested_party_ids: top5
+            });
         }
 
         return NextResponse.json(jsonResponse);

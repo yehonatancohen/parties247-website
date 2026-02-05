@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Groq from 'groq-sdk';
 
-const groq = new Groq({
-    apiKey: process.env.GROQ_API_KEY,
-});
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function POST(req: NextRequest) {
+    let body: any = {};
     try {
-        const body = await req.json();
+        body = await req.json();
         const { description, location, date, name } = body;
 
         if (!process.env.GROQ_API_KEY) {
@@ -60,45 +59,35 @@ export async function POST(req: NextRequest) {
             name: name
         });
 
-        const models = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"];
-        let jsonResponse;
+        try {
+            const completion = await groq.chat.completions.create({
+                messages: [
+                    { role: "system", content: systemPrompt },
+                    { role: "user", content: userContent }
+                ],
+                model: "llama-3.3-70b-versatile",
+                temperature: 0.5,
+                max_tokens: 1024,
+                response_format: { type: "json_object" },
+            });
 
-        for (const model of models) {
-            try {
-                const completion = await groq.chat.completions.create({
-                    messages: [
-                        { role: "system", content: systemPrompt },
-                        { role: "user", content: userContent }
-                    ],
-                    model: model,
-                    temperature: 0.5,
-                    max_tokens: 1024,
-                    response_format: { type: "json_object" },
-                });
+            const responseText = completion.choices[0]?.message?.content || "{}";
+            const jsonResponse = JSON.parse(responseText);
 
-                const responseText = completion.choices[0]?.message?.content || "{}";
-                jsonResponse = JSON.parse(responseText);
-                break; // If successful, exit loop
-            } catch (error: any) {
-                console.warn(`Groq API error with model ${model}:`, error.message || error);
-                // Continue to next model
-            }
-        }
-
-        if (!jsonResponse) {
-            // Fallback to original data if all models failed
+            return NextResponse.json(jsonResponse);
+        } catch (error: any) {
+            console.error('Groq API error:', error);
+            // Return fallback if API fails
             return NextResponse.json({
                 description: description,
                 location: { name: location }
             });
         }
 
-        return NextResponse.json(jsonResponse);
-
     } catch (error) {
         console.error('Error enhancing party data:', error);
-        // Even in the outer catch, return fallback instead of 500 to keep the process alive
-        const body = await req.json().catch(() => ({}));
+        // Return fallback using the body we captured (if available)
+        // If body is empty (e.g. req.json failed), we return empty/default values which is safer than 500
         return NextResponse.json({
             description: body.description || '',
             location: { name: body.location || '' }
