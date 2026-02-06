@@ -159,7 +159,8 @@ const AdminAnalytics: React.FC = () => {
   if (error) return <div className="p-6 bg-red-900/20 text-red-200 rounded-xl border border-red-500/30">{error}</div>;
   if (!summary || !stats) return null;
 
-  const maxChartValue = Math.max(...chartData.map(d => Math.max(d.views, d.visits || 0)), 1);
+  const maxValue = Math.max(...chartData.map(d => Math.max(d.views, d.visits || 0)), 1);
+  const maxChartValue = maxValue * 1.1; // Add 10% headroom
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -247,7 +248,7 @@ const AdminAnalytics: React.FC = () => {
           <div className="relative h-64 w-full" dir="ltr">
             {/* SVG Layer */}
             <div className="absolute inset-0 bottom-6 left-0 right-0">
-              <svg className="w-full h-full" viewBox={`0 0 ${chartData.length - 1} 100`} preserveAspectRatio="none">
+              <svg className="w-full h-full" viewBox={`0 0 ${chartData.length} 100`} preserveAspectRatio="none">
                 <defs>
                   <linearGradient id="grad-visits" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#a855f7" stopOpacity="0.4" />
@@ -265,11 +266,11 @@ const AdminAnalytics: React.FC = () => {
 
                 {/* Visits (Purple) */}
                 <path
-                  d={`M ${chartData.map((d, i) => `${i},${maxChartValue > 0 ? 100 - (d.visits / maxChartValue * 100) : 100}`).join(' L ')} L ${chartData.length - 1},100 L 0,100 Z`}
+                  d={`M ${chartData.map((d, i) => `${i + 0.5},${maxChartValue > 0 ? 100 - (d.visits / maxChartValue * 100) : 100}`).join(' L ')} L ${chartData.length - 0.5},100 L 0.5,100 Z`}
                   fill="url(#grad-visits)"
                 />
                 <path
-                  d={`M ${chartData.map((d, i) => `${i},${maxChartValue > 0 ? 100 - (d.visits / maxChartValue * 100) : 100}`).join(' L ')}`}
+                  d={`M ${chartData.map((d, i) => `${i + 0.5},${maxChartValue > 0 ? 100 - (d.visits / maxChartValue * 100) : 100}`).join(' L ')}`}
                   fill="none"
                   stroke="#a855f7"
                   strokeWidth="2"
@@ -279,11 +280,11 @@ const AdminAnalytics: React.FC = () => {
 
                 {/* Views (Blue) */}
                 <path
-                  d={`M ${chartData.map((d, i) => `${i},${maxChartValue > 0 ? 100 - (d.views / maxChartValue * 100) : 100}`).join(' L ')} L ${chartData.length - 1},100 L 0,100 Z`}
+                  d={`M ${chartData.map((d, i) => `${i + 0.5},${maxChartValue > 0 ? 100 - (d.views / maxChartValue * 100) : 100}`).join(' L ')} L ${chartData.length - 0.5},100 L 0.5,100 Z`}
                   fill="url(#grad-views)"
                 />
                 <path
-                  d={`M ${chartData.map((d, i) => `${i},${maxChartValue > 0 ? 100 - (d.views / maxChartValue * 100) : 100}`).join(' L ')}`}
+                  d={`M ${chartData.map((d, i) => `${i + 0.5},${maxChartValue > 0 ? 100 - (d.views / maxChartValue * 100) : 100}`).join(' L ')}`}
                   fill="none"
                   stroke="#3b82f6"
                   strokeWidth="2"
@@ -292,11 +293,11 @@ const AdminAnalytics: React.FC = () => {
 
                 {/* Clicks (Green - Top Layer) */}
                 <path
-                  d={`M ${chartData.map((d, i) => `${i},${maxChartValue > 0 ? 100 - (d.clicks / maxChartValue * 100) : 100}`).join(' L ')} L ${chartData.length - 1},100 L 0,100 Z`}
+                  d={`M ${chartData.map((d, i) => `${i + 0.5},${maxChartValue > 0 ? 100 - (d.clicks / maxChartValue * 100) : 100}`).join(' L ')} L ${chartData.length - 0.5},100 L 0.5,100 Z`}
                   fill="url(#grad-clicks)"
                 />
                 <path
-                  d={`M ${chartData.map((d, i) => `${i},${maxChartValue > 0 ? 100 - (d.clicks / maxChartValue * 100) : 100}`).join(' L ')}`}
+                  d={`M ${chartData.map((d, i) => `${i + 0.5},${maxChartValue > 0 ? 100 - (d.clicks / maxChartValue * 100) : 100}`).join(' L ')}`}
                   fill="none"
                   stroke="#84cc16"
                   strokeWidth="3"
