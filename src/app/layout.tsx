@@ -41,13 +41,12 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: "/icon-144-favicon.png",
+        url: "https://www.parties247.co.il/icon-144-favicon.png",
         sizes: "144x144",
         type: "image/png",
       }
     ],
-    shortcut: "/icon-144-favicon.png",
-    apple: "/icon-144-favicon.png",
+    apple: "https://www.parties247.co.il/icon-144-favicon.png",
   },
   openGraph: {
     siteName: "Parties 24/7",
