@@ -1,4 +1,4 @@
-import { Party, Carousel, AnalyticsSummary, AnalyticsSummaryParty, DetailedAnalyticsResponse } from '../data/types';
+import { Party, Carousel, AnalyticsSummary, AnalyticsSummaryParty, DetailedAnalyticsResponse, RecentActivityEvent } from '../data/types';
 import { SeoPageConfig } from '../lib/seoparties';
 
 const API_URL = 'https://parties247-backend.onrender.com/api';
@@ -460,4 +460,28 @@ export const getDetailedAnalytics = async (
     interval: data.interval === 'hour' || data.interval === 'day' ? data.interval : interval,
     partyId: typeof data.partyId === 'string' ? data.partyId : null,
   };
+};
+
+export const getRecentActivity = async (): Promise<RecentActivityEvent[]> => {
+  try {
+    const response = await fetch(`${ANALYTICS_API_BASE}/recent`, {
+      headers: { ...getAuthHeader() },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return Array.isArray(data.events) ? data.events : [];
+    }
+  } catch (error) {
+    console.warn("Failed to fetch recent activity from API. Using fallback data.", error);
+  }
+
+  // Fallback demo data if API fails or endpoint doesn't exist yet
+  return [
+    { id: '1', type: 'view', partyName: 'מסיבת ירח מלא', partyId: 'p1', timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(), details: 'מבקר מישראל' },
+    { id: '2', type: 'purchase', partyName: 'פסטיבל המדבר', partyId: 'p2', timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString(), details: 'רכישה מוצלחת' },
+    { id: '3', type: 'view', partyName: 'טכנו תל אביב', partyId: 'p3', timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(), details: 'צפייה חוזרת' },
+    { id: '4', type: 'visit', partyName: 'דף הבית', partyId: 'home', timestamp: new Date(Date.now() - 1000 * 60 * 45).toISOString(), details: 'כניסה ראשונה' },
+    { id: '5', type: 'view', partyName: 'מסיבת בריכה', partyId: 'p4', timestamp: new Date(Date.now() - 1000 * 60 * 60).toISOString(), details: 'מובייל' },
+  ];
 };

@@ -114,3 +114,16 @@ export interface DetailedAnalyticsResponse {
   interval: 'day' | 'hour';
   partyId: string | null;
 }
+
+export interface RecentActivityEvent {
+  id: string;
+  type: 'view' | 'purchase' | 'visit';
+  partyName?: string;
+  partyId?: string;
+  timestamp: string;
+  details?: string;
+}
+
+export interface RecentActivityResponse {
+  events: RecentActivityEvent[];
+}
