@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useMemo, useState } from 'react';
 import LoadingSpinner from './LoadingSpinner';
+import RecentActivityFeed from './RecentActivityFeed';
 import { getAnalyticsSummary, getDetailedAnalytics } from '../services/api';
 import { AnalyticsSummary, DetailedAnalyticsResponse } from '../data/types';
 import { FireIcon, TicketIcon, MegaphoneIcon } from './Icons';
@@ -373,30 +374,34 @@ const AdminAnalytics: React.FC = () => {
         </div>
 
         {/* Side List: Needs Improvement */}
-        <div className="bg-gray-900/40 border border-white/5 rounded-2xl p-6">
-          <h3 className="text-xl text-white font-bold mb-6">טעוני שיפור ⚠️</h3>
-          <p className="text-xs text-gray-500 mb-4">מסיבות עם חשיפה גבוהה אך מעט הקלקות (Low CTR)</p>
-          <div className="space-y-4">
-            {stats.sortedByViews
-              .filter(p => p.views > 10 && calculateCTR(p.views, p.redirects) < 2)
-              .slice(0, 5)
-              .map(party => (
-                <div key={party.partyId} className="flex items-center justify-between p-3 bg-red-500/5 rounded-lg border border-red-500/10">
-                  <div className="overflow-hidden">
-                    <p className="text-sm font-bold text-gray-200 truncate">{party.name}</p>
-                    <p className="text-xs text-red-300">
-                      {party.views} צפיות · {party.redirects} קליקים
-                    </p>
+        <div className="space-y-8">
+          <RecentActivityFeed />
+
+          <div className="bg-gray-900/40 border border-white/5 rounded-2xl p-6">
+            <h3 className="text-xl text-white font-bold mb-6">טעוני שיפור ⚠️</h3>
+            <p className="text-xs text-gray-500 mb-4">מסיבות עם חשיפה גבוהה אך מעט הקלקות (Low CTR)</p>
+            <div className="space-y-4">
+              {stats.sortedByViews
+                .filter(p => p.views > 10 && calculateCTR(p.views, p.redirects) < 2)
+                .slice(0, 5)
+                .map(party => (
+                  <div key={party.partyId} className="flex items-center justify-between p-3 bg-red-500/5 rounded-lg border border-red-500/10">
+                    <div className="overflow-hidden">
+                      <p className="text-sm font-bold text-gray-200 truncate">{party.name}</p>
+                      <p className="text-xs text-red-300">
+                        {party.views} צפיות · {party.redirects} קליקים
+                      </p>
+                    </div>
+                    <div className="text-lg font-bold text-red-500 font-mono">
+                      {calculateCTR(party.views, party.redirects).toFixed(1)}%
+                    </div>
                   </div>
-                  <div className="text-lg font-bold text-red-500 font-mono">
-                    {calculateCTR(party.views, party.redirects).toFixed(1)}%
-                  </div>
-                </div>
-              ))
-            }
-            {stats.sortedByViews.filter(p => p.views > 10 && calculateCTR(p.views, p.redirects) < 2).length === 0 && (
-              <p className="text-gray-500 text-sm text-center py-4">אין כרגע מסיבות עם ביצועים נמוכים חריגים 👏</p>
-            )}
+                ))
+              }
+              {stats.sortedByViews.filter(p => p.views > 10 && calculateCTR(p.views, p.redirects) < 2).length === 0 && (
+                <p className="text-gray-500 text-sm text-center py-4">אין כרגע מסיבות עם ביצועים נמוכים חריגים 👏</p>
+              )}
+            </div>
           </div>
         </div>
       </div>

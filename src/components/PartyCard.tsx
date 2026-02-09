@@ -14,12 +14,11 @@ interface PartyCardProps {
 const PartyCard: React.FC<PartyCardProps> = ({ party, showDiscountCode = false }) => {
   const partyDate = new Date(party.date);
 
-  // FIX: Force timezone to 'Asia/Jerusalem' to ensure Server and Client match,
-  // preventing hydration errors.
+  // FIX: Use compact date format to fit in cards
   const formattedDate = new Intl.DateTimeFormat('he-IL', {
-    weekday: 'long',
-    day: '2-digit',
-    month: '2-digit',
+    weekday: 'short',  // Use short weekday (e.g., "שבת" instead of "יום שבת")
+    day: 'numeric',
+    month: 'numeric',
     timeZone: 'UTC',
   }).format(partyDate);
 
@@ -39,7 +38,7 @@ const PartyCard: React.FC<PartyCardProps> = ({ party, showDiscountCode = false }
   };
 
   const renderTagContent = (tag: string) => {
-    if (tag === LAST_TICKETS_TAG) return <>🔥 {tag}</>;
+    if (tag === LAST_TICKETS_TAG) return <><FireIcon className="w-3.5 h-3.5 ml-1" />{tag}</>;
     if (tag === 'לוהט') return <><FireIcon className="w-3.5 h-3.5 ml-1" />{tag}</>;
     if (tag === 'ביקוש גבוה') return <><PartyPopperIcon className="w-3.5 h-3.5 ml-1" />{tag}</>;
     return tag;
@@ -71,13 +70,13 @@ const PartyCard: React.FC<PartyCardProps> = ({ party, showDiscountCode = false }
         </div>
       </Link>
       <div className="p-4 flex flex-col flex-grow">
-        <div className="flex flex-col sm:flex-row justify-between sm:items-center text-jungle-text/80 text-md mb-4 gap-2 sm:gap-4">
+        <div className="flex flex-col gap-2 text-jungle-text/80 text-sm mb-4">
           <div className="flex items-center gap-2">
-            <CalendarIcon className="h-5 w-5 text-jungle-accent flex-shrink-0" />
-            <span className="font-semibold">{formattedDate} | {formattedTime}</span>
+            <CalendarIcon className="h-4 w-4 text-jungle-accent flex-shrink-0" />
+            <span className="font-semibold whitespace-nowrap">{formattedDate} · {formattedTime}</span>
           </div>
           <div className="flex items-center gap-2">
-            <LocationIcon className="h-5 w-5 text-jungle-accent flex-shrink-0" />
+            <LocationIcon className="h-4 w-4 text-jungle-accent flex-shrink-0" />
             <span className="truncate">{party.location.name}</span>
           </div>
         </div>

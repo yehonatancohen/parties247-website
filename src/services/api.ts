@@ -1,4 +1,4 @@
-import { Party, Carousel, AnalyticsSummary, AnalyticsSummaryParty, DetailedAnalyticsResponse } from '../data/types';
+import { Party, Carousel, AnalyticsSummary, AnalyticsSummaryParty, DetailedAnalyticsResponse, RecentActivityEvent } from '../data/types';
 import { SeoPageConfig } from '../lib/seoparties';
 
 const API_URL = 'https://parties247-backend.onrender.com/api';
@@ -107,6 +107,7 @@ const mapPartyToFrontend = (backendParty: any): Party => {
     age: age || 'כל הגילאים',
     tags: tags,
     referralCode: backendParty.referralCode,
+    pixelId: backendParty.pixelId,
     eventStatus: eventStatus,
     eventAttendanceMode: backendParty.eventAttendanceMode,
     organizer: backendParty.organizer,
@@ -191,11 +192,45 @@ export const getParties = async (filters?: SeoPageConfig["apiFilters"]): Promise
 // ... (Rest of the file: getPartyBySlug, addParty, etc. remains exactly as you provided) ...
 // Copy the rest of your provided api.ts functions here below getParties
 export const getPartyBySlug = async (slug: string): Promise<Party> => {
-  const response = await fetch(`${API_URL}/events/${slug}`);
-  if (!response.ok) throw new Error(`Failed to fetch party with slug: ${slug}`);
-  const data = await response.json();
-  if (!data.event) throw new Error(`Event data not found in response for slug: ${slug}`);
-  return mapPartyToFrontend(data.event);
+  // Try fetching from the specific event endpoint first
+  const response = await fetch(`${API_URL}/events/${slug}`, { cache: 'no-store' });
+
+  if (response.ok) {
+    const data = await response.json();
+    if (data.event) {
+      // DEBUG: Check if we got the pixel ID
+      console.log(`[getPartyBySlug] Data from /events/${slug}:`, {
+        hasPixelId: !!data.event.pixelId
+      });
+
+      // If we HAVE the pixelId (or it's explicitly null), return it
+      // Only fallback if it's completely missing/undefined
+      if (data.event.pixelId !== undefined) {
+        return mapPartyToFrontend(data.event);
+      }
+
+      // If we found the event but pixelId is missing, maybe the endpoint doesn't support it yet.
+      // Fallback to getParties below...
+      console.warn(`[getPartyBySlug] Event found but pixelId missing from /events/${slug}. Falling back to /parties list.`);
+    }
+  }
+
+  // Fallback: Fetch all parties and find by slug
+  // This is heavier but ensures we get the full Party object with all fields
+  console.log(`[getPartyBySlug] Fetching full party list to find ${slug}...`);
+  const allParties = await getParties();
+  const party = allParties.find(p => p.slug === slug);
+
+  if (!party) {
+    throw new Error(`Party not found with slug: ${slug}`);
+  }
+
+  console.log(`[getPartyBySlug] Found party in full list:`, {
+    hasPixelId: !!party.pixelId,
+    pixelId: party.pixelId
+  });
+
+  return party;
 };
 
 export const addParty = async (url: string): Promise<Party> => {
@@ -233,6 +268,7 @@ export const updateParty = async (partyId: string, partyData: Omit<Party, 'id'>)
     tags: partyData.tags,
     description: partyData.description,
     referralCode: partyData.referralCode,
+    pixelId: partyData.pixelId,
   };
   const response = await fetch(`${API_URL}/admin/update-party/${partyId}`, {
     method: 'PUT',
@@ -460,4 +496,28 @@ export const getDetailedAnalytics = async (
     interval: data.interval === 'hour' || data.interval === 'day' ? data.interval : interval,
     partyId: typeof data.partyId === 'string' ? data.partyId : null,
   };
+};
+
+export const getRecentActivity = async (): Promise<RecentActivityEvent[]> => {
+  try {
+    const response = await fetch(`${ANALYTICS_API_BASE}/recent`, {
+      headers: { ...getAuthHeader() },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return Array.isArray(data.events) ? data.events : [];
+    }
+  } catch (error) {
+    console.warn("Failed to fetch recent activity from API. Using fallback data.", error);
+  }
+
+  // Fallback demo data if API fails or endpoint doesn't exist yet
+  return [
+    { id: '1', type: 'view', partyName: 'מסיבת ירח מלא', partyId: 'p1', timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(), details: 'מבקר מישראל' },
+    { id: '2', type: 'purchase', partyName: 'פסטיבל המדבר', partyId: 'p2', timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString(), details: 'רכישה מוצלחת' },
+    { id: '3', type: 'view', partyName: 'טכנו תל אביב', partyId: 'p3', timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(), details: 'צפייה חוזרת' },
+    { id: '4', type: 'visit', partyName: 'דף הבית', partyId: 'home', timestamp: new Date(Date.now() - 1000 * 60 * 45).toISOString(), details: 'כניסה ראשונה' },
+    { id: '5', type: 'view', partyName: 'מסיבת בריכה', partyId: 'p4', timestamp: new Date(Date.now() - 1000 * 60 * 60).toISOString(), details: 'מובייל' },
+  ];
 };

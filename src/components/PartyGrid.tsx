@@ -5,8 +5,7 @@ import PartyCard from './PartyCard';
 
 // These must be Client Components that read/write to the URL
 import AdvancedFilter from './AdvancedFilter';
-import PartySearchInput from './PartySearchInput';
-import { SearchIcon } from './Icons';
+import AllPartiesAISearch from './AllPartiesAISearch';
 
 const DEFAULT_PAGE_SIZE = 20;
 
@@ -119,7 +118,7 @@ export default function PartyGrid({
 
     return page === 1
       ? `${basePath}${queryString}`
-      : `${basePath}/עמוד/${page}${queryString}`;
+      : `${basePath}/page-num/${page}${queryString}`;
   };
 
   return (
@@ -132,8 +131,8 @@ export default function PartyGrid({
       )}
 
       {showSearch && (
-        <div className="mb-6 max-w-2xl mx-auto">
-          <PartySearchInput defaultValue={searchTerm} />
+        <div className="mb-8">
+          <AllPartiesAISearch defaultQuery={aiQuery} />
         </div>
       )}
 
