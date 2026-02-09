@@ -198,37 +198,22 @@ export const getPartyBySlug = async (slug: string): Promise<Party> => {
   if (response.ok) {
     const data = await response.json();
     if (data.event) {
-      // DEBUG: Check if we got the pixel ID
-      console.log(`[getPartyBySlug] Data from /events/${slug}:`, {
-        hasPixelId: !!data.event.pixelId
-      });
-
       // If we HAVE the pixelId (or it's explicitly null), return it
       // Only fallback if it's completely missing/undefined
       if (data.event.pixelId !== undefined) {
         return mapPartyToFrontend(data.event);
       }
-
-      // If we found the event but pixelId is missing, maybe the endpoint doesn't support it yet.
-      // Fallback to getParties below...
-      console.warn(`[getPartyBySlug] Event found but pixelId missing from /events/${slug}. Falling back to /parties list.`);
     }
   }
 
   // Fallback: Fetch all parties and find by slug
   // This is heavier but ensures we get the full Party object with all fields
-  console.log(`[getPartyBySlug] Fetching full party list to find ${slug}...`);
   const allParties = await getParties();
   const party = allParties.find(p => p.slug === slug);
 
   if (!party) {
     throw new Error(`Party not found with slug: ${slug}`);
   }
-
-  console.log(`[getPartyBySlug] Found party in full list:`, {
-    hasPixelId: !!party.pixelId,
-    pixelId: party.pixelId
-  });
 
   return party;
 };

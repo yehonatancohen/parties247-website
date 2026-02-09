@@ -24,8 +24,11 @@ const initializedPixels = new Set<string>();
 export function initializeMetaPixel(pixelId: string): void {
     if (!pixelId || typeof window === 'undefined') return;
 
+    const cleanPixelId = String(pixelId).trim();
+    if (!cleanPixelId || cleanPixelId === 'null' || cleanPixelId === 'undefined') return;
+
     // Skip if already initialized
-    if (initializedPixels.has(pixelId)) return;
+    if (initializedPixels.has(cleanPixelId)) return;
 
     // Initialize fbq if not already present
     if (!window.fbq) {
@@ -42,7 +45,7 @@ export function initializeMetaPixel(pixelId: string): void {
     }
 
     // Initialize this specific pixel
-    window.fbq('init', pixelId);
+    window.fbq('init', cleanPixelId);
 
     // Load the pixel script if not already loaded
     if (!document.querySelector('script[src*="connect.facebook.net/en_US/fbevents.js"]')) {
@@ -52,7 +55,7 @@ export function initializeMetaPixel(pixelId: string): void {
         document.head.appendChild(script);
     }
 
-    initializedPixels.add(pixelId);
+    initializedPixels.add(cleanPixelId);
 }
 
 /**
@@ -70,8 +73,11 @@ export function trackPurchaseClick(
 ): void {
     if (!pixelId || typeof window === 'undefined') return;
 
+    const cleanPixelId = String(pixelId).trim();
+    if (!cleanPixelId || cleanPixelId === 'null' || cleanPixelId === 'undefined') return;
+
     // Ensure pixel is initialized FIRST
-    initializeMetaPixel(pixelId);
+    initializeMetaPixel(cleanPixelId);
 
     // Now check if fbq exists (it should after init)
     if (!window.fbq) {
@@ -80,7 +86,7 @@ export function trackPurchaseClick(
     }
 
     // Track the InitiateCheckout event (user clicked to purchase)
-    window.fbq('trackSingle', pixelId, 'InitiateCheckout', {
+    window.fbq('trackSingle', cleanPixelId, 'InitiateCheckout', {
         content_name: partyName || 'Party Ticket',
         content_ids: partyId ? [partyId] : undefined,
         content_type: 'product',
