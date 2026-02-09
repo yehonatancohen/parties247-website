@@ -13,6 +13,7 @@ import PurchaseButton from "@/components/PurchaseButton";
 import { PeopleWatching, RecentPurchaseToast, StickyPurchaseBar } from "@/components/UrgencyComponents";
 import PartyViewTracker from "@/components/PartyViewTracker";
 import { BASE_URL, LAST_TICKETS_TAG } from "@/data/constants";
+import PartySpecificPixel from "@/components/PartySpecificPixel"; // Import the new component
 
 // Force dynamic rendering if API data changes often, or use revalidate
 export const revalidate = 60;
@@ -160,7 +161,10 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
   };
 
   return (
-    <>
+    <div className="min-h-screen bg-jungle-deep text-white pb-20 overflow-x-hidden">
+      {/* Inject Party-Specific Pixel if available */}
+      <PartySpecificPixel pixelId={party.pixelId} />
+
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(eventJsonLd) }}
@@ -300,6 +304,6 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
         <StickyPurchaseBar href={referralUrl} triggerId="main-purchase-button" partyId={party.id} slug={party.slug} pixelId={party.pixelId} partyName={party.name} />
         <RecentPurchaseToast />
       </div>
-    </>
+    </div>
   );
 }
