@@ -5,6 +5,7 @@ import Providers from "./providers";
 import SwiperRegister from "../components/SwiperRegister";
 import { Assistant, Rubik } from "next/font/google";
 import { BASE_URL, BRAND_LOGO_URL } from "@/data/constants";
+import { Suspense } from "react";
 
 // Component Imports
 import Header from '../components/Header';
@@ -16,6 +17,7 @@ import ScrollToTop from '../components/ScrollToTop';
 import PrefetchLinks from '../components/PrefetchLinks';
 import PageCrossLinks from '../components/PageCrossLinks';
 import AnalyticsTracker from '../components/AnalyticsTracker';
+import MetaPixelEvents from '../components/MetaPixelEvents';
 
 const assistant = Assistant({
   subsets: ["latin", "hebrew"],
@@ -60,10 +62,15 @@ export const metadata: Metadata = {
   },
 };
 
+// ... other imports
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="he" dir="rtl" className={`${assistant.variable} ${rubik.variable}`}>
       <body suppressHydrationWarning className="font-sans">
+        <Suspense fallback={null}>
+          <MetaPixelEvents />
+        </Suspense>
         <SwiperRegister />
         <Providers>
           {/* Global Decorations/Logic */}
