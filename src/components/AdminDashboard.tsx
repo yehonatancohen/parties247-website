@@ -154,6 +154,19 @@ const EditPartyModal: React.FC<{ party: Party; onClose: () => void; onSave: (upd
             <label htmlFor="description" className="block text-sm text-jungle-text/80 mb-1">Description</label>
             <textarea id="description" name="description" value={formData.description} onChange={handleChange} className={`${inputClass} h-24`} />
           </div>
+          <div>
+            <label htmlFor="pixelId" className="block text-sm text-jungle-text/80 mb-1">Meta Pixel ID (Optional)</label>
+            <input
+              type="text"
+              id="pixelId"
+              name="pixelId"
+              value={formData.pixelId || ''}
+              onChange={handleChange}
+              placeholder="e.g., 123456789012345"
+              className={inputClass}
+            />
+            <p className="text-xs text-jungle-text/50 mt-1">Facebook/Meta Pixel ID for tracking conversions when users click the purchase button</p>
+          </div>
           <div className="flex justify-end gap-3 pt-4">
             <button type="button" onClick={onClose} className="bg-gray-600 text-white font-bold py-2 px-6 rounded-md hover:bg-opacity-80">Cancel</button>
             <button type="submit" disabled={isSaving} className="bg-jungle-accent text-jungle-deep font-bold py-2 px-6 rounded-md hover:bg-opacity-80 disabled:bg-gray-500 flex items-center">
@@ -381,6 +394,18 @@ const AdminDashboard: React.FC = () => {
 
   const handleSaveParty = async (updatedParty: Party) => {
     await updateParty(updatedParty);
+
+    // Revalidate the page cache so changes (like pixel ID) are immediately visible
+    try {
+      await fetch('/api/revalidate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug: updatedParty.slug }),
+      });
+    } catch (e) {
+      console.warn('Failed to revalidate page cache:', e);
+    }
+
     setEditingParty(null);
   };
 

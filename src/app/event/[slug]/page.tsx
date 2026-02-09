@@ -250,7 +250,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
 
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                   <div className="w-full sm:flex-1" id="main-purchase-button">
-                    <PurchaseButton partyId={party.id} slug={party.slug} href={referralUrl} />
+                    <PurchaseButton partyId={party.id} slug={party.slug} href={referralUrl} pixelId={party.pixelId} partyName={party.name} />
                   </div>
                   <a
                     href={whatsappHref}
@@ -297,7 +297,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
           </div>
         )}
 
-        <StickyPurchaseBar href={referralUrl} triggerId="main-purchase-button" partyId={party.id} slug={party.slug} />
+        <StickyPurchaseBar href={referralUrl} triggerId="main-purchase-button" partyId={party.id} slug={party.slug} pixelId={party.pixelId} partyName={party.name} />
         <RecentPurchaseToast />
       </div>
     </>

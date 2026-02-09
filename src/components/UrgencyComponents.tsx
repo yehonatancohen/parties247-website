@@ -86,13 +86,17 @@ export function StickyPurchaseBar({
     priceLabel = "לרכישת כרטיסים",
     triggerId,
     partyId,
-    slug
+    slug,
+    pixelId,
+    partyName
 }: {
     href: string;
     priceLabel?: string;
     triggerId?: string;
     partyId: string;
     slug: string;
+    pixelId?: string;
+    partyName?: string;
 }) {
     const [isVisible, setIsVisible] = useState(false);
 
@@ -134,6 +138,19 @@ export function StickyPurchaseBar({
         };
     }, [triggerId]);
 
+    const handleClick = () => {
+        // Track internal analytics
+        trackPartyRedirect(partyId, slug);
+
+        // Fire Meta Pixel event if pixel ID is configured
+        if (pixelId) {
+            // Import dynamically to avoid issues
+            import("@/lib/metaPixel").then(({ trackPurchaseClick }) => {
+                trackPurchaseClick(pixelId, partyName, partyId);
+            });
+        }
+    };
+
     if (!isVisible) return null;
 
     return (
@@ -147,7 +164,7 @@ export function StickyPurchaseBar({
                     href={href}
                     target="_blank"
                     rel="nofollow noreferrer"
-                    onClick={() => trackPartyRedirect(partyId, slug)}
+                    onClick={handleClick}
                     className="flex-1 sm:flex-none bg-gradient-to-r from-jungle-lime to-jungle-accent hover:from-jungle-lime/80 hover:to-jungle-accent/80 text-jungle-deep font-bold text-lg py-3 px-8 rounded-xl shadow-lg shadow-lime-900/20 transition transform hover:scale-105 active:scale-95 text-center flex items-center justify-center gap-2"
                 >
                     <TicketIcon className="w-5 h-5" />
@@ -157,3 +174,4 @@ export function StickyPurchaseBar({
         </div>
     );
 }
+

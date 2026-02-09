@@ -22,6 +22,7 @@ export interface Party {
   age: 'נוער' | '18+' | '21+' | 'כל הגילאים';
   tags: string[];
   referralCode?: string;
+  pixelId?: string; // Meta Pixel ID for conversion tracking
   eventStatus?: 'EventScheduled' | 'EventCancelled' | 'EventPostponed' | 'EventRescheduled';
   eventAttendanceMode?: 'OnlineEventAttendanceMode' | 'OfflineEventAttendanceMode' | 'MixedEventAttendanceMode';
   organizer?: {

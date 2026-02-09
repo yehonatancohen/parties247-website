@@ -2,11 +2,12 @@ import { Metadata } from 'next';
 import PartyGrid from '@/components/PartyGrid';
 import * as api from '@/services/api';
 import { createCarouselSlug } from '@/lib/carousels';
+import { notFound } from 'next/navigation';
 
 // Handle dynamic routes like /all-parties/עמוד/2
 interface Props {
-  params: { slug?: string[] };
-  searchParams: { query?: string };
+  params: Promise<{ pageNumber: string }>;
+  searchParams: Promise<{ query?: string }>;
 }
 
 /**
@@ -35,7 +36,7 @@ async function getPageData() {
         slug.includes("חם-עכשיו")
       );
     });
-    
+
     const hotPartyIds = hotNowCarousel?.partyIds || [];
 
     return { parties: futureParties, hotPartyIds };
@@ -59,7 +60,8 @@ export const metadata: Metadata = {
 /**
  * 3. MAIN SERVER COMPONENT
  */
-export default async function AllPartiesPage({ params, searchParams }: Props) {
+export default async function AllPartiesPaginatedPage({ params }: Props) {
+  const { pageNumber } = await params;
   const data = await getPageData();
 
   if (!data) {
@@ -73,13 +75,11 @@ export default async function AllPartiesPage({ params, searchParams }: Props) {
   }
 
   // Parse Page Number from URL (e.g., /all-parties/עמוד/2)
-  // params.slug might be undefined (page 1) or ["עמוד", "2"]
-  let currentPage = 1;
-  if (params.slug && params.slug[0] === 'עמוד' && params.slug[1]) {
-    const pageNum = parseInt(params.slug[1], 10);
-    if (!isNaN(pageNum)) {
-      currentPage = pageNum;
-    }
+  const currentPage = parseInt(pageNumber, 10);
+
+  // Validate page number
+  if (isNaN(currentPage) || currentPage < 1) {
+    notFound();
   }
 
   // Pass data to the Client Component
