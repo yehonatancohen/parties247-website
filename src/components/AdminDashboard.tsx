@@ -4,7 +4,66 @@ import { useParties } from '../hooks/useParties';
 import { Party, Carousel } from '../data/types';
 import LoadingSpinner from './LoadingSpinner';
 import { BASE_URL, LAST_TICKETS_TAG } from '../data/constants';
-import { SearchIcon, EditIcon, ChevronDownIcon, ArrowUpIcon, ArrowDownIcon, MegaphoneIcon, ShareIcon, RefreshIcon } from './Icons';
+import { SearchIcon, EditIcon, ChevronDownIcon, ArrowUpIcon, ArrowDownIcon, MegaphoneIcon, ShareIcon, RefreshIcon, DocumentDuplicateIcon } from './Icons';
+// ... (skip lines) ...
+
+
+const ClonePartyModal: React.FC<{ party: Party; onClose: () => void; onClone: (url: string, slug: string, referral: string, pixelId?: string) => Promise<void>; }> = ({ party, onClose, onClone }) => {
+  const [url, setUrl] = useState(party.originalUrl || '');
+  const [slug, setSlug] = useState(`${party.slug}-copy`);
+  const [referral, setReferral] = useState(party.referralCode || '');
+  const [pixelId, setPixelId] = useState(party.pixelId || '');
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSaving(true);
+    await onClone(url, slug, referral, pixelId);
+    setIsSaving(false);
+    onClose();
+  };
+
+  const inputClass = "w-full bg-jungle-deep text-white p-2 rounded-md border border-wood-brown focus:ring-2 focus:ring-jungle-lime focus:outline-none";
+
+  return (
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+      <div className="bg-jungle-surface rounded-lg shadow-2xl w-full max-w-lg h-auto flex flex-col border border-wood-brown">
+        <div className="p-4 border-b border-wood-brown flex justify-between items-center">
+          <h3 className="text-xl font-display text-white">Clone Party</h3>
+          <button onClick={onClose} className="text-2xl text-jungle-text/70 hover:text-white">&times;</button>
+        </div>
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <div className="bg-blue-500/10 border border-blue-500/30 p-3 rounded-md text-sm text-blue-200 mb-4">
+            <p><strong>Note:</strong> Cloning uses the URL to create a new entry. If you keep the same URL, we will append a unique ID to force a new creation.</p>
+          </div>
+          <div>
+            <label htmlFor="url" className="block text-sm text-jungle-text/80 mb-1">Ticket URL (Original)</label>
+            <input type="url" id="url" value={url} onChange={(e) => setUrl(e.target.value)} className={inputClass} required />
+          </div>
+          <div>
+            <label htmlFor="slug" className="block text-sm text-jungle-text/80 mb-1">New Slug</label>
+            <input type="text" id="slug" value={slug} onChange={(e) => setSlug(e.target.value)} className={inputClass} required />
+          </div>
+          <div>
+            <label htmlFor="referral" className="block text-sm text-jungle-text/80 mb-1">Referral Code (Optional)</label>
+            <input type="text" id="referral" value={referral} onChange={(e) => setReferral(e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label htmlFor="pixelId" className="block text-sm text-jungle-text/80 mb-1">Meta Pixel ID (Optional)</label>
+            <input type="text" id="pixelId" value={pixelId} onChange={(e) => setPixelId(e.target.value)} className={inputClass} />
+          </div>
+          <div className="flex justify-end gap-3 pt-4">
+            <button type="button" onClick={onClose} className="bg-gray-600 text-white font-bold py-2 px-6 rounded-md hover:bg-opacity-80">Cancel</button>
+            <button type="submit" disabled={isSaving} className="bg-jungle-accent text-jungle-deep font-bold py-2 px-6 rounded-md hover:bg-opacity-80 disabled:bg-gray-500 flex items-center">
+              {isSaving ? <LoadingSpinner /> : 'Clone Party'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
 import { pageLinkOptions } from '../data/pageLinks';
 import { scrapePartyDetails } from '../services/scrapeService';
 
@@ -198,6 +257,7 @@ const AdminDashboard: React.FC = () => {
   const [newCarouselTitle, setNewCarouselTitle] = useState('');
 
   const [editingParty, setEditingParty] = useState<Party | null>(null);
+  const [cloningParty, setCloningParty] = useState<Party | null>(null);
   const [showArchived, setShowArchived] = useState(false);
   const [partySearchTerm, setPartySearchTerm] = useState('');
   const [partySort, setPartySort] = useState<{ key: 'date' | 'name', direction: 'asc' | 'desc' }>({ key: 'date', direction: 'asc' });
@@ -407,6 +467,47 @@ const AdminDashboard: React.FC = () => {
     }
 
     setEditingParty(null);
+  };
+
+  const handleClonePartySave = async (url: string, slug: string, referral: string, pixelId?: string) => {
+    if (!cloningParty) return;
+
+    let finalUrl = url;
+    // Append timestamp hash if URL is unchanged to attempt to force backend to treat it as new
+    if (url === cloningParty.originalUrl) {
+      finalUrl = `${url}#clone-${Date.now()}`;
+    }
+
+    try {
+      const newParty = await addParty(finalUrl);
+
+      // Sanitize the source party to remove ID-specific fields before spreading
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { id, ...sourceProps } = cloningParty;
+
+      await updateParty({
+        ...sourceProps, // Copy most properties
+        id: newParty.id, // Use new ID
+        slug,
+        referralCode: referral,
+        pixelId: pixelId || cloningParty.pixelId, // Use new pixel or keep old? Logic says new overrides.
+        // If pixelId is undefined/empty string passed from modal, we might want to respect that or fallback?
+        // The modal state defaults to existing. User can clear it.
+        // So passing pixelId from modal is correct.
+        originalUrl: url, // Store the clean URL
+        // Ensure image and other scraped data is from source, not the fresh scrape of (possibly) same URL
+      });
+
+      setPromotionMessages(prev => ({
+        ...prev,
+        [newParty.id]: { type: 'success', message: 'Party cloned successfully! 🎉' }
+      }));
+    } catch (e) {
+      console.error("Clone failed", e);
+      alert(`Clone failed: ${e instanceof Error ? e.message : 'Unknown error'}`);
+    }
+
+    setCloningParty(null);
   };
 
   const handleEditCarousel = (carousel: Carousel) => {
@@ -677,6 +778,9 @@ const AdminDashboard: React.FC = () => {
           >
             <ShareIcon className="w-4 h-4" /> <span className="hidden sm:inline">העתק</span>
           </button>
+          <button onClick={() => setCloningParty(party)} className="bg-purple-600 text-white px-3 py-1 rounded-md hover:bg-purple-700 transition-colors text-sm flex items-center gap-1.5">
+            <DocumentDuplicateIcon className="w-4 h-4" /> <span className="hidden sm:inline">Clone</span>
+          </button>
           <button onClick={() => setEditingParty(party)} className="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700 transition-colors text-sm flex items-center gap-1.5">
             <EditIcon className="w-4 h-4" /> <span className="hidden sm:inline">Edit</span>
           </button>
@@ -736,6 +840,13 @@ const AdminDashboard: React.FC = () => {
           party={editingParty}
           onClose={() => setEditingParty(null)}
           onSave={handleSaveParty}
+        />
+      )}
+      {cloningParty && (
+        <ClonePartyModal
+          party={cloningParty}
+          onClose={() => setCloningParty(null)}
+          onClone={handleClonePartySave}
         />
       )}
       <h2 className="text-3xl font-display mb-6 text-white">Admin Dashboard</h2>
