@@ -127,10 +127,12 @@ const mapCarouselToFrontend = (backendCarousel: any): Carousel => {
 
 // --- UPDATED API Functions ---
 
-export const getParties = async (filters?: SeoPageConfig["apiFilters"]): Promise<Party[]> => {
-  const response = await fetch(`${API_URL}/parties?upcoming=true`, {
-    next: { revalidate: 60 },
-  });
+export const getParties = async (filters?: SeoPageConfig["apiFilters"], forceFresh = false): Promise<Party[]> => {
+  const fetchOptions: RequestInit = forceFresh
+    ? { cache: 'no-store' }
+    : { next: { revalidate: 60 } };
+
+  const response = await fetch(`${API_URL}/parties?upcoming=true`, fetchOptions);
 
   if (!response.ok) throw new Error("Failed to fetch parties");
 
@@ -206,9 +208,10 @@ export const getPartyBySlug = async (slug: string): Promise<Party> => {
     }
   }
 
-  // Fallback: Fetch all parties and find by slug
-  // This is heavier but ensures we get the full Party object with all fields
-  const allParties = await getParties();
+  // Fallback: Fetch all parties (FRESH) and find by slug
+  // We force fresh here because if the slug lookup failed (maybe backend hasn't indexed yet),
+  // we want to be sure we are checking the absolute latest list of parties.
+  const allParties = await getParties(undefined, true);
   const party = allParties.find(p => p.slug === slug);
 
   if (!party) {
