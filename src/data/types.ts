@@ -77,6 +77,7 @@ export interface PartyContextType {
   deleteCarousel: (carouselId: string) => Promise<void>;
   updateCarousel: (carouselId: string, updates: { title?: string; order?: number }) => Promise<void>;
   reorderCarousels: (orderedIds: string[]) => Promise<void>;
+  cloneParty: (sourceSlug: string, newSlug: string, purchaseLink: string, referralCode?: string, pixelId?: string) => Promise<Party>;
   addPartyToCarousel: (carouselId: string, partyId: string) => Promise<void>;
   removePartyFromCarousel: (carouselId: string, partyId: string) => Promise<void>;
   isLoading: boolean;
