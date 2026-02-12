@@ -4,8 +4,7 @@ import React, { useEffect, useRef } from "react";
 import Script from "next/script";
 import { usePathname, useSearchParams } from "next/navigation";
 
-// Global Main Pixel ID provided by user
-export const GLOBAL_PIXEL_ID = "855037240866987";
+import { GLOBAL_PIXEL_ID } from "@/data/constants";
 
 export default function MetaPixelEvents() {
     const pathname = usePathname();

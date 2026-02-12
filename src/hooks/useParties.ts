@@ -91,8 +91,13 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
       const errorMessage = error instanceof Error ? error.message : "Could not add party.";
       alert(`Error: ${errorMessage}`);
       throw error;
+      console.error("Failed to add party:", error);
+      const errorMessage = error instanceof Error ? error.message : "Could not add party.";
+      alert(`Error: ${errorMessage}`);
+      throw error;
     }
   }, []);
+
 
   const updateParty = useCallback(async (partyToUpdate: Party) => {
     try {
@@ -101,6 +106,10 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
       setAllParties(prev => prev.map(p => p.id === id ? updatedParty : p));
       return updatedParty;
     } catch (error) {
+      console.error("Failed to update party:", error);
+      const errorMessage = error instanceof Error ? error.message : "Could not update party.";
+      alert(`Error: ${errorMessage}`);
+      throw error;
       console.error("Failed to update party:", error);
       const errorMessage = error instanceof Error ? error.message : "Could not update party.";
       alert(`Error: ${errorMessage}`);
@@ -120,6 +129,9 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
         partyIds: c.partyIds.filter(id => id !== partyId)
       })));
     } catch (error) {
+      console.error("Failed to delete party:", error);
+      alert("Error: Could not delete party.");
+      throw error;
       console.error("Failed to delete party:", error);
       alert("Error: Could not delete party.");
       throw error;
@@ -148,6 +160,7 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
     }
   }, []);
 
+
   const updateCarousel = useCallback(async (carouselId: string, updates: { title?: string; order?: number }) => {
     const originalCarousels = carousels;
     const carouselToUpdate = originalCarousels.find(c => c.id === carouselId);
@@ -157,6 +170,7 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
       throw new Error("Carousel not found for update.");
     }
 
+
     // Optimistic UI update
     setCarousels(prev => prev.map(c => c.id === carouselId ? { ...c, ...updates } : c));
 
@@ -165,11 +179,23 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
         title: updates.title ?? carouselToUpdate.title,
         order: updates.order ?? carouselToUpdate.order,
       };
+      const payload = {
+        title: updates.title ?? carouselToUpdate.title,
+        order: updates.order ?? carouselToUpdate.order,
+      };
 
       const updatedCarousel = await api.updateCarouselInfo(carouselId, payload);
       // Sync with server response on success for consistency
       setCarousels(prev => prev.map(c => c.id === carouselId ? updatedCarousel : c));
+      const updatedCarousel = await api.updateCarouselInfo(carouselId, payload);
+      // Sync with server response on success for consistency
+      setCarousels(prev => prev.map(c => c.id === carouselId ? updatedCarousel : c));
     } catch (error) {
+      console.error("Error updating carousel, rolling back.", error);
+      alert("Error: " + (error as Error).message);
+      // Roll back the optimistic update on failure
+      setCarousels(originalCarousels);
+      throw error;
       console.error("Error updating carousel, rolling back.", error);
       alert("Error: " + (error as Error).message);
       // Roll back the optimistic update on failure
@@ -263,6 +289,7 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
     }
   }, [carousels]);
 
+
   const setDefaultReferral = useCallback(async (code: string) => {
     try {
       await api.setDefaultReferral(code);
@@ -270,6 +297,19 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
     } catch (error) {
       console.error("Failed to set default referral:", error);
       alert("Error: Could not set default referral code.");
+      throw error;
+    }
+  }, []);
+
+  const cloneParty = useCallback(async (sourceSlug: string, newSlug: string, purchaseLink: string, referralCode?: string, pixelId?: string) => {
+    try {
+      const newParty = await api.cloneParty(sourceSlug, newSlug, purchaseLink, referralCode, pixelId);
+      setParties(prev => [newParty, ...prev]);
+      return newParty;
+    } catch (error) {
+      console.error("Failed to clone party:", error);
+      const errorMessage = error instanceof Error ? error.message : "Could not clone party.";
+      alert(`Error: ${errorMessage}`);
       throw error;
     }
   }, []);

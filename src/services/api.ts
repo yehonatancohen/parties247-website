@@ -274,6 +274,27 @@ export const updateParty = async (partyId: string, partyData: Omit<Party, 'id'>)
   return responseData.party ? mapPartyToFrontend(responseData.party) : { ...partyData, id: partyId };
 };
 
+export const cloneParty = async (sourceSlug: string, newSlug: string, purchaseLink: string, referralCode?: string, pixelId?: string): Promise<Party> => {
+  const payload = {
+    sourceSlug,
+    newSlug,
+    purchaseLink,
+    referralCode,
+    pixelId,
+  };
+
+  const response = await fetch(`${API_URL}/admin/clone-party`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    body: JSON.stringify(payload),
+  });
+
+  const responseData = await response.json();
+  if (!response.ok) throw new Error(responseData.message || 'Failed to clone party');
+
+  return mapPartyToFrontend(responseData.party);
+};
+
 export const login = async (password: string): Promise<void> => {
   const response = await fetch(`${API_URL}/admin/login`, {
     method: 'POST',
