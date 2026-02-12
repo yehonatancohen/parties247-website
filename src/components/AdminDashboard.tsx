@@ -96,6 +96,17 @@ const EditPartyModal: React.FC<{ party: Party; onClose: () => void; onSave: (upd
     }
   };
 
+  const togglePromotion = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const isChecked = e.target.checked;
+    setFormData(prev => {
+      const currentTags = prev.tags || [];
+      const newTags = isChecked
+        ? (currentTags.includes('promotion') ? currentTags : [...currentTags, 'promotion'])
+        : currentTags.filter(t => t !== 'promotion');
+      return { ...prev, tags: newTags };
+    });
+  };
+
   const getLocalDateTimeString = (isoDate: string) => {
     const date = new Date(isoDate);
     const year = date.getFullYear();
@@ -167,6 +178,18 @@ const EditPartyModal: React.FC<{ party: Party; onClose: () => void; onSave: (upd
             />
             <p className="text-xs text-jungle-text/50 mt-1">Facebook/Meta Pixel ID for tracking conversions when users click the purchase button</p>
           </div>
+          <div className="flex items-center gap-2 bg-jungle-deep p-2 rounded border border-wood-brown">
+            <input
+              type="checkbox"
+              id="isPromotion"
+              checked={formData.tags?.includes('promotion') || false}
+              onChange={togglePromotion}
+              className="w-4 h-4"
+            />
+            <label htmlFor="isPromotion" className="text-sm text-white font-semibold">
+              Is Promotion Party (Hidden from site search)
+            </label>
+          </div>
           <div className="flex justify-end gap-3 pt-4">
             <button type="button" onClick={onClose} className="bg-gray-600 text-white font-bold py-2 px-6 rounded-md hover:bg-opacity-80">Cancel</button>
             <button type="submit" disabled={isSaving} className="bg-jungle-accent text-jungle-deep font-bold py-2 px-6 rounded-md hover:bg-opacity-80 disabled:bg-gray-500 flex items-center">
@@ -185,7 +208,7 @@ type PromotionMessage = {
 };
 
 const AdminDashboard: React.FC = () => {
-  const { parties, addParty, deleteParty, updateParty, carousels, addCarousel, deleteCarousel, updateCarousel, reorderCarousels, addPartyToCarousel, removePartyFromCarousel, defaultReferral, setDefaultReferral } = useParties();
+  const { allParties: parties, addParty, deleteParty, updateParty, carousels, addCarousel, deleteCarousel, updateCarousel, reorderCarousels, addPartyToCarousel, removePartyFromCarousel, defaultReferral, setDefaultReferral } = useParties();
 
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -636,6 +659,55 @@ const AdminDashboard: React.FC = () => {
     updateParty({ ...party, tags: updatedTags });
   }, [updateParty]);
 
+  const handleCloneParty = useCallback(async (party: Party) => {
+    if (!party.originalUrl) {
+      alert('Cannot clone: Missing original URL');
+      return;
+    }
+
+    // eslint-disable-next-line
+    const confirm = window.confirm(`Clone "${party.name}" as a PROMOTION party?\n\nThis will create a hidden copy for campaign tracking.`);
+    if (!confirm) return;
+
+    try {
+      // Create unique URL to force new entry in backend/DB
+      const separator = party.originalUrl.includes('?') ? '&' : '?';
+      const uniqueUrl = `${party.originalUrl}${separator}clone_ref=${Date.now()}`;
+
+      const newParty = await addParty(uniqueUrl);
+
+      // Update immediately to promotion status
+      const baseSlug = party.slug.replace(/-promotion$/, '');
+      const promotionSlug = `${baseSlug}-promotion`;
+
+      // Ensure unique slug if multiple clones exist (though usually only 1 promotion copy per event)
+      // Check if slug taken:
+      let finalSlug = promotionSlug;
+      let counter = 1;
+      while (parties.some(p => p.slug === finalSlug && p.id !== newParty.id)) {
+        finalSlug = `${promotionSlug}-${counter}`;
+        counter++;
+      }
+
+      await updateParty({
+        ...newParty,
+        name: `${party.name} (Promo)`,
+        slug: finalSlug,
+        tags: Array.from(new Set([...(newParty.tags || []), 'promotion'])),
+        referralCode: '', // Clear ref as requested
+      });
+
+      setPromotionMessages(prev => ({
+        ...prev,
+        [newParty.id]: { type: 'success', message: 'Cloned successfully as Promotion Party! 🚀' }
+      }));
+
+    } catch (e: any) {
+      console.error(e);
+      alert('Failed to clone party: ' + (e.message || 'Unknown error'));
+    }
+  }, [addParty, updateParty, parties]);
+
   // FIX: Explicitly type PartyListItem as React.FC to correctly handle props like 'key' and resolve assignment errors.
   const PartyListItem: React.FC<{ party: Party }> = ({ party }) => (
     <div className="bg-jungle-deep p-3 rounded-md">
@@ -682,6 +754,9 @@ const AdminDashboard: React.FC = () => {
           </button>
           <button onClick={() => deleteParty(party.id)} className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 transition-colors text-sm">
             Delete
+          </button>
+          <button onClick={() => handleCloneParty(party)} className="bg-purple-600 text-white px-3 py-1 rounded-md hover:bg-purple-700 transition-colors text-sm" title="Clone as Promotion Party">
+            Clone Promo
           </button>
         </div>
       </div>

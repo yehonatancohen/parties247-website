@@ -127,7 +127,9 @@ const mapCarouselToFrontend = (backendCarousel: any): Carousel => {
 
 // --- UPDATED API Functions ---
 
-export const getParties = async (filters?: SeoPageConfig["apiFilters"]): Promise<Party[]> => {
+
+export const getParties = async (filters?: SeoPageConfig["apiFilters"], includeHidden = false): Promise<Party[]> => {
+  // Use 'upcoming=true' by default, if we also want past parties we need another param
   const response = await fetch(`${API_URL}/parties?upcoming=true`, {
     next: { revalidate: 60 },
   });
@@ -137,6 +139,11 @@ export const getParties = async (filters?: SeoPageConfig["apiFilters"]): Promise
   const data = await response.json();
 
   let parties = data.map(mapPartyToFrontend).filter((party: Party) => party.slug);
+
+  // Filter out promotion parties unless explicitly requested
+  if (!includeHidden) {
+    parties = parties.filter((p: Party) => !p.tags?.includes('promotion'));
+  }
 
   if (filters) {
     parties = parties.filter((party: Party) => {
@@ -206,9 +213,9 @@ export const getPartyBySlug = async (slug: string): Promise<Party> => {
     }
   }
 
-  // Fallback: Fetch all parties and find by slug
+  // Fallback: Fetch all parties (including hidden ones) and find by slug
   // This is heavier but ensures we get the full Party object with all fields
-  const allParties = await getParties();
+  const allParties = await getParties(undefined, true);
   const party = allParties.find(p => p.slug === slug);
 
   if (!party) {

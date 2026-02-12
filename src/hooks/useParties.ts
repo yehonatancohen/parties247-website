@@ -11,7 +11,7 @@ interface PartyProviderProps {
 }
 
 export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialState }) => {
-  const [parties, setParties] = useState<Party[]>(() => initialState?.parties ?? []);
+  const [allParties, setAllParties] = useState<Party[]>(() => initialState?.parties ?? []);
   const [carousels, setCarousels] = useState<Carousel[]>(() => initialState?.carousels ?? []);
   const hasInitialData = Boolean(initialState?.parties?.length || initialState?.carousels?.length);
   const [isLoading, setIsLoading] = useState(!hasInitialData);
@@ -19,6 +19,11 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
   const [error, setError] = useState<string | null>(null);
   const [loadingMessage, setLoadingMessage] = useState<string | null>(null);
   const skipInitialFetch = initialState?.disableInitialFetch ?? false;
+
+  // Filter out promotion parties for public consumption
+  const parties = React.useMemo(() => {
+    return allParties.filter(p => !p.tags?.includes('promotion'));
+  }, [allParties]);
 
   // Effect for initial data load
   useEffect(() => {
@@ -39,14 +44,14 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
       for (let i = 0; i < 4; i++) {
         try {
           const [fetchedParties, fetchedCarousels, fetchedReferral] = await Promise.all([
-            api.getParties(),
+            api.getParties(undefined, true), // Fetch ALL parties including hidden ones
             api.getCarousels(),
             api.getDefaultReferral(),
           ]);
           if (isCancelled) {
             return;
           }
-          setParties(fetchedParties);
+          setAllParties(fetchedParties);
           setCarousels(fetchedCarousels);
           setDefaultReferralState(fetchedReferral);
           setIsLoading(false);
@@ -78,46 +83,46 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
 
   const addParty = useCallback(async (url: string) => {
     try {
-        const newParty = await api.addParty(url);
-        setParties(prev => [newParty, ...prev]);
-        return newParty;
+      const newParty = await api.addParty(url);
+      setAllParties(prev => [newParty, ...prev]);
+      return newParty;
     } catch (error) {
-        console.error("Failed to add party:", error);
-        const errorMessage = error instanceof Error ? error.message : "Could not add party.";
-        alert(`Error: ${errorMessage}`);
-        throw error;
+      console.error("Failed to add party:", error);
+      const errorMessage = error instanceof Error ? error.message : "Could not add party.";
+      alert(`Error: ${errorMessage}`);
+      throw error;
     }
   }, []);
-  
+
   const updateParty = useCallback(async (partyToUpdate: Party) => {
     try {
-        const { id, ...partyData } = partyToUpdate;
-        const updatedParty = await api.updateParty(id, partyData);
-        setParties(prev => prev.map(p => p.id === id ? updatedParty : p));
-        return updatedParty;
+      const { id, ...partyData } = partyToUpdate;
+      const updatedParty = await api.updateParty(id, partyData);
+      setAllParties(prev => prev.map(p => p.id === id ? updatedParty : p));
+      return updatedParty;
     } catch (error) {
-        console.error("Failed to update party:", error);
-        const errorMessage = error instanceof Error ? error.message : "Could not update party.";
-        alert(`Error: ${errorMessage}`);
-        throw error;
+      console.error("Failed to update party:", error);
+      const errorMessage = error instanceof Error ? error.message : "Could not update party.";
+      alert(`Error: ${errorMessage}`);
+      throw error;
     }
   }, []);
 
 
   const deleteParty = useCallback(async (partyId: string) => {
     try {
-        await api.deleteParty(partyId);
-        setParties(prev => prev.filter(p => p.id !== partyId));
-        // Also remove from any carousels in the local state for immediate UI feedback.
-        // The backend should handle the actual removal from its database.
-        setCarousels(prev => prev.map(c => ({
-          ...c,
-          partyIds: c.partyIds.filter(id => id !== partyId)
-        })));
+      await api.deleteParty(partyId);
+      setAllParties(prev => prev.filter(p => p.id !== partyId));
+      // Also remove from any carousels in the local state for immediate UI feedback.
+      // The backend should handle the actual removal from its database.
+      setCarousels(prev => prev.map(c => ({
+        ...c,
+        partyIds: c.partyIds.filter(id => id !== partyId)
+      })));
     } catch (error) {
-        console.error("Failed to delete party:", error);
-        alert("Error: Could not delete party.");
-        throw error;
+      console.error("Failed to delete party:", error);
+      alert("Error: Could not delete party.");
+      throw error;
     }
   }, []);
 
@@ -142,7 +147,7 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
       throw error;
     }
   }, []);
-  
+
   const updateCarousel = useCallback(async (carouselId: string, updates: { title?: string; order?: number }) => {
     const originalCarousels = carousels;
     const carouselToUpdate = originalCarousels.find(c => c.id === carouselId);
@@ -151,25 +156,25 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
       console.error("Carousel not found for update:", carouselId);
       throw new Error("Carousel not found for update.");
     }
-    
+
     // Optimistic UI update
     setCarousels(prev => prev.map(c => c.id === carouselId ? { ...c, ...updates } : c));
 
     try {
-        const payload = {
-            title: updates.title ?? carouselToUpdate.title,
-            order: updates.order ?? carouselToUpdate.order,
-        };
+      const payload = {
+        title: updates.title ?? carouselToUpdate.title,
+        order: updates.order ?? carouselToUpdate.order,
+      };
 
-        const updatedCarousel = await api.updateCarouselInfo(carouselId, payload);
-        // Sync with server response on success for consistency
-        setCarousels(prev => prev.map(c => c.id === carouselId ? updatedCarousel : c));
+      const updatedCarousel = await api.updateCarouselInfo(carouselId, payload);
+      // Sync with server response on success for consistency
+      setCarousels(prev => prev.map(c => c.id === carouselId ? updatedCarousel : c));
     } catch (error) {
-        console.error("Error updating carousel, rolling back.", error);
-        alert("Error: " + (error as Error).message);
-        // Roll back the optimistic update on failure
-        setCarousels(originalCarousels);
-        throw error;
+      console.error("Error updating carousel, rolling back.", error);
+      alert("Error: " + (error as Error).message);
+      // Roll back the optimistic update on failure
+      setCarousels(originalCarousels);
+      throw error;
     }
   }, [carousels]);
 
@@ -213,7 +218,7 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
     }
 
     // Defensive check: Ensure all existing IDs in the carousel are still valid parties.
-    const validExistingPartyIds = carousel.partyIds.filter(id => parties.some(p => p.id === id));
+    const validExistingPartyIds = carousel.partyIds.filter(id => allParties.some(p => p.id === id));
     const updatedPartyIds = [...validExistingPartyIds, partyId];
 
     // Optimistically update UI.
@@ -230,7 +235,7 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
       setCarousels(originalCarousels);
       throw error;
     }
-  }, [carousels, parties]);
+  }, [carousels, allParties]);
 
   const removePartyFromCarousel = useCallback(async (carouselId: string, partyId: string) => {
     const originalCarousels = carousels;
@@ -257,7 +262,7 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
       throw error;
     }
   }, [carousels]);
-  
+
   const setDefaultReferral = useCallback(async (code: string) => {
     try {
       await api.setDefaultReferral(code);
@@ -270,11 +275,12 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
   }, []);
 
   const contextValue: PartyContextType = {
-    parties,
-    carousels,
-    addParty,
-    deleteParty,
-    updateParty,
+    allParties: allParties,
+    parties: parties,
+    carousels: carousels,
+    addParty: addParty,
+    deleteParty: deleteParty,
+    updateParty: updateParty,
     addCarousel,
     deleteCarousel,
     updateCarousel,
