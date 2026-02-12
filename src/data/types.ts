@@ -68,6 +68,7 @@ export type FilterState = {
 };
 
 export interface PartyContextType {
+  allParties: Party[]; // Includes hidden/promotion parties
   parties: Party[];
   carousels: Carousel[];
   addParty: (url: string) => Promise<Party>;

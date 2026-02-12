@@ -127,18 +127,23 @@ const mapCarouselToFrontend = (backendCarousel: any): Carousel => {
 
 // --- UPDATED API Functions ---
 
-export const getParties = async (filters?: SeoPageConfig["apiFilters"], forceFresh = false): Promise<Party[]> => {
-  const fetchOptions: RequestInit = forceFresh
-    ? { cache: 'no-store' }
-    : { next: { revalidate: 60 } };
 
-  const response = await fetch(`${API_URL}/parties?upcoming=true`, fetchOptions);
+export const getParties = async (filters?: SeoPageConfig["apiFilters"], includeHidden = false): Promise<Party[]> => {
+  // Use 'upcoming=true' by default, if we also want past parties we need another param
+  const response = await fetch(`${API_URL}/parties?upcoming=true`, {
+    next: { revalidate: 60 },
+  });
 
   if (!response.ok) throw new Error("Failed to fetch parties");
 
   const data = await response.json();
 
   let parties = data.map(mapPartyToFrontend).filter((party: Party) => party.slug);
+
+  // Filter out promotion parties unless explicitly requested
+  if (!includeHidden) {
+    parties = parties.filter((p: Party) => !p.tags?.includes('promotion'));
+  }
 
   if (filters) {
     parties = parties.filter((party: Party) => {
@@ -208,9 +213,8 @@ export const getPartyBySlug = async (slug: string): Promise<Party> => {
     }
   }
 
-  // Fallback: Fetch all parties (FRESH) and find by slug
-  // We force fresh here because if the slug lookup failed (maybe backend hasn't indexed yet),
-  // we want to be sure we are checking the absolute latest list of parties.
+  // Fallback: Fetch all parties (including hidden ones) and find by slug
+  // This is heavier but ensures we get the full Party object with all fields
   const allParties = await getParties(undefined, true);
   const party = allParties.find(p => p.slug === slug);
 

@@ -11,7 +11,7 @@ interface PartyProviderProps {
 }
 
 export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialState }) => {
-  const [parties, setParties] = useState<Party[]>(() => initialState?.parties ?? []);
+  const [allParties, setAllParties] = useState<Party[]>(() => initialState?.parties ?? []);
   const [carousels, setCarousels] = useState<Carousel[]>(() => initialState?.carousels ?? []);
   const hasInitialData = Boolean(initialState?.parties?.length || initialState?.carousels?.length);
   const [isLoading, setIsLoading] = useState(!hasInitialData);
@@ -19,6 +19,11 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
   const [error, setError] = useState<string | null>(null);
   const [loadingMessage, setLoadingMessage] = useState<string | null>(null);
   const skipInitialFetch = initialState?.disableInitialFetch ?? false;
+
+  // Filter out promotion parties for public consumption
+  const parties = React.useMemo(() => {
+    return allParties.filter(p => !p.tags?.includes('promotion'));
+  }, [allParties]);
 
   // Effect for initial data load
   useEffect(() => {
@@ -39,14 +44,14 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
       for (let i = 0; i < 4; i++) {
         try {
           const [fetchedParties, fetchedCarousels, fetchedReferral] = await Promise.all([
-            api.getParties(),
+            api.getParties(undefined, true), // Fetch ALL parties including hidden ones
             api.getCarousels(),
             api.getDefaultReferral(),
           ]);
           if (isCancelled) {
             return;
           }
-          setParties(fetchedParties);
+          setAllParties(fetchedParties);
           setCarousels(fetchedCarousels);
           setDefaultReferralState(fetchedReferral);
           setIsLoading(false);
@@ -79,7 +84,7 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
   const addParty = useCallback(async (url: string) => {
     try {
       const newParty = await api.addParty(url);
-      setParties(prev => [newParty, ...prev]);
+      setAllParties(prev => [newParty, ...prev]);
       return newParty;
     } catch (error) {
       console.error("Failed to add party:", error);
@@ -89,11 +94,12 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
     }
   }, []);
 
+
   const updateParty = useCallback(async (partyToUpdate: Party) => {
     try {
       const { id, ...partyData } = partyToUpdate;
       const updatedParty = await api.updateParty(id, partyData);
-      setParties(prev => prev.map(p => p.id === id ? updatedParty : p));
+      setAllParties(prev => prev.map(p => p.id === id ? updatedParty : p));
       return updatedParty;
     } catch (error) {
       console.error("Failed to update party:", error);
@@ -107,7 +113,7 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
   const deleteParty = useCallback(async (partyId: string) => {
     try {
       await api.deleteParty(partyId);
-      setParties(prev => prev.filter(p => p.id !== partyId));
+      setAllParties(prev => prev.filter(p => p.id !== partyId));
       // Also remove from any carousels in the local state for immediate UI feedback.
       // The backend should handle the actual removal from its database.
       setCarousels(prev => prev.map(c => ({
@@ -117,7 +123,6 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
     } catch (error) {
       console.error("Failed to delete party:", error);
       alert("Error: Could not delete party.");
-      throw error;
     }
   }, []);
 
@@ -143,6 +148,7 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
     }
   }, []);
 
+
   const updateCarousel = useCallback(async (carouselId: string, updates: { title?: string; order?: number }) => {
     const originalCarousels = carousels;
     const carouselToUpdate = originalCarousels.find(c => c.id === carouselId);
@@ -151,6 +157,7 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
       console.error("Carousel not found for update:", carouselId);
       throw new Error("Carousel not found for update.");
     }
+
 
     // Optimistic UI update
     setCarousels(prev => prev.map(c => c.id === carouselId ? { ...c, ...updates } : c));
@@ -213,7 +220,7 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
     }
 
     // Defensive check: Ensure all existing IDs in the carousel are still valid parties.
-    const validExistingPartyIds = carousel.partyIds.filter(id => parties.some(p => p.id === id));
+    const validExistingPartyIds = carousel.partyIds.filter(id => allParties.some(p => p.id === id));
     const updatedPartyIds = [...validExistingPartyIds, partyId];
 
     // Optimistically update UI.
@@ -230,7 +237,7 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
       setCarousels(originalCarousels);
       throw error;
     }
-  }, [carousels, parties]);
+  }, [carousels, allParties]);
 
   const removePartyFromCarousel = useCallback(async (carouselId: string, partyId: string) => {
     const originalCarousels = carousels;
@@ -258,6 +265,7 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
     }
   }, [carousels]);
 
+
   const setDefaultReferral = useCallback(async (code: string) => {
     try {
       await api.setDefaultReferral(code);
@@ -272,7 +280,7 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
   const cloneParty = useCallback(async (sourceSlug: string, newSlug: string, purchaseLink: string, referralCode?: string, pixelId?: string) => {
     try {
       const newParty = await api.cloneParty(sourceSlug, newSlug, purchaseLink, referralCode, pixelId);
-      setParties(prev => [newParty, ...prev]);
+      setAllParties(prev => [newParty, ...prev]);
       return newParty;
     } catch (error) {
       console.error("Failed to clone party:", error);
@@ -283,16 +291,17 @@ export const PartyProvider: React.FC<PartyProviderProps> = ({ children, initialS
   }, []);
 
   const contextValue: PartyContextType = {
-    parties,
-    carousels,
-    addParty,
-    deleteParty,
-    updateParty,
-    cloneParty,
+    allParties: allParties,
+    parties: parties,
+    carousels: carousels,
+    addParty: addParty,
+    deleteParty: deleteParty,
+    updateParty: updateParty,
     addCarousel,
     deleteCarousel,
     updateCarousel,
     reorderCarousels,
+    cloneParty,
     addPartyToCarousel,
     removePartyFromCarousel,
     isLoading,

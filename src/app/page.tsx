@@ -7,28 +7,28 @@ async function getData() {
 
   try {
     const partiesRes = await fetch(`${apiUrl}/api/parties?upcoming=true`, {
-      next: { revalidate: 60 } 
+      next: { revalidate: 60 }
     });
 
-    const carouselsRes = await fetch(`${apiUrl}/api/carousels`, { 
-      next: { revalidate: 60 } 
+    const carouselsRes = await fetch(`${apiUrl}/api/carousels`, {
+      next: { revalidate: 60 }
     });
 
     // Check if both succeeded
     if (!partiesRes.ok || !carouselsRes.ok) {
-        console.error("Failed to fetch one of the endpoints");
-        return { parties: [], carousels: [] };
+      console.error("Failed to fetch one of the endpoints");
+      return { parties: [], carousels: [] };
     }
 
     let rawParties = await partiesRes.json();
     const carousels = await carouselsRes.json();
-    const parties = Array.isArray(rawParties) 
-      ? rawParties.map(p => ({ ...p, id: p._id })) 
+    const parties = Array.isArray(rawParties)
+      ? rawParties.map(p => ({ ...p, id: p._id })).filter((p: any) => !p.tags?.includes('promotion'))
       : [];
 
-    return { 
-      parties: Array.isArray(parties) ? parties : [], 
-      carousels: Array.isArray(carousels) ? carousels : [] 
+    return {
+      parties: Array.isArray(parties) ? parties : [],
+      carousels: Array.isArray(carousels) ? carousels : []
     };
 
   } catch (error) {
@@ -69,9 +69,9 @@ export default async function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
       {/* Pass the server-fetched data to the client component */}
-      <HomeClient 
-        initialParties={data.parties || []} 
-        initialCarousels={data.carousels || []} 
+      <HomeClient
+        initialParties={data.parties || []}
+        initialCarousels={data.carousels || []}
       />
     </>
   );
