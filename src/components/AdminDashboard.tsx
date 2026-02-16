@@ -27,12 +27,12 @@ const ClonePartyModal: React.FC<{ party: Party; onClose: () => void; onClone: (u
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-      <div className="bg-jungle-surface rounded-lg shadow-2xl w-full max-w-lg h-auto flex flex-col border border-wood-brown">
+      <div className="bg-jungle-surface rounded-lg shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col border border-wood-brown">
         <div className="p-4 border-b border-wood-brown flex justify-between items-center">
           <h3 className="text-xl font-display text-white">Clone Party</h3>
           <button onClick={onClose} className="text-2xl text-jungle-text/70 hover:text-white">&times;</button>
         </div>
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto">
           <div className="bg-blue-500/10 border border-blue-500/30 p-3 rounded-md text-sm text-blue-200 mb-4">
             <p><strong>Note:</strong> Cloning uses the URL to create a new entry. If you keep the same URL, we will append a unique ID to force a new creation.</p>
           </div>
@@ -189,12 +189,12 @@ const EditPartyModal: React.FC<{ party: Party; onClose: () => void; onSave: (upd
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-      <div className="bg-jungle-surface rounded-lg shadow-2xl w-full max-w-lg h-auto flex flex-col border border-wood-brown">
+      <div className="bg-jungle-surface rounded-lg shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col border border-wood-brown">
         <div className="p-4 border-b border-wood-brown flex justify-between items-center">
           <h3 className="text-xl font-display text-white">Edit Party</h3>
           <button onClick={onClose} className="text-2xl text-jungle-text/70 hover:text-white">&times;</button>
         </div>
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto">
           <div>
             <label htmlFor="name" className="block text-sm text-jungle-text/80 mb-1">Name</label>
             <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} className={inputClass} required />
@@ -307,7 +307,7 @@ const AdminDashboard: React.FC = () => {
     now.setHours(0, 0, 0, 0); // Start of today
     const active: Party[] = [];
     const archived: Party[] = [];
-    parties.forEach(p => {
+    (parties || []).forEach(p => {
       if (new Date(p.date) < now) {
         archived.push(p);
       } else {
