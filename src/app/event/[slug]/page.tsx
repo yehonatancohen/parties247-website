@@ -308,7 +308,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
         ═══════════════════════════════════════════════════ */}
         <div className="rounded-2xl border border-jungle-accent/25 bg-gradient-to-br from-jungle-surface via-jungle-surface/80 to-jungle-deep p-6 md:p-8 mb-8" id="main-purchase-button">
           <p className="text-center text-jungle-text/70 text-sm mb-5">
-            הכרטיסים נמכרים באתר המקורי של המאורגן. לחצו למעבר 👇
+            הכרטיסים נמכרים דרך אתר GO-OUT. לחצו למעבר 👇
           </p>
 
           <div className="flex flex-col gap-3">
