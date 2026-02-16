@@ -83,7 +83,7 @@ export function RecentPurchaseToast() {
 // --- 3. Sticky Purchase Bar ---
 export function StickyPurchaseBar({
     href,
-    priceLabel = "לרכישת כרטיסים",
+    priceLabel = "מעבר לרכישת כרטיסים →",
     triggerId,
     partyId,
     slug,

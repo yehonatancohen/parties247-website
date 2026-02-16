@@ -105,4 +105,32 @@
       opacity: 1;
     }
   }
+
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.4s ease-out forwards;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 8px theme('colors.jungle-lime / 30%');
+    }
+    50% {
+      box-shadow: 0 0 20px theme('colors.jungle-lime / 60%'), 0 0 40px theme('colors.jungle-lime / 20%');
+    }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
 }
