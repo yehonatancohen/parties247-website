@@ -38,52 +38,76 @@ const PartyCard: React.FC<PartyCardProps> = ({ party, showDiscountCode = false }
   };
 
   const renderTagContent = (tag: string) => {
-    if (tag === LAST_TICKETS_TAG) return <><FireIcon className="w-3.5 h-3.5 ml-1" />{tag}</>;
-    if (tag === 'לוהט') return <><FireIcon className="w-3.5 h-3.5 ml-1" />{tag}</>;
-    if (tag === 'ביקוש גבוה') return <><PartyPopperIcon className="w-3.5 h-3.5 ml-1" />{tag}</>;
+    if (tag === LAST_TICKETS_TAG) return <><FireIcon className="w-3 h-3 ml-0.5" />{tag}</>;
+    if (tag === 'לוהט') return <><FireIcon className="w-3 h-3 ml-0.5" />{tag}</>;
+    if (tag === 'ביקוש גבוה') return <><PartyPopperIcon className="w-3 h-3 ml-0.5" />{tag}</>;
     return tag;
   };
 
+  const hasLastTickets = party.tags.includes(LAST_TICKETS_TAG);
+
   return (
-    <div className="bg-jungle-surface rounded-xl overflow-hidden shadow-lg hover:shadow-jungle-glow/60 transition-all duration-300 flex flex-col group transform hover:-translate-y-1 border border-wood-brown/50">
-      <Link href={`/event/${party.slug}`} className="block">
-        <div className="relative">
+    <div className="group relative bg-jungle-surface rounded-2xl overflow-hidden shadow-lg hover:shadow-jungle-glow/40 transition-all duration-300 flex flex-col transform hover:-translate-y-1.5 border border-white/5 hover:border-jungle-accent/30">
+      <Link href={`/event/${party.slug}`} className="block relative">
+        {/* Image container — full card-width, proper aspect ratio, no clipping */}
+        <div className="relative overflow-hidden">
           <Image
             src={party.imageUrl}
             alt={party.name}
-            className="w-full aspect-[3/4] object-cover"
+            className="w-full aspect-[3/4] object-cover transition-transform duration-500 group-hover:scale-105"
             loading="lazy"
-            width={"300"}
-            height={"400"}
+            width={400}
+            height={533}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
-          <div className="absolute top-3 right-3 flex flex-col gap-2">
+          {/* Gradient overlays */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+
+          {/* Tags */}
+          <div className="absolute top-2.5 right-2.5 flex flex-col gap-1.5">
             {party.tags.slice(0, 2).map(tag => (
-              <span key={tag} className={`${getTagColor(tag)} backdrop-blur-sm text-xs font-bold px-2 py-1 rounded-full shadow-lg flex items-center`}>
+              <span key={tag} className={`${getTagColor(tag)} backdrop-blur-md text-[10px] sm:text-xs font-bold px-2 py-0.5 sm:py-1 rounded-full shadow-lg flex items-center w-fit`}>
                 {renderTagContent(tag)}
               </span>
             ))}
           </div>
-          <div className="absolute bottom-0 left-0 p-4 w-full">
-            <h3 className="font-display text-3xl text-white mb-1 truncate" style={{ textShadow: '2px 2px 6px rgba(0,0,0,0.9)' }}>{party.name}</h3>
+
+          {/* Last tickets flash badge */}
+          {hasLastTickets && (
+            <div className="absolute top-2.5 left-2.5">
+              <span className="inline-flex items-center gap-1 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-full animate-pulse shadow-lg shadow-red-500/30">
+                <FireIcon className="w-3 h-3" />
+                אחרונים!
+              </span>
+            </div>
+          )}
+
+          {/* Party name — overlaying image bottom */}
+          <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4">
+            <h3 className="font-display text-xl sm:text-2xl text-white leading-tight line-clamp-2" style={{ textShadow: '1px 1px 4px rgba(0,0,0,0.9)' }}>
+              {party.name}
+            </h3>
           </div>
         </div>
       </Link>
-      <div className="p-4 flex flex-col flex-grow">
-        <div className="flex flex-col gap-2 text-jungle-text/80 text-sm mb-4">
-          <div className="flex items-center gap-2">
-            <CalendarIcon className="h-4 w-4 text-jungle-accent flex-shrink-0" />
+
+      {/* Card body */}
+      <div className="p-3 sm:p-4 flex flex-col flex-grow">
+        <div className="flex flex-col gap-1.5 text-jungle-text/80 text-xs sm:text-sm mb-3">
+          <div className="flex items-center gap-1.5">
+            <CalendarIcon className="h-3.5 w-3.5 text-jungle-lime flex-shrink-0" />
             <span className="font-semibold whitespace-nowrap">{formattedDate} · {formattedTime}</span>
           </div>
-          <div className="flex items-center gap-2">
-            <LocationIcon className="h-4 w-4 text-jungle-accent flex-shrink-0" />
+          <div className="flex items-center gap-1.5">
+            <LocationIcon className="h-3.5 w-3.5 text-jungle-lime flex-shrink-0" />
             <span className="truncate">{party.location.name}</span>
           </div>
         </div>
-        {showDiscountCode && <DiscountCodeReveal className="mb-4" />}
+
+        {showDiscountCode && <DiscountCodeReveal className="mb-3" />}
+
         <Link
           href={`/event/${party.slug}`}
-          className="mt-auto flex items-center justify-center gap-2 text-center bg-gradient-to-r from-jungle-lime to-jungle-accent hover:from-jungle-lime/80 hover:to-jungle-accent/80 text-jungle-deep font-display text-2xl py-3 px-4 rounded-lg transition-all w-full group-hover:scale-105 tracking-wider"
+          className="mt-auto flex items-center justify-center gap-2 text-center bg-gradient-to-r from-jungle-lime to-jungle-accent hover:from-jungle-lime/80 hover:to-jungle-accent/80 text-jungle-deep font-display text-lg sm:text-xl py-2.5 px-3 rounded-xl transition-all w-full group-hover:scale-[1.03] tracking-wide shadow-lg shadow-jungle-lime/10"
         >
           <span>פרטים וכרטיסים</span>
         </Link>

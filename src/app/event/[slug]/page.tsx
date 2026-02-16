@@ -2,44 +2,43 @@ import { Metadata, ResolvingMetadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { getPartyBySlug, getParties } from "@/services/api"; // Ensure getParties is exported
+import { getPartyBySlug, getParties } from "@/services/api";
 import { Party } from "@/data/types";
 import { BRAND_LOGO_URL } from "@/data/constants";
-import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon, WhatsAppIcon } from "@/components/Icons"; // Adjust imports
-import ShareButtons from "@/components/ShareButtons"; // Ensure this handles 'use client' internally if it has state
-import DiscountCodeReveal from "@/components/DiscountCodeReveal"; // Ensure this handles 'use client' internally
+import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon, WhatsAppIcon } from "@/components/Icons";
+import ShareButtons from "@/components/ShareButtons";
+import DiscountCodeReveal from "@/components/DiscountCodeReveal";
 import RelatedPartyCard from "@/components/RelatedPartyCard";
 import PurchaseButton from "@/components/PurchaseButton";
 import { PeopleWatching, RecentPurchaseToast, StickyPurchaseBar } from "@/components/UrgencyComponents";
 import PartyViewTracker from "@/components/PartyViewTracker";
 import { BASE_URL, LAST_TICKETS_TAG } from "@/data/constants";
-import PartySpecificPixel from "@/components/PartySpecificPixel"; // Import the new component
+import PartySpecificPixel from "@/components/PartySpecificPixel";
 
-// Force dynamic rendering if API data changes often, or use revalidate
 export const revalidate = 60;
-
-// Helper to calculate "Hot Now" (Server Side Logic)
-function isHotNow(partyId: string) {
-  // You might need to fetch carousels here or hardcode the logic if carousels aren't available globally
-  // For now, defaulting to false to prevent crash, or implement your carousel fetching logic here.
-  return false;
-}
 
 // Helper for Tag Colors
 const getTagColor = (tag: string) => {
   if (tag === LAST_TICKETS_TAG) return 'bg-red-500/90 text-white';
   if (tag === 'לוהט') return 'bg-red-500/80 text-white';
   if (tag === 'ביקוש גבוה') return 'bg-yellow-500/80 text-jungle-deep';
+  if (tag.includes('חינם')) return 'bg-emerald-500/80 text-white';
+  if (tag.includes('+')) return 'bg-wood-brown/80 text-jungle-text';
   return 'bg-jungle-accent/80 text-jungle-deep';
 };
 
-// Helper for Referral URL
+const getTagIcon = (tag: string) => {
+  if (tag === LAST_TICKETS_TAG) return <FireIcon className="w-3.5 h-3.5 ml-1" />;
+  if (tag === 'לוהט') return <FireIcon className="w-3.5 h-3.5 ml-1" />;
+  if (tag === 'ביקוש גבוה') return <PartyPopperIcon className="w-3.5 h-3.5 ml-1" />;
+  return null;
+};
+
 const getReferralUrl = (originalUrl: string, partyReferral?: string, defaultReferral?: string): string => {
   try {
     const referralCode = partyReferral || defaultReferral;
     if (!referralCode || !originalUrl) return originalUrl;
     const url = new URL(originalUrl);
-    // Clean existing params
     url.searchParams.delete('aff');
     url.searchParams.delete('referrer');
     url.searchParams.set('ref', referralCode);
@@ -51,15 +50,13 @@ const getReferralUrl = (originalUrl: string, partyReferral?: string, defaultRefe
 
 async function fetchPartyData(slug: string) {
   try {
-    // Parallel fetch: Get specific party AND all parties (for related logic + image merging)
     const [partyFromApi, allParties] = await Promise.all([
       getPartyBySlug(slug),
-      getParties().catch(() => []) // Fallback to empty array if this fails
+      getParties().catch(() => [])
     ]);
 
     if (!partyFromApi) return null;
 
-    // Merge logic from your Vite App (fixing missing images using the list)
     const partyFromList = allParties.find((p: Party) => p.slug === slug);
 
     const finalParty: Party = {
@@ -68,7 +65,6 @@ async function fetchPartyData(slug: string) {
       id: partyFromApi.id || partyFromList?.id || '',
     };
 
-    // Calculate Related Parties
     const relatedParties = allParties.filter((p: Party) => {
       if (p.id === finalParty.id) return false;
       if (new Date(p.date) < new Date()) return false;
@@ -78,7 +74,6 @@ async function fetchPartyData(slug: string) {
     }).slice(0, 4);
 
     return { party: finalParty, relatedParties };
-
   } catch (error) {
     console.error("Failed to load party", error);
     return null;
@@ -125,7 +120,6 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
 
   const { party, relatedParties } = data;
 
-  // Formatting dates
   const partyDate = new Date(party.date);
   const formattedDate = new Intl.DateTimeFormat('he-IL', { dateStyle: 'full', timeZone: 'UTC' }).format(partyDate);
   const formattedTime = new Intl.DateTimeFormat('he-IL', { timeStyle: 'short', timeZone: 'UTC' }).format(partyDate);
@@ -135,10 +129,8 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
   const partyPageUrl = `${BASE_URL}/event/${party.slug}`;
   const whatsappMessage = encodeURIComponent(`היי, אשמח לשמור כרטיסים ל"${party.name}" ב-${formattedDate}. ${partyPageUrl}`);
   const whatsappHref = `https://wa.me/?text=${whatsappMessage}`;
-  // Note: hotNow logic requires fetching carousels. Passing false for now.
   const showDiscountCode = false;
 
-  // JSON-LD Schema
   const eventJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Event',
@@ -161,8 +153,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
   };
 
   return (
-    <div className="min-h-screen bg-jungle-deep text-white pb-20 overflow-x-hidden">
-      {/* Inject Party-Specific Pixel if available */}
+    <div className="min-h-screen bg-jungle-deep text-white overflow-x-hidden pb-24">
       <PartySpecificPixel pixelId={party.pixelId} />
 
       <script
@@ -170,129 +161,212 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
         dangerouslySetInnerHTML={{ __html: JSON.stringify(eventJsonLd) }}
       />
 
-      <div className="container mx-auto px-4 py-6">
-        <PartyViewTracker partyId={party.id} slug={party.slug} />
-        {/* Breadcrumb / Back Link */}
-        <div className="mb-4">
-          <Link className="text-lime-300 hover:text-white" href="/all-parties">
+      <PartyViewTracker partyId={party.id} slug={party.slug} />
+
+      <div className="max-w-3xl mx-auto px-4 pt-6 pb-8">
+
+        {/* Back link */}
+        <div className="mb-5">
+          <Link
+            className="inline-flex items-center gap-2 text-jungle-accent hover:text-white text-sm font-semibold transition-colors"
+            href="/all-parties"
+          >
             ← חזרה למסיבות
           </Link>
         </div>
 
-        <div className="max-w-5xl mx-auto bg-jungle-surface rounded-xl overflow-hidden shadow-lg border border-wood-brown/50">
-          <div className="md:grid md:grid-cols-5 md:gap-8">
-            {/* Image Section */}
-            <div className="md:col-span-2">
-              <Image
-                src={party.imageUrl}
-                alt={party.name}
-                className="w-full h-64 md:h-full object-cover"
-                loading="eager"
-                priority
-                width={600}
-                height={400}
-              />
+        {/* ═══════════════════════════════════════════════════
+            SECTION 1: FULL PARTY FLYER / IMAGE
+        ═══════════════════════════════════════════════════ */}
+        <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl mb-8">
+          <Image
+            src={party.imageUrl}
+            alt={party.name}
+            className="w-full h-auto object-contain bg-black"
+            width={800}
+            height={1000}
+            priority
+            sizes="(max-width: 768px) 100vw, 720px"
+          />
+        </div>
+
+        {/* ═══════════════════════════════════════════════════
+            SECTION 2: PARTY NAME + TAGS + SOCIAL PROOF
+        ═══════════════════════════════════════════════════ */}
+        <div className="mb-8">
+          {/* Tags */}
+          {party.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {party.tags.map(tag => (
+                <span
+                  key={tag}
+                  className={`${getTagColor(tag)} text-xs font-bold px-3 py-1.5 rounded-full flex items-center w-fit`}
+                >
+                  {getTagIcon(tag)}
+                  {tag}
+                </span>
+              ))}
             </div>
+          )}
 
-            {/* Content Section */}
-            <div className="md:col-span-3 p-6 md:p-8">
-              <div className="flex flex-wrap gap-2 mb-4">
-                {party.tags.map(tag => (
-                  <span key={tag} className={`${getTagColor(tag)} text-xs font-bold px-3 py-1 rounded-full flex items-center`}>
-                    {tag === LAST_TICKETS_TAG && <FireIcon className="w-4 h-4 ml-1" />}
-                    {tag === 'לוהט' && <FireIcon className="w-4 h-4 ml-1" />}
-                    {tag === 'ביקוש גבוה' && <PartyPopperIcon className="w-4 h-4 ml-1" />}
-                    {tag}
-                  </span>
-                ))}
-              </div>
+          <h1 className="font-display text-4xl md:text-5xl text-white mb-3 leading-tight">
+            {party.name}
+          </h1>
 
-              <div className="mb-4">
-                <PeopleWatching />
-              </div>
+          {/* Social proof */}
+          <div className="mb-4">
+            <PeopleWatching />
+          </div>
 
-              {hasLastTickets && (
-                <div className="mb-4 inline-flex items-center gap-2 rounded-lg border border-red-400/60 bg-red-500/10 px-3 py-2 text-red-100">
-                  <FireIcon className="w-5 h-5" />
-                  <span>כרטיסים אחרונים - מומלץ לשריין כרטיס עכשיו</span>
-                </div>
-              )}
+          {hasLastTickets && (
+            <div className="inline-flex items-center gap-2 rounded-xl border border-red-400/50 bg-red-500/10 px-4 py-2.5 text-red-200 text-sm font-bold">
+              <FireIcon className="w-4 h-4 text-red-400" />
+              <span>כרטיסים אחרונים – מומלץ לשריין מקום עכשיו</span>
+            </div>
+          )}
+        </div>
 
-              <h1 className="font-display text-4xl md:text-5xl text-white mb-4">{party.name}</h1>
+        {/* ═══════════════════════════════════════════════════
+            SECTION 3: EVENT DETAILS
+        ═══════════════════════════════════════════════════ */}
+        <div className="rounded-2xl border border-white/10 bg-jungle-surface/50 p-6 md:p-8 mb-8">
 
-              <div className="space-y-4 text-jungle-text mb-6">
-                <div className="flex items-start gap-3">
-                  <CalendarIcon className="h-6 w-6 text-jungle-accent mt-1 flex-shrink-0" />
-                  <div>
-                    <p className="font-bold">{formattedDate}</p>
-                    <p className="text-sm">{formattedTime}</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <LocationIcon className="h-6 w-6 text-jungle-accent mt-1 flex-shrink-0" />
-                  <div>
-                    <p className="font-bold">{party.location.name}</p>
-                    {party.location.address && <p className="text-sm">{party.location.address}</p>}
-                  </div>
-                </div>
-              </div>
-
-              <p className="text-jungle-text/90 whitespace-pre-line mb-6">{party.description}</p>
-
-              {showDiscountCode && <DiscountCodeReveal variant="expanded" className="mb-6" />}
-
-              <div className="flex flex-col gap-3 mb-6">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <ShareButtons partyName={party.name} shareUrl={referralUrl} />
-                  {hasLastTickets && (
-                    <span className="inline-flex items-center gap-1 text-sm text-red-200">
-                      <FireIcon className="w-4 h-4" />
-                      כרטיסים אחרונים
-                    </span>
-                  )}
-                </div>
-
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                  <div className="w-full sm:flex-1" id="main-purchase-button">
-                    <PurchaseButton partyId={party.id} slug={party.slug} href={referralUrl} pixelId={party.pixelId} partyName={party.name} />
-                  </div>
-                  <a
-                    href={whatsappHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full sm:flex-1 inline-flex items-center justify-center gap-3 rounded-lg border border-green-300/70 bg-green-500/10 px-6 py-4 text-2xl sm:text-3xl font-semibold text-green-100 transition hover:bg-green-500/20"
-                  >
-                    <WhatsAppIcon className="w-5 h-5" />
-                    שלחו לי בווטסאפ
-                  </a>
-                </div>
-              </div>
+          {/* Date & Time */}
+          <div className="flex items-start gap-4 mb-5">
+            <div className="w-11 h-11 rounded-xl bg-jungle-lime/10 border border-jungle-lime/20 flex items-center justify-center flex-shrink-0">
+              <CalendarIcon className="h-5 w-5 text-jungle-lime" />
+            </div>
+            <div>
+              <p className="text-xs text-jungle-text/50 uppercase tracking-wider mb-0.5">תאריך ושעה</p>
+              <p className="font-bold text-white text-lg">{formattedDate}</p>
+              <p className="text-jungle-text/70">{formattedTime}</p>
             </div>
           </div>
 
-          {/* Map Section */}
-          <div className="p-6 md:p-8 border-t border-wood-brown/50">
-            <h3 className="text-xl font-display text-white mb-4">מיקום על המפה</h3>
-            <div className="p-6 md:p-8 border-t border-wood-brown/50">
-              <div className="aspect-[16/9] rounded-lg overflow-hidden border-2 border-wood-brown/50">
-                <iframe
-                  src={`https://maps.google.com/maps?q=${encodeURIComponent(party.location.name)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
-                  style={{ filter: "invert(90%) hue-rotate(180deg) contrast(85%) grayscale(20%)" }}
-                  suppressHydrationWarning={true}
-                  className="w-full h-full border-0 rounded-lg"
-                  allowFullScreen={false}
-                  loading="lazy"
-                  title={`Map of ${party.location.name}`}
-                ></iframe>
+          {/* Location */}
+          <div className="flex items-start gap-4 mb-5">
+            <div className="w-11 h-11 rounded-xl bg-jungle-lime/10 border border-jungle-lime/20 flex items-center justify-center flex-shrink-0">
+              <LocationIcon className="h-5 w-5 text-jungle-lime" />
+            </div>
+            <div>
+              <p className="text-xs text-jungle-text/50 uppercase tracking-wider mb-0.5">מיקום</p>
+              <p className="font-bold text-white text-lg">{party.location.name}</p>
+              {party.location.address && <p className="text-jungle-text/70">{party.location.address}</p>}
+            </div>
+          </div>
+
+          {/* Music Genre */}
+          {party.musicGenres && (
+            <div className="flex items-start gap-4 mb-5">
+              <div className="w-11 h-11 rounded-xl bg-jungle-lime/10 border border-jungle-lime/20 flex items-center justify-center flex-shrink-0">
+                <span className="text-lg">🎵</span>
+              </div>
+              <div>
+                <p className="text-xs text-jungle-text/50 uppercase tracking-wider mb-0.5">סגנון מוזיקה</p>
+                <p className="font-bold text-white text-lg">{party.musicGenres}</p>
               </div>
             </div>
+          )}
+
+          {/* Age */}
+          {party.age && (
+            <div className="flex items-start gap-4">
+              <div className="w-11 h-11 rounded-xl bg-jungle-lime/10 border border-jungle-lime/20 flex items-center justify-center flex-shrink-0">
+                <span className="text-lg">🎟️</span>
+              </div>
+              <div>
+                <p className="text-xs text-jungle-text/50 uppercase tracking-wider mb-0.5">קהל יעד</p>
+                <p className="font-bold text-white text-lg">{party.age}</p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* ═══════════════════════════════════════════════════
+            SECTION 4: DESCRIPTION
+        ═══════════════════════════════════════════════════ */}
+        {party.description && (
+          <div className="rounded-2xl border border-white/10 bg-jungle-surface/50 p-6 md:p-8 mb-8">
+            <h2 className="text-xl font-display text-white mb-3 flex items-center gap-2">
+              <span className="w-1 h-5 bg-jungle-lime rounded-full inline-block" />
+              על האירוע
+            </h2>
+            <p className="text-jungle-text/85 whitespace-pre-line leading-relaxed">
+              {party.description}
+            </p>
+          </div>
+        )}
+
+        {showDiscountCode && (
+          <div className="mb-8">
+            <DiscountCodeReveal variant="expanded" />
+          </div>
+        )}
+
+        {/* ═══════════════════════════════════════════════════
+            SECTION 5: CTA — AFTER all the details
+        ═══════════════════════════════════════════════════ */}
+        <div className="rounded-2xl border border-jungle-accent/25 bg-gradient-to-br from-jungle-surface via-jungle-surface/80 to-jungle-deep p-6 md:p-8 mb-8" id="main-purchase-button">
+          <p className="text-center text-jungle-text/70 text-sm mb-5">
+            הכרטיסים נמכרים באתר המקורי של המאורגן. לחצו למעבר 👇
+          </p>
+
+          <div className="flex flex-col gap-3">
+            <PurchaseButton partyId={party.id} slug={party.slug} href={referralUrl} pixelId={party.pixelId} partyName={party.name} />
+
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-3 rounded-xl border border-green-400/30 bg-green-500/10 px-6 py-3.5 text-lg font-bold text-green-100 transition-all hover:bg-green-500/20 hover:border-green-400/50"
+            >
+              <WhatsAppIcon className="w-5 h-5" />
+              שלחו לחבר בווטסאפ
+            </a>
+          </div>
+
+          {/* Share */}
+          <div className="flex items-center justify-between mt-5 pt-5 border-t border-white/10">
+            <ShareButtons partyName={party.name} shareUrl={referralUrl} />
+            {hasLastTickets && (
+              <span className="inline-flex items-center gap-1.5 text-xs text-red-300 font-semibold animate-pulse">
+                <FireIcon className="w-3.5 h-3.5" />
+                כרטיסים אחרונים
+              </span>
+            )}
           </div>
         </div>
 
-        {/* Related Parties Section */}
+        {/* ═══════════════════════════════════════════════════
+            SECTION 6: MAP
+        ═══════════════════════════════════════════════════ */}
+        <div className="rounded-2xl border border-white/10 bg-jungle-surface/50 overflow-hidden mb-8">
+          <div className="p-5">
+            <h2 className="text-xl font-display text-white flex items-center gap-2">
+              <span className="w-1 h-5 bg-jungle-lime rounded-full inline-block" />
+              מיקום על המפה
+            </h2>
+          </div>
+          <div className="aspect-[16/9]">
+            <iframe
+              src={`https://maps.google.com/maps?q=${encodeURIComponent(party.location.name)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+              style={{ filter: "invert(90%) hue-rotate(180deg) contrast(85%) grayscale(20%)" }}
+              suppressHydrationWarning={true}
+              className="w-full h-full border-0"
+              allowFullScreen={false}
+              loading="lazy"
+              title={`Map of ${party.location.name}`}
+            ></iframe>
+          </div>
+        </div>
+
+        {/* ═══════════════════════════════════════════════════
+            SECTION 7: RELATED PARTIES
+        ═══════════════════════════════════════════════════ */}
         {relatedParties.length > 0 && (
-          <div className="max-w-5xl mx-auto mt-12">
-            <h2 className="text-3xl font-display text-center mb-6 text-white">מסיבות דומות שאולי תאהבו</h2>
+          <div className="mb-8">
+            <h2 className="text-2xl md:text-3xl font-display text-white text-center mb-2">מסיבות דומות שאולי תאהבו</h2>
+            <p className="text-jungle-text/50 text-sm text-center mb-6">אירועים נוספים שיכולים לעניין אותך</p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {relatedParties.map(relatedParty => (
                 <RelatedPartyCard key={relatedParty.id} party={relatedParty} />
@@ -300,10 +374,10 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
             </div>
           </div>
         )}
-
-        <StickyPurchaseBar href={referralUrl} triggerId="main-purchase-button" partyId={party.id} slug={party.slug} pixelId={party.pixelId} partyName={party.name} />
-        <RecentPurchaseToast />
       </div>
+
+      <StickyPurchaseBar href={referralUrl} triggerId="main-purchase-button" partyId={party.id} slug={party.slug} pixelId={party.pixelId} partyName={party.name} />
+      <RecentPurchaseToast />
     </div>
   );
 }
