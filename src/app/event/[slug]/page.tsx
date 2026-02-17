@@ -10,7 +10,7 @@ import ShareButtons from "@/components/ShareButtons";
 import DiscountCodeReveal from "@/components/DiscountCodeReveal";
 import RelatedPartyCard from "@/components/RelatedPartyCard";
 import PurchaseButton from "@/components/PurchaseButton";
-import { PeopleWatching, RecentPurchaseToast, StickyPurchaseBar } from "@/components/UrgencyComponents";
+import { PeopleWatching, StickyPurchaseBar } from "@/components/UrgencyComponents";
 import PartyViewTracker from "@/components/PartyViewTracker";
 import { BASE_URL, LAST_TICKETS_TAG } from "@/data/constants";
 import PartySpecificPixel from "@/components/PartySpecificPixel";
@@ -255,31 +255,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
             </div>
           </div>
 
-          {/* Music Genre */}
-          {party.musicGenres && (
-            <div className="flex items-start gap-4 mb-5">
-              <div className="w-11 h-11 rounded-xl bg-jungle-lime/10 border border-jungle-lime/20 flex items-center justify-center flex-shrink-0">
-                <span className="text-lg">🎵</span>
-              </div>
-              <div>
-                <p className="text-xs text-jungle-text/50 uppercase tracking-wider mb-0.5">סגנון מוזיקה</p>
-                <p className="font-bold text-white text-lg">{party.musicGenres}</p>
-              </div>
-            </div>
-          )}
 
-          {/* Age */}
-          {party.age && (
-            <div className="flex items-start gap-4">
-              <div className="w-11 h-11 rounded-xl bg-jungle-lime/10 border border-jungle-lime/20 flex items-center justify-center flex-shrink-0">
-                <span className="text-lg">🎟️</span>
-              </div>
-              <div>
-                <p className="text-xs text-jungle-text/50 uppercase tracking-wider mb-0.5">קהל יעד</p>
-                <p className="font-bold text-white text-lg">{party.age}</p>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* ═══════════════════════════════════════════════════
@@ -377,7 +353,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
       </div>
 
       <StickyPurchaseBar href={referralUrl} triggerId="main-purchase-button" partyId={party.id} slug={party.slug} pixelId={party.pixelId} partyName={party.name} />
-      <RecentPurchaseToast />
+
     </div>
   );
 }
