@@ -68,6 +68,19 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="he" dir="rtl" className={`${assistant.variable} ${rubik.variable}`}>
+      {/* Google Analytics */}
+      <Script
+        src="https://www.googletagmanager.com/gtag/js?id=G-3GNCM8S9KQ"
+        strategy="afterInteractive"
+      />
+      <Script id="google-analytics" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-3GNCM8S9KQ');
+        `}
+      </Script>
       <body suppressHydrationWarning className="font-sans">
         <Suspense fallback={null}>
           <GlobalPixelTracker />
