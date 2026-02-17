@@ -62,7 +62,7 @@ const markVisitorRecorded = (): void => {
   }
 };
 
-const ensureSessionId = (): string => {
+export const ensureSessionId = (): string => {
   if (typeof window === 'undefined') {
     if (!fallbackSessionId) {
       fallbackSessionId = generateId();
@@ -95,6 +95,59 @@ export const hasAnalyticsConsent = (): boolean => {
   }
 };
 
+/**
+ * Extract UTM parameters from the current URL query string.
+ */
+const extractUtmParams = (): Record<string, string> => {
+  if (typeof window === 'undefined') return {};
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const utm: Record<string, string> = {};
+    const keys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
+    for (const key of keys) {
+      const val = params.get(key);
+      if (val) {
+        const camelKey = key.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+        utm[camelKey] = val;
+      }
+    }
+    return utm;
+  } catch {
+    return {};
+  }
+};
+
+/**
+ * Build enriched visitor context for the analytics API.
+ */
+const buildVisitorContext = (): Record<string, unknown> => {
+  const ctx: Record<string, unknown> = {};
+
+  if (typeof window === 'undefined') return ctx;
+
+  try {
+    ctx.pageUrl = window.location.href;
+    ctx.referrer = document.referrer || undefined;
+    ctx.language = navigator.language || undefined;
+
+    try {
+      ctx.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    } catch { /* timezone optional */ }
+
+    if (window.screen) {
+      ctx.screenWidth = window.screen.width;
+      ctx.screenHeight = window.screen.height;
+    }
+
+    const utm = extractUtmParams();
+    Object.assign(ctx, utm);
+  } catch {
+    // Silently fail — context is best-effort
+  }
+
+  return ctx;
+};
+
 export const initializeAnalytics = (): boolean => {
   if (!analyticsReady) {
     ensureSessionId();
@@ -106,7 +159,9 @@ export const initializeAnalytics = (): boolean => {
 
   if (!hasVisitorBeenRecorded()) {
     const sessionId = ensureSessionId();
-    void recordVisitor(sessionId)
+    const context = buildVisitorContext();
+
+    void recordVisitor(sessionId, context)
       .then(() => {
         markVisitorRecorded();
       })
@@ -124,7 +179,10 @@ export const trackPartyRedirect = (partyId: string, partySlug: string): boolean 
   }
 
   initializeAnalytics();
-  void recordPartyRedirect({ partyId, partySlug }).catch((error) => {
+  const sessionId = ensureSessionId();
+  const referrer = typeof document !== 'undefined' ? document.referrer : undefined;
+
+  void recordPartyRedirect({ partyId, partySlug, sessionId, referrer }).catch((error) => {
     console.debug('Failed to record party redirect', error);
   });
   return true;

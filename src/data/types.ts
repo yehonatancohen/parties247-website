@@ -98,10 +98,18 @@ export interface AnalyticsSummaryParty {
   metadata?: Record<string, unknown>;
 }
 
+export interface BreakdownItem {
+  label: string;
+  count: number;
+  percent: number;
+}
+
 export interface AnalyticsSummary {
   generatedAt: string;
   uniqueVisitors24h: number;
   parties: AnalyticsSummaryParty[];
+  trafficSources: BreakdownItem[];
+  devices: BreakdownItem[];
 }
 
 export interface DetailedAnalyticsDataPoint {
@@ -129,4 +137,36 @@ export interface RecentActivityEvent {
 
 export interface RecentActivityResponse {
   events: RecentActivityEvent[];
+}
+
+export interface VisitorRecord {
+  sessionId: string;
+  timestamp: string;
+  deviceType: string;
+  browser: string;
+  os: string;
+  trafficSource: string;
+  referer?: string;
+  language: string;
+  screen?: string;
+  pageUrl?: string;
+  utm?: {
+    source?: string;
+    medium?: string;
+    campaign?: string;
+    term?: string;
+    content?: string;
+  };
+}
+
+export interface VisitorAnalyticsResponse {
+  total: number;
+  range: string;
+  devices: BreakdownItem[];
+  browsers: BreakdownItem[];
+  operatingSystems: BreakdownItem[];
+  trafficSources: BreakdownItem[];
+  languages: BreakdownItem[];
+  topReferrers: BreakdownItem[];
+  visitors: VisitorRecord[];
 }

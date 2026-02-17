@@ -1,34 +1,39 @@
 "use client";
+import { useEffect, useRef } from "react";
+import { initializeAnalytics, ensureSessionId } from "../lib/analytics";
 
-import { useEffect, useRef } from 'react';
-import { recordVisitor } from '../services/api';
-
-const SESSION_STORAGE_KEY = 'parties247_session_id';
+const SESSION_STORAGE_KEY = "parties247.analytics.sessionId";
 
 const AnalyticsTracker = () => {
     const isInitialized = useRef(false);
 
     useEffect(() => {
-        // Prevent double execution in strict mode or re-renders
         if (isInitialized.current) return;
 
-        const trackVisitor = async () => {
+        try {
+            // Ensure a session ID exists first
+            let sessionId: string | null = null;
             try {
-                let sessionId = localStorage.getItem(SESSION_STORAGE_KEY);
-
-                if (!sessionId) {
-                    sessionId = crypto.randomUUID();
-                    localStorage.setItem(SESSION_STORAGE_KEY, sessionId);
-                }
-
-                await recordVisitor(sessionId);
-                isInitialized.current = true;
-            } catch (error) {
-                console.error('Analytics error:', error);
+                sessionId = localStorage.getItem(SESSION_STORAGE_KEY);
+            } catch {
+                // SSR or restricted access
             }
-        };
 
-        trackVisitor();
+            if (!sessionId) {
+                sessionId = ensureSessionId();
+                try {
+                    localStorage.setItem(SESSION_STORAGE_KEY, sessionId);
+                } catch {
+                    // SSR or restricted access
+                }
+            }
+
+            // Initialize analytics — this handles visitor recording with enriched data
+            initializeAnalytics();
+            isInitialized.current = true;
+        } catch (error) {
+            console.error('Analytics error:', error);
+        }
     }, []);
 
     return null;

@@ -1,8 +1,11 @@
-import { Party, Carousel, AnalyticsSummary, AnalyticsSummaryParty, DetailedAnalyticsResponse, RecentActivityEvent } from '../data/types';
+import { Party, Carousel, AnalyticsSummary, AnalyticsSummaryParty, DetailedAnalyticsResponse, RecentActivityEvent, VisitorAnalyticsResponse } from '../data/types';
 import { SeoPageConfig } from '../lib/seoparties';
 
-const API_URL = 'https://parties247-backend.onrender.com/api';
-const ANALYTICS_API_BASE = `${API_URL}/%61nalytics`;
+const API_URL = process.env.NEXT_PUBLIC_API_URL
+  ? `${process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')}/api`
+  : 'http://127.0.0.1:3001/api';
+
+const ANALYTICS_API_BASE = `${API_URL}/analytics`;
 const JWT_TOKEN_STORAGE = 'jwtAuthToken';
 
 // --- Helper Functions ---
@@ -28,6 +31,8 @@ const isDateToday = (dateString: string) => {
 type PartyAnalyticsPayload = {
   partyId: string;
   partySlug: string;
+  sessionId?: string;
+  referrer?: string;
 };
 
 const mapPartyToFrontend = (backendParty: any): Party => {
@@ -442,11 +447,13 @@ const mapSummaryParty = (item: any): AnalyticsSummaryParty => {
   };
 };
 
-export const recordVisitor = async (sessionId: string): Promise<void> => {
+export const recordVisitor = async (sessionId: string, context?: Record<string, unknown>): Promise<void> => {
+  const payload: Record<string, unknown> = { sessionId, ...context };
+
   const response = await fetch(`${ANALYTICS_API_BASE}/visitor`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ sessionId }),
+    body: JSON.stringify(payload),
     keepalive: true,
   });
   if (!response.ok) throw new Error('Failed to record visitor');
@@ -480,6 +487,8 @@ export const getAnalyticsSummary = async (): Promise<AnalyticsSummary> => {
     generatedAt: typeof data.generatedAt === 'string' ? data.generatedAt : new Date().toISOString(),
     uniqueVisitors24h: normalizeCount(data.uniqueVisitors24h),
     parties: Array.isArray(data.parties) ? data.parties.map(mapSummaryParty) : [],
+    trafficSources: Array.isArray(data.trafficSources) ? data.trafficSources : [],
+    devices: Array.isArray(data.devices) ? data.devices : [],
   };
 };
 
@@ -522,15 +531,37 @@ export const getRecentActivity = async (): Promise<RecentActivityEvent[]> => {
       return Array.isArray(data.events) ? data.events : [];
     }
   } catch (error) {
-    console.warn("Failed to fetch recent activity from API. Using fallback data.", error);
+    console.warn("Failed to fetch recent activity from API.", error);
   }
 
-  // Fallback demo data if API fails or endpoint doesn't exist yet
-  return [
-    { id: '1', type: 'view', partyName: 'מסיבת ירח מלא', partyId: 'p1', timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(), details: 'מבקר מישראל' },
-    { id: '2', type: 'purchase', partyName: 'פסטיבל המדבר', partyId: 'p2', timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString(), details: 'רכישה מוצלחת' },
-    { id: '3', type: 'view', partyName: 'טכנו תל אביב', partyId: 'p3', timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(), details: 'צפייה חוזרת' },
-    { id: '4', type: 'visit', partyName: 'דף הבית', partyId: 'home', timestamp: new Date(Date.now() - 1000 * 60 * 45).toISOString(), details: 'כניסה ראשונה' },
-    { id: '5', type: 'view', partyName: 'מסיבת בריכה', partyId: 'p4', timestamp: new Date(Date.now() - 1000 * 60 * 60).toISOString(), details: 'מובייל' },
-  ];
+  return [];
+};
+
+export const getVisitorAnalytics = async (
+  range: '24h' | '7d' | '30d' = '24h'
+): Promise<VisitorAnalyticsResponse> => {
+  const params = new URLSearchParams({ range });
+  try {
+    const response = await fetch(`${API_URL}/admin/analytics/visitors?${params.toString()}`, {
+      headers: { ...getAuthHeader() },
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.message || 'Failed to fetch visitor analytics');
+
+    return {
+      total: normalizeCount(data.total),
+      range: typeof data.range === 'string' ? data.range : range,
+      devices: Array.isArray(data.devices) ? data.devices : [],
+      browsers: Array.isArray(data.browsers) ? data.browsers : [],
+      operatingSystems: Array.isArray(data.operatingSystems) ? data.operatingSystems : [],
+      trafficSources: Array.isArray(data.trafficSources) ? data.trafficSources : [],
+      languages: Array.isArray(data.languages) ? data.languages : [],
+      topReferrers: Array.isArray(data.topReferrers) ? data.topReferrers : [],
+      visitors: Array.isArray(data.visitors) ? data.visitors : [],
+    };
+  } catch (error) {
+    console.error("Critical error in getVisitorAnalytics:", error);
+    throw error;
+  }
 };
