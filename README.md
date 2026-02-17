@@ -34,3 +34,11 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Environment Variables
+
+When deploying to Vercel (or any production environment), make sure to set the following Environment Variables in your project settings:
+
+-   `NEXT_PUBLIC_API_URL`: The URL of your backend API (e.g., `https://parties247-backend.onrender.com/`). This is critical for the static build process to fetch data correctly.
+-   `NEXT_PUBLIC_FACEBOOK_PIXEL_ID`: Your Meta (Facebook) Pixel ID (e.g., `606546023249079`). This enables the global conversion tracking.
+

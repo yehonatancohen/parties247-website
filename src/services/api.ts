@@ -3,7 +3,7 @@ import { SeoPageConfig } from '../lib/seoparties';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
   ? `${process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')}/api`
-  : 'http://127.0.0.1:3001/api';
+  : 'https://parties247-backend.onrender.com/api';
 
 const ANALYTICS_API_BASE = `${API_URL}/analytics`;
 const JWT_TOKEN_STORAGE = 'jwtAuthToken';
