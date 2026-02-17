@@ -27,7 +27,7 @@ export function initializeMetaPixel(pixelId: string): void {
     const cleanPixelId = String(pixelId).trim();
     if (!cleanPixelId || cleanPixelId === 'null' || cleanPixelId === 'undefined') return;
 
-    // Skip if already initialized
+    // Skip if THIS specific pixel is already initialized
     if (initializedPixels.has(cleanPixelId)) return;
 
     // Initialize fbq if not already present
@@ -44,9 +44,6 @@ export function initializeMetaPixel(pixelId: string): void {
         n.queue = [];
     }
 
-    // Initialize this specific pixel
-    window.fbq('init', cleanPixelId);
-
     // Load the pixel script if not already loaded
     if (!document.querySelector('script[src*="connect.facebook.net/en_US/fbevents.js"]')) {
         const script = document.createElement('script');
@@ -55,6 +52,10 @@ export function initializeMetaPixel(pixelId: string): void {
         document.head.appendChild(script);
     }
 
+    // Initialize this specific pixel
+    window.fbq('init', cleanPixelId);
+
+    // Mark as initialized
     initializedPixels.add(cleanPixelId);
 }
 
@@ -100,8 +101,12 @@ export function trackPurchaseClick(
  * @param pixelId - The Meta Pixel ID to track with
  */
 export function trackPageView(pixelId: string): void {
-    if (!pixelId || typeof window === 'undefined' || !window.fbq) return;
+    if (!pixelId || typeof window === 'undefined') return;
 
+    // Ensure pixel is initialized FIRST
     initializeMetaPixel(pixelId);
+
+    if (!window.fbq) return;
+
     window.fbq('trackSingle', pixelId, 'PageView');
 }
