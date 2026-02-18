@@ -66,7 +66,7 @@ const ClonePartyModal: React.FC<{ party: Party; onClose: () => void; onClone: (u
 
 import { pageLinkOptions } from '../data/pageLinks';
 import { scrapePartyDetails } from '../services/scrapeService';
-import { cloneParty } from '@/services/api';
+import { cloneParty, triggerPriceUpdate } from '@/services/api';
 
 const sanitizeGoOutUrl = (input: string): string => {
   if (!input) {
@@ -565,6 +565,24 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
+  const handleUpdatePrices = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await triggerPriceUpdate();
+      alert(`Price update complete.\nParties checked: ${result.checked}\nPrices updated: ${result.updated}`);
+      // Optionally refresh the parties list to show new prices
+      // Since we don't have a direct refresh function exposed from useParties, we might need to reload or rely on revalidation.
+      // But for admin dashboard, maybe we should trigger a refetch if useParties supports it.
+      // For now, an alert is good feedback.
+    } catch (e) {
+      console.error("Price update failed", e);
+      setError(e instanceof Error ? e.message : 'Failed to update prices');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleAddParty = useCallback(async () => {
     setError(null);
 
@@ -977,6 +995,19 @@ const AdminDashboard: React.FC = () => {
             className="bg-jungle-lime text-jungle-deep font-bold py-2 px-4 rounded-md hover:bg-opacity-80 disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isRefreshingCovers ? <LoadingSpinner /> : 'Refresh all cover images'}
+          </button>
+
+          <button
+            onClick={handleUpdatePrices}
+            disabled={isLoading}
+            className="bg-emerald-500 text-white font-bold py-2 px-4 rounded-md hover:bg-emerald-600 disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            {isLoading ? <LoadingSpinner /> : (
+              <>
+                <RefreshIcon className="w-4 h-4" />
+                Update All Prices
+              </>
+            )}
           </button>
 
           <button

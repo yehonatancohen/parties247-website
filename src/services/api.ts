@@ -255,6 +255,16 @@ export const deleteParty = async (partyId: string): Promise<void> => {
   }
 };
 
+export const triggerPriceUpdate = async (): Promise<{ checked: number; updated: number }> => {
+  const response = await fetch(`${API_URL}/admin/update-prices`, {
+    method: 'POST',
+    headers: { ...getAuthHeader() },
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || 'Failed to update prices');
+  return data.details;
+};
+
 export const updateParty = async (partyId: string, partyData: Omit<Party, 'id'>): Promise<Party> => {
   const updatePayload = {
     title: partyData.name,
