@@ -266,6 +266,7 @@ export const updateParty = async (partyId: string, partyData: Omit<Party, 'id'>)
     description: partyData.description,
     referralCode: partyData.referralCode,
     pixelId: partyData.pixelId,
+    ticketPrice: partyData.ticketPrice,
   };
   const response = await fetch(`${API_URL}/admin/update-party/${partyId}`, {
     method: 'PUT',

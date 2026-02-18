@@ -283,6 +283,13 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
             SECTION 5: CTA — AFTER all the details
         ═══════════════════════════════════════════════════ */}
         <div className="rounded-2xl border border-jungle-accent/25 bg-gradient-to-br from-jungle-surface via-jungle-surface/80 to-jungle-deep p-6 md:p-8 mb-8" id="main-purchase-button">
+          {party.ticketPrice && (
+            <div className="text-center mb-4">
+              <span className="inline-block bg-jungle-lime/10 text-jungle-lime border border-jungle-lime/20 px-4 py-1.5 rounded-full font-bold text-lg shadow-[0_0_15px_rgba(163,230,53,0.1)]">
+                כרטיסים החל מ-{party.ticketPrice} ₪
+              </span>
+            </div>
+          )}
           <p className="text-center text-jungle-text/70 text-sm mb-5">
             הכרטיסים נמכרים דרך אתר GO-OUT. לחצו למעבר 👇
           </p>

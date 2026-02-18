@@ -94,6 +94,14 @@ const getTags = (text: string, location: string): string[] => {
   return [...new Set(tags)]; // Return unique tags
 };
 
+const getTicketPrice = (html: string): number | undefined => {
+  const priceMatch = html.match(/החל מ-?(\d+)/);
+  if (priceMatch && priceMatch[1]) {
+    return parseInt(priceMatch[1], 10);
+  }
+  return undefined;
+};
+
 // --- Manual Description Builder (Fallback when AI is unavailable) ---
 
 const buildManualDescription = (rawDesc: string, locationName: string, startingDate: string): string => {
@@ -249,6 +257,7 @@ export const scrapePartyDetails = async (url: string): Promise<ScrapedPartyDetai
       eventType: getEventType(fullText),
       age: getAge(fullText, eventData.MinimumAge || 0),
       tags: getTags(fullText, eventData.Adress),
+      ticketPrice: getTicketPrice(htmlText),
     };
 
     // ════════════════════════════════════════════════════════════

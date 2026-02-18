@@ -150,6 +150,8 @@ const EditPartyModal: React.FC<{ party: Party; onClose: () => void; onSave: (upd
       const localDate = new Date(value);
       const isoString = localDate.toISOString();
       setFormData(prev => ({ ...prev, [name]: isoString }));
+    } else if (name === 'ticketPrice') {
+      setFormData(prev => ({ ...prev, [name]: value === '' ? undefined : Number(value) }));
     }
     else {
       setFormData(prev => ({ ...prev, [name]: value }));
@@ -237,6 +239,18 @@ const EditPartyModal: React.FC<{ party: Party; onClose: () => void; onSave: (upd
               className={inputClass}
             />
             <p className="text-xs text-jungle-text/50 mt-1">Facebook/Meta Pixel ID for tracking conversions when users click the purchase button</p>
+          </div>
+          <div>
+            <label htmlFor="ticketPrice" className="block text-sm text-jungle-text/80 mb-1">Ticket Price (Optional)</label>
+            <input
+              type="number"
+              id="ticketPrice"
+              name="ticketPrice"
+              value={formData.ticketPrice || ''}
+              onChange={handleChange}
+              placeholder="e.g., 200"
+              className={inputClass}
+            />
           </div>
           <div className="flex items-center gap-2 bg-jungle-deep p-2 rounded border border-wood-brown">
             <input

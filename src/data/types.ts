@@ -16,6 +16,7 @@ export interface Party {
   };
   description: string;
   originalUrl: string;
+  ticketPrice?: number;
   region: 'דרום' | 'מרכז' | 'צפון' | 'לא ידוע';
   musicType: 'מיינסטרים' | 'טכנו' | 'טראנס' | 'אחר';
   eventType: 'מסיבת בית' | 'מסיבת מועדון' | 'מסיבת טבע' | 'פסטיבל' | 'אחר';
