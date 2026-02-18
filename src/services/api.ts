@@ -117,6 +117,7 @@ const mapPartyToFrontend = (backendParty: any): Party => {
     eventAttendanceMode: backendParty.eventAttendanceMode,
     organizer: backendParty.organizer,
     performer: backendParty.performer,
+    ticketPrice: backendParty.ticketPrice,
   };
 };
 
