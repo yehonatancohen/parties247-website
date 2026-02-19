@@ -102,6 +102,21 @@ const getTicketPrice = (html: string): number | undefined => {
   return undefined;
 };
 
+// Extract final ticket price (including service fee) from go-out.co schemaOrg FAQ.
+// FAQ answer contains e.g. "מתחילים ב-86.80₪ (מחיר סופי כולל עמלות)"
+const getPriceFromSchemaOrg = (schemaOrg: unknown): number | undefined => {
+  const items = Array.isArray(schemaOrg) ? schemaOrg : [schemaOrg];
+  for (const item of items) {
+    if (!item || (item as { '@type'?: string })['@type'] !== 'FAQPage') continue;
+    for (const q of (item as { mainEntity?: { acceptedAnswer?: { text?: string } }[] }).mainEntity ?? []) {
+      const text = q.acceptedAnswer?.text ?? '';
+      const m = text.match(/([\d]+\.?\d*)₪/);
+      if (m) return parseFloat(m[1]);
+    }
+  }
+  return undefined;
+};
+
 // --- Manual Description Builder (Fallback when AI is unavailable) ---
 
 const buildManualDescription = (rawDesc: string, locationName: string, startingDate: string): string => {
@@ -257,11 +272,7 @@ export const scrapePartyDetails = async (url: string): Promise<ScrapedPartyDetai
       eventType: getEventType(fullText),
       age: getAge(fullText, eventData.MinimumAge || 0),
       tags: getTags(fullText, eventData.Adress),
-      ticketPrice: (() => {
-        const ticketTypes: { Price?: number }[] = eventData.TicketTypes || [];
-        const prices = ticketTypes.map(t => t.Price).filter((p): p is number => p != null);
-        return prices.length > 0 ? Math.min(...prices) : getTicketPrice(htmlText);
-      })(),
+      ticketPrice: getPriceFromSchemaOrg(eventData.schemaOrg) ?? getTicketPrice(htmlText),
     };
 
     // ════════════════════════════════════════════════════════════
