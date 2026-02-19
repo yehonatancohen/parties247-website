@@ -257,7 +257,11 @@ export const scrapePartyDetails = async (url: string): Promise<ScrapedPartyDetai
       eventType: getEventType(fullText),
       age: getAge(fullText, eventData.MinimumAge || 0),
       tags: getTags(fullText, eventData.Adress),
-      ticketPrice: getTicketPrice(htmlText),
+      ticketPrice: (() => {
+        const ticketTypes: { Price?: number }[] = eventData.TicketTypes || [];
+        const prices = ticketTypes.map(t => t.Price).filter((p): p is number => p != null);
+        return prices.length > 0 ? Math.min(...prices) : getTicketPrice(htmlText);
+      })(),
     };
 
     // ════════════════════════════════════════════════════════════
