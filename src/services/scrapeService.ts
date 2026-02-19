@@ -95,7 +95,7 @@ const getTags = (text: string, location: string): string[] => {
 };
 
 const getTicketPrice = (html: string): number | undefined => {
-  const priceMatch = html.match(/החל מ-?(\d+)/);
+  const priceMatch = html.match(/החל מ\s*-?\s*(\d+)/);
   if (priceMatch && priceMatch[1]) {
     return parseInt(priceMatch[1], 10);
   }
