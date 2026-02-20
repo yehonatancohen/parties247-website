@@ -106,7 +106,7 @@ export default async function PurimPage() {
                 <JungleDecorations />
 
                 {/* HERO SECTION */}
-                <section className="relative h-[60vh] min-h-[500px] pt-20 flex items-center justify-center overflow-hidden">
+                <section className="relative h-[55vh] md:h-[60vh] md:min-h-[500px] pt-10 flex flex-col items-center justify-center overflow-hidden">
                     {/* Background Image */}
                     <div className="absolute inset-0 z-0">
                         <Image
@@ -114,27 +114,27 @@ export default async function PurimPage() {
                             alt="Purim Rave Background"
                             fill
                             style={{ objectFit: 'cover', objectPosition: 'center' }}
-                            className="opacity-70"
+                            className="opacity-70 scale-[1.6] sm:scale-[1.3] md:scale-100 object-center"
                             priority
-                            sizes="(max-width: 768px) 100vw, 100vw"
+                            sizes="100vw"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-b from-jungle-deep/30 via-jungle-deep/60 to-jungle-deep"></div>
+                        <div className="absolute inset-0 bg-gradient-to-b from-jungle-deep/50 via-jungle-deep/60 to-jungle-deep/90"></div>
                     </div>
 
-                    <div className="relative z-10 container mx-auto px-4 text-center mt-10">
-                        <h1 className="text-5xl md:text-7xl font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-jungle-lime to-jungle-accent drop-shadow-[0_2px_10px_rgba(118,200,147,0.5)] mb-6">
+                    <div className="relative z-10 container mx-auto px-4 text-center pb-8">
+                        <h1 className="text-5xl md:text-7xl font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-jungle-lime to-jungle-accent drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)] mb-6">
                             מסיבות פורים 2026
                         </h1>
-                        <p className="text-xl md:text-2xl text-jungle-text max-w-2xl mx-auto font-light leading-relaxed">
+                        <p className="text-xl md:text-2xl text-white max-w-2xl mx-auto font-light leading-relaxed drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
                             המדריך המלא למסיבות, הנשפים והפסטיבלים הכי שווים של החג.
                             <br />
-                            <span className="font-bold text-white">כי בפורים הזה לא נשארים בבית!</span>
+                            <span className="font-bold text-jungle-lime">כי בפורים הזה לא נשארים בבית!</span>
                         </p>
                     </div>
                 </section>
 
                 {/* CONTENT & INFO SECTION */}
-                <section className="container mx-auto px-4 -mt-10 relative z-20 mb-16">
+                <section className="container mx-auto px-4 mt-8 relative z-20 mb-16">
                     <div className="bg-jungle-surface/80 backdrop-blur-md border border-jungle-accent/20 rounded-2xl p-8 md:p-12 shadow-2xl max-w-4xl mx-auto text-center md:text-right">
                         <h2 className="text-3xl font-display text-white mb-6 text-center">חוגגים את פורים עם Parties24/7</h2>
 
