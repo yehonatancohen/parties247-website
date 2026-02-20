@@ -253,10 +253,51 @@ export const scrapePartyDetails = async (url: string): Promise<ScrapedPartyDetai
 
     if (!imageUrl) throw new Error("Could not find party image URL.");
 
-    let description = (eventData.Description || '').split('\n').filter(Boolean).slice(0, 3).join(' ').trim();
-    if (description.length > 250) description = description.substring(0, 247) + '...';
+    // ════════════════════════════════════════════════════════════
+    // FETCH FULL DESCRIPTION from go-out.co's separate API
+    // The __NEXT_DATA__ Description field is truncated to ~300 chars.
+    // The full text is available at their getEventDescription endpoint.
+    // ════════════════════════════════════════════════════════════
+    let fullDescription = (eventData.Description || '').trim();
+    const eventId = eventData.Url || eventData.Id || eventData._id || '';
 
-    const fullText = `${eventData.Title} ${eventData.Description}`;
+    if (eventId) {
+      try {
+        console.log(`Fetching full description for event: ${eventId}`);
+        const descResponse = await fetch(`https://www.go-out.co/endOne/getEventDescription?name=${encodeURIComponent(eventId)}`);
+        if (descResponse.ok) {
+          const descData = await descResponse.json();
+          if (descData.status && descData.event) {
+            // The API returns HTML with Quill CSS classes — strip tags to get plain text,
+            // or keep the raw HTML for the AI cleaner to process
+            const rawHtml: string = descData.event;
+            // Strip HTML tags but preserve line breaks
+            const plainText = rawHtml
+              .replace(/<br\s*\/?>/gi, '\n')
+              .replace(/<\/p>/gi, '\n')
+              .replace(/<\/h[1-6]>/gi, '\n')
+              .replace(/<\/li>/gi, '\n')
+              .replace(/<\/div>/gi, '\n')
+              .replace(/<[^>]+>/g, '')
+              .replace(/&nbsp;/g, ' ')
+              .replace(/&amp;/g, '&')
+              .replace(/&quot;/g, '"')
+              .replace(/&lt;/g, '<')
+              .replace(/&gt;/g, '>')
+              .replace(/\n{3,}/g, '\n\n')
+              .trim();
+            if (plainText.length > fullDescription.length) {
+              fullDescription = plainText;
+              console.log(`Got full description: ${plainText.length} chars (was ${(eventData.Description || '').length} chars)`);
+            }
+          }
+        }
+      } catch (descError) {
+        console.warn('Failed to fetch full description from go-out API, using truncated version:', descError);
+      }
+    }
+
+    const fullText = `${eventData.Title} ${fullDescription}`;
 
     const partyDetails: ScrapedPartyDetails = {
       // FIX: Add slug property which is required by ScrapedPartyDetails.
@@ -266,7 +307,7 @@ export const scrapePartyDetails = async (url: string): Promise<ScrapedPartyDetai
       date: eventData.StartingDate,
       musicGenres: eventData.MusicGenres || 'אחר',
       location: { name: eventData.Adress },
-      description: description || 'No description available.',
+      description: fullDescription || 'No description available.',
       region: getRegion(eventData.Adress),
       musicType: getMusicType(fullText),
       eventType: getEventType(fullText),
@@ -276,10 +317,11 @@ export const scrapePartyDetails = async (url: string): Promise<ScrapedPartyDetai
     };
 
     // ════════════════════════════════════════════════════════════
-    // AI-FIRST ENHANCEMENT: Send RAW data to AI, fallback to manual
+    // AI CLEANUP: Send full description to AI for junk removal only
     // ════════════════════════════════════════════════════════════
 
-    const rawDescription = eventData.Description || '';
+    const rawDescription = fullDescription;
+    const venueName: string = eventData.Name || eventData.VenueName || '';
 
     try {
       const response = await fetch('/api/enhance-party-data', {
@@ -287,6 +329,7 @@ export const scrapePartyDetails = async (url: string): Promise<ScrapedPartyDetai
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           rawDescription: rawDescription,
+          venueName: venueName,
           location: eventData.Adress || '',
           date: eventData.StartingDate,
           name: eventData.Title,

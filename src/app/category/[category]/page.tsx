@@ -35,7 +35,7 @@ export default async function CategoryPage({ params }: { params: { category: str
             <li key={party.id} className="rounded-xl border border-white/10 bg-white/5 p-4 shadow">
               <div className="text-sm text-gray-300">{party.region}</div>
               <h2 className="text-xl font-semibold text-white">{party.name}</h2>
-              <p className="text-sm text-gray-200 line-clamp-2">{party.description}</p>
+              <p className="text-sm text-gray-200 line-clamp-2">{party.description.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()}</p>
               <Link className="text-lime-300 hover:text-white" href={`/event/${party.slug}`}>
                 לעמוד האירוע
               </Link>

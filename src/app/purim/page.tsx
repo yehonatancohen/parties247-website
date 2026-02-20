@@ -102,19 +102,21 @@ export default async function PurimPage() {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
 
-            <main className="min-h-screen bg-jungle-deep text-white pb-20 relative overflow-x-hidden">
+            <main className="min-h-screen bg-jungle-deep text-white pb-20 relative overflow-x-hidden -mt-20">
                 <JungleDecorations />
 
                 {/* HERO SECTION */}
-                <section className="relative h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden">
+                <section className="relative h-[60vh] min-h-[500px] pt-20 flex items-center justify-center overflow-hidden">
                     {/* Background Image */}
                     <div className="absolute inset-0 z-0">
                         <Image
                             src="/purim-hero.png"
                             alt="Purim Rave Background"
                             fill
-                            className="object-cover opacity-60"
+                            style={{ objectFit: 'cover', objectPosition: 'center' }}
+                            className="opacity-70"
                             priority
+                            sizes="(max-width: 768px) 100vw, 100vw"
                         />
                         <div className="absolute inset-0 bg-gradient-to-b from-jungle-deep/30 via-jungle-deep/60 to-jungle-deep"></div>
                     </div>

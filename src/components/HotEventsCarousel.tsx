@@ -3,7 +3,6 @@
 import React, { useRef, useEffect, useMemo, FC, useId, useState } from 'react';
 import Link from "next/link";
 import Image from "next/image";
-import { register } from 'swiper/element/bundle';
 
 import { Party } from '../data/types';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
@@ -36,7 +35,7 @@ const renderTagContent = (tag: string) => {
 };
 
 const CarouselPartyCard: FC<{ party: Party; directUrl: string; priority: boolean }> = React.memo(({ party, directUrl, priority }) => {
-  
+
   const partyDate = new Date(party.date);
   const formattedDate = new Intl.DateTimeFormat('he-IL', {
     weekday: 'long', day: '2-digit', month: '2-digit',
@@ -52,7 +51,7 @@ const CarouselPartyCard: FC<{ party: Party; directUrl: string; priority: boolean
       draggable="false"
     >
       <div className="relative rounded-xl overflow-hidden shadow-lg transition-all duration-500 ease-in-out border border-wood-brown/50 transform-gpu subpixel-antialiased">
-        
+
         <Image
           src={party.imageUrl}
           alt={party.name}
@@ -99,20 +98,19 @@ interface PartyCarouselProps {
   priority?: boolean;
 }
 
-const PartyCarousel: React.FC<PartyCarouselProps> = ({ 
-    title, 
-    parties, 
-    viewAllLink, 
-    variant = 'coverflow',
-    priority = false 
+const PartyCarousel: React.FC<PartyCarouselProps> = ({
+  title,
+  parties,
+  viewAllLink,
+  variant = 'coverflow',
+  priority = false
 }) => {
   const swiperElRef = useRef<any>(null);
-  const rawId = useId(); 
-  const uniqueId = `carousel-${rawId.replace(/:/g, '')}`; 
+  const rawId = useId();
+  const uniqueId = `carousel-${rawId.replace(/:/g, '')}`;
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    register();
     setMounted(true);
   }, []);
 
@@ -125,52 +123,52 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
   );
 
   const slides = useMemo(() => {
-     if (sortedParties.length === 0) return [];
+    if (sortedParties.length === 0) return [];
 
-     // FIX 1: INCREASED BUFFER SIZE 
-     // We drastically increased baseMinSlides (was 12 -> now 30).
-     // Coverflow loop needs a huge buffer of slides to ensure the left side is never empty.
-     const baseMinSlides = variant === 'coverflow' ? 30 : 20;
-     const needsExtraDensity = sortedParties.length <= 2;
+    // FIX 1: INCREASED BUFFER SIZE 
+    // We drastically increased baseMinSlides (was 12 -> now 30).
+    // Coverflow loop needs a huge buffer of slides to ensure the left side is never empty.
+    const baseMinSlides = variant === 'coverflow' ? 30 : 20;
+    const needsExtraDensity = sortedParties.length <= 2;
 
-     const minSlides = needsExtraDensity ? baseMinSlides * 2 : baseMinSlides;
-     const duplicationFactor = needsExtraDensity ? 6 : 2;
+    const minSlides = needsExtraDensity ? baseMinSlides * 2 : baseMinSlides;
+    const duplicationFactor = needsExtraDensity ? 6 : 2;
 
-     const targetLength = Math.max(minSlides, sortedParties.length * duplicationFactor);
-     const repetitions = Math.ceil(targetLength / sortedParties.length);
-     const duplicated = Array.from({ length: repetitions }, () => sortedParties).flat();
+    const targetLength = Math.max(minSlides, sortedParties.length * duplicationFactor);
+    const repetitions = Math.ceil(targetLength / sortedParties.length);
+    const duplicated = Array.from({ length: repetitions }, () => sortedParties).flat();
 
-     return duplicated.slice(0, targetLength);
+    return duplicated.slice(0, targetLength);
   }, [sortedParties, variant]);
 
   const BREAKPOINTS = useMemo(() => (
     variant === 'coverflow'
       ? {
-          0:    { slidesPerView: 1.6 },
-          360:  { slidesPerView: 1.9 },
-          420:  { slidesPerView: 2.2 },
-          640:  { slidesPerView: 2.8 },
-          768:  { slidesPerView: 3.0 },
-          1024: { slidesPerView: 3.4 },
-          1440: { slidesPerView: 3.8 },
-        }
+        0: { slidesPerView: 1.6 },
+        360: { slidesPerView: 1.9 },
+        420: { slidesPerView: 2.2 },
+        640: { slidesPerView: 2.8 },
+        768: { slidesPerView: 3.0 },
+        1024: { slidesPerView: 3.4 },
+        1440: { slidesPerView: 3.8 },
+      }
       : {
-          0:    { slidesPerView: 1.8 },
-          360:  { slidesPerView: 2.2 },
-          420:  { slidesPerView: 2.6 },
-          640:  { slidesPerView: 3.2 },
-          768:  { slidesPerView: 4.0 },
-          1024: { slidesPerView: 5.0 },
-          1280: { slidesPerView: 6.0 },
-        }
+        0: { slidesPerView: 1.8 },
+        360: { slidesPerView: 2.2 },
+        420: { slidesPerView: 2.6 },
+        640: { slidesPerView: 3.2 },
+        768: { slidesPerView: 4.0 },
+        1024: { slidesPerView: 5.0 },
+        1280: { slidesPerView: 6.0 },
+      }
   ), [variant]);
 
   useEffect(() => {
     if (!mounted) return;
-    
+
     const swiperEl = swiperElRef.current;
     if (!swiperEl || slides.length === 0) return;
-    
+
     // Calculate offset to start safely in the middle of our duplicated list
     const initialSlideIndex = sortedParties.length > 0 ? sortedParties.length : 0;
 
@@ -178,24 +176,24 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
       breakpoints: BREAKPOINTS,
       spaceBetween: 12,
       loop: true,
-      
+
       // Start in the middle of the duplicates
       initialSlide: initialSlideIndex,
-      
+
       // We increased this to 10 to give coverflow plenty of room
-      loopedSlides: 10, 
+      loopedSlides: 10,
       observer: true,
       observeParents: true,
       loopAdditionalSlides: Math.min(slides.length, 10),
       roundLengths: true,
-      
+
       navigation: {
         nextEl: `#next-${uniqueId}`,
         prevEl: `#prev-${uniqueId}`,
       },
       watchOverflow: true,
     };
-    
+
     const variantParams = variant === 'coverflow' ? {
       effect: 'coverflow',
       centeredSlides: true,
@@ -208,7 +206,7 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
       coverflowEffect: {
         rotate: 0,
         stretch: 36,
-        depth: 90, 
+        depth: 90,
         modifier: 1,
         slideShadows: false,
       },
@@ -217,23 +215,38 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
     };
 
     const params = { ...commonParams, ...variantParams };
-    
+
     Object.assign(swiperEl, params);
 
     const timer = setTimeout(() => {
+      // Guard: Swiper web-component may not be registered yet
+      if (typeof swiperEl.initialize !== 'function') {
+        // Retry after a longer delay to allow registration to complete
+        const retryTimer = setTimeout(() => {
+          if (typeof swiperEl.initialize === 'function') {
+            swiperEl.initialize();
+            if (swiperEl.swiper) {
+              swiperEl.swiper.loopFix();
+              swiperEl.swiper.update();
+            }
+          }
+        }, 500);
+        return () => clearTimeout(retryTimer);
+      }
+
       swiperEl.initialize();
-      
+
       // FIX 2: FORCE LOOP FIX
       // Immediately after init, force Swiper to recalculate the loop 
       // and generate the missing ghost slides on the left.
       if (swiperEl.swiper) {
-        swiperEl.swiper.loopFix(); 
+        swiperEl.swiper.loopFix();
         swiperEl.swiper.update();
       }
     }, 50);
 
     return () => clearTimeout(timer);
-    
+
   }, [slides, variant, uniqueId, BREAKPOINTS, mounted, sortedParties.length]);
 
   if (!mounted) return null;
@@ -255,7 +268,7 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
           </div>
         </div>
       </div>
-      
+
       <div className={`${carouselClasses} mx-auto w-full max-w-[min(2200px,calc(100vw-1.25rem))]`}>
         {React.createElement(
           'swiper-container',
@@ -264,10 +277,10 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
             React.createElement(
               'swiper-slide',
               { key: `${party.id}-${index}` },
-              <CarouselPartyCard 
-                party={party} 
-                directUrl={party.originalUrl || '#'} 
-                priority={priority && index < 2} 
+              <CarouselPartyCard
+                party={party}
+                directUrl={party.originalUrl || '#'}
+                priority={priority && index < 2}
               />
             )
           )

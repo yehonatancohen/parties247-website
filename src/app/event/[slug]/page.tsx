@@ -263,13 +263,15 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
         ═══════════════════════════════════════════════════ */}
         {party.description && (
           <div className="rounded-2xl border border-white/10 bg-jungle-surface/50 p-6 md:p-8 mb-8">
-            <h2 className="text-xl font-display text-white mb-3 flex items-center gap-2">
-              <span className="w-1 h-5 bg-jungle-lime rounded-full inline-block" />
-              על האירוע
-            </h2>
-            <p className="text-jungle-text/85 whitespace-pre-line leading-relaxed">
-              {party.description}
-            </p>
+            <div
+              className="text-jungle-text/85 leading-relaxed text-center
+                [&_h2]:text-white [&_h2]:font-display [&_h2]:font-bold [&_h2]:text-2xl [&_h2]:tracking-tight [&_h2]:mb-3 [&_h2]:mt-6 [&_h2:first-child]:mt-0
+                [&_h3]:text-white [&_h3]:font-black [&_h3]:text-xl [&_h3]:tracking-tight [&_h3]:mb-2 [&_h3]:mt-4 [&_h3:first-child]:mt-0
+                [&_p]:mb-3 [&_p:last-child]:mb-0
+                [&_ul]:list-none [&_ul]:my-3 [&_ul]:space-y-2
+                [&_li]:text-white [&_li]:font-semibold [&_li]:text-lg"
+              dangerouslySetInnerHTML={{ __html: party.description }}
+            />
           </div>
         )}
 
