@@ -3,32 +3,25 @@
 
 
 
-import { trackPartyRedirect } from "@/lib/analytics"; // Adjust path
-import { trackPurchaseClick } from "@/lib/metaPixel";
+import { trackPartyRedirect } from "@/lib/analytics";
+import { trackPurchaseButtonClick } from "@/lib/gtm";
 
 export default function PurchaseButton({
   partyId,
   slug,
   href,
-  pixelId,
   partyName,
   price
 }: {
   partyId: string;
   slug: string;
   href: string;
-  pixelId?: string;
   partyName?: string;
   price?: number;
 }) {
   const handleClick = () => {
-    // Track internal analytics
     trackPartyRedirect(partyId, slug);
-
-    // Fire Meta Pixel event if pixel ID is configured
-    if (pixelId) {
-      trackPurchaseClick(pixelId, partyName, partyId);
-    }
+    trackPurchaseButtonClick(partyName, partyId, price);
   };
 
   return (

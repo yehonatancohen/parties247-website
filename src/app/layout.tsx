@@ -5,7 +5,6 @@ import Providers from "./providers";
 import SwiperRegister from "../components/SwiperRegister";
 import { Assistant, Rubik } from "next/font/google";
 import { BASE_URL, BRAND_LOGO_URL } from "@/data/constants";
-import { Suspense } from "react";
 import Script from "next/script";
 
 // Component Imports
@@ -18,7 +17,6 @@ import ScrollToTop from '../components/ScrollToTop';
 import PrefetchLinks from '../components/PrefetchLinks';
 import PageCrossLinks from '../components/PageCrossLinks';
 import AnalyticsTracker from '../components/AnalyticsTracker';
-import GlobalPixelTracker from '../components/GlobalPixelTracker';
 
 const assistant = Assistant({
   subsets: ["latin", "hebrew"],
@@ -68,23 +66,24 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="he" dir="rtl" className={`${assistant.variable} ${rubik.variable}`}>
-      {/* Google Analytics */}
-      <Script
-        src="https://www.googletagmanager.com/gtag/js?id=G-3GNCM8S9KQ"
-        strategy="afterInteractive"
-      />
-      <Script id="google-analytics" strategy="afterInteractive">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-3GNCM8S9KQ');
-        `}
+      {/* Google Tag Manager */}
+      <Script id="gtm-head" strategy="afterInteractive">
+        {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-K6CHZLLX');`}
       </Script>
       <body suppressHydrationWarning className="font-sans">
-        <Suspense fallback={null}>
-          <GlobalPixelTracker />
-        </Suspense>
+        {/* Google Tag Manager (noscript fallback) */}
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-K6CHZLLX"
+            height="0"
+            width="0"
+            style={{ display: 'none', visibility: 'hidden' }}
+          />
+        </noscript>
         <SwiperRegister />
         <Providers>
           {/* Global Decorations/Logic */}

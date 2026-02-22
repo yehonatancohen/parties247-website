@@ -13,7 +13,6 @@ import PurchaseButton from "@/components/PurchaseButton";
 import { PeopleWatching, StickyPurchaseBar } from "@/components/UrgencyComponents";
 import PartyViewTracker from "@/components/PartyViewTracker";
 import { BASE_URL, LAST_TICKETS_TAG } from "@/data/constants";
-import PartySpecificPixel from "@/components/PartySpecificPixel";
 
 export const revalidate = 60;
 
@@ -154,8 +153,6 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
 
   return (
     <div className="min-h-screen bg-jungle-deep text-white overflow-x-hidden pb-24">
-      <PartySpecificPixel pixelId={party.pixelId} />
-
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(eventJsonLd) }}
@@ -297,7 +294,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
           </p>
 
           <div className="flex flex-col gap-3">
-            <PurchaseButton partyId={party.id} slug={party.slug} href={referralUrl} pixelId={party.pixelId} partyName={party.name} price={party.ticketPrice} />
+            <PurchaseButton partyId={party.id} slug={party.slug} href={referralUrl} partyName={party.name} price={party.ticketPrice} />
 
             <a
               href={whatsappHref}
@@ -366,7 +363,6 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
         triggerId="main-purchase-button"
         partyId={party.id}
         slug={party.slug}
-        pixelId={party.pixelId}
         partyName={party.name}
         priceLabel={party.ticketPrice ? `לרכישת כרטיסים החל מ-${party.ticketPrice} ₪` : undefined}
       />
