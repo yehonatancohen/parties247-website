@@ -96,13 +96,14 @@ export async function generateMetadata(
   if (!data?.party) return { title: "אירוע לא נמצא" };
   const { party } = data;
   const ogImage = getWhatsappOgImage(party.imageUrl);
+  const plainDescription = party.description.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 
   return {
     title: `${party.name} | Parties 24/7`,
-    description: party.description.substring(0, 160),
+    description: plainDescription.substring(0, 160),
     openGraph: {
       title: party.name,
-      description: party.description,
+      description: plainDescription.substring(0, 300),
       images: ogImage ? [{ url: ogImage }] : [{ url: BRAND_LOGO_URL }],
       type: "article",
     },
