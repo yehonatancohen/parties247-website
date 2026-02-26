@@ -242,7 +242,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
           </p>
 
           <div className="flex flex-col gap-3">
-            <PurchaseButton partyId={party.id} slug={party.slug} href={referralUrl} pixelId={party.pixelId} partyName={party.name} price={party.ticketPrice} />
+            <PurchaseButton partyId={party.id} slug={party.slug} href={referralUrl} partyName={party.name} price={party.ticketPrice} />
 
             <a
               href={whatsappHref}

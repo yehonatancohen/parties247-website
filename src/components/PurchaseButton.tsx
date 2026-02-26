@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { trackPartyRedirect } from "@/lib/analytics"; // Adjust path
-import { trackPurchaseClick } from "@/lib/metaPixel";
+import { trackPurchaseButtonClick } from "@/lib/gtm";
 
 export default function PurchaseButton({
   partyId,
@@ -24,10 +24,8 @@ export default function PurchaseButton({
     // Track internal analytics
     trackPartyRedirect(partyId, slug);
 
-    // Fire Meta Pixel event if pixel ID is configured
-    if (pixelId) {
-      trackPurchaseClick(pixelId, partyName, partyId);
-    }
+    // Fire GTM Event
+    trackPurchaseButtonClick(partyName, partyId, price);
 
     // Show loading screen if going to go-out
     if (href.includes('go-out.co') || href.includes('go-out.co.il')) {

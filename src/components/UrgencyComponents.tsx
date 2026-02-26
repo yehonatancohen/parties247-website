@@ -142,13 +142,8 @@ export function StickyPurchaseBar({
         // Track internal analytics
         trackPartyRedirect(partyId, slug);
 
-        // Fire Meta Pixel event if pixel ID is configured
-        if (pixelId) {
-            // Import dynamically to avoid issues
-            import("@/lib/metaPixel").then(({ trackPurchaseClick }) => {
-                trackPurchaseClick(pixelId, partyName, partyId);
-            });
-        }
+        // Fire GTM event
+        trackPurchaseButtonClick(partyName, partyId);
 
         // Show loading screen if going to go-out
         if (href.includes('go-out.co') || href.includes('go-out.co.il')) {
