@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { trackPartyRedirect } from "@/lib/analytics";
+import { trackPurchaseButtonClick } from "@/lib/gtm";
 import { FireIcon, TicketIcon } from "./Icons";
 
 // --- Fake Data for Purchasing Proof ---
@@ -87,7 +88,6 @@ export function StickyPurchaseBar({
     triggerId,
     partyId,
     slug,
-    pixelId,
     partyName
 }: {
     href: string;
@@ -95,7 +95,6 @@ export function StickyPurchaseBar({
     triggerId?: string;
     partyId: string;
     slug: string;
-    pixelId?: string;
     partyName?: string;
 }) {
     const [isVisible, setIsVisible] = useState(false);

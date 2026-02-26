@@ -9,14 +9,12 @@ export default function PurchaseButton({
   partyId,
   slug,
   href,
-  pixelId,
   partyName,
   price
 }: {
   partyId: string;
   slug: string;
   href: string;
-  pixelId?: string;
   partyName?: string;
   price?: number;
 }) {
