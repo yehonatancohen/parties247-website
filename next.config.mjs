@@ -27,6 +27,10 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'static.vecteezy.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.go-out.co',
       }
     ],
     qualities: [25, 40, 50, 75],

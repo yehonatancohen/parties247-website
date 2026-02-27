@@ -18,12 +18,12 @@ export const revalidate = 60;
 
 // Helper for Tag Colors
 const getTagColor = (tag: string) => {
-  if (tag === LAST_TICKETS_TAG) return 'bg-red-500/90 text-white';
-  if (tag === 'לוהט') return 'bg-red-500/80 text-white';
-  if (tag === 'ביקוש גבוה') return 'bg-yellow-500/80 text-jungle-deep';
-  if (tag.includes('חינם')) return 'bg-emerald-500/80 text-white';
-  if (tag.includes('+')) return 'bg-wood-brown/80 text-jungle-text';
-  return 'bg-jungle-accent/80 text-jungle-deep';
+  if (tag === LAST_TICKETS_TAG) return 'border-red-500/30 bg-red-500/10 text-red-300';
+  if (tag === 'לוהט') return 'border-red-500/30 bg-red-500/10 text-red-300';
+  if (tag === 'ביקוש גבוה') return 'border-yellow-500/30 bg-yellow-500/10 text-yellow-300';
+  if (tag.includes('חינם')) return 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300';
+  if (tag.includes('+')) return 'border-white/20 bg-white/5 text-gray-300';
+  return 'border-jungle-lime/30 bg-jungle-lime/10 text-jungle-lime';
 };
 
 const getTagIcon = (tag: string) => {
@@ -180,7 +180,8 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
           <Image
             src={party.imageUrl}
             alt={party.name}
-            className="w-full h-auto object-contain bg-black"
+            title={party.name}
+            className="w-full h-auto object-contain bg-black select-none pointer-events-none"
             width={800}
             height={1000}
             priority
@@ -198,7 +199,8 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
               {party.tags.map(tag => (
                 <span
                   key={tag}
-                  className={`${getTagColor(tag)} text-xs font-bold px-3 py-1.5 rounded-full flex items-center w-fit`}
+                  title={`תגית: ${tag}`}
+                  className={`${getTagColor(tag)} text-xs font-medium px-2.5 py-1 rounded border flex items-center w-fit pointer-events-none select-none`}
                 >
                   {getTagIcon(tag)}
                   {tag}
@@ -222,6 +224,47 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
               <span>כרטיסים אחרונים – מומלץ לשריין מקום עכשיו</span>
             </div>
           )}
+        </div>
+
+        {/* ═══════════════════════════════════════════════════
+            MAIN CALL TO ACTION (Moved up for better conversion)
+        ═══════════════════════════════════════════════════ */}
+        <div className="rounded-2xl border border-jungle-accent/25 bg-gradient-to-br from-jungle-surface via-jungle-surface/80 to-jungle-deep p-6 md:p-8 mb-8" id="main-purchase-button">
+          {party.ticketPrice && (
+            <div className="text-center mb-4">
+              <span className="inline-block bg-jungle-lime/10 text-jungle-lime border border-jungle-lime/20 px-4 py-1.5 rounded-full font-bold text-lg shadow-[0_0_15px_rgba(163,230,53,0.1)]">
+                כרטיסים החל מ-{party.ticketPrice} ₪
+              </span>
+            </div>
+          )}
+          <p className="text-center text-jungle-text/70 text-sm mb-5">
+            הכרטיסים נמכרים דרך אתר GO-OUT. לחצו למעבר 👇
+          </p>
+
+          <div className="flex flex-col gap-3">
+            <PurchaseButton partyId={party.id} slug={party.slug} href={referralUrl} partyName={party.name} price={party.ticketPrice} />
+
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-3 rounded-xl border border-green-400/30 bg-green-500/10 px-6 py-3.5 text-lg font-bold text-green-100 transition-all hover:bg-green-500/20 hover:border-green-400/50"
+            >
+              <WhatsAppIcon className="w-5 h-5" />
+              שלחו לחבר בווטסאפ
+            </a>
+          </div>
+
+          {/* Share */}
+          <div className="flex items-center justify-between mt-5 pt-5 border-t border-white/10">
+            <ShareButtons partyName={party.name} shareUrl={referralUrl} />
+            {hasLastTickets && (
+              <span className="inline-flex items-center gap-1.5 text-xs text-red-300 font-semibold animate-pulse">
+                <FireIcon className="w-3.5 h-3.5" />
+                כרטיסים אחרונים
+              </span>
+            )}
+          </div>
         </div>
 
         {/* ═══════════════════════════════════════════════════
@@ -279,46 +322,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
           </div>
         )}
 
-        {/* ═══════════════════════════════════════════════════
-            SECTION 5: CTA — AFTER all the details
-        ═══════════════════════════════════════════════════ */}
-        <div className="rounded-2xl border border-jungle-accent/25 bg-gradient-to-br from-jungle-surface via-jungle-surface/80 to-jungle-deep p-6 md:p-8 mb-8" id="main-purchase-button">
-          {party.ticketPrice && (
-            <div className="text-center mb-4">
-              <span className="inline-block bg-jungle-lime/10 text-jungle-lime border border-jungle-lime/20 px-4 py-1.5 rounded-full font-bold text-lg shadow-[0_0_15px_rgba(163,230,53,0.1)]">
-                כרטיסים החל מ-{party.ticketPrice} ₪
-              </span>
-            </div>
-          )}
-          <p className="text-center text-jungle-text/70 text-sm mb-5">
-            הכרטיסים נמכרים דרך אתר GO-OUT. לחצו למעבר 👇
-          </p>
 
-          <div className="flex flex-col gap-3">
-            <PurchaseButton partyId={party.id} slug={party.slug} href={referralUrl} partyName={party.name} price={party.ticketPrice} />
-
-            <a
-              href={whatsappHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-3 rounded-xl border border-green-400/30 bg-green-500/10 px-6 py-3.5 text-lg font-bold text-green-100 transition-all hover:bg-green-500/20 hover:border-green-400/50"
-            >
-              <WhatsAppIcon className="w-5 h-5" />
-              שלחו לחבר בווטסאפ
-            </a>
-          </div>
-
-          {/* Share */}
-          <div className="flex items-center justify-between mt-5 pt-5 border-t border-white/10">
-            <ShareButtons partyName={party.name} shareUrl={referralUrl} />
-            {hasLastTickets && (
-              <span className="inline-flex items-center gap-1.5 text-xs text-red-300 font-semibold animate-pulse">
-                <FireIcon className="w-3.5 h-3.5" />
-                כרטיסים אחרונים
-              </span>
-            )}
-          </div>
-        </div>
 
         {/* ═══════════════════════════════════════════════════
             SECTION 6: MAP
