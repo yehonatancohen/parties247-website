@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { trackPartyRedirect } from "@/lib/analytics";
 import { trackPurchaseButtonClick } from "@/lib/gtm";
 import { FireIcon, TicketIcon } from "./Icons";
+import RedirectOverlay from "./RedirectOverlay";
 
 // --- Fake Data for Purchasing Proof ---
 const NAMES = ["איתי", "נועה", "דניאל", "עומר", "רוני", "מאיה", "גיא", "תומר", "יובל", "עדי", "שחר", "גל", "ניב", "טל", "ליאור", "סתיו"];
@@ -37,32 +38,27 @@ export function RecentPurchaseToast() {
     useEffect(() => {
         // Show first toast after 3-8 seconds
         const initialDelay = Math.random() * 5000 + 3000;
+        let interval: ReturnType<typeof setInterval> | null = null;
 
         const showToast = () => {
             const name = NAMES[Math.floor(Math.random() * NAMES.length)];
             const time = TIMES[Math.floor(Math.random() * TIMES.length)];
             setData({ name, time });
             setVisible(true);
-
-            // Hide after 8 seconds
             setTimeout(() => setVisible(false), 8000);
         };
 
         const timeout = setTimeout(() => {
             showToast();
-            // Maybe loop? The user said "add 'Itay bought...', somewhere random". 
-            // A loop might be too aggressive. Let's do it once or twice.
-
-            // Let's set an interval to show occasionally
-            const interval = setInterval(() => {
+            interval = setInterval(() => {
                 if (Math.random() > 0.5) showToast();
-            }, 20000); // Check every 20s
-
-            return () => clearInterval(interval);
-
+            }, 20000);
         }, initialDelay);
 
-        return () => clearTimeout(timeout);
+        return () => {
+            clearTimeout(timeout);
+            if (interval) clearInterval(interval);
+        };
     }, []);
 
     if (!visible || !data) return null;

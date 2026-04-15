@@ -101,11 +101,21 @@ export async function generateMetadata(
   return {
     title: `${party.name} | Parties 24/7`,
     description: plainDescription.substring(0, 160),
+    alternates: {
+      canonical: `/event/${party.slug}`,
+    },
     openGraph: {
       title: party.name,
       description: plainDescription.substring(0, 300),
-      images: ogImage ? [{ url: ogImage }] : [{ url: BRAND_LOGO_URL }],
+      images: ogImage ? [{ url: ogImage, width: 1200, height: 630 }] : [{ url: BRAND_LOGO_URL }],
       type: "article",
+      locale: "he_IL",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: party.name,
+      description: plainDescription.substring(0, 160),
+      images: ogImage ? [ogImage] : [BRAND_LOGO_URL],
     },
   };
 }
@@ -131,25 +141,49 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
   const whatsappHref = `https://wa.me/?text=${whatsappMessage}`;
   const showDiscountCode = false;
 
+  const plainDescriptionForLd = party.description.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+
   const eventJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Event',
     'name': party.name,
     'startDate': party.date,
+    'eventStatus': 'https://schema.org/EventScheduled',
+    'eventAttendanceMode': 'https://schema.org/OfflineEventAttendanceMode',
     'location': {
       '@type': 'Place',
       'name': party.location.name,
-      'address': party.location.address || party.location.name,
+      'address': {
+        '@type': 'PostalAddress',
+        'streetAddress': party.location.address || party.location.name,
+        'addressCountry': 'IL',
+      },
     },
     'image': [party.imageUrl],
-    'description': party.description,
+    'description': plainDescriptionForLd.substring(0, 500),
+    'organizer': {
+      '@type': 'Organization',
+      'name': 'Parties 24/7',
+      'url': BASE_URL,
+    },
     'offers': {
       '@type': 'Offer',
       'url': referralUrl,
-      'price': '0',
-      'priceCurrency': 'ILS',
-      'availability': 'https://schema.org/InStock',
-    }
+      ...(party.ticketPrice ? { 'price': String(party.ticketPrice), 'priceCurrency': 'ILS' } : {}),
+      'availability': hasLastTickets
+        ? 'https://schema.org/LimitedAvailability'
+        : 'https://schema.org/InStock',
+    },
+  };
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    'itemListElement': [
+      { '@type': 'ListItem', 'position': 1, 'name': 'בית', 'item': BASE_URL },
+      { '@type': 'ListItem', 'position': 2, 'name': 'כל המסיבות', 'item': `${BASE_URL}/all-parties` },
+      { '@type': 'ListItem', 'position': 3, 'name': party.name, 'item': partyPageUrl },
+    ],
   };
 
   return (
@@ -157,6 +191,10 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(eventJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
       <PartyViewTracker partyId={party.id} slug={party.slug} />
