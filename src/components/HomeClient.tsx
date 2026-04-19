@@ -136,7 +136,7 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
   return (
     <>
       {/* ─── Hero Section ─── */}
-      <section className="relative mb-16 min-h-[100svh] flex flex-col overflow-hidden bg-jungle-deep">
+      <section className="relative mb-16 min-h-[100svh] flex flex-col justify-end overflow-hidden bg-jungle-deep">
 
         {/* Background image */}
         <picture className="absolute inset-0">
@@ -159,8 +159,8 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_60%_80%,rgba(47,197,165,0.12),transparent_55%),radial-gradient(ellipse_at_30%_20%,rgba(255,255,255,0.07),transparent_40%)]" />
         </div>
 
-        {/* ── Upper content block — centred vertically in remaining space ── */}
-        <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-5 pt-24 pb-6 w-full max-w-5xl mx-auto gap-6">
+        {/* ── Content block — bottom-anchored ── */}
+        <div className="relative z-10 flex flex-col items-center text-center px-5 pt-32 pb-4 w-full max-w-5xl mx-auto gap-5">
 
           {/* Live badge */}
           <div className="flex items-center gap-2 rounded-full border border-jungle-accent/40 bg-black/40 backdrop-blur-sm px-4 py-1.5 text-xs font-semibold text-jungle-accent tracking-widest uppercase">
@@ -222,66 +222,66 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
               <span>עדכון יומי</span>
             </div>
           )}
-        </div>
 
-        {/* ── Hot Now strip — pinned to the bottom of the hero ── */}
-        {hotNowCarousel && hotNowCarousel.parties.length > 0 && (
-          <div className="relative z-10 w-full pb-6">
-            {/* Label row */}
-            <div className="flex items-center gap-3 px-5 mb-3" dir="rtl">
-              <span className="text-sm font-bold text-white flex items-center gap-1.5">
-                <span className="text-jungle-accent">🔥</span>
-                {hotNowCarousel.title}
-              </span>
-              <div className="flex-1 h-px bg-white/10" />
-              <Link
-                href={hotNowCarousel.viewAllLink}
-                className="text-xs text-white/50 hover:text-jungle-accent transition shrink-0"
+          {/* ── Hot Now strip ── */}
+          {hotNowCarousel && hotNowCarousel.parties.length > 0 && (
+            <div className="w-screen relative -mx-5 mt-2">
+              {/* Label row */}
+              <div className="flex items-center gap-3 px-5 mb-2" dir="rtl">
+                <span className="text-sm font-bold text-white flex items-center gap-1.5">
+                  <span className="text-jungle-accent">🔥</span>
+                  {hotNowCarousel.title}
+                </span>
+                <div className="flex-1 h-px bg-white/10" />
+                <Link
+                  href={hotNowCarousel.viewAllLink}
+                  className="text-xs text-white/50 hover:text-jungle-accent transition shrink-0"
+                >
+                  הצג הכל ←
+                </Link>
+              </div>
+
+              {/* Scrollable party cards */}
+              <div
+                ref={hotStripRef}
+                className="flex gap-3 overflow-x-auto px-5 pb-1 snap-x snap-mandatory"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               >
-                הצג הכל ←
-              </Link>
-            </div>
-
-            {/* Scrollable party cards */}
-            <div
-              ref={hotStripRef}
-              className="flex gap-3 overflow-x-auto px-5 pb-1 snap-x snap-mandatory"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            >
-              {hotNowCarousel.parties.slice(0, 10).map((party, i) => {
-                const partyDate = new Date(party.date);
-                const formattedDate = new Intl.DateTimeFormat('he-IL', {
-                  weekday: 'short', day: '2-digit', month: '2-digit',
-                }).format(partyDate);
-                return (
-                  <a
-                    key={party.id}
-                    href={party.originalUrl || `/event/${party.slug}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="snap-start shrink-0 w-[108px] group"
-                  >
-                    <div className="relative rounded-xl overflow-hidden border border-white/10 group-hover:border-jungle-accent/60 transition">
-                      <Image
-                        src={party.imageUrl}
-                        alt={party.name}
-                        width={108}
-                        height={162}
-                        loading={i < 4 ? "eager" : "lazy"}
-                        className="w-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
-                      <div className="absolute bottom-0 p-2 w-full">
-                        <p className="text-white text-[11px] font-semibold truncate leading-tight">{party.name}</p>
-                        <p className="text-white/55 text-[10px] mt-0.5">{formattedDate}</p>
+                {hotNowCarousel.parties.slice(0, 10).map((party, i) => {
+                  const partyDate = new Date(party.date);
+                  const formattedDate = new Intl.DateTimeFormat('he-IL', {
+                    weekday: 'short', day: '2-digit', month: '2-digit',
+                  }).format(partyDate);
+                  return (
+                    <a
+                      key={party.id}
+                      href={party.originalUrl || `/event/${party.slug}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="snap-start shrink-0 w-[108px] group"
+                    >
+                      <div className="relative rounded-xl overflow-hidden border border-white/10 group-hover:border-jungle-accent/60 transition">
+                        <Image
+                          src={party.imageUrl}
+                          alt={party.name}
+                          width={108}
+                          height={162}
+                          loading={i < 4 ? "eager" : "lazy"}
+                          className="w-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+                        <div className="absolute bottom-0 p-2 w-full">
+                          <p className="text-white text-[11px] font-semibold truncate leading-tight">{party.name}</p>
+                          <p className="text-white/55 text-[10px] mt-0.5">{formattedDate}</p>
+                        </div>
                       </div>
-                    </div>
-                  </a>
-                );
-              })}
+                    </a>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </section>
 
       {/* Carousels Section */}
