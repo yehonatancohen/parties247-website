@@ -5,11 +5,8 @@ import Link from "next/link";
 import Image from "next/image";
 import SocialsCta from "@/components/SocialsCta";
 import { createCarouselSlug } from "@/lib/carousels";
-// We use the SSR component for ALL carousels now
 import PartyCarousel from "@/components/HotEventsCarousel";
-import PartyCard from "@/components/PartyCard";
 import { Carousel, Party } from "@/data/types";
-import HeroAISearch from "@/components/HeroAISearch";
 
 const HERO_IMAGE_URL =
   "https://i.ibb.co/qMQXFTpr/Gemini-Generated-Image-a2279ca2279ca227.png";
@@ -23,8 +20,6 @@ interface HomeClientProps {
 
 // --- Main Component ---
 export default function HomeClient({ initialParties = [], initialCarousels = [] }: HomeClientProps) {
-  const [searchResults, setSearchResults] = React.useState<{ parties: DisplayParty[], query: string } | null>(null);
-
   const carouselsWithParties = useMemo(() => {
     const partyLookup = new Map(
       initialParties.map((party) => [String(party.id ?? party._id), party])
@@ -61,13 +56,16 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
     };
   }, [carouselsWithParties, initialParties]);
 
-  const quickLinks = [
-    { href: "/all-parties", label: "כל האירועים" },
-    { href: "/day/weekend", label: "מסיבות סוף שבוע" },
-    { href: "/day/today", label: "מסיבות היום" },
-    { href: "/party-discovery", label: "חיפוש מתקדם" },
-    { href: "/day/thursday", label: "חמישי" },
-    { href: "/day/friday", label: "שישי" },
+  const categoryPills = [
+    { href: "/day/today",    label: "הלילה",       emoji: "🌙" },
+    { href: "/day/thursday", label: "חמישי",        emoji: "🔥" },
+    { href: "/day/friday",   label: "שישי",         emoji: "✨" },
+    { href: "/day/weekend",  label: "סוף שבוע",     emoji: "🎉" },
+    { href: "/genre/techno-music",  label: "טכנו",  emoji: "⚡" },
+    { href: "/genre/house-music",   label: "האוס",  emoji: "🎵" },
+    { href: "/genre/trance",        label: "טראנס", emoji: "🌀" },
+    { href: "/cities/tel-aviv",     label: "תל אביב", emoji: "🏙️" },
+    { href: "/cities/haifa",        label: "חיפה",  emoji: "⛰️" },
   ];
 
   const inspirations = [
@@ -88,28 +86,12 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
     },
   ];
 
-  const handleSearchResults = (parties: any[], query: string) => {
-    setSearchResults({ parties: parties as DisplayParty[], query });
-    // Scroll to results
-    setTimeout(() => {
-      document.getElementById('ai-search-results')?.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
-  };
-
-  const searchResultParties = useMemo(() => {
-    return searchResults?.parties || [];
-  }, [searchResults]);
-
   return (
     <>
-      {/* Hero Section */}
-      <section
-        className="relative text-center mb-16 pt-16 md:pt-20 min-h-[78vh] sm:min-h-[75vh] lg:min-h-[85vh] flex items-center justify-center overflow-hidden bg-jungle-deep"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at 30% 20%, rgba(47, 197, 165, 0.18), transparent 40%), radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.08), transparent 45%)",
-        }}
-      >
+      {/* ─── Hero Section ─── */}
+      <section className="relative mb-16 min-h-[88vh] flex flex-col justify-end overflow-hidden bg-jungle-deep">
+
+        {/* Background image */}
         <picture className="absolute inset-0">
           <source srcSet={`${HERO_IMAGE_URL}&fm=avif`} type="image/avif" />
           <Image
@@ -118,87 +100,87 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
             loading="eager"
             fetchPriority="high"
             decoding="async"
-            width={1600}
-            height={900}
-            className="w-full h-full object-cover brightness-[0.6]"
+            fill
+            className="object-cover brightness-50"
           />
         </picture>
-        <div className="absolute inset-0 bg-gradient-to-t from-jungle-deep via-transparent to-jungle-deep/50" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-transparent to-black/60" aria-hidden="true" />
-        <div
-          className="pointer-events-none absolute inset-0"
-          aria-hidden
-        >
-          <div className="absolute inset-x-[-20%] bottom-[-10%] h-[40vh] sm:h-[45vh] bg-gradient-to-t from-jungle-deep via-black/60 to-transparent" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(167,255,131,0.12),transparent_32%),radial-gradient(circle_at_80%_20%,rgba(255,255,255,0.12),transparent_30%)]" />
+
+        {/* Gradient overlays */}
+        <div className="pointer-events-none absolute inset-0" aria-hidden>
+          {/* top vignette */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent" />
+          {/* bottom fade into page */}
+          <div className="absolute bottom-0 inset-x-0 h-[55%] bg-gradient-to-t from-jungle-deep via-jungle-deep/80 to-transparent" />
+          {/* subtle accent glows */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_60%_80%,rgba(47,197,165,0.14),transparent_55%),radial-gradient(ellipse_at_30%_20%,rgba(255,255,255,0.07),transparent_40%)]" />
         </div>
-        <div className="relative z-10 p-6 max-w-6xl mx-auto flex flex-col items-center gap-8">
-          <h1
-            className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl mb-2 text-white drop-shadow-xl"
-            style={{ textShadow: "3px 3px 8px rgba(0,0,0,0.7)" }}
-          >
-            איפה תהיה המסיבה הבאה שלך?
+
+        {/* Content — anchored to bottom */}
+        <div className="relative z-10 w-full max-w-5xl mx-auto px-5 pb-14 pt-32 flex flex-col items-center gap-7 text-center">
+
+          {/* Live badge */}
+          <div className="flex items-center gap-2 rounded-full border border-jungle-accent/40 bg-black/40 backdrop-blur-sm px-4 py-1.5 text-xs font-semibold text-jungle-accent tracking-widest uppercase">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-jungle-accent animate-pulse" />
+            {stats.totalParties > 0 ? `${stats.totalParties}+ אירועים פעילים` : "PARTIES 24/7"} &nbsp;•&nbsp; עדכון יומי
+          </div>
+
+          {/* Headline */}
+          <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[1.05] text-white drop-shadow-2xl" dir="rtl">
+            המסיבה הבאה שלך{" "}
+            <span className="text-jungle-accent">מתחילה כאן</span>
           </h1>
-          <p className="text-lg sm:text-xl text-jungle-text max-w-3xl">
-            השתמשו בחיפוש החכם שלנו כדי למצוא את האירוע המושלם – פשוט תאמרו לנו מה אתם מחפשים
+
+          {/* Subtitle */}
+          <p className="text-base sm:text-lg md:text-xl text-white/75 max-w-xl leading-relaxed" dir="rtl">
+            גלו אירועי לילה, רייבים ופסטיבלים ברחבי ישראל — לפי יום, עיר וז׳אנר
           </p>
 
-          {/* AI Search Box */}
-          <HeroAISearch onSearchResults={handleSearchResults} />
+          {/* Category pills */}
+          <div className="flex flex-wrap justify-center gap-2 sm:gap-2.5" dir="rtl">
+            {categoryPills.map(({ href, label, emoji }) => (
+              <Link
+                key={href}
+                href={href}
+                className="group flex items-center gap-1.5 rounded-full border border-white/20 bg-black/30 backdrop-blur-sm px-3.5 py-2 text-sm font-medium text-white/90 transition hover:border-jungle-accent hover:bg-jungle-accent/20 hover:text-white hover:scale-105 active:scale-95"
+              >
+                <span className="text-base leading-none">{emoji}</span>
+                {label}
+              </Link>
+            ))}
+          </div>
+
+          {/* Primary CTAs */}
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <Link
+              href="/all-parties"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-jungle-accent px-7 py-3.5 text-sm font-bold text-jungle-deep shadow-lg shadow-jungle-accent/30 transition hover:scale-105 hover:shadow-jungle-glow active:scale-95"
+            >
+              לכל האירועים
+              <svg className="w-4 h-4 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </Link>
+            <Link
+              href="/day/weekend"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 bg-white/10 backdrop-blur-sm px-7 py-3.5 text-sm font-bold text-white transition hover:border-white/60 hover:bg-white/20 hover:scale-105 active:scale-95"
+            >
+              מסיבות הסוף שבוע
+            </Link>
+          </div>
+
+          {/* Stats strip */}
+          {stats.cityCount > 0 && (
+            <div className="flex items-center gap-4 text-xs text-white/50 tracking-wide" dir="rtl">
+              <span>{stats.totalParties}+ אירועים</span>
+              <span className="w-px h-3 bg-white/20" />
+              <span>{stats.cityCount} ערים</span>
+              <span className="w-px h-3 bg-white/20" />
+              <span>עדכון יומי</span>
+            </div>
+          )}
+
         </div>
       </section>
-
-      {/* AI Search Results Section */}
-      {searchResults && (
-        <div id="ai-search-results" className="container mx-auto px-4 mb-16 scroll-mt-28">
-          <div className="bg-gradient-to-r from-jungle-surface/80 to-jungle-deep/80 border-2 border-jungle-accent/50 rounded-2xl p-6 backdrop-blur">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-jungle-accent to-jungle-lime flex items-center justify-center flex-shrink-0">
-                  <svg className="w-6 h-6 text-jungle-deep" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-jungle-accent font-bold text-lg">חיפוש AI</p>
-                  <p className="text-jungle-text/90 text-sm">
-                    נמצאו {searchResultParties.length} מסיבות עבור: <span className="text-white font-semibold">"{searchResults.query}"</span>
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => setSearchResults(null)}
-                className="px-4 py-2 bg-jungle-surface/60 hover:bg-jungle-surface border border-jungle-accent/30 hover:border-jungle-accent text-jungle-accent rounded-lg text-sm transition-all"
-              >
-                נקה חיפוש
-              </button>
-            </div>
-
-            {searchResultParties.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-                {searchResultParties.map((party) => (
-                  <PartyCard
-                    key={party.id}
-                    party={party}
-                    showDiscountCode={false}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <p className="text-jungle-text/80 text-lg mb-2">לא נמצאו מסיבות שתואמות את החיפוש</p>
-                <p className="text-jungle-text/60 text-sm">נסו לחפש משהו אחר או בדקו את כל האירועים</p>
-                <Link
-                  href="/all-parties"
-                  className="inline-block mt-4 px-6 py-2 bg-jungle-accent text-jungle-deep rounded-full font-semibold hover:scale-105 transition-transform"
-                >
-                  כל האירועים
-                </Link>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
 
       {/* Carousels Section */}
       <div id="hot-now-carousels" className="space-y-16 scroll-mt-28">
