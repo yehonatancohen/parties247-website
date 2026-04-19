@@ -85,11 +85,6 @@
   .swiper-lazy-preloader {
     --swiper-preloader-color: theme('colors.jungle-lime');
   }
-
-  /* Hide scrollbar on native mobile carousel row */
-  .scrollbar-none::-webkit-scrollbar {
-    display: none;
-  }
 }
 
 @layer utilities {
