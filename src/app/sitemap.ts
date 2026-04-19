@@ -96,6 +96,13 @@ const categoryPaths = [
   '/thursday-parties',
   '/day/today',
 
+  // SEO content pages
+  '/tel-aviv-weekend-2026',
+  '/friday-parties-guide',
+  '/jimmy-who',
+  '/moon-child',
+  '/tickets-israel',
+
   // Specific party landing pages (from SPECIFIC_PARTIES_PAGES)
   '/parties/parties-in-tel-aviv-today',
   '/parties/parties-in-tel-aviv-weekend',
