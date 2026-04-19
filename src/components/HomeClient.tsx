@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import SocialsCta from "@/components/SocialsCta";
@@ -63,6 +63,45 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
       ) ?? carouselsWithParties[0],
     [carouselsWithParties]
   );
+
+  const hotStripRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = hotStripRef.current;
+    if (!el) return;
+
+    // card width (108) + gap (12) = 120px per card
+    const CARD_STEP = 120;
+    const INTERVAL_MS = 1800;
+
+    let paused = false;
+    const pause = () => { paused = true; };
+    const resume = () => { paused = false; };
+
+    el.addEventListener('pointerenter', pause);
+    el.addEventListener('pointerleave', resume);
+    el.addEventListener('touchstart', pause, { passive: true });
+    el.addEventListener('touchend', resume);
+
+    const timer = setInterval(() => {
+      if (paused) return;
+      const maxScroll = el.scrollWidth - el.clientWidth;
+      // RTL: scrollLeft is negative; use abs for comparison
+      if (Math.abs(el.scrollLeft) >= maxScroll - 2) {
+        el.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        el.scrollBy({ left: -CARD_STEP, behavior: 'smooth' });
+      }
+    }, INTERVAL_MS);
+
+    return () => {
+      clearInterval(timer);
+      el.removeEventListener('pointerenter', pause);
+      el.removeEventListener('pointerleave', resume);
+      el.removeEventListener('touchstart', pause);
+      el.removeEventListener('touchend', resume);
+    };
+  }, [hotNowCarousel]);
 
   const categoryPills = [
     { href: "/day/today",    label: "הלילה",       emoji: "🌙" },
@@ -205,6 +244,7 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
 
             {/* Scrollable party cards */}
             <div
+              ref={hotStripRef}
               className="flex gap-3 overflow-x-auto px-5 pb-1 snap-x snap-mandatory"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
