@@ -90,6 +90,28 @@ const CarouselPartyCard: FC<{ party: Party; directUrl: string; priority: boolean
   );
 });
 
+// Native CSS scroll-snap row shown only on mobile (< md).
+// Doesn't depend on Swiper registration so it always works.
+const MobileCarouselRow: FC<{ parties: Party[]; priority: boolean }> = ({ parties, priority }) => {
+  const shown = parties.slice(0, 10);
+  return (
+    <div
+      className="flex gap-3 overflow-x-auto pb-3 px-4 snap-x snap-mandatory scrollbar-none"
+      style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+    >
+      {shown.map((party) => (
+        <div key={party.id} className="snap-start shrink-0 w-[52vw] max-w-[200px]">
+          <CarouselPartyCard
+            party={party}
+            directUrl={party.originalUrl || '#'}
+            priority={priority}
+          />
+        </div>
+      ))}
+    </div>
+  );
+};
+
 interface PartyCarouselProps {
   title: string;
   parties: Party[];
@@ -249,19 +271,20 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
 
   }, [slides, variant, uniqueId, BREAKPOINTS, mounted, sortedParties.length]);
 
-  if (!mounted) return null;
-  if (slides.length === 0) return null;
+  if (parties.length === 0) return null;
 
   const carouselClasses = `relative party-carousel ${variant === 'coverflow' ? 'party-carousel-coverflow' : 'party-carousel-standard'}`;
 
   return (
     <div className="py-4">
+      {/* Header — shared across mobile & desktop */}
       <div className="mx-auto w-full max-w-[min(2200px,calc(100vw-1.25rem))] px-4 sm:px-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-3xl font-display text-white">{title}</h2>
           <div className="flex items-center gap-4">
             <Link href={viewAllLink} className="text-jungle-accent hover:text-white transition-colors">הצג הכל</Link>
-            <div className="flex gap-2">
+            {/* Arrow buttons only make sense for the Swiper carousel */}
+            <div className="hidden md:flex gap-2">
               <button id={`prev-${uniqueId}`} className="swiper-button-prev !static !w-11 !h-11"><ArrowLeft className="w-6 h-6" /></button>
               <button id={`next-${uniqueId}`} className="swiper-button-next !static !w-11 !h-11"><ArrowRight className="w-6 h-6" /></button>
             </div>
@@ -269,23 +292,31 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
         </div>
       </div>
 
-      <div className={`${carouselClasses} mx-auto w-full max-w-[min(2200px,calc(100vw-1.25rem))]`}>
-        {React.createElement(
-          'swiper-container',
-          { ref: swiperElRef, init: 'false' },
-          ...slides.map((party, index) =>
-            React.createElement(
-              'swiper-slide',
-              { key: `${party.id}-${index}` },
-              <CarouselPartyCard
-                party={party}
-                directUrl={party.originalUrl || '#'}
-                priority={priority && index < 2}
-              />
-            )
-          )
-        )}
+      {/* ── Mobile: native scroll-snap row (always renders, no JS dependency) ── */}
+      <div className="md:hidden">
+        <MobileCarouselRow parties={parties} priority={priority} />
       </div>
+
+      {/* ── Desktop: Swiper coverflow / standard (client-only) ── */}
+      {mounted && slides.length > 0 && (
+        <div className={`hidden md:block ${carouselClasses} mx-auto w-full max-w-[min(2200px,calc(100vw-1.25rem))]`}>
+          {React.createElement(
+            'swiper-container',
+            { ref: swiperElRef, init: 'false' },
+            ...slides.map((party, index) =>
+              React.createElement(
+                'swiper-slide',
+                { key: `${party.id}-${index}` },
+                <CarouselPartyCard
+                  party={party}
+                  directUrl={party.originalUrl || '#'}
+                  priority={priority && index < 2}
+                />
+              )
+            )
+          )}
+        </div>
+      )}
     </div>
   );
 };
