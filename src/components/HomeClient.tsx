@@ -160,7 +160,7 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
         </div>
 
         {/* ── Content block — bottom-anchored ── */}
-        <div className="relative z-10 flex flex-col items-center text-center px-5 pt-32 pb-4 w-full max-w-5xl mx-auto gap-5">
+        <div className="relative z-10 flex flex-col items-center text-center px-5 pt-20 sm:pt-32 pb-3 w-full max-w-5xl mx-auto gap-3 sm:gap-5">
 
           {/* Live badge */}
           <div className="flex items-center gap-2 rounded-full border border-jungle-accent/40 bg-black/40 backdrop-blur-sm px-4 py-1.5 text-xs font-semibold text-jungle-accent tracking-widest uppercase">
@@ -169,23 +169,27 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
           </div>
 
           {/* Headline */}
-          <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[1.05] text-white drop-shadow-2xl" dir="rtl">
+          <h1 className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl leading-[1.05] text-white drop-shadow-2xl" dir="rtl">
             המסיבה הבאה שלך{" "}
             <span className="text-jungle-accent">מתחילה כאן</span>
           </h1>
 
-          {/* Subtitle */}
-          <p className="text-base sm:text-lg md:text-xl text-white/75 max-w-xl leading-relaxed" dir="rtl">
+          {/* Subtitle — hidden on mobile to save vertical space */}
+          <p className="hidden sm:block text-base sm:text-lg md:text-xl text-white/75 max-w-xl leading-relaxed" dir="rtl">
             גלו אירועי לילה, רייבים ופסטיבלים ברחבי ישראל — לפי יום, עיר וז׳אנר
           </p>
 
-          {/* Category pills */}
-          <div className="flex flex-wrap justify-center gap-2 sm:gap-2.5" dir="rtl">
+          {/* Category pills — single scrollable row on mobile, wrapping on desktop */}
+          <div
+            className="flex sm:flex-wrap sm:justify-center gap-2 w-screen sm:w-auto -mx-5 sm:mx-0 px-5 sm:px-0 overflow-x-auto sm:overflow-visible pb-0.5 sm:pb-0"
+            style={{ scrollbarWidth: 'none' }}
+            dir="rtl"
+          >
             {categoryPills.map(({ href, label, emoji }) => (
               <Link
                 key={href}
                 href={href}
-                className="group flex items-center gap-1.5 rounded-full border border-white/20 bg-black/30 backdrop-blur-sm px-3.5 py-2 text-sm font-medium text-white/90 transition hover:border-jungle-accent hover:bg-jungle-accent/20 hover:text-white hover:scale-105 active:scale-95"
+                className="shrink-0 sm:shrink group flex items-center gap-1.5 rounded-full border border-white/20 bg-black/30 backdrop-blur-sm px-3 py-1.5 sm:px-3.5 sm:py-2 text-sm font-medium text-white/90 transition hover:border-jungle-accent hover:bg-jungle-accent/20 hover:text-white hover:scale-105 active:scale-95"
               >
                 <span className="text-base leading-none">{emoji}</span>
                 {label}
@@ -194,10 +198,10 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
           </div>
 
           {/* Primary CTAs */}
-          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <div className="flex flex-row gap-2 sm:gap-3 w-full sm:w-auto">
             <Link
               href="/all-parties"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-jungle-accent px-7 py-3.5 text-sm font-bold text-jungle-deep shadow-lg shadow-jungle-accent/30 transition hover:scale-105 hover:shadow-jungle-glow active:scale-95"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 rounded-full bg-jungle-accent px-5 sm:px-7 py-3 sm:py-3.5 text-sm font-bold text-jungle-deep shadow-lg shadow-jungle-accent/30 transition hover:scale-105 hover:shadow-jungle-glow active:scale-95"
             >
               לכל האירועים
               <svg className="w-4 h-4 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -206,15 +210,15 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
             </Link>
             <Link
               href="/day/weekend"
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 bg-white/10 backdrop-blur-sm px-7 py-3.5 text-sm font-bold text-white transition hover:border-white/60 hover:bg-white/20 hover:scale-105 active:scale-95"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 rounded-full border border-white/30 bg-white/10 backdrop-blur-sm px-5 sm:px-7 py-3 sm:py-3.5 text-sm font-bold text-white transition hover:border-white/60 hover:bg-white/20 hover:scale-105 active:scale-95"
             >
-              מסיבות הסוף שבוע
+              סוף שבוע
             </Link>
           </div>
 
-          {/* Stats strip */}
+          {/* Stats strip — hidden on mobile */}
           {stats.cityCount > 0 && (
-            <div className="flex items-center gap-4 text-xs text-white/50 tracking-wide" dir="rtl">
+            <div className="hidden sm:flex items-center gap-4 text-xs text-white/50 tracking-wide" dir="rtl">
               <span>{stats.totalParties}+ אירועים</span>
               <span className="w-px h-3 bg-white/20" />
               <span>{stats.cityCount} ערים</span>
@@ -225,7 +229,7 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
 
           {/* ── Hot Now strip ── */}
           {hotNowCarousel && hotNowCarousel.parties.length > 0 && (
-            <div className="w-screen relative -mx-5 mt-2">
+            <div className="w-screen relative -mx-5 mt-1">
               {/* Label row */}
               <div className="flex items-center gap-3 px-5 mb-2" dir="rtl">
                 <span className="text-sm font-bold text-white flex items-center gap-1.5">
