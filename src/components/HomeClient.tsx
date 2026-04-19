@@ -136,7 +136,7 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
   return (
     <>
       {/* ─── Hero Section ─── */}
-      <section className="relative mb-16 min-h-[100svh] flex flex-col justify-end overflow-hidden bg-jungle-deep">
+      <section className="relative mb-16 min-h-[100svh] flex flex-col justify-center overflow-hidden bg-jungle-deep">
 
         {/* Background image */}
         <picture className="absolute inset-0">
@@ -160,7 +160,7 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
         </div>
 
         {/* ── Content block — bottom-anchored ── */}
-        <div className="relative z-10 flex flex-col items-center text-center px-5 pt-20 sm:pt-32 pb-3 w-full max-w-5xl mx-auto gap-3 sm:gap-5">
+        <div className="relative z-10 flex flex-col items-center text-center px-5 pt-4 sm:pt-8 pb-3 w-full max-w-5xl mx-auto gap-3 sm:gap-5">
 
           {/* Live badge */}
           <div className="flex items-center gap-2 rounded-full border border-jungle-accent/40 bg-black/40 backdrop-blur-sm px-4 py-1.5 text-xs font-semibold text-jungle-accent tracking-widest uppercase">
