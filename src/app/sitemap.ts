@@ -44,16 +44,34 @@ const staticPages: MetadataRoute.Sitemap = [
     priority: 0.8,
   },
   {
+    url: `${BASE_URL}/parties`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly',
+    priority: 0.85,
+  },
+  {
+    url: `${BASE_URL}/articles`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly',
+    priority: 0.7,
+  },
+  {
+    url: `${BASE_URL}/purim`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly',
+    priority: 0.85,
+  },
+  {
     url: `${BASE_URL}/about`,
     lastModified: new Date(),
     changeFrequency: 'monthly',
     priority: 0.5,
   },
   {
-    url: `${BASE_URL}/contact`,
+    url: `${BASE_URL}/accessibility`,
     lastModified: new Date(),
-    changeFrequency: 'monthly',
-    priority: 0.5,
+    changeFrequency: 'yearly',
+    priority: 0.3,
   },
   {
     url: `${BASE_URL}/terms`,

@@ -1,9 +1,11 @@
 import React from 'react';
 import { Metadata } from 'next';
+import { BASE_URL } from '@/data/constants';
 
 export const metadata: Metadata = {
   title: 'הצהרת נגישות | Parties 24/7',
   description: 'הסדרי הנגישות באתר Parties 24/7',
+  alternates: { canonical: `${BASE_URL}/accessibility` },
 };
 
 export default function AccessibilityPage() {

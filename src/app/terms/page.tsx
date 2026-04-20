@@ -1,9 +1,11 @@
 import React from 'react';
 import { Metadata } from 'next';
+import { BASE_URL } from '@/data/constants';
 
 export const metadata: Metadata = {
   title: 'תנאי שימוש | Parties 24/7',
   description: 'תנאי השימוש והגבלת האחריות באתר Parties 24/7',
+  alternates: { canonical: `${BASE_URL}/terms` },
 };
 
 export default function TermsPage() {

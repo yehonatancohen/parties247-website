@@ -1,9 +1,11 @@
 import React from 'react';
 import { Metadata } from 'next';
+import { BASE_URL } from '@/data/constants';
 
 export const metadata: Metadata = {
   title: 'מדיניות פרטיות | Parties 24/7',
   description: 'מדיניות הפרטיות והגנת המידע באתר Parties 24/7',
+  alternates: { canonical: `${BASE_URL}/privacy` },
 };
 
 export default function PrivacyPage() {
