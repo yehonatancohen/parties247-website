@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { trackPartyRedirect } from "@/lib/analytics"; // Adjust path
+import { trackPartyRedirect } from "@/lib/analytics";
 import { trackPurchaseButtonClick } from "@/lib/gtm";
 
 export default function PurchaseButton({

@@ -34,10 +34,10 @@ const rubik = Rubik({
 
 export const metadata: Metadata = {
   title: {
-    default: "Parties247",
+    default: "Parties247 | מסיבות וחיי לילה בישראל",
     template: "%s | Parties247",
   },
-  description: "Find parties and nightlife events in Israel.",
+  description: "Parties247 – כל המסיבות, האירועים וחיי הלילה בישראל במקום אחד. תל אביב, חיפה, ירושלים ועוד.",
   metadataBase: new URL(BASE_URL),
   icons: {
     icon: [
@@ -52,16 +52,41 @@ export const metadata: Metadata = {
   openGraph: {
     siteName: "Parties 24/7",
     type: "website",
+    locale: "he_IL",
     images: [
       {
         url: BRAND_LOGO_URL,
-        alt: "Parties 24/7 logo",
+        width: 1200,
+        height: 630,
+        alt: "Parties 24/7 – מסיבות בישראל",
       },
     ],
   },
+  twitter: {
+    card: "summary_large_image",
+    site: "@parties_247",
+    images: [BRAND_LOGO_URL],
+  },
 };
 
-// ... other imports
+import { SOCIAL_LINKS } from "@/data/constants";
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Parties 24/7",
+  url: BASE_URL,
+  logo: BRAND_LOGO_URL,
+  sameAs: [
+    SOCIAL_LINKS.instagram,
+    SOCIAL_LINKS.tiktok,
+  ],
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "customer support",
+    availableLanguage: "Hebrew",
+  },
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -84,6 +109,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             style={{ display: 'none', visibility: 'hidden' }}
           />
         </noscript>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
         <SwiperRegister />
         <Providers>
           {/* Global Decorations/Logic */}
