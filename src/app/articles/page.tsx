@@ -12,6 +12,33 @@ export const metadata: Metadata = {
   },
 };
 
+const guides = [
+  {
+    title: 'רייבים בישראל – המדריך המלא',
+    description: 'סוגי רייבים, מה להביא, איך מוצאים אירועים ועוד טיפים לרייב ראשון.',
+    href: '/genre/rave-parties',
+    emoji: '🔊',
+  },
+  {
+    title: 'מסיבות טכנו ורייבים',
+    description: 'סצנת הטכנו בישראל: מהרחבות המחתרתיות ועד המועדונים הגדולים.',
+    href: '/genre/techno-music',
+    emoji: '🎛️',
+  },
+  {
+    title: 'Jimmy Who תל אביב',
+    description: 'כרטיסים, אירועים קרובים, שולחנות VIP ומה לצפות בלילה.',
+    href: '/club/jimmy-who',
+    emoji: '🎤',
+  },
+  {
+    title: 'Moon Child תל אביב',
+    description: 'מועדון אינטימי עם סטים מלודיים, תאורת ירח וקוקטיילים ייחודיים.',
+    href: '/club/moon-child',
+    emoji: '🌙',
+  },
+];
+
 export default function ArticlesIndexPage() {
   return (
     <div className="container mx-auto px-4 py-12">
@@ -64,6 +91,28 @@ export default function ArticlesIndexPage() {
           </article>
         ))}
       </div>
+
+      {/* Guides section */}
+      <section className="mt-16">
+        <h2 className="text-3xl font-display text-white mb-2">מדריכים ועמודי ז׳אנר</h2>
+        <p className="text-jungle-text/70 text-sm mb-8">עמודי תוכן מעמיקים על מועדונים, ז׳אנרים וסצנות</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {guides.map((guide) => (
+            <Link
+              key={guide.href}
+              href={guide.href}
+              className="group flex flex-col gap-3 rounded-xl border border-white/10 bg-jungle-surface/60 p-5 transition-all hover:border-jungle-accent/40 hover:bg-jungle-surface hover:-translate-y-0.5"
+            >
+              <span className="text-3xl">{guide.emoji}</span>
+              <h3 className="text-lg font-display text-white group-hover:text-jungle-accent transition-colors">
+                {guide.title}
+              </h3>
+              <p className="text-sm text-jungle-text/70 leading-relaxed flex-grow">{guide.description}</p>
+              <span className="text-jungle-accent text-sm font-semibold">קרא עוד ←</span>
+            </Link>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

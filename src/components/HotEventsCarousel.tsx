@@ -148,9 +148,11 @@ const PartyCarousel: React.FC<PartyCarouselProps> = ({
         360: { slidesPerView: 1.9 },
         420: { slidesPerView: 2.2 },
         640: { slidesPerView: 2.8 },
-        768: { slidesPerView: 3.0 },
-        1024: { slidesPerView: 3.4 },
-        1440: { slidesPerView: 3.8 },
+        768: { slidesPerView: 3.2 },
+        1024: { slidesPerView: 4.5 },
+        1280: { slidesPerView: 5.0 },
+        1440: { slidesPerView: 5.5 },
+        1920: { slidesPerView: 6.0 },
       }
       : {
         0: { slidesPerView: 1.8 },
