@@ -1,15 +1,23 @@
 import React from 'react';
-import SeoManager from '../../components/SeoManager';
+import { Metadata } from 'next';
+import { BASE_URL } from '@/data/constants';
+
+export const metadata: Metadata = {
+  title: 'אודות | Parties 24/7',
+  description: 'הסיפור של Parties 24/7 – איך הפכנו למקור מספר אחת לחיי הלילה בישראל.',
+  alternates: { canonical: `${BASE_URL}/about` },
+  openGraph: {
+    title: 'אודות | Parties 24/7',
+    description: 'הסיפור של Parties 24/7 – איך הפכנו למקור מספר אחת לחיי הלילה בישראל.',
+    url: `${BASE_URL}/about`,
+    locale: 'he_IL',
+    type: 'website',
+  },
+};
 
 const AboutPage: React.FC = () => {
   return (
     <>
-      <SeoManager
-        title="אודות - Parties 24/7"
-        description="הסיפור של Parties 24/7 - איך הפכנו למקור מספר אחת לחיי הלילה בישראל."
-        canonicalPath="/about"
-        ogType="profile"
-      />
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto text-jungle-text/90">
           <h1 className="text-5xl font-display text-center mb-8 text-white">הסיפור שלנו</h1>
