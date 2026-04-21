@@ -268,19 +268,27 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
             MAIN CALL TO ACTION (Moved up for better conversion)
         ═══════════════════════════════════════════════════ */}
         <div className="rounded-2xl border border-jungle-accent/25 bg-gradient-to-br from-jungle-surface via-jungle-surface/80 to-jungle-deep p-6 md:p-8 mb-8" id="main-purchase-button">
-          {party.ticketPrice && (
+          {party.soldOut ? (
+            <div className="text-center mb-4">
+              <span className="inline-block bg-white/5 text-white/50 border border-white/10 px-4 py-1.5 rounded-full font-bold text-lg">
+                הכרטיסים אזלו
+              </span>
+            </div>
+          ) : party.ticketPrice ? (
             <div className="text-center mb-4">
               <span className="inline-block bg-jungle-lime/10 text-jungle-lime border border-jungle-lime/20 px-4 py-1.5 rounded-full font-bold text-lg shadow-[0_0_15px_rgba(163,230,53,0.1)]">
                 כרטיסים החל מ-{party.ticketPrice} ₪
               </span>
             </div>
+          ) : null}
+          {!party.soldOut && (
+            <p className="text-center text-jungle-text/70 text-sm mb-5">
+              הכרטיסים נמכרים דרך אתר GO-OUT. לחצו למעבר 👇
+            </p>
           )}
-          <p className="text-center text-jungle-text/70 text-sm mb-5">
-            הכרטיסים נמכרים דרך אתר GO-OUT. לחצו למעבר 👇
-          </p>
 
           <div className="flex flex-col gap-3">
-            <PurchaseButton partyId={party.id} slug={party.slug} href={referralUrl} partyName={party.name} price={party.ticketPrice} />
+            <PurchaseButton partyId={party.id} slug={party.slug} href={referralUrl} partyName={party.name} price={party.ticketPrice} soldOut={party.soldOut} />
 
             <a
               href={whatsappHref}
@@ -407,7 +415,8 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
         partyId={party.id}
         slug={party.slug}
         partyName={party.name}
-        priceLabel={party.ticketPrice ? `לרכישת כרטיסים החל מ-${party.ticketPrice} ₪` : undefined}
+        priceLabel={party.soldOut ? 'הכרטיסים אזלו' : party.ticketPrice ? `לרכישת כרטיסים החל מ-${party.ticketPrice} ₪` : undefined}
+      soldOut={party.soldOut}
       />
 
     </div >

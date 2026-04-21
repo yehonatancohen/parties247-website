@@ -102,6 +102,24 @@ const getTicketPrice = (html: string): number | undefined => {
   return undefined;
 };
 
+type TicketType = { FinalPrice?: number; finalPrice?: number; Price?: number; price?: number; IsSoldOut?: boolean; soldOut?: boolean; SoldOut?: boolean; TotalAmount?: number; Quantity?: number; Total?: number; SoldAmount?: number; AmountSold?: number; Sold?: number };
+
+const getPriceFromTicketTypes = (eventData: Record<string, unknown>): number | undefined => {
+  const types = (eventData['TicketTypes'] || eventData['ticketTypes']) as TicketType[] | undefined;
+  if (!Array.isArray(types) || types.length === 0) return undefined;
+  let min: number | undefined;
+  for (const tt of types) {
+    if (tt.IsSoldOut || tt.soldOut || tt.SoldOut) continue;
+    const total = tt.TotalAmount ?? tt.Quantity ?? tt.Total;
+    const sold = tt.SoldAmount ?? tt.AmountSold ?? tt.Sold;
+    if (total != null && sold != null && sold >= total) continue;
+    const raw = tt.FinalPrice ?? tt.finalPrice ?? tt.Price ?? tt.price;
+    const p = typeof raw === 'number' ? raw : parseFloat(String(raw));
+    if (!isNaN(p) && p > 0 && (min === undefined || p < min)) min = p;
+  }
+  return min !== undefined ? Math.round(min * 100) / 100 : undefined;
+};
+
 // Extract final ticket price (including service fee) from go-out.co schemaOrg FAQ.
 // FAQ answer contains e.g. "מתחילים ב-86.80₪ (מחיר סופי כולל עמלות)"
 const getPriceFromSchemaOrg = (schemaOrg: unknown): number | undefined => {
@@ -110,8 +128,8 @@ const getPriceFromSchemaOrg = (schemaOrg: unknown): number | undefined => {
     if (!item || (item as { '@type'?: string })['@type'] !== 'FAQPage') continue;
     for (const q of (item as { mainEntity?: { acceptedAnswer?: { text?: string } }[] }).mainEntity ?? []) {
       const text = q.acceptedAnswer?.text ?? '';
-      const m = text.match(/([\d]+\.?\d*)₪/);
-      if (m) return parseFloat(m[1]);
+      const m = text.match(/([\d,]+\.?\d*)₪/);
+      if (m) return parseFloat(m[1].replace(/,/g, ''));
     }
   }
   return undefined;
@@ -313,7 +331,7 @@ export const scrapePartyDetails = async (url: string): Promise<ScrapedPartyDetai
       eventType: getEventType(fullText),
       age: getAge(fullText, eventData.MinimumAge || 0),
       tags: getTags(fullText, eventData.Adress),
-      ticketPrice: getPriceFromSchemaOrg(eventData.schemaOrg) ?? getTicketPrice(htmlText),
+      ticketPrice: getPriceFromSchemaOrg(eventData.schemaOrg) ?? getPriceFromTicketTypes(eventData as Record<string, unknown>) ?? getTicketPrice(htmlText),
     };
 
     // ════════════════════════════════════════════════════════════

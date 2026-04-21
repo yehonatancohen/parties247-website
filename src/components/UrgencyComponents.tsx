@@ -84,7 +84,8 @@ export function StickyPurchaseBar({
     triggerId,
     partyId,
     slug,
-    partyName
+    partyName,
+    soldOut = false,
 }: {
     href: string;
     priceLabel?: string;
@@ -92,6 +93,7 @@ export function StickyPurchaseBar({
     partyId: string;
     slug: string;
     partyName?: string;
+    soldOut?: boolean;
 }) {
     const [isVisible, setIsVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -164,16 +166,23 @@ export function StickyPurchaseBar({
                             <p className="text-white font-bold text-lg">שריינו מקום עכשיו</p>
                             <p className="text-sm text-gray-400">הכרטיסים נחטפים מהר!</p>
                         </div>
-                        <a
-                            href={href}
-                            target={href.includes('go-out') ? "_self" : "_blank"}
-                            rel="nofollow noreferrer"
-                            onClick={handleClick}
-                            className="flex-1 sm:flex-none bg-gradient-to-r from-jungle-lime to-jungle-accent hover:from-jungle-lime/80 hover:to-jungle-accent/80 text-jungle-deep font-bold text-lg py-3 px-8 rounded-xl shadow-lg shadow-lime-900/20 transition transform hover:scale-105 active:scale-95 text-center flex items-center justify-center gap-2"
-                        >
-                            <TicketIcon className="w-5 h-5" />
-                            {priceLabel}
-                        </a>
+                        {soldOut ? (
+                            <div className="flex-1 sm:flex-none bg-white/5 border border-white/10 text-white/40 font-bold text-lg py-3 px-8 rounded-xl text-center flex items-center justify-center gap-2 cursor-not-allowed">
+                                <TicketIcon className="w-5 h-5" />
+                                הכרטיסים אזלו
+                            </div>
+                        ) : (
+                            <a
+                                href={href}
+                                target={href.includes('go-out') ? "_self" : "_blank"}
+                                rel="nofollow noreferrer"
+                                onClick={handleClick}
+                                className="flex-1 sm:flex-none bg-gradient-to-r from-jungle-lime to-jungle-accent hover:from-jungle-lime/80 hover:to-jungle-accent/80 text-jungle-deep font-bold text-lg py-3 px-8 rounded-xl shadow-lg shadow-lime-900/20 transition transform hover:scale-105 active:scale-95 text-center flex items-center justify-center gap-2"
+                            >
+                                <TicketIcon className="w-5 h-5" />
+                                {priceLabel}
+                            </a>
+                        )}
                     </div>
                 </div>
             )}
