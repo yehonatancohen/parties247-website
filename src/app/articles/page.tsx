@@ -26,16 +26,34 @@ const guides = [
     emoji: '🎛️',
   },
   {
-    title: 'Jimmy Who תל אביב',
-    description: 'כרטיסים, אירועים קרובים, שולחנות VIP ומה לצפות בלילה.',
-    href: '/club/jimmy-who',
+    title: 'Jimmy Who – ליינאפ, כתובת וכרטיסים',
+    description: 'כרטיסים, ליינאפ עדכני, שעות פתיחה וכל מה שצריך לפני שיוצאים לג׳ימי הו.',
+    href: '/jimmy-who',
     emoji: '🎤',
   },
   {
-    title: 'Moon Child תל אביב',
-    description: 'מועדון אינטימי עם סטים מלודיים, תאורת ירח וקוקטיילים ייחודיים.',
-    href: '/club/moon-child',
+    title: 'Moon Child – ליינאפ, כתובת וכרטיסים',
+    description: 'ליינאפ עדכני, כתובת ומידע על כרטיסים לאירועי Moon Child בישראל.',
+    href: '/moon-child',
     emoji: '🌙',
+  },
+  {
+    title: 'מסיבות יום שישי – המדריך המלא',
+    description: 'ליינאפ, כרטיסים ומועדוני הלילה הכי חמים לליל שישי בתל אביב וכל הארץ.',
+    href: '/friday-parties-guide',
+    emoji: '🎉',
+  },
+  {
+    title: 'מסיבות בתל אביב סוף שבוע 2026',
+    description: 'המדריך המלא למסיבות סוף שבוע בתל אביב 2026 – טכנו, היפ-הופ ורייבים.',
+    href: '/tel-aviv-weekend-2026',
+    emoji: '🏙️',
+  },
+  {
+    title: 'כרטיסים למסיבות בישראל',
+    description: 'כיצד לרכוש כרטיסים, מתי לקנות early-bird והיכן למצוא הנחות לאירועי לילה.',
+    href: '/tickets-israel',
+    emoji: '🎟️',
   },
 ];
 
