@@ -41,11 +41,11 @@ const CarouselPartyCard: FC<{ party: Party; directUrl: string; priority: boolean
     weekday: 'long', day: '2-digit', month: '2-digit',
   }).format(partyDate);
 
+  const eventPageUrl = `/event/${party.slug}`;
+
   return (
     <a
-      href={directUrl}
-      target="_blank"
-      rel="noopener noreferrer"
+      href={eventPageUrl}
       className="group block outline-none select-none"
       onClick={() => trackPartyRedirect(party.id, party.slug)}
       draggable="false"

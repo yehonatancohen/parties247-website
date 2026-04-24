@@ -265,6 +265,26 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
         </div>
 
         {/* ═══════════════════════════════════════════════════
+            QUICK INFO STRIP: Date / Location / Age
+        ═══════════════════════════════════════════════════ */}
+        <div className="flex flex-wrap gap-3 mb-6" dir="rtl">
+          <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-jungle-surface/60 px-4 py-2.5 text-sm">
+            <CalendarIcon className="w-4 h-4 text-jungle-lime flex-shrink-0" />
+            <span className="text-white font-semibold">{formattedDate}</span>
+            <span className="text-jungle-text/60">·</span>
+            <span className="text-jungle-text/70">{formattedTime}</span>
+          </div>
+          <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-jungle-surface/60 px-4 py-2.5 text-sm">
+            <LocationIcon className="w-4 h-4 text-jungle-lime flex-shrink-0" />
+            <span className="text-white font-semibold">{party.location.name}</span>
+          </div>
+          <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-jungle-surface/60 px-4 py-2.5 text-sm">
+            <span className="text-jungle-lime font-bold text-base leading-none">🎂</span>
+            <span className="text-white font-semibold">{party.age}</span>
+          </div>
+        </div>
+
+        {/* ═══════════════════════════════════════════════════
             MAIN CALL TO ACTION (Moved up for better conversion)
         ═══════════════════════════════════════════════════ */}
         <div className="rounded-2xl border border-jungle-accent/25 bg-gradient-to-br from-jungle-surface via-jungle-surface/80 to-jungle-deep p-6 md:p-8 mb-8" id="main-purchase-button">
@@ -284,6 +304,9 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
           {!party.soldOut && (
             <p className="text-center text-jungle-text/70 text-sm mb-5">
               הכרטיסים נמכרים דרך אתר GO-OUT. לחצו למעבר 👇
+              {party.ticketPrice && (
+                <span className="block text-xs text-jungle-text/40 mt-1">* המחיר המוצג הוא מחיר התחלתי ועשוי להשתנות — המחיר הסופי נקבע ב-Go-Out</span>
+              )}
             </p>
           )}
 

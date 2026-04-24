@@ -259,9 +259,7 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
                   return (
                     <a
                       key={party.id}
-                      href={party.originalUrl || `/event/${party.slug}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      href={`/event/${party.slug}`}
                       className="snap-start shrink-0 w-[108px] sm:w-[148px] group"
                     >
                       <div className="relative rounded-xl overflow-hidden border border-white/10 group-hover:border-jungle-accent/60 transition">
