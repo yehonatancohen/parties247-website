@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { BASE_URL } from "@/data/constants";
+import { BASE_URL, BRAND_LOGO_URL } from "@/data/constants";
 
 export const metadata: Metadata = {
   title: "Jimmy Who – ליינאפ, כתובת וכרטיסים | Parties 24/7",
@@ -36,9 +36,12 @@ const jsonLd = [
   },
   {
     "@context": "https://schema.org",
-    "@type": "Event",
+    "@type": "EventSeries",
     name: "מסיבות שבועיות ב-Jimmy Who",
     description: "אירועי לילה קבועים ב-Jimmy Who תל אביב",
+    startDate: "2020-01-01",
+    endDate: "2027-12-31",
+    image: BRAND_LOGO_URL,
     location: {
       "@type": "MusicVenue",
       name: "Jimmy Who",
@@ -52,6 +55,16 @@ const jsonLd = [
       "@type": "Organization",
       name: "Parties 24/7",
       url: BASE_URL,
+    },
+    performer: {
+      "@type": "PerformingGroup",
+      name: "DJs שונים",
+    },
+    offers: {
+      "@type": "Offer",
+      url: `${BASE_URL}/jimmy-who`,
+      priceCurrency: "ILS",
+      availability: "https://schema.org/InStock",
     },
     eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
     eventStatus: "https://schema.org/EventScheduled",

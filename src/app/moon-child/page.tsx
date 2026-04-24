@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { BASE_URL } from "@/data/constants";
+import { BASE_URL, BRAND_LOGO_URL } from "@/data/constants";
 
 export const metadata: Metadata = {
   title: "Moon Child – ליינאפ, כתובת וכרטיסים | Parties 24/7",
@@ -21,18 +21,35 @@ export const metadata: Metadata = {
 const jsonLd = [
   {
     "@context": "https://schema.org",
-    "@type": "Event",
+    "@type": "EventSeries",
     name: "Moon Child",
     description:
       "מסיבות Moon Child – אירועי לילה אלקטרוניים ייחודיים עם ליינאפים מגוונים ואווירה מיסטית",
+    startDate: "2020-01-01",
+    endDate: "2027-12-31",
+    image: BRAND_LOGO_URL,
     location: {
-      "@type": "PostalAddress",
-      addressLocality: "תל אביב-יפו",
-      addressCountry: "IL",
+      "@type": "Place",
+      name: "תל אביב-יפו",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "תל אביב-יפו",
+        addressCountry: "IL",
+      },
     },
     organizer: {
       "@type": "Organization",
       name: "Moon Child Events",
+    },
+    performer: {
+      "@type": "PerformingGroup",
+      name: "Moon Child DJs",
+    },
+    offers: {
+      "@type": "Offer",
+      url: `${BASE_URL}/moon-child`,
+      priceCurrency: "ILS",
+      availability: "https://schema.org/InStock",
     },
     url: `${BASE_URL}/moon-child`,
     eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
@@ -44,16 +61,31 @@ const jsonLd = [
     name: "Moon Child Party Series",
     description:
       "סדרת מסיבות Moon Child בישראל – אירועים אלקטרוניים עם דגש על עיצוב ואווירה",
+    startDate: "2020-01-01",
+    endDate: "2027-12-31",
+    image: BRAND_LOGO_URL,
     location: {
-      "@type": "PostalAddress",
-      addressLocality: "תל אביב-יפו",
-      addressCountry: "IL",
+      "@type": "Place",
+      name: "תל אביב-יפו",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "תל אביב-יפו",
+        addressCountry: "IL",
+      },
     },
     performer: {
       "@type": "PerformingGroup",
       name: "Moon Child DJs",
     },
+    offers: {
+      "@type": "Offer",
+      url: `${BASE_URL}/moon-child`,
+      priceCurrency: "ILS",
+      availability: "https://schema.org/InStock",
+    },
     url: `${BASE_URL}/moon-child`,
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    eventStatus: "https://schema.org/EventScheduled",
   },
 ];
 
