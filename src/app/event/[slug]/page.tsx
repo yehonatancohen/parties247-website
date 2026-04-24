@@ -278,10 +278,12 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
             <LocationIcon className="w-4 h-4 text-jungle-lime flex-shrink-0" />
             <span className="text-white font-semibold">{party.location.name}</span>
           </div>
-          <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-jungle-surface/60 px-4 py-2.5 text-sm">
-            <span className="text-jungle-lime font-bold text-base leading-none">🎂</span>
-            <span className="text-white font-semibold">{party.age}</span>
-          </div>
+          {party.age && party.age !== 'כל הגילאים' && (
+            <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-jungle-surface/60 px-4 py-2.5 text-sm">
+              <span className="text-jungle-lime font-bold text-base leading-none">🔞</span>
+              <span className="text-white font-semibold">{party.age}</span>
+            </div>
+          )}
         </div>
 
         {/* ═══════════════════════════════════════════════════
