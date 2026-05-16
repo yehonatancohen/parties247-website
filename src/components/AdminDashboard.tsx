@@ -66,7 +66,7 @@ const ClonePartyModal: React.FC<{ party: Party; onClose: () => void; onClone: (u
 
 import { pageLinkOptions } from '../data/pageLinks';
 import { scrapePartyDetails } from '../services/scrapeService';
-import { cloneParty, triggerPriceUpdate } from '@/services/api';
+import { cloneParty, triggerPriceUpdate, triggerManualScan, getGoOutStatus } from '@/services/api';
 
 const sanitizeGoOutUrl = (input: string): string => {
   if (!input) {
@@ -312,9 +312,32 @@ const AdminDashboard: React.FC = () => {
   const [editingCarouselId, setEditingCarouselId] = useState<string | null>(null);
   const [editingCarouselTitle, setEditingCarouselTitle] = useState('');
 
+  const [goOutStatus, setGoOutStatus] = useState<{
+    pendingCount: number;
+    accounts: number;
+    isRunning: boolean;
+    lastRun: string | null;
+    sessions: Array<{ account_id: string; session_valid: boolean; last_checked: string }>;
+  } | null>(null);
+  const [isScanning, setIsScanning] = useState(false);
+  const [scanMessage, setScanMessage] = useState<string | null>(null);
+
   useEffect(() => {
     setLocalDefaultReferral(defaultReferral);
   }, [defaultReferral]);
+
+  useEffect(() => {
+    const fetchStatus = async () => {
+      try {
+        const status = await getGoOutStatus();
+        setGoOutStatus(status);
+        setIsScanning(status.isRunning);
+      } catch (e) {
+        console.warn('Could not fetch Go-Out status', e);
+      }
+    };
+    fetchStatus();
+  }, []);
 
   const { activeParties, archivedParties } = useMemo(() => {
     const now = new Date();
@@ -563,6 +586,26 @@ const AdminDashboard: React.FC = () => {
     } catch (e) {
       console.error('An error occurred during the reorder operation:', e);
     }
+  };
+
+  const handleManualScan = async () => {
+    setIsScanning(true);
+    setScanMessage(null);
+    try {
+      const result = await triggerManualScan();
+      setScanMessage(result.message);
+    } catch (e) {
+      setScanMessage(e instanceof Error ? e.message : 'Scan failed');
+    }
+    // Don't set isScanning=false here — it'll reset when status is re-fetched
+    // After 5s re-fetch status
+    setTimeout(async () => {
+      try {
+        const status = await getGoOutStatus();
+        setGoOutStatus(status);
+        setIsScanning(status.isRunning);
+      } catch {}
+    }, 5000);
   };
 
   const handleUpdatePrices = async () => {
@@ -1025,6 +1068,54 @@ const AdminDashboard: React.FC = () => {
           )}
           {refreshAllParsesStatus && (
             <p className="text-sm text-jungle-text/80">{refreshAllParsesStatus}</p>
+          )}
+        </div>
+
+        {/* Go-Out Auto-Import */}
+        <div className="mt-4 border-t border-wood-brown/50 pt-4">
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="text-sm font-semibold text-jungle-accent">Go-Out Auto-Import</h4>
+            {goOutStatus && (
+              <div className="flex items-center gap-2 text-xs text-jungle-text/60">
+                <span>{goOutStatus.accounts} account{goOutStatus.accounts !== 1 ? 's' : ''}</span>
+                <span>•</span>
+                <span>{goOutStatus.pendingCount} pending</span>
+                {goOutStatus.lastRun && (
+                  <>
+                    <span>•</span>
+                    <span>Last: {new Date(goOutStatus.lastRun).toLocaleTimeString('he-IL')}</span>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+          {goOutStatus?.sessions && goOutStatus.sessions.length > 0 && (
+            <div className="flex gap-2 mb-3 flex-wrap">
+              {goOutStatus.sessions.map(s => (
+                <span key={s.account_id} className={`text-xs px-2 py-0.5 rounded-full border ${s.session_valid ? 'border-green-500/40 text-green-400 bg-green-500/10' : 'border-red-500/40 text-red-400 bg-red-500/10'}`}>
+                  {s.account_id}: {s.session_valid ? '✅ valid' : '❌ expired'}
+                </span>
+              ))}
+            </div>
+          )}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleManualScan}
+              disabled={isScanning}
+              className="bg-orange-500 text-white font-bold py-2 px-4 rounded-md hover:bg-orange-600 disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center gap-2 text-sm"
+            >
+              {isScanning ? (
+                <><LoadingSpinner /><span>Scanning...</span></>
+              ) : (
+                <><span>🔍</span><span>Scan Now</span></>
+              )}
+            </button>
+            <p className="text-xs text-jungle-text/60">
+              Scans both Go-Out accounts and sends all found parties to Telegram for approval.
+            </p>
+          </div>
+          {scanMessage && (
+            <p className="mt-2 text-xs text-jungle-accent">{scanMessage}</p>
           )}
         </div>
       </div>
