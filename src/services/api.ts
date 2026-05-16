@@ -579,28 +579,3 @@ export const getVisitorAnalytics = async (
   }
 };
 
-export const triggerManualScan = async (): Promise<{ message: string }> => {
-  const response = await fetch(`${API_URL}/admin/goout/manual-scrape`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-  });
-  if (!response.ok) {
-    const err = await response.json().catch(() => ({}));
-    throw new Error((err as any).message || 'Failed to start scan');
-  }
-  return response.json();
-};
-
-export const getGoOutStatus = async (): Promise<{
-  pendingCount: number;
-  accounts: number;
-  isRunning: boolean;
-  lastRun: string | null;
-  sessions: Array<{ account_id: string; session_valid: boolean; last_checked: string }>;
-}> => {
-  const response = await fetch(`${API_URL}/admin/goout/status`, {
-    headers: getAuthHeader(),
-  });
-  if (!response.ok) throw new Error('Failed to fetch Go-Out status');
-  return response.json();
-};
