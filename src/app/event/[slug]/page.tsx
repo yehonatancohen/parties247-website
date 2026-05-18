@@ -148,8 +148,8 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
     '@type': 'Event',
     'name': party.name,
     'startDate': party.date,
-    'eventStatus': 'https://schema.org/EventScheduled',
-    'eventAttendanceMode': 'https://schema.org/OfflineEventAttendanceMode',
+    'eventStatus': `https://schema.org/${party.eventStatus ?? 'EventScheduled'}`,
+    'eventAttendanceMode': `https://schema.org/${party.eventAttendanceMode ?? 'OfflineEventAttendanceMode'}`,
     'location': {
       '@type': 'Place',
       'name': party.location.name,
@@ -158,6 +158,13 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
         'streetAddress': party.location.address || party.location.name,
         'addressCountry': 'IL',
       },
+      ...(party.location.geo ? {
+        'geo': {
+          '@type': 'GeoCoordinates',
+          'latitude': party.location.geo.latitude,
+          'longitude': party.location.geo.longitude,
+        },
+      } : {}),
     },
     'image': [party.imageUrl],
     'description': plainDescriptionForLd.substring(0, 500),
@@ -169,7 +176,8 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
     'offers': {
       '@type': 'Offer',
       'url': referralUrl,
-      ...(party.ticketPrice ? { 'price': String(party.ticketPrice), 'priceCurrency': 'ILS' } : {}),
+      'price': party.ticketPrice ? String(party.ticketPrice) : '0',
+      'priceCurrency': 'ILS',
       'availability': hasLastTickets
         ? 'https://schema.org/LimitedAvailability'
         : 'https://schema.org/InStock',

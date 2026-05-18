@@ -43,6 +43,8 @@ export interface Article {
   summary: string;
   imageUrl: string;
   content: string;
+  datePublished: string; // ISO 8601
+  dateModified: string;  // ISO 8601
 }
 
 export interface Carousel {

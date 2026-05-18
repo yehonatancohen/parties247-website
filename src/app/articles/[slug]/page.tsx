@@ -73,8 +73,33 @@ export default async function ArticlePage({
 
   if (!article) notFound();
 
+  const articleJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    'headline': article.title,
+    'description': article.summary,
+    'image': article.imageUrl,
+    'datePublished': article.datePublished,
+    'dateModified': article.dateModified,
+    'author': {
+      '@type': 'Organization',
+      'name': 'Parties 24/7',
+      'url': BASE_URL,
+    },
+    'publisher': {
+      '@type': 'Organization',
+      'name': 'Parties 24/7',
+      'url': BASE_URL,
+    },
+    'url': `${BASE_URL}/articles/${encodeURIComponent(article.slug)}`,
+  };
+
   return (
     <main className="container mx-auto max-w-4xl px-4 py-12 space-y-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
       <header className="space-y-4 text-center">
         <p className="text-sm uppercase tracking-wide text-jungle-text/60">המגזין</p>
         <h1 className="text-3xl md:text-4xl font-display text-white">{article.title}</h1>
