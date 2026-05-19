@@ -133,7 +133,7 @@ export async function generateMetadata(
     description: descStr,
     alternates: {
       canonical: `/event/${party.slug}`,
-      languages: { 'he-IL': `${party.slug}` },
+      languages: { 'he-IL': `/event/${party.slug}` },
     },
     openGraph: {
       title: party.name,
