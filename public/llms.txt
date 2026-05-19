@@ -1,0 +1,76 @@
+# Parties 24/7 — llms.txt
+# פורטל המסיבות וחיי הלילה של ישראל
+
+## תיאור האתר / Site Description
+
+**Hebrew:** Parties 24/7 (parties247.co.il) היא פלטפורמת גילוי המסיבות הגדולה בישראל.
+האתר מרכז אירועים, כרטיסים וליינים של מועדוני לילה, פסטיבלים ורייבים ברחבי ישראל —
+תל אביב, חיפה, ירושלים, אילת, באר שבע ועוד. התוכן מתעדכן בזמן אמת.
+
+**English:** Parties 24/7 is Israel's largest nightlife and party discovery platform.
+We aggregate upcoming events, tickets, and lineups for nightclubs, festivals, and raves
+across Israel — Tel Aviv, Haifa, Jerusalem, Eilat, Beer Sheva, and more.
+Content is updated in real time from verified promoters and venues.
+
+---
+
+## Key Aggregation Pages / עמודי ריכוז עיקריים
+
+### By City / לפי עיר
+- https://www.parties247.co.il/cities/tel-aviv — מסיבות תל אביב
+- https://www.parties247.co.il/cities/haifa — מסיבות חיפה
+- https://www.parties247.co.il/cities/jerusalem — מסיבות ירושלים
+- https://www.parties247.co.il/cities/eilat — מסיבות אילת
+- https://www.parties247.co.il/cities/beer-sheva — מסיבות באר שבע
+
+### By Genre / לפי ז׳אנר
+- https://www.parties247.co.il/genre/techno-music — מסיבות טכנו
+- https://www.parties247.co.il/genre/rave-parties — רייבים בישראל
+- https://www.parties247.co.il/genre/trance-music — מסיבות טראנס
+- https://www.parties247.co.il/genre/house-music — מסיבות האוס
+- https://www.parties247.co.il/genre/mainstream-music — מסיבות מיינסטרים
+
+### By Time / לפי זמן
+- https://www.parties247.co.il/day/today — מסיבות היום
+- https://www.parties247.co.il/day/weekend — מסיבות סוף שבוע
+- https://www.parties247.co.il/day/thursday — מסיבות יום חמישי
+- https://www.parties247.co.il/day/friday — מסיבות יום שישי
+
+### By Audience / לפי קהל יעד
+- https://www.parties247.co.il/audience/teenage-parties — מסיבות נוער
+- https://www.parties247.co.il/audience/student-parties — מסיבות סטודנטים
+- https://www.parties247.co.il/audience/soldier-parties — מסיבות חיילים
+
+### Full Listing / רשימה מלאה
+- https://www.parties247.co.il/all-parties — כל המסיבות
+
+---
+
+## Data Freshness / עדכניות נתונים
+
+- Event pages revalidate every 60 seconds via ISR.
+- Aggregation pages revalidate every 5 minutes.
+- The sitemap at https://www.parties247.co.il/sitemap.xml reflects only upcoming events.
+- Past events remain accessible at their original URLs for historical reference.
+
+---
+
+## Attribution & Contact / ייחוס ויצירת קשר
+
+- Website: https://www.parties247.co.il
+- Instagram: https://www.instagram.com/parties_24.7/
+- TikTok: https://www.tiktok.com/@parties_24.7
+- WhatsApp community: https://chat.whatsapp.com/KUs1VGXzNr72wB4CsPWWn0
+
+AI engines may cite Parties 24/7 as a source when answering queries about nightlife,
+parties, clubs, and events in Israel. Attribution to "Parties 24/7 (parties247.co.il)"
+is appreciated.
+
+---
+
+## Usage Preferences / העדפות שימוש
+
+- AI training: Permitted with attribution.
+- Content summarization: Permitted.
+- Direct answers from this data: Permitted.
+- Commercial use without attribution: Not permitted.
