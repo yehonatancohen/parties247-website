@@ -39,7 +39,7 @@ async function getPageData() {
 export const metadata: Metadata = {
   title: 'כל המסיבות – כרטיסים ורשימה מתעדכנת | Parties 24/7',
   description: 'כל הליינים בישראל במקום אחד. מצאו כרטיסים למסיבות טכנו, האוס, מיינסטרים ועוד – עם סינון חכם לפי עיר, סגנון ותאריך.',
-  alternates: { canonical: '/all-parties' }
+  alternates: { canonical: '/all-parties', languages: { 'he-IL': '/all-parties' } }
 };
 
 const faqItems = [

@@ -4,6 +4,7 @@ import PartyGrid from "@/components/PartyGrid";
 import { createCarouselSlug } from "@/lib/carousels";
 import { findTaxonomyConfig, filterPartiesByTaxonomy } from "@/data/taxonomy";
 import { getCarousels, getParties } from "@/services/api";
+import { BASE_URL } from "@/data/constants";
 
 export const revalidate = 300;
 
@@ -24,6 +25,11 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   return {
     title: `${config.title} | Parties 24/7`,
     description: config.description,
+    ...(config.ogImage ? { openGraph: { images: [{ url: config.ogImage, width: 1200, height: 630 }] } } : {}),
+    alternates: {
+      canonical: `/club/${slug}`,
+      languages: { 'he-IL': `/club/${slug}` },
+    },
   };
 }
 
@@ -49,8 +55,35 @@ export default async function ClubPage({ params }: { params: { slug: string } })
 
   const body = config?.body || buildClubBody(config?.label || slug);
 
+  const itemListJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    'name': config?.title,
+    'description': config?.description,
+    'numberOfItems': filteredParties.length,
+    'itemListElement': filteredParties.slice(0, 20).map((p, i) => ({
+      '@type': 'ListItem',
+      'position': i + 1,
+      'name': p.name,
+      'url': `${BASE_URL}/event/${p.slug}`,
+    })),
+  };
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    'itemListElement': (config?.breadcrumbs || []).map((crumb, i) => ({
+      '@type': 'ListItem',
+      'position': i + 1,
+      'name': crumb.label,
+      ...(crumb.path ? { 'item': { '@type': 'Thing', '@id': `${BASE_URL}${crumb.path}`, 'name': crumb.label } } : {}),
+    })),
+  };
+
   return (
     <div className="space-y-10">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <PartyGrid
         parties={filteredParties}
         hotPartyIds={Array.from(new Set(hotNowCarousel?.partyIds || []))}
