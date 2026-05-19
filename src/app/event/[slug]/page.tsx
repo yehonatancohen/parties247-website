@@ -16,6 +16,30 @@ import { BASE_URL, LAST_TICKETS_TAG } from "@/data/constants";
 
 export const revalidate = 60;
 
+// Converts a UTC date string to a proper ISO 8601 string in Israel local time (Asia/Jerusalem).
+// Israel is UTC+2 (IST) in winter and UTC+3 (IDT) in summer.
+function toIsraelISO(dateStr: string): string {
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return dateStr;
+  // 'sv-SE' locale produces ISO-like "YYYY-MM-DD HH:mm:ss" output
+  const localStr = new Intl.DateTimeFormat('sv-SE', {
+    timeZone: 'Asia/Jerusalem',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit',
+  }).format(d);
+  // Reconstruct a "fake UTC" timestamp from the local parts to compute actual offset
+  const [datePart, timePart] = localStr.split(' ');
+  const [year, month, day] = datePart.split('-').map(Number);
+  const [hour, min, sec] = timePart.split(':').map(Number);
+  const localAsUtcMs = Date.UTC(year, month - 1, day, hour, min, sec);
+  const offsetMinutes = Math.round((localAsUtcMs - d.getTime()) / 60000);
+  const sign = offsetMinutes >= 0 ? '+' : '-';
+  const abs = Math.abs(offsetMinutes);
+  const hh = String(Math.floor(abs / 60)).padStart(2, '0');
+  const mm = String(abs % 60).padStart(2, '0');
+  return `${datePart}T${timePart}${sign}${hh}:${mm}`;
+}
+
 // Helper for Tag Colors
 const getTagColor = (tag: string) => {
   if (tag === LAST_TICKETS_TAG) return 'border-red-500/30 bg-red-500/10 text-red-300';
@@ -98,17 +122,24 @@ export async function generateMetadata(
   const ogImage = getWhatsappOgImage(party.imageUrl);
   const plainDescription = party.description.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 
+  const eventDate = new Date(party.date);
+  const heDate = new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'long', timeZone: 'Asia/Jerusalem' }).format(eventDate);
+  const heCity = party.location.name;
+  const titleStr = `${party.name} - ${heCity}, ${heDate} | Parties 24/7`;
+  const descStr = plainDescription.substring(0, 160) || `${party.name} ב${heCity}. קנו כרטיסים לאירוע ב-Parties 24/7.`;
+
   return {
-    title: `${party.name} | Parties 24/7`,
-    description: plainDescription.substring(0, 160),
+    title: titleStr,
+    description: descStr,
     alternates: {
       canonical: `/event/${party.slug}`,
+      languages: { 'he-IL': `${party.slug}` },
     },
     openGraph: {
       title: party.name,
       description: plainDescription.substring(0, 300),
       images: ogImage ? [{ url: ogImage, width: 1200, height: 630 }] : [{ url: BRAND_LOGO_URL }],
-      type: "article",
+      type: "website",
       locale: "he_IL",
     },
     twitter: {
@@ -143,11 +174,11 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
 
   const plainDescriptionForLd = party.description.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 
-  const eventJsonLd = {
+  const eventJsonLd: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'Event',
     'name': party.name,
-    'startDate': party.date,
+    'startDate': toIsraelISO(party.date),
     'eventStatus': `https://schema.org/${party.eventStatus ?? 'EventScheduled'}`,
     'eventAttendanceMode': `https://schema.org/${party.eventAttendanceMode ?? 'OfflineEventAttendanceMode'}`,
     'location': {
@@ -156,6 +187,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
       'address': {
         '@type': 'PostalAddress',
         'streetAddress': party.location.address || party.location.name,
+        ...(party.region && party.region !== 'לא ידוע' ? { 'addressRegion': party.region } : {}),
         'addressCountry': 'IL',
       },
       ...(party.location.geo ? {
@@ -166,31 +198,35 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
         },
       } : {}),
     },
-    'image': [party.imageUrl],
+    'image': [
+      party.imageUrl,
+    ].filter(Boolean),
     'description': plainDescriptionForLd.substring(0, 500),
-    'organizer': {
-      '@type': 'Organization',
-      'name': 'Parties 24/7',
-      'url': BASE_URL,
-    },
+    'organizer': party.organizer
+      ? { '@type': 'Organization', 'name': party.organizer.name, ...(party.organizer.url ? { 'url': party.organizer.url } : {}) }
+      : { '@type': 'Organization', 'name': 'Parties 24/7', 'url': BASE_URL },
     'offers': {
       '@type': 'Offer',
       'url': referralUrl,
-      'price': party.ticketPrice ? String(party.ticketPrice) : '0',
-      'priceCurrency': 'ILS',
+      ...(party.ticketPrice != null ? { 'price': String(party.ticketPrice), 'priceCurrency': 'ILS' } : {}),
       'availability': hasLastTickets
         ? 'https://schema.org/LimitedAvailability'
-        : 'https://schema.org/InStock',
+        : party.soldOut
+          ? 'https://schema.org/SoldOut'
+          : 'https://schema.org/InStock',
     },
   };
+  if (party.performer?.name) {
+    eventJsonLd['performer'] = { '@type': 'PerformingGroup', 'name': party.performer.name };
+  }
 
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     'itemListElement': [
-      { '@type': 'ListItem', 'position': 1, 'name': 'בית', 'item': BASE_URL },
-      { '@type': 'ListItem', 'position': 2, 'name': 'כל המסיבות', 'item': `${BASE_URL}/all-parties` },
-      { '@type': 'ListItem', 'position': 3, 'name': party.name, 'item': partyPageUrl },
+      { '@type': 'ListItem', 'position': 1, 'name': 'בית', 'item': { '@type': 'Thing', '@id': BASE_URL, 'name': 'בית' } },
+      { '@type': 'ListItem', 'position': 2, 'name': 'כל המסיבות', 'item': { '@type': 'Thing', '@id': `${BASE_URL}/all-parties`, 'name': 'כל המסיבות' } },
+      { '@type': 'ListItem', 'position': 3, 'name': party.name },
     ],
   };
 
