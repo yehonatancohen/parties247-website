@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import PartyGrid from "@/components/PartyGrid";
 import { createCarouselSlug } from "@/lib/carousels";
 import { getCarousels, getParties } from "@/services/api";
+import { BASE_URL } from "@/data/constants";
 
 export const revalidate = 300;
 
@@ -65,6 +66,10 @@ export async function generateMetadata({ params }: { params: { genre: GenreKey }
   return {
     title: config ? `${config.title} | Parties 24/7` : "מסיבות לפי סגנון",
     description: config?.description,
+    alternates: {
+      canonical: `/genre/${genre}`,
+      languages: { 'he-IL': `/genre/${genre}` },
+    },
   };
 }
 
@@ -88,8 +93,34 @@ export default async function GenrePage({ params }: { params: { genre: GenreKey 
   const filteredParties = parties.filter(config.filter);
   const hotPartyIds = new Set(hotNowCarousel?.partyIds || []);
 
+  const itemListJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    'name': config.title,
+    'description': config.description,
+    'numberOfItems': filteredParties.length,
+    'itemListElement': filteredParties.slice(0, 20).map((p, i) => ({
+      '@type': 'ListItem',
+      'position': i + 1,
+      'name': p.name,
+      'url': `${BASE_URL}/event/${p.slug}`,
+    })),
+  };
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    'itemListElement': [
+      { '@type': 'ListItem', 'position': 1, 'name': 'בית', 'item': { '@type': 'Thing', '@id': BASE_URL, 'name': 'בית' } },
+      { '@type': 'ListItem', 'position': 2, 'name': 'מסיבות לפי סגנון', 'item': { '@type': 'Thing', '@id': `${BASE_URL}/party-discovery`, 'name': 'מסיבות לפי סגנון' } },
+      { '@type': 'ListItem', 'position': 3, 'name': config.title },
+    ],
+  };
+
   return (
     <div className="space-y-10">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <PartyGrid
         parties={filteredParties}
         hotPartyIds={Array.from(new Set(hotPartyIds || []))}

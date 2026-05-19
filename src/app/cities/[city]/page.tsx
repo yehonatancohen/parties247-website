@@ -3,6 +3,7 @@ import PartyGrid from "@/components/PartyGrid";
 import { createCarouselSlug } from "@/lib/carousels";
 import { getCarousels, getParties } from "@/services/api";
 import BackButton from "@/components/BackButton";
+import { BASE_URL } from "@/data/constants";
 
 export const revalidate = 300;
 
@@ -48,12 +49,15 @@ const buildCityBody = (cityName: string) =>
 export async function generateMetadata({ params }: { params: { city: string } }): Promise<Metadata> {
   const { city } = await params;
   const decodedSlug = decodeURIComponent(city);
-  // Use the new helper here
-  const cityName = getCityDisplayName(decodedSlug); 
-  
+  const cityName = getCityDisplayName(decodedSlug);
+
   return {
-    title: `מסיבות ב${cityName} | Parties247`,
-    description: `גילוי מסיבות ואירועים ב${cityName}.`,
+    title: `מסיבות ב${cityName} | Parties 24/7`,
+    description: `כל המסיבות, הרייבים והאירועי לילה ב${cityName}. כרטיסים וליינים מעודכנים – Parties 24/7.`,
+    alternates: {
+      canonical: `/cities/${decodedSlug}`,
+      languages: { 'he-IL': `/cities/${decodedSlug}` },
+    },
   };
 }
 
@@ -87,8 +91,34 @@ export default async function CityPage({ params }: { params: { city: string } })
   // Pass the Hebrew name to the body builder
   const body = buildCityBody(displayCityName);
 
+  const itemListJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    'name': `מסיבות ב${displayCityName}`,
+    'description': `כל המסיבות והאירועים ב${displayCityName}`,
+    'numberOfItems': cityParties.length,
+    'itemListElement': cityParties.slice(0, 20).map((p, i) => ({
+      '@type': 'ListItem',
+      'position': i + 1,
+      'name': p.name,
+      'url': `${BASE_URL}/event/${p.slug}`,
+    })),
+  };
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    'itemListElement': [
+      { '@type': 'ListItem', 'position': 1, 'name': 'בית', 'item': { '@type': 'Thing', '@id': BASE_URL, 'name': 'בית' } },
+      { '@type': 'ListItem', 'position': 2, 'name': 'מסיבות לפי עיר', 'item': { '@type': 'Thing', '@id': `${BASE_URL}/party-discovery`, 'name': 'מסיבות לפי עיר' } },
+      { '@type': 'ListItem', 'position': 3, 'name': `מסיבות ב${displayCityName}` },
+    ],
+  };
+
   return (
     <div className="space-y-10">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <div className="container mx-auto px-4 pt-6 md:pt-8">
         <BackButton fallbackHref="/party-discovery" label="חזרה לעמוד החיפוש" />
       </div>

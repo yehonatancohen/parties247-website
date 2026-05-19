@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import PartyGrid from "@/components/PartyGrid";
 import { createCarouselSlug } from "@/lib/carousels";
 import { getCarousels, getParties } from "@/services/api";
+import { BASE_URL } from "@/data/constants";
 
 export const revalidate = 300;
 
@@ -95,14 +96,16 @@ export async function generateMetadata({ params }: { params: { day: string } }):
   const dayConfigs = getDayConfig(today.toISOString().slice(0, 10), today.getDay());
   const config = dayConfigs[day];
   if (!config) {
-    return {
-      title: "מסיבות קרובות | Parties 24/7",
-    };
+    return { title: "מסיבות קרובות | Parties 24/7" };
   }
 
   return {
     title: `${config.title} | Parties 24/7`,
     description: config.description,
+    alternates: {
+      canonical: `/day/${day}`,
+      languages: { 'he-IL': `/day/${day}` },
+    },
   };
 }
 
@@ -129,8 +132,34 @@ export default async function DayPartiesPage({ params }: { params: { day: string
   const hotPartyIds = new Set(hotNowCarousel?.partyIds || []);
   const filteredParties = parties.filter((party) => config.filter(party, normalizedToday, today.getDay()));
 
+  const itemListJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    'name': config.title,
+    'description': config.description,
+    'numberOfItems': filteredParties.length,
+    'itemListElement': filteredParties.slice(0, 20).map((p, i) => ({
+      '@type': 'ListItem',
+      'position': i + 1,
+      'name': p.name,
+      'url': `${BASE_URL}/event/${p.slug}`,
+    })),
+  };
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    'itemListElement': [
+      { '@type': 'ListItem', 'position': 1, 'name': 'בית', 'item': { '@type': 'Thing', '@id': BASE_URL, 'name': 'בית' } },
+      { '@type': 'ListItem', 'position': 2, 'name': 'כל המסיבות', 'item': { '@type': 'Thing', '@id': `${BASE_URL}/all-parties`, 'name': 'כל המסיבות' } },
+      { '@type': 'ListItem', 'position': 3, 'name': config.title },
+    ],
+  };
+
   return (
     <div className="space-y-10">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <PartyGrid
         parties={filteredParties}
         hotPartyIds={Array.from(new Set(hotPartyIds || []))}
