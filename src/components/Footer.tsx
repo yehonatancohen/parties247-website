@@ -7,13 +7,25 @@ const Footer: React.FC = () => {
   return (
     <footer className="bg-jungle-surface mt-12 text-jungle-text/70 border-t-2 border-wood-brown/50">
       <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-right">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-right">
           <div>
-            <h3 className="font-display text-xl text-white mb-4">קיצורי דרך</h3>
+            <h3 className="font-display text-xl text-white mb-4">מסיבות לפי עיר</h3>
             <ul className="space-y-2">
               <li><Link href="/cities/tel-aviv" className="hover:text-jungle-accent transition-colors">מסיבות בתל אביב</Link></li>
-              <li><Link href="/carousels/חם-עכשיו" className="hover:text-jungle-accent transition-colors">מסיבות חמות</Link></li>
-              <li><Link href="/audience/teenage-parties" className="hover:text-jungle-accent transition-colors">מסיבות נוער</Link></li>
+              <li><Link href="/cities/haifa" className="hover:text-jungle-accent transition-colors">מסיבות בחיפה</Link></li>
+              <li><Link href="/cities/jerusalem" className="hover:text-jungle-accent transition-colors">מסיבות בירושלים</Link></li>
+              <li><Link href="/cities/eilat" className="hover:text-jungle-accent transition-colors">מסיבות באילת</Link></li>
+              <li><Link href="/cities/beer-sheva" className="hover:text-jungle-accent transition-colors">מסיבות בבאר שבע</Link></li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="font-display text-xl text-white mb-4">מסיבות לפי סגנון</h3>
+            <ul className="space-y-2">
+              <li><Link href="/genre/techno-music" className="hover:text-jungle-accent transition-colors">מסיבות טכנו</Link></li>
+              <li><Link href="/genre/rave-parties" className="hover:text-jungle-accent transition-colors">רייבים בישראל</Link></li>
+              <li><Link href="/genre/trance-music" className="hover:text-jungle-accent transition-colors">מסיבות טראנס</Link></li>
+              <li><Link href="/genre/house-music" className="hover:text-jungle-accent transition-colors">מסיבות האוס</Link></li>
+              <li><Link href="/genre/mainstream-music" className="hover:text-jungle-accent transition-colors">מסיבות מיינסטרים</Link></li>
             </ul>
           </div>
           <div>

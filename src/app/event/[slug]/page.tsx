@@ -463,6 +463,49 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
         </div>
 
         {/* ═══════════════════════════════════════════════════
+            SECTION 6.5: CROSS-LINKS (city + genre aggregation)
+        ═══════════════════════════════════════════════════ */}
+        {(() => {
+          const CITY_SLUG_MAP: Record<string, string> = {
+            'תל אביב': 'tel-aviv', 'תל-אביב': 'tel-aviv',
+            'חיפה': 'haifa', 'ירושלים': 'jerusalem',
+            'אילת': 'eilat', 'באר שבע': 'beer-sheva',
+            'הרצליה': 'herzliya', 'נתניה': 'netanya',
+            'ראשון לציון': 'rishon-lezion',
+          };
+          const MUSIC_GENRE_SLUG_MAP: Record<string, string> = {
+            'טכנו': 'techno-music', 'טראנס': 'trance-music',
+            'האוס': 'house-music', 'מיינסטרים': 'mainstream-music',
+          };
+          const citySlug = CITY_SLUG_MAP[party.location.name] || null;
+          const genreSlug = MUSIC_GENRE_SLUG_MAP[party.musicType] || null;
+          if (!citySlug && !genreSlug) return null;
+          return (
+            <div className="rounded-2xl border border-white/10 bg-jungle-surface/50 p-6 mb-8">
+              <h2 className="text-lg font-display text-white mb-4">עוד מסיבות שיכולות לעניין אותך</h2>
+              <div className="flex flex-wrap gap-3">
+                {citySlug && (
+                  <Link
+                    href={`/cities/${citySlug}`}
+                    className="inline-flex items-center gap-2 rounded-xl border border-jungle-lime/30 bg-jungle-lime/10 px-4 py-2.5 text-sm font-semibold text-jungle-lime hover:bg-jungle-lime/20 transition-colors"
+                  >
+                    עוד מסיבות ב{party.location.name} ←
+                  </Link>
+                )}
+                {genreSlug && (
+                  <Link
+                    href={`/genre/${genreSlug}`}
+                    className="inline-flex items-center gap-2 rounded-xl border border-jungle-accent/30 bg-jungle-accent/10 px-4 py-2.5 text-sm font-semibold text-jungle-accent hover:bg-jungle-accent/20 transition-colors"
+                  >
+                    עוד מסיבות {party.musicType} ←
+                  </Link>
+                )}
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* ═══════════════════════════════════════════════════
             SECTION 7: RELATED PARTIES
         ═══════════════════════════════════════════════════ */}
         {relatedParties.length > 0 && (
