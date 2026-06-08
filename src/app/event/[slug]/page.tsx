@@ -126,7 +126,8 @@ export async function generateMetadata(
   const heDate = new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'long', timeZone: 'Asia/Jerusalem' }).format(eventDate);
   const heCity = party.location.name;
   const titleStr = `${party.name} - ${heCity}, ${heDate} | Parties 24/7`;
-  const descStr = plainDescription.substring(0, 160) || `${party.name} ב${heCity}. קנו כרטיסים לאירוע ב-Parties 24/7.`;
+  const priceNote = party.ticketPrice ? ` – כרטיסים מ-${party.ticketPrice} ₪` : '';
+  const descStr = `${party.name} ב${heCity}, ${heDate}${priceNote} | קנו כרטיסים ב-Parties 24/7`;
 
   return {
     title: titleStr,
