@@ -19,7 +19,7 @@ const genreConfig: Record<GenreKey, { title: string; description: string; filter
   },
   "rave-parties": {
     title: "רייבים בישראל",
-    description: "רייבים בתל אביב וברחבי הארץ: מסיבות טכנו, טראנס ואלקטרוניקה במחסנים, חניונים ואתרי טבע. כרטיסים ורשימת אירועים מתעדכנת.",
+    description: "רייבים קרובים בתל אביב ובכל הארץ: טכנו, טראנס ואלקטרוניקה במחסנים, חניונים ואתרי טבע. ליינים, שעות ורכישת כרטיסים – מתעדכן בזמן אמת.",
     filter: (party) =>
       party.tags.some((tag: string) =>
         tag.toLowerCase().includes("rave") ||
@@ -65,6 +65,9 @@ export async function generateMetadata({ params }: { params: { genre: GenreKey }
   return {
     title: config ? `${config.title} | Parties 24/7` : "מסיבות לפי סגנון",
     description: config?.description,
+    alternates: {
+      canonical: `/genre/${genre}`,
+    },
   };
 }
 
