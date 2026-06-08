@@ -39,7 +39,7 @@ async function getData() {
 
 export const metadata: Metadata = {
   title: 'כרטיסים למסיבות, פסטיבלים וחיי לילה | Parties24/7',
-  description: 'כל המסיבות הכי חמות בישראל – תל אביב, חיפה, אילת ועוד. Parties24/7 היא פלטפורמת המסיבות של ישראל.',
+  description: 'מחפשים מסיבה קרובה? כל הרייבים, מסיבות הטכנו, האוס ומיינסטרים בתל אביב וישראל. כרטיסים מוקדמים, אירועי סוף שבוע ולוח מסיבות מעודכן – Parties24/7.',
   alternates: {
     canonical: '/',
     languages: { 'he-IL': '/' },
