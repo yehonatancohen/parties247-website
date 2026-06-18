@@ -89,6 +89,13 @@ const categoryPaths = [
   '/weekend-parties',
   '/thursday-parties',
   '/day/today',
+  '/day/friday',
+  '/day/weekend',
+  '/day/thursday',
+
+  // Magazine & content
+  '/articles',
+  '/about',
 
   // SEO content pages
   '/tel-aviv-weekend-2026',

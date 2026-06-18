@@ -51,7 +51,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const slug = createCarouselSlug(carousel.title);
   
   return {
-    title: `${carousel.title} | Parties247`,
+    title: carousel.title,
     description: `כל המסיבות בקרוסלת "${carousel.title}". הצטרפו לרייב הבא שלכם.`,
     alternates: {
       canonical: `/carousels/${slug}`,

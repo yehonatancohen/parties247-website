@@ -5,8 +5,8 @@ import { BASE_URL } from '../../data/constants';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'המגזין - Parties 24/7',
-  description: 'כל הכתבות והעדכונים החמים',
+  title: 'המגזין | מדריכי מסיבות וחיי לילה בישראל',
+  description: 'מדריכי מסיבות, טיפים לרייב ראשון, מועדוני טכנו בתל אביב וכתבות על סצנת חיי הלילה בישראל – הכל במקום אחד.',
   alternates: {
     canonical: `${BASE_URL}/articles`,
   },
