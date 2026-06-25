@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import PartyGrid from "@/components/PartyGrid";
-import { createCarouselSlug } from "@/lib/carousels";
+import { findHotNowCarousel } from "@/lib/carousels";
 import { findTaxonomyConfig, filterPartiesByTaxonomy } from "@/data/taxonomy";
 import { getCarousels, getParties } from "@/services/api";
 import { BASE_URL } from "@/data/constants";
@@ -48,12 +48,10 @@ export default async function ClubPage({ params }: { params: { slug: string } })
 
   const filteredParties = filterPartiesByTaxonomy(parties, config!);
 
-  const hotNowCarousel = carousels.find((carousel) => {
-    const carouselSlug = createCarouselSlug(carousel.title);
-    return carouselSlug === "hot-now" || carouselSlug.includes("hot") || carouselSlug.includes("חם-עכשיו");
-  });
+  const hotNowCarousel = findHotNowCarousel(carousels);
 
   const body = config?.body || buildClubBody(config?.label || slug);
+  const faqItems = config?.faq || [];
 
   const itemListJsonLd = {
     '@context': 'https://schema.org',
@@ -68,6 +66,16 @@ export default async function ClubPage({ params }: { params: { slug: string } })
       'url': `${BASE_URL}/event/${p.slug}`,
     })),
   };
+
+  const faqJsonLd = faqItems.length > 0 ? {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqItems.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: { '@type': 'Answer', text: item.answer },
+    })),
+  } : null;
 
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
@@ -84,6 +92,7 @@ export default async function ClubPage({ params }: { params: { slug: string } })
     <div className="space-y-10">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+      {faqJsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />}
       <PartyGrid
         parties={filteredParties}
         hotPartyIds={Array.from(new Set(hotNowCarousel?.partyIds || []))}
@@ -106,6 +115,20 @@ export default async function ClubPage({ params }: { params: { slug: string } })
             ))}
         </div>
       </section>
+
+      {faqItems.length > 0 && (
+        <section className="container mx-auto max-w-4xl rounded-2xl border border-white/10 bg-white/5 p-8 text-jungle-text">
+          <h2 className="text-2xl font-display text-white mb-6">שאלות נפוצות</h2>
+          <div className="space-y-6">
+            {faqItems.map((item) => (
+              <div key={item.question}>
+                <h3 className="text-lg font-bold text-white mb-2">{item.question}</h3>
+                <p className="text-jungle-text/80 leading-relaxed">{item.answer}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

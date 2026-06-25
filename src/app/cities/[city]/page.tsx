@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import PartyGrid from "@/components/PartyGrid";
-import { createCarouselSlug } from "@/lib/carousels";
+import { findHotNowCarousel } from "@/lib/carousels";
 import { getCarousels, getParties } from "@/services/api";
 import BackButton from "@/components/BackButton";
 import { BASE_URL } from "@/data/constants";
@@ -51,9 +51,14 @@ export async function generateMetadata({ params }: { params: { city: string } })
   const decodedSlug = decodeURIComponent(city);
   const cityName = getCityDisplayName(decodedSlug);
 
+  const CITY_META_DESCRIPTIONS: Record<string, string> = {
+    'תל אביב': 'מחפשים מסיבות בתל אביב הלילה? כל הרייבים, מועדוני הטכנו, האוס והמיינסטרים – עם כרטיסים מוקדמים וליינים מעודכנים. Parties 24/7.',
+    'אילת': 'מסיבות ורייבים באילת – הכל במקום אחד. ליינים מעודכנים לחופשה, כרטיסים מוקדמים ומידע על מועדוני הלילה של אילת. Parties 24/7.',
+  };
+
   return {
     title: `מסיבות ב${cityName} | Parties 24/7`,
-    description: `כל המסיבות, הרייבים והאירועי לילה ב${cityName}. כרטיסים וליינים מעודכנים – Parties 24/7.`,
+    description: CITY_META_DESCRIPTIONS[cityName] ?? `כל המסיבות, הרייבים והאירועי לילה ב${cityName}. כרטיסים וליינים מעודכנים – Parties 24/7.`,
     alternates: {
       canonical: `/cities/${decodedSlug}`,
       languages: { 'he-IL': `/cities/${decodedSlug}` },
@@ -83,10 +88,7 @@ export default async function CityPage({ params }: { params: { city: string } })
     || party.tags.some((tag) => tag.includes(displayCityName)) 
   );
 
-  const hotNowCarousel = carousels.find((carousel) => {
-    const slug = createCarouselSlug(carousel.title);
-    return slug === "hot-now" || slug.includes("hot") || slug.includes("חם-עכשיו");
-  });
+  const hotNowCarousel = findHotNowCarousel(carousels);
 
   // Pass the Hebrew name to the body builder
   const body = buildCityBody(displayCityName);

@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import PartyGrid from '@/components/PartyGrid';
 import * as api from '@/services/api';
-import { createCarouselSlug } from '@/lib/carousels';
+import { findHotNowCarousel } from '@/lib/carousels';
 import { notFound } from 'next/navigation';
 
 // Handle dynamic routes like /all-parties/עמוד/2
@@ -27,16 +27,7 @@ async function getPageData() {
     const futureParties = parties.filter(p => new Date(p.date) >= now);
 
     // Calculate "Hot Now" IDs on the server
-    const hotNowCarousel = carousels.find((carousel) => {
-      const slug = createCarouselSlug(carousel.title);
-      return (
-        slug === "hot-now" ||
-        slug === "חם-עכשיו" ||
-        (slug.includes("hot") && slug.includes("now")) ||
-        slug.includes("חם-עכשיו")
-      );
-    });
-
+    const hotNowCarousel = findHotNowCarousel(carousels);
     const hotPartyIds = hotNowCarousel?.partyIds || [];
 
     return { parties: futureParties, hotPartyIds };

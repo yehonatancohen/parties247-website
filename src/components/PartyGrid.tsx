@@ -53,7 +53,7 @@ export default function PartyGrid({
     weekday: typeof searchParams.weekday === 'string' ? parseInt(searchParams.weekday) : undefined,
   };
 
-  const hotIdsSet = new Set(hotPartyIds);
+  const hotIdsSet = new Set(hotPartyIds.map(id => String(id).trim()));
   const now = new Date();
   const lowercasedTerm = searchTerm.toLowerCase();
 
@@ -176,7 +176,7 @@ export default function PartyGrid({
             <PartyCard
               key={party.id}
               party={party}
-              showDiscountCode={hotIdsSet.has(party.id)}
+              showDiscountCode={hotIdsSet.has(String(party.id).trim())}
             />
           ))}
         </div>

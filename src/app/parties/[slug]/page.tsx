@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import PartyGrid from "@/components/PartyGrid";
-import { createCarouselSlug } from "@/lib/carousels";
+import { findHotNowCarousel } from "@/lib/carousels";
 import { getCarousels, getParties } from "@/services/api";
 import { SPECIFIC_PARTIES_PAGES } from "@/lib/seoparties";
 
@@ -40,12 +40,7 @@ export default async function SpecificPartyPage({ params }: { params: { slug: st
   ]);
 
   // 3. Logic to identify "Hot" parties (visual highlight in the grid)
-  const hotNowCarousel = Array.isArray(carousels)
-    ? carousels.find((carousel: any) => {
-        const cSlug = createCarouselSlug(carousel.title);
-        return cSlug === "hot-now" || cSlug.includes("hot") || cSlug.includes("חם-עכשיו");
-      })
-    : null;
+  const hotNowCarousel = Array.isArray(carousels) ? findHotNowCarousel(carousels) : null;
 
   const hotPartyIds = new Set(hotNowCarousel?.partyIds || []);
 

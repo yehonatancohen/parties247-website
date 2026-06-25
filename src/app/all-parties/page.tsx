@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import PartyGrid from '@/components/PartyGrid';
 import * as api from '@/services/api';
-import { createCarouselSlug } from '@/lib/carousels';
+import { findHotNowCarousel } from '@/lib/carousels';
 
 // Helper function to fetch and prepare data
 // We keep this separate so we can reuse the logic concept, though we'll just call it directly here
@@ -17,14 +17,7 @@ async function getPageData() {
     const futureParties = parties.filter(p => new Date(p.date) >= now);
 
     // Calculate Hot IDs on server
-    const hotNowCarousel = carousels.find((carousel) => {
-      const slug = createCarouselSlug(carousel.title);
-      return (
-        slug === "hot-now" || slug === "חם-עכשיו" ||
-        (slug.includes("hot") && slug.includes("now")) ||
-        slug.includes("חם-עכשיו")
-      );
-    });
+    const hotNowCarousel = findHotNowCarousel(carousels);
 
     return {
       parties: futureParties,
@@ -37,7 +30,7 @@ async function getPageData() {
 }
 
 export const metadata: Metadata = {
-  title: 'כל המסיבות – כרטיסים ורשימה מתעדכנת | Parties 24/7',
+  title: 'כל המסיבות בישראל – כרטיסים ורשימה מתעדכנת | Parties 24/7',
   description: 'כל הליינים בישראל במקום אחד. מצאו כרטיסים למסיבות טכנו, האוס, מיינסטרים ועוד – עם סינון חכם לפי עיר, סגנון ותאריך.',
   alternates: { canonical: '/all-parties', languages: { 'he-IL': '/all-parties' } }
 };

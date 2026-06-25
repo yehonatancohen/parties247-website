@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import PartyGrid from "@/components/PartyGrid";
-import { createCarouselSlug } from "@/lib/carousels";
+import { findHotNowCarousel } from "@/lib/carousels";
 import { getCarousels, getParties } from "@/services/api";
 import { BASE_URL } from "@/data/constants";
 
@@ -61,10 +61,7 @@ export default async function AudiencePage({ params }: { params: { audience: Aud
     getCarousels(),
   ]);
 
-  const hotNowCarousel = carousels.find((carousel) => {
-    const slug = createCarouselSlug(carousel.title);
-    return slug === "hot-now" || slug.includes("hot") || slug.includes("חם-עכשיו");
-  });
+  const hotNowCarousel = findHotNowCarousel(carousels);
 
   const filteredParties = parties.filter(config.filter);
   const hotPartyIds = new Set(hotNowCarousel?.partyIds || []);
