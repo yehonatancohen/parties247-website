@@ -78,6 +78,12 @@ export default async function AllPartiesPage({ searchParams }: { searchParams: {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
       <div className="space-y-10">
+        <section className="container mx-auto max-w-4xl px-4 pt-10 text-center">
+          <h1 className="text-3xl md:text-4xl font-display text-white mb-4">כל המסיבות בישראל</h1>
+          <p className="text-lg text-gray-300 leading-relaxed max-w-2xl mx-auto">
+            הרשימה המלאה של מסיבות, רייבים ואירועי לילה בישראל – מתעדכנת בזמן אמת. סננו לפי עיר, ז'אנר מוזיקה, תאריך או קהל יעד, ורכשו כרטיסים מוקדמים ישירות מהמוכר הרשמי.
+          </p>
+        </section>
         <PartyGrid
           parties={data.parties}
           hotPartyIds={Array.from(new Set(data.hotPartyIds || []))}

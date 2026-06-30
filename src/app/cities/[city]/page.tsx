@@ -43,8 +43,34 @@ const getCityDisplayName = (slug: string) => {
   return CITY_HEBREW_NAMES[normalizedSlug] || formatCityName(slug);
 };
 
+const CITY_BODIES: Record<string, string> = {
+  'תל אביב': `תל אביב היא בירת הלילה של ישראל ואחת הערים התוססות ביותר בתחום המסיבות בעולם. סצנת הלילה מתרכזת בכמה אזורים מרכזיים: שכונת פלורנטין עם מועדוני האנדרגראונד, נמל תל אביב עם הפקות קיץ גדולות, והרחבות הפתוחות לאורך הצפון. בכל לילה שישי ושבת עשרות אירועים מתקיימים במקביל – מרייבים טכנו ועד מסיבות מיינסטרים.\n\nהמועדונים הבולטים של תל אביב פועלים עם ליינים בינלאומיים ומתמחים בז'אנרים שונים: טכנו, האוס, היפ הופ, מיינסטרים ועוד. כרטיסים מוקדמים נמכרים בדרך כלל שבוע עד שבועיים לפני האירוע ומחיר הדלת גבוה משמעותית מ-early bird. אם אתם מגיעים בתחבורה ציבורית, קווי הלילה של תל אביב פועלים בסופי שבוע ומחברים את עיקר האזורים.`,
+
+  'אילת': `אילת היא עיר הבילוי של ישראל – יעד שמושך תיירים ומקומיים לאורך כל השנה. מועדוני הלילה של אילת פזורים לאורך החוף הדרומי, ומציעים מוזיקה חיה, דיג'ייז מובילים ואווירה ייחודית שאי אפשר למצוא בשום מקום אחר בארץ. בין אם אתם מגיעים לחופשת קיץ, לסוף שבוע מהיר או לאירוע מיוחד – תמיד יש מה לעשות בעיר שלא ישנה.\n\nהמועדונים הפופולריים ביותר באילת כוללים הפקות לילה על חוף הים, מסיבות בבריכה ואירועי DJ אינטרנציונליים. עונת השיא נמשכת מאפריל עד ספטמבר, אך גם בחורף ימצאו חובבי הבילוי אירועים איכותיים. כרטיסים לאירועי אילת נמכרים מראש ומומלץ לרכוש כמה ימים לפני האירוע כדי להבטיח כניסה.`,
+};
+
 const buildCityBody = (cityName: string) =>
-  `עמוד מסיבות ${cityName} מרכז את כל מה שצריך כדי לתכנן ערב בעיר: אילו מועדונים פתוחים, איזה ליינים חוזרים ומהן ההפקות החד פעמיות שמגיעות השבוע. פתחנו את הטקסט בתיאור קצר של אזורי הבילוי המרכזיים בעיר, כדי שתדעו אם להתכוונן לדרום התעשייתי, לחוף או למרכז העירוני. כל פסקה מוסיפה עוד פרטים על אפשרויות ההגעה, שעות השיא של הרחבות וטיפים לאיך לסגור כרטיסים בלי להיתקע בתורים.\n\nכדי להגיע ליותר מ-500 תווים אספנו גם עצות על מה לעשות לפני ואחרי המסיבה: איפה לעצור לאכול משהו קטן, איך לשלב בין שתי מסיבות באותו לילה ואיך לבדוק מדיניות כניסה של מועדונים שונים בעיר ${cityName}. אם אתם מגיעים מרחוק, שימו לב להמלצות על קווי לילה, חניונים מאובטחים או שאטלים שמוצעים באירועים גדולים.\n\nהעמוד מחובר גם לעמודי ז׳אנר, קהל יעד וימים ספציפיים, כך שתוכלו לסנן את הרשימה למסיבות טכנו, היפ הופ או ערב חמישי בלבד. המטרה היא לתת לכם תיאור עשיר על העיר ${cityName} לצד כפתורי פעולה ברורים, כדי שתדעו מה מחכה ברחבות עוד לפני שהגעתם.`;
+  CITY_BODIES[cityName] ??
+  `עמוד המסיבות של ${cityName} מרכז את כל האירועים, המועדונים וההפקות המתקיימים בעיר. תמצאו כאן ליינים מעודכנים, כרטיסים מוקדמים ופרטי כניסה לכל האירועים הקרובים – מסורות טכנו ורייבים ועד מסיבות מיינסטרים ואירועי חוף.\n\nסננו לפי תאריך, ז'אנר או קהל יעד כדי למצוא את המסיבה שמתאימה לכם. כרטיסים מוקדמים זולים משמעותית ממחיר הדלת – מומלץ לרכוש מראש לאירועים מבוקשים.`;
+
+const buildCityFaqs = (cityName: string) => [
+  {
+    question: `איפה יש מסיבות ב${cityName}?`,
+    answer: `ב-Parties 24/7 תמצאו את כל המסיבות, הרייבים והאירועים ב${cityName} מעודכנים בזמן אמת. הרשימה כוללת מועדוני לילה, אירועי חוץ וסוגי מוזיקה שונים – עם קישורים ישירים לרכישת כרטיסים.`,
+  },
+  {
+    question: `איך קונים כרטיסים לאירועים ב${cityName}?`,
+    answer: `לחצו על כל אירוע ברשימה ותועברו לדף הרכישה הרשמי. מומלץ לקנות מוקדם – כרטיסי early bird זולים משמעותית ממחיר הדלת, ולאירועים מבוקשים הכרטיסים נגמרים לפני האירוע.`,
+  },
+  {
+    question: `מה גיל הכניסה למסיבות ב${cityName}?`,
+    answer: `ברוב המסיבות גיל הכניסה הוא 18+. חלק מהאירועים פתוחים לגיל 21+ ומעלה. גיל הכניסה המדויק מצוין בכל כרטיס אירוע ברשימה.`,
+  },
+  {
+    question: `מהן המסיבות הכי טובות ב${cityName}?`,
+    answer: `המסיבות הפופולריות ביותר ב${cityName} מסומנות ברשימה. תוכלו לסנן לפי ז'אנר מוזיקה, תאריך ומחיר כדי למצוא את האירוע שמתאים לכם.`,
+  },
+];
 
 export async function generateMetadata({ params }: { params: { city: string } }): Promise<Metadata> {
   const { city } = await params;
@@ -92,6 +118,17 @@ export default async function CityPage({ params }: { params: { city: string } })
 
   // Pass the Hebrew name to the body builder
   const body = buildCityBody(displayCityName);
+  const faqItems = buildCityFaqs(displayCityName);
+
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqItems.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: { '@type': 'Answer', text: item.answer },
+    })),
+  };
 
   const itemListJsonLd = {
     '@context': 'https://schema.org',
@@ -121,6 +158,7 @@ export default async function CityPage({ params }: { params: { city: string } })
     <div className="space-y-10">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
       <div className="container mx-auto px-4 pt-6 md:pt-8">
         <BackButton fallbackHref="/party-discovery" label="חזרה לעמוד החיפוש" />
       </div>
@@ -146,6 +184,20 @@ export default async function CityPage({ params }: { params: { city: string } })
             .map((paragraph) => (
               <p key={paragraph.slice(0, 24)}>{paragraph}</p>
             ))}
+        </div>
+      </section>
+
+      <section className="container mx-auto max-w-4xl px-4 pb-16">
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-8">
+          <h2 className="text-2xl font-display text-white mb-6">שאלות נפוצות על מסיבות ב{displayCityName}</h2>
+          <div className="space-y-6">
+            {faqItems.map((item) => (
+              <div key={item.question}>
+                <h3 className="text-lg font-bold text-white mb-2">{item.question}</h3>
+                <p className="text-jungle-text/80 leading-relaxed">{item.answer}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
     </div>
