@@ -20,7 +20,7 @@ const genreConfig: Record<GenreKey, { title: string; description: string; filter
   },
   "rave-parties": {
     title: "רייבים בישראל",
-    description: "רייבים בתל אביב וברחבי הארץ: מסיבות טכנו, טראנס ואלקטרוניקה במחסנים, חניונים ואתרי טבע. כרטיסים ורשימת אירועים מתעדכנת.",
+    description: "רייבים בישראל – כל הרייבים הקרובים: טכנו, טראנס ואנדרגראונד במחסנים, חניונים ואתרי טבע. כרטיסים וליינים מתעדכנים.",
     filter: (party) =>
       party.tags.some((tag: string) =>
         tag.toLowerCase().includes("rave") ||
