@@ -37,7 +37,23 @@ const nextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920]
   },
 
-  // 2. Configure Hebrew URL Rewrites
+  // 2. Redirect legacy duplicate club pages to the canonical /club/[slug] pages
+  async redirects() {
+    return [
+      {
+        source: '/jimmy-who',
+        destination: '/club/jimmy-who',
+        permanent: true,
+      },
+      {
+        source: '/moon-child',
+        destination: '/club/moon-child',
+        permanent: true,
+      },
+    ];
+  },
+
+  // 3. Configure Hebrew URL Rewrites
   async rewrites() {
     return [
       {

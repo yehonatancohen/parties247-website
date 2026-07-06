@@ -9,14 +9,6 @@ const SITE_NAME = "Parties 24/7";
 const DEFAULT_TITLE = "כרטיסים למסיבות ופסטיבלים";
 const DEFAULT_DESCRIPTION = "פורטל המסיבות והבילויים הגדול בישראל. הזמנת כרטיסים לאירועים הכי שווים.";
 
-const PAGE_DESCRIPTIONS: Record<string, string> = {
-  'club/echo': 'מסיבות ואירועים במועדון Echo תל אביב – ליינים מעודכנים, כרטיסים מוקדמים ופרטי כניסה לכל האירועים הקרובים. Parties 24/7.',
-  'club/jimmy-who': 'אירועים ומסיבות ב-Jimmy Who תל אביב – ליינים, DJים ומחירי כרטיסים לכל ההופעות הקרובות. Parties 24/7.',
-  'club/bahia': 'Bahia Beach Club Herzliya – summer parties, events and tickets on the Herzliya beachfront. כרטיסים ומסיבות קיץ ב-Bahia Beach הרצליה. Parties 24/7.',
-  'genre/rave-parties': 'כל הרייבים בישראל – ליינים טכנו, האוס ואלקטרוני עם כרטיסים מוקדמים. Parties 24/7.',
-  'genre/techno-parties': 'מסיבות טכנו בישראל – ליינים, מועדונים ורייבים אנדרגראונד עם כרטיסים מוקדמים. Parties 24/7.',
-};
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const slug = ((await params).path ?? []).join('/');
 
@@ -36,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const data = await res.json();
 
     const pageTitle = data.h1 ? `${data.h1} | ${SITE_NAME}` : `${DEFAULT_TITLE} | ${SITE_NAME}`;
-    const pageDescription = PAGE_DESCRIPTIONS[slug] ?? DEFAULT_DESCRIPTION;
+    const pageDescription = DEFAULT_DESCRIPTION;
 
     return {
       title: pageTitle,
