@@ -68,9 +68,15 @@ const faqJsonLd = {
   })),
 };
 
-export default async function AllPartiesPage({ searchParams }: { searchParams: { query?: string; ai_filter?: string } }) {
+export default async function AllPartiesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   const data = await getPageData();
-  const { query, ai_filter } = await searchParams;
+  const resolvedSearchParams = await searchParams;
+  const query = typeof resolvedSearchParams.query === 'string' ? resolvedSearchParams.query : undefined;
+  const ai_filter = typeof resolvedSearchParams.ai_filter === 'string' ? resolvedSearchParams.ai_filter : undefined;
 
   if (!data) return <div className="text-center text-white p-10">Error loading parties</div>;
 
@@ -87,6 +93,7 @@ export default async function AllPartiesPage({ searchParams }: { searchParams: {
         <PartyGrid
           parties={data.parties}
           hotPartyIds={Array.from(new Set(data.hotPartyIds || []))}
+          searchParams={resolvedSearchParams}
           title="כל המסיבות"
           description="מצאו את הבילוי הבא שלכם בג'ונגל העירוני"
           syncNavigation

@@ -7,7 +7,7 @@ import { notFound } from 'next/navigation';
 // Handle dynamic routes like /all-parties/עמוד/2
 interface Props {
   params: Promise<{ pageNumber: string }>;
-  searchParams: Promise<{ query?: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 /**
@@ -51,8 +51,11 @@ export const metadata: Metadata = {
 /**
  * 3. MAIN SERVER COMPONENT
  */
-export default async function AllPartiesPaginatedPage({ params }: Props) {
+export default async function AllPartiesPaginatedPage({ params, searchParams }: Props) {
   const { pageNumber } = await params;
+  const resolvedSearchParams = await searchParams;
+  const query = typeof resolvedSearchParams.query === 'string' ? resolvedSearchParams.query : undefined;
+  const ai_filter = typeof resolvedSearchParams.ai_filter === 'string' ? resolvedSearchParams.ai_filter : undefined;
   const data = await getPageData();
 
   if (!data) {
@@ -78,11 +81,14 @@ export default async function AllPartiesPaginatedPage({ params }: Props) {
     <PartyGrid
       parties={data.parties}
       hotPartyIds={Array.from(new Set(data.hotPartyIds || []))}
+      searchParams={resolvedSearchParams}
       currentPage={currentPage}
       title="כל המסיבות"
       description="מצאו את הבילוי הבא שלכם בג'ונגל העירוני"
       syncNavigation
       basePath="/all-parties"
+      aiFilterIds={ai_filter ? ai_filter.split(',') : undefined}
+      aiQuery={query}
     />
   );
 }
