@@ -9,6 +9,7 @@ import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon, WhatsAppIcon } f
 import ShareButtons from "@/components/ShareButtons";
 import DiscountCodeReveal from "@/components/DiscountCodeReveal";
 import RelatedPartyCard from "@/components/RelatedPartyCard";
+import FlyerToPurchaseLink from "@/components/FlyerToPurchaseLink";
 import PurchaseButton from "@/components/PurchaseButton";
 import { PeopleWatching, StickyPurchaseBar } from "@/components/UrgencyComponents";
 import PartyViewTracker from "@/components/PartyViewTracker";
@@ -55,6 +56,25 @@ const getTagIcon = (tag: string) => {
   if (tag === 'לוהט') return <FireIcon className="w-3.5 h-3.5 ml-1" />;
   if (tag === 'ביקוש גבוה') return <PartyPopperIcon className="w-3.5 h-3.5 ml-1" />;
   return null;
+};
+
+// Where a tag chip should send the user — an evergreen taxonomy page when one
+// matches, otherwise the all-parties list filtered to that exact tag.
+const getTagLink = (tag: string): string => {
+  const t = tag.toLowerCase();
+  if (t.includes('טכנו') || t.includes('techno')) return '/genre/techno-music';
+  if (t.includes('האוס') || t.includes('house')) return '/genre/house-music';
+  if (t.includes('מיינסטרים') || t.includes('mainstream') || t.includes('פופ')) return '/genre/mainstream-music';
+  if (t.includes('רייב') || t.includes('rave')) return '/genre/rave-parties';
+  if (t.includes('סטודנט')) return '/audience/student-parties';
+  if (t.includes('חייל')) return '/audience/soldier-parties';
+  if (t.includes('נוער')) return '/audience/teenage-parties';
+  if (t.includes('24+') || t.includes('25+')) return '/audience/24plus-parties';
+  if (t.includes('18')) return '/parties/18-plus-parties-tel-aviv';
+  if (t.includes('תל אביב') || t.includes('tel aviv')) return '/cities/tel-aviv';
+  if (t.includes('חיפה') || t.includes('haifa')) return '/cities/haifa';
+  if (t.includes('אילת') || t.includes('eilat')) return '/cities/eilat';
+  return `/all-parties?tags=${encodeURIComponent(tag)}`;
 };
 
 const getReferralUrl = (originalUrl: string, partyReferral?: string, defaultReferral?: string): string => {
@@ -258,18 +278,21 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
         {/* ═══════════════════════════════════════════════════
             SECTION 1: FULL PARTY FLYER / IMAGE
         ═══════════════════════════════════════════════════ */}
-        <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl mb-8">
+        <FlyerToPurchaseLink
+          ariaLabel={`לכרטיסים ל${party.name}`}
+          className="block rounded-2xl overflow-hidden border border-white/10 shadow-2xl mb-8 transition-transform duration-300 active:scale-[0.98]"
+        >
           <Image
             src={party.imageUrl}
             alt={party.name}
             title={party.name}
-            className="w-full h-auto object-contain bg-black select-none pointer-events-none"
+            className="w-full h-auto object-contain bg-black"
             width={800}
             height={1000}
             priority
             sizes="(max-width: 768px) 100vw, 720px"
           />
-        </div>
+        </FlyerToPurchaseLink>
 
         {/* ═══════════════════════════════════════════════════
             SECTION 2: PARTY NAME + TAGS + SOCIAL PROOF
@@ -279,14 +302,15 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
           {party.tags.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-4">
               {party.tags.map(tag => (
-                <span
+                <Link
                   key={tag}
-                  title={`תגית: ${tag}`}
-                  className={`${getTagColor(tag)} text-xs font-medium px-2.5 py-1 rounded border flex items-center w-fit pointer-events-none select-none`}
+                  href={getTagLink(tag)}
+                  title={`עוד מסיבות ${tag}`}
+                  className={`${getTagColor(tag)} text-xs font-medium px-2.5 py-1 rounded border flex items-center w-fit transition-colors hover:brightness-125`}
                 >
                   {getTagIcon(tag)}
                   {tag}
-                </span>
+                </Link>
               ))}
             </div>
           )}

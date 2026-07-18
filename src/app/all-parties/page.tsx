@@ -1,7 +1,22 @@
 import { Metadata } from 'next';
 import PartyGrid from '@/components/PartyGrid';
+import PartyCard from '@/components/PartyCard';
 import * as api from '@/services/api';
 import { findHotNowCarousel } from '@/lib/carousels';
+
+// Parties happening between now and the end of the coming Saturday (Israel weekend).
+function getWeekendParties(parties: { date: string }[]) {
+  const now = new Date();
+  const endOfSaturday = new Date(now);
+  endOfSaturday.setDate(now.getDate() + ((6 - now.getDay() + 7) % 7));
+  endOfSaturday.setHours(23, 59, 59, 999);
+  return parties
+    .filter(p => {
+      const d = new Date(p.date);
+      return d >= now && d <= endOfSaturday;
+    })
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+}
 
 // Helper function to fetch and prepare data
 // We keep this separate so we can reuse the logic concept, though we'll just call it directly here
@@ -90,6 +105,24 @@ export default async function AllPartiesPage({
             הרשימה המלאה של מסיבות, רייבים ואירועי לילה בישראל – מתעדכנת בזמן אמת. סננו לפי עיר, ז'אנר מוזיקה, תאריך או קהל יעד, ורכשו כרטיסים מוקדמים ישירות מהמוכר הרשמי.
           </p>
         </section>
+
+        {(() => {
+          const weekendParties = getWeekendParties(data.parties) as typeof data.parties;
+          if (weekendParties.length < 3) return null;
+          return (
+            <section className="container mx-auto px-4">
+              <h2 className="text-2xl font-display text-white mb-4 text-right">הסופ״ש הקרוב 🔥</h2>
+              <div className="flex gap-4 overflow-x-auto pb-2" dir="rtl">
+                {weekendParties.slice(0, 6).map(party => (
+                  <div key={party.id} className="w-44 sm:w-56 flex-shrink-0">
+                    <PartyCard party={party} />
+                  </div>
+                ))}
+              </div>
+            </section>
+          );
+        })()}
+
         <PartyGrid
           parties={data.parties}
           hotPartyIds={Array.from(new Set(data.hotPartyIds || []))}

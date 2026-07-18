@@ -6,6 +6,7 @@ import Image from "next/image";
 import SocialsCta from "@/components/SocialsCta";
 import { createCarouselSlug } from "@/lib/carousels";
 import PartyCarousel from "@/components/HotEventsCarousel";
+import TrustBand from "@/components/TrustBand";
 import { Carousel, Party } from "@/data/types";
 
 const HERO_IMAGE_URL =
@@ -302,7 +303,9 @@ export default function HomeClient({ initialParties = [], initialCarousels = [] 
               priority={index === 0}
             />
 
-            {/* Quick Search section removed */}
+            {/* Trust band right after the first carousel — Clarity shows only ~28%
+                of visitors scroll deep enough to see it below all carousels */}
+            {index === 0 && <TrustBand />}
           </React.Fragment>
         ))}
 
