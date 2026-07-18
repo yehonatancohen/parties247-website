@@ -1,7 +1,7 @@
 # parties247.co.il — SEO & GEO Roadmap
 
-**Last updated:** 2026-07-06
-**Data range analyzed:** 2026-06-06 → 2026-07-05
+**Last updated:** 2026-07-18
+**Data range analyzed:** 2026-06-18 → 2026-07-16
 
 ---
 
@@ -9,18 +9,18 @@
 
 | Metric | Value | Trend |
 |---|---|---|
-| Total Clicks (30d) | 219 | ↑ +30% vs last period |
-| Total Impressions (30d) | 4,447 | ↑ +25% vs last period |
-| Avg CTR | ~4.9% | ↑ Up from 4.7% |
-| Avg Position | trending 10–16 (was 20–35 early June) | ↑ Improving |
-| Sitemap Pages Submitted | 150 | ↓ from 173 — watch next cycle, not yet critical |
-| Sitemap Pages Indexed | 0 (API) | → Known API quirk; confirm against GSC dashboard next cycle |
+| Total Clicks (30d) | ~441 | ↑ Best day on record 2026-07-16: 47 clicks |
+| Total Impressions (30d) | ~7,650 | ↑ Two straight 600+ impression days |
+| Avg CTR | ~5.8% | ↑ Up from 5.6% |
+| Avg Position | ~8–15 (best day 8.3) | ↑ Improving |
+| Sitemap Pages Submitted | 194, 0 errors | → Down from 207; normal event-page churn |
+| Sitemap Pages Indexed | 0 (API) | → Known API quirk; trust GSC dashboard |
 
 ---
 
-## Sitemap Status — Watch
+## Sitemap Status — OK
 
-Submitted URL count dropped from 173 → 150. The GSC API's `list_sitemaps` tool still reports `indexed: 0`, consistent with the known API quirk noted previously (trust the GSC dashboard number, which wasn't rechecked this cycle). Re-verify the dashboard number and investigate the submitted-count drop next cycle if it continues.
+Submitted URL count 194 (down from 207 — expected churn as event pages expire), 0 errors/warnings, last downloaded 2026-07-17. The API's `indexed: 0` remains the known quirk — trust the GSC dashboard.
 
 ---
 
@@ -28,31 +28,34 @@ Submitted URL count dropped from 173 → 150. The GSC API's `list_sitemaps` tool
 
 | Page | Clicks | Impressions | CTR | Avg Position |
 |---|---|---|---|---|
-| Homepage (`/`) | 56 | 600 | 9.3% | 11.4 |
-| `/genre/rave-parties` | 11 | 103 | 10.7% | 10.1 |
-| `/parties/18-plus-parties-tel-aviv` | 10 | 113 | 8.8% | 13.4 |
-| `/event/revival-summer-festival` | 9 | 126 | 7.1% | 7.2 |
-| `/all-parties` | 4 | 107 | 3.7% | 43.2 |
-| `/cities/eilat` | 2 | 97 | 2.1% | 33.7 |
-| `/club/echo` | 2 | 92 | 2.2% | 17.4 |
+| Homepage (`/`) | 84 | 927 | 9.1% | 10.0 |
+| `/parties/18-plus-parties-tel-aviv` | 22 | 237 | 9.3% | 7.5 |
+| `/event/revival-summer-festival` | 17 | 261 | 6.5% | 6.9 |
+| `/genre/rave-parties` | 14 | 152 | 9.2% | 7.6 |
+| `/parties/techno-parties-weekend` | 6 | 29 | 20.7% | 13.8 |
+| `/cities/eilat` | 5 | 144 | 3.5% | 25.5 |
 
-Individual event pages now generating strong traffic (6 events ranked, CTR 7–32%).
+Event pages are now the traffic engine: World Cup viewing events, pub crawls and weekly ליינים pages fill most of the top-20 with CTRs of 7–46% at positions 4–9.
 
 ### Quick Win Opportunities
 
-**`/club/jimmy-who`** — Still 0 clicks across ~130 combined impressions this cycle despite the 2026-07-02 meta rewrite. Root cause found 2026-07-06: a legacy duplicate page at `/jimmy-who` (older, generic title/description) was cannibalizing the same brand queries. Deleted the duplicate + added a 301 redirect to `/club/jimmy-who`. Monitor next cycle for whether consolidating signal finally converts clicks.
+**`/club/jimmy-who`** — The 301 consolidation worked for ranking signal: all brand queries now credit `/club/jimmy-who` and impressions roughly tripled to ~340 (biggest: "גימי הו" 101 impressions, pos 10.1). But CTR is still ~0% (1 click). Diagnosis: the snippet loses to the official Instagram/Google Maps results, and it sold tickets while searchers want practical info. 2026-07-17: description rewritten around location (רוטשילד), hours, weekly lineup and entry age; Hebrew typos in the body fixed. Monitor next cycle.
 
-**`/club/moon-child`** — Still 0 clicks across ~100+ impressions (many misspelled variants: "moonchild", "מונציילד", "מון צ'יילד"). Same cannibalization root cause as Jimmy Who — legacy `/moon-child` duplicate deleted, 301 redirect added to `/club/moon-child` (2026-07-06). Monitor next cycle.
+**`/club/moon-child`** — Same pattern: "moonchild" 83 impressions, pos 10.5, 0 clicks; "moon child" 33 impressions, 1 click. 2026-07-17: description rewritten to practical-info format; fixed an FAQ that literally said "Sun Child" instead of Moon Child. Monitor next cycle.
 
-**`/club/bahia`** — Found to be silently 404ing this cycle: no taxonomy entry existed, so `/club/[slug]` called `notFound()`. The 2026-07-02 "fix" lived in a dead-code catch-all route that was shadowed and never rendered. Added a full taxonomy entry with title/description/body/FAQ (2026-07-06) — this is the page's first real working version. Monitor for indexing and clicks next cycle.
+**`/cities/haifa`** — NEW opportunity: "מסיבות בחיפה" 17 impressions, pos 22.4, 1 click. Page existed with weak, half-English meta ("Haifa Parties – מסיבות בין ההר לים"). 2026-07-17: title/description rewritten to target "מסיבות בחיפה" directly. Watch position over the next 4 weeks.
 
-**`/club/goat`** — NEW page added 2026-07-06. "goat tlv" (13 impressions, position ~30, 0 clicks) was previously fragmented across 4 expiring event pages with no evergreen page to consolidate ranking signal.
+**`/parties/18-plus-parties-tel-aviv`** — TLV query is excellent (pos 6.2, 28% CTR), but the generic "מסיבות 18 פלוס" (26 impressions, pos 8.5) got 0 clicks. 2026-07-17: title/description broadened to "בתל אביב ובכל הארץ" while keeping TLV primary.
 
-**`/genre/rave-parties`** — "רייבים בישראל" holding position ~6, 28.6% CTR when clicked — healthy, no action needed.
+**Homepage English queries** — "parties" + "party" = 86 impressions, 0 clicks (pos 7–15); snippet was Hebrew-only. 2026-07-17: English sentence appended to homepage meta description.
 
-**Homepage** — CTR ~9%, healthy and improving with traffic growth.
+**`/club/echo`** — FIXED ✅: 2 clicks at 22% CTR on "מועדון אקו תל אביב" this cycle after three cycles at 0. Long-tail Echo variants still 0-click but low volume; no further action.
 
-**`/club/echo`** — Still 0 clicks on "echo מועדון" / "echo תל אביב" queries (pos ~10) despite June 30 fix. Unlike Jimmy Who/Moon Child, no duplicate-page issue was found for Echo — Google may simply not be surfacing the updated snippet yet. Continue monitoring.
+**`/club/bahia`** — "bahia herzliya" + "bahia beach herzliya" = 18 impressions at pos ~9, still 0 clicks. Page is new (first working version 2026-07-06); give it another cycle before touching.
+
+**`/club/goat`** — no goat-query impressions surfaced yet this cycle; page is young. Keep monitoring.
+
+**`/club/gagarin`** — starting to appear ("gagarin" pos 25, "גגארין" pos 11.5, low volume). Taxonomy entry already solid; no action.
 
 ---
 
@@ -60,27 +63,31 @@ Individual event pages now generating strong traffic (6 events ranked, CTR 7–3
 
 | Query | Clicks | Impressions | CTR | Position |
 |---|---|---|---|---|
-| מסיבות 18 פלוס תל אביב | 5 | 19 | 26.3% | **7.9** |
-| רייבים בישראל | 2 | 7 | 28.6% | 6.1 |
-| מועדון אקו תל אביב | 2 | 13 | 15.4% | 9.5 |
-| parties | 1 | 54 | 1.96% | 6.4 |
-| מסיבות 18 פלוס | 1 | 17 | 5.9% | 18.8 |
-| jimmy who תל-אביב | 0 | 30 | 0% | 11.2 |
-| jimmy who תל אביב | 0 | 19 | 0% | 8.0 |
-| jimmywho? bar & lounge | 0 | 16 | 0% | 10.4 |
-| גימי הו | 0 | 12 | 0% | 13.6 |
-| רייבים | 0 | 14 | 0% | 7.9 |
-| מסיבות אלכוהול חופשי | 0 | 12 | 0% | 9.6 |
-| echo מועדון | 0 | 8 | 0% | 10.0 |
-| moon child | 0 | 11 | 0% | 9.9 |
-| bahia beach herzliya | 0 | 6 | 0% | 9.7 |
+| מסיבות 18 פלוס תל אביב | 7 | 25 | 28.0% | **6.2** |
+| מסיבות סטודנטים | 3 | 7 | 42.9% | 8.9 |
+| מועדון אקו תל אביב | 2 | 9 | 22.2% | 9.2 |
+| moon child | 1 | 33 | 3.0% | 9.9 |
+| מסיבות אלכוהול חופשי | 1 | 19 | 5.3% | 7.9 |
+| מסיבות בחיפה | 1 | 17 | 5.9% | 22.4 |
+| רייבים בישראל | 1 | 4 | 25% | 6.0 |
+| גימי הו | 0 | 101 | 0% | 10.1 |
+| moonchild | 0 | 83 | 0% | 10.5 |
+| jimmy who תל אביב | 0 | 44 | 0% | 8.0 |
+| parties (EN) | 0 | 43 | 0% | 7.2 |
+| party (EN) | 0 | 43 | 0% | 15.0 |
+| jimmy who תל-אביב | 0 | 36 | 0% | 10.6 |
+| jimmywho? bar & lounge | 0 | 36 | 0% | 10.3 |
+| מסיבות 18 פלוס | 0 | 26 | 0% | 8.5 |
+| bahia herzliya (+beach) | 0 | 18 | 0% | ~9 |
 
 ### Observations
-- "מסיבות 18 פלוס תל אביב": position jumped from 16.7 → 7.9 — nearly page 1, leave it alone
-- "רייבים בישראל": holding at position 6.1, strong 28.6% CTR when clicked
-- Jimmy Who: 77 combined impressions across 4 queries, ALL 0 clicks — biggest quick win, fixed 2026-07-02
-- "parties" (English): 54 impressions, position 6.4, only 1.96% CTR — homepage not compelling to English searchers
-- "moon child" and "bahia beach herzliya": new zero-click opportunities, fixed 2026-07-02
+- "מסיבות 18 פלוס תל אביב": 7.9 → 6.2, CTR 28% — best-performing query, leave alone
+- "מסיבות סטודנטים": 43% CTR at pos 8.9 — Phase 2 target confirmed working
+- Echo converted this cycle — June 30 fix finally paid off
+- Jimmy Who/Moon Child: consolidation tripled impressions but CTR still ~0 — snippet rewritten 2026-07-17 to practical-info format
+- "מסיבות בחיפה" — new city opportunity, meta fixed 2026-07-17
+- English "parties"/"party": 86 impressions 0 clicks — English line added to homepage description 2026-07-17
+- New long-tail signals worth watching: "אפטרים בתל אביב" (pos 14), "מסיבות 35+ תל אביב", "מסיבות שישי" (pos 33)
 
 ---
 
@@ -105,9 +112,14 @@ Individual event pages now generating strong traffic (6 events ranked, CTR 7–3
 - [x] **Improve Bahia meta description** — bilingual English/Hebrew targeting "bahia beach herzliya" English queries (2026-07-02)
 - [x] **Improve rave-parties genre page description** — now leads with "רייבים בישראל" keyword directly (2026-07-02)
 - [x] **Update homepage meta description** — added "אלכוהול חופשי", "18 פלוס", "רייבים" to match zero-click queries (2026-07-02)
-- [ ] **Improve `all-parties` page ranking** — position 43.2, intro text added; monitor for improvement over next 4 weeks
-- [ ] **Improve `cities/eilat` ranking** — position 33.7 (improving from 36.9), real content + FAQ added; monitor next 4 weeks
-- [ ] **Monitor Echo club page** — 0 clicks despite June 30 fix; Google re-crawl expected within 2–3 weeks
+- [x] **Monitor Echo club page** — CONVERTED: 2 clicks at 22% CTR on "מועדון אקו תל אביב" this cycle (2026-07-17)
+- [x] **Rewrite Jimmy Who & Moon Child snippets to practical-info format** — consolidation tripled impressions but CTR stayed ~0%; descriptions now lead with location/hours/lineup instead of ticket-sales language; fixed "Sun Child" FAQ typo and Hebrew body typos (2026-07-17)
+- [x] **Target "מסיבות בחיפה" on the Haifa city page** — replaced half-English title/weak description with direct Hebrew targeting (2026-07-17)
+- [x] **Broaden 18-plus page to generic "מסיבות 18 פלוס"** — title/description now cover "בתל אביב ובכל הארץ" (2026-07-17)
+- [x] **Add English sentence to homepage meta description** — targets 86 zero-click English "parties"/"party" impressions (2026-07-17)
+- [ ] **Improve `cities/eilat` ranking** — position 25.5 (improving: 36.9 → 33.7 → 25.5) and now 5 clicks; keep monitoring, no action needed
+- [ ] **Improve `all-parties` page ranking** — dropped out of top-20 pages this cycle; check indexing status next cycle
+- [ ] **Monitor Bahia & Goat club pages** — both young (first working versions 2026-07-06); Bahia getting impressions at pos ~9, Goat not yet surfacing
 
 ### Phase 2 — Hebrew SEO Optimization
 - [ ] Ensure every page has a Hebrew title tag and meta description
@@ -127,8 +139,10 @@ GEO = optimizing for AI-powered search results (Google AI Overviews, ChatGPT, Pe
 
 ### Phase 4 — Content Expansion
 - [ ] Articles/blog targeting high-volume party search queries in Hebrew
-- [ ] Landing pages for new cities (beyond TLV and Eilat)
-- [ ] Genre pages for underserved genres (techno, hip-hop, etc.)
+- [ ] Landing pages for new cities (beyond TLV and Eilat) — Haifa meta upgraded 2026-07-17; watch "מסיבות בחיפה"
+- [ ] Consider an "אפטרים בתל אביב" page — new query at position 14 with a click, no dedicated page yet
+- [ ] Genre pages for underserved genres (techno, hip-hop, etc.) — techno signals emerging 2026-07-18: "טכנו בתל אביב" (1 click, pos 9.8), "מועדוני טכנו בתל אביב" (10 impressions, pos 42), "מסיבות טכנו תל אביב" (1 click, pos 9)
+- [ ] Consider a "מסיבות 35+" audience page — "מסיבות 35+ תל אביב" got 2 clicks on 2 impressions (pos 41) with no dedicated page (first seen 2026-07-17, confirmed 2026-07-18)
 - [ ] "Best parties this week in [city]" dynamic pages
 
 ### Phase 5 — Link Building & Authority
@@ -159,6 +173,8 @@ For AI search engines to surface parties247.co.il:
 | 2026-06-30 | 30d: 139 clicks (+34%), 3,288 impressions (+13%), CTR 4.2% (up from 3.6%), avg pos ~14-16. Applied 4 changes: (1) per-slug meta descriptions for catch-all club/genre pages; (2) replaced filler `buildCityBody` with real Eilat + TLV copy; (3) FAQPage JSON-LD + FAQ section added to all city pages; (4) server-rendered H1 + intro paragraph added to /all-parties above JS grid. |
 | 2026-07-02 | 30d: 169 clicks (+22%), 3,569 impressions (+9%), CTR 4.7% (up from 4.2%), avg pos ~13–15. "מסיבות 18 פלוס תל אביב" position jumped to 7.9 (from 16.7). Applied 5 changes: (1) Jimmy Who title rewritten to "JimmyWho? Bar & Lounge" + "גימי הו" to fix 77 zero-click impressions; (2) Moon Child description updated (11 impressions, pos 9.9, 0 clicks); (3) Bahia description bilingual for English queries; (4) rave-parties description leads with "רייבים בישראל"; (5) homepage description adds "אלכוהול חופשי / 18 פלוס / רייבים". |
 | 2026-07-06 | 30d: 219 clicks (+30%), 4,447 impressions (+25%), CTR 4.9% (up from 4.7%), position trending 10–16. Root-caused why prior Jimmy Who/Moon Child/Bahia meta fixes hadn't converted to clicks: (1) `/club/bahia` was silently 404ing (no taxonomy entry existed) — added one; (2) legacy duplicate `/jimmy-who` and `/moon-child` standalone pages were cannibalizing the maintained `/club/...` pages for identical brand queries — deleted both, added 301 redirects; (3) added a new `/club/goat` page to consolidate "goat tlv" traffic (13 impressions, pos ~30) previously split across 4 expiring event pages; (4) removed a dead `PAGE_DESCRIPTIONS` map in the catch-all route, shadowed by more specific routes and never rendered. |
+| 2026-07-18 | Scheduled check, one day after the 2026-07-17 cycle. 30d: ~441 clicks, ~7,650 impressions, CTR ~5.8%; 2026-07-16 was the best day on record (47 clicks, avg pos 8.3, 658 impressions). **No website changes applied** — the only quick-win candidates were `/club/moon-child` (rewritten yesterday, needs a cycle to measure) and an already-expired World Cup semifinal event page; everything else is too low-volume to act on. Early positives: "jimmywho" got its first click (1/8, pos 10.5), "moon child" 1 click/45 impressions, Echo now 3 clicks at 23% CTR, "מסיבות בחיפה" position 22.4 → 21.45. New low-volume signals to watch: "מסיבות 35+ תל אביב" (2/2 clicks, pos 41), "טכנו בתל אביב" (1 click, pos 9.8) + "מועדוני טכנו בתל אביב" (pos 42), "מסיבות האוס" (1 click, pos 10.3). Sitemap 207 → 194 submitted, 0 errors (event-page churn, not a regression). |
+| 2026-07-17 | 30d: ~400 clicks (+83%), ~7,100 impressions (+60%), CTR 5.6%, position ~9–15. Sitemap recovered to 207 submitted, 0 errors. Echo CONVERTED (2 clicks, 22% CTR) after 3 cycles at zero. Jimmy Who/Moon Child 301 consolidation tripled impressions (~340 / ~120) but CTR stayed ~0% — losing to official Instagram/Maps results. Applied 5 changes: (1) Jimmy Who description rewritten to practical-info format (רוטשילד location, hours, lineup) + Hebrew body typos fixed; (2) Moon Child description same treatment + fixed FAQ that said "Sun Child"; (3) Haifa city title/description now target "מסיבות בחיפה" directly (17 impressions, pos 22.4); (4) 18-plus page broadened to generic "מסיבות 18 פלוס" (26 impressions, pos 8.5, 0 clicks); (5) English sentence added to homepage meta description for 86 zero-click "parties"/"party" impressions. |
 
 ---
 
