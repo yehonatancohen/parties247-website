@@ -1,13 +1,13 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link'
-import { grantAnalyticsConsent, hasAnalyticsConsent, initializeAnalytics } from '../lib/analytics';
+import { grantAnalyticsConsent, hasAnalyticsConsent, initializeAnalytics, isAdminUser } from '../lib/analytics';
 
 const CookieBanner: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    if (!hasAnalyticsConsent()) {
+    if (!isAdminUser() && !hasAnalyticsConsent()) {
       setIsVisible(true);
     }
   }, []);

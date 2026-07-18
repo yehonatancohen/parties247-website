@@ -9,6 +9,7 @@ import SeoManager from '@/components/SeoManager';
 import * as api from '@/services/api';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import AdminAnalytics from '@/components/AdminAnalytics';
+import { markAdminUser } from '@/lib/analytics';
 
 const JWT_TOKEN_STORAGE = 'jwtAuthToken';
 
@@ -23,6 +24,7 @@ const AdminPage: React.FC = () => {
       if (token) {
         try {
           await api.verifyToken();
+          markAdminUser();
           setAuthStatus('authenticated');
         } catch (error) {
           sessionStorage.removeItem(JWT_TOKEN_STORAGE);
@@ -37,6 +39,7 @@ const AdminPage: React.FC = () => {
   }, []);
 
   const handleAuthSuccess = () => {
+    markAdminUser();
     setAuthStatus('authenticated');
   };
 

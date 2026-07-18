@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
-import { initializeAnalytics, ensureSessionId } from "../lib/analytics";
+import { initializeAnalytics, ensureSessionId, isAdminUser } from "../lib/analytics";
 
 const SESSION_STORAGE_KEY = "parties247.analytics.sessionId";
 
@@ -9,6 +9,11 @@ const AnalyticsTracker = () => {
 
     useEffect(() => {
         if (isInitialized.current) return;
+
+        if (isAdminUser()) {
+            isInitialized.current = true;
+            return;
+        }
 
         try {
             // Ensure a session ID exists first
