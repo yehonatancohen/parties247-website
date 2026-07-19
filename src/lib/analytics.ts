@@ -1,12 +1,15 @@
 import { recordPartyRedirect, recordPartyView, recordVisitor } from '../services/api';
+import { pushToDataLayer } from './gtm';
 
 export const COOKIE_CONSENT_KEY = 'cookieConsent_v2';
 export const ANALYTICS_CONSENT_EVENT = 'analytics:consentGranted';
+export const ADMIN_USER_KEY = 'parties247.isAdminUser';
 
 const SESSION_STORAGE_KEY = 'parties247.analytics.sessionId';
 const VISITOR_RECORDED_KEY = 'parties247.analytics.visitorRecorded';
 
 let fallbackConsentGranted = false;
+let fallbackAdminUser = false;
 
 let analyticsReady = false;
 let fallbackSessionId: string | null = null;
@@ -95,6 +98,49 @@ export const hasAnalyticsConsent = (): boolean => {
   }
 };
 
+export const isAdminUser = (): boolean => {
+  if (typeof window === 'undefined') {
+    return fallbackAdminUser;
+  }
+  try {
+    const flagged = window.localStorage.getItem(ADMIN_USER_KEY) === 'true';
+    if (flagged) {
+      fallbackAdminUser = true;
+    }
+    return flagged;
+  } catch (error) {
+    console.warn('Failed to read admin user flag', error);
+    return fallbackAdminUser;
+  }
+};
+
+/**
+ * Marks the current browser as belonging to a logged-in admin so subsequent
+ * analytics calls (in-house tracking, GTM, Clarity) can exclude this user.
+ */
+export const markAdminUser = (): void => {
+  fallbackAdminUser = true;
+
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(ADMIN_USER_KEY, 'true');
+  } catch (error) {
+    console.warn('Failed to persist admin user flag', error);
+  }
+
+  pushToDataLayer({ event: 'admin_user_identified', isAdminUser: true });
+
+  try {
+    const clarity = (window as unknown as { clarity?: (...args: unknown[]) => void }).clarity;
+    clarity?.('stop');
+  } catch (error) {
+    console.debug('Failed to stop Clarity tracking for admin user', error);
+  }
+};
+
 /**
  * Extract UTM parameters from the current URL query string.
  */
@@ -151,6 +197,10 @@ const buildVisitorContext = (): Record<string, unknown> => {
 };
 
 export const initializeAnalytics = (): boolean => {
+  if (isAdminUser()) {
+    return false;
+  }
+
   if (!analyticsReady) {
     ensureSessionId();
     analyticsReady = true;
@@ -176,7 +226,7 @@ export const initializeAnalytics = (): boolean => {
 };
 
 export const trackPartyRedirect = (partyId: string, partySlug: string): boolean => {
-  if (!partyId || !partySlug) {
+  if (!partyId || !partySlug || isAdminUser()) {
     return false;
   }
 
@@ -191,7 +241,7 @@ export const trackPartyRedirect = (partyId: string, partySlug: string): boolean 
 };
 
 export const trackPartyView = (partyId: string, partySlug: string): boolean => {
-  if (!partyId || !partySlug) {
+  if (!partyId || !partySlug || isAdminUser()) {
     return false;
   }
 
