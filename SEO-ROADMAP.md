@@ -1,7 +1,7 @@
 # parties247.co.il — SEO & GEO Roadmap
 
-**Last updated:** 2026-07-18
-**Data range analyzed:** 2026-06-18 → 2026-07-16
+**Last updated:** 2026-07-21
+**Data range analyzed:** 2026-06-21 → 2026-07-18 (GSC lag: latest available row is 07-18)
 
 ---
 
@@ -9,11 +9,11 @@
 
 | Metric | Value | Trend |
 |---|---|---|
-| Total Clicks (30d) | ~441 | ↑ Best day on record 2026-07-16: 47 clicks |
-| Total Impressions (30d) | ~7,650 | ↑ Two straight 600+ impression days |
-| Avg CTR | ~5.8% | ↑ Up from 5.6% |
-| Avg Position | ~8–15 (best day 8.3) | ↑ Improving |
-| Sitemap Pages Submitted | 194, 0 errors | → Down from 207; normal event-page churn |
+| Total Clicks (28d) | ~504 | ↑ New best day 2026-07-18: 51 clicks |
+| Total Impressions (28d) | ~8,720 | ↑ Three straight 600+ impression days |
+| Avg CTR | ~5.8% | → Flat vs last cycle |
+| Avg Position | ~8–19 (best day 8.3 on 07-16) | → Stable, still noisy day-to-day |
+| Sitemap Pages Submitted | 181, 0 errors | → Down from 194; normal event-page churn |
 | Sitemap Pages Indexed | 0 (API) | → Known API quirk; trust GSC dashboard |
 
 ---
@@ -143,7 +143,7 @@ GEO = optimizing for AI-powered search results (Google AI Overviews, ChatGPT, Pe
 - [ ] Articles/blog targeting high-volume party search queries in Hebrew
 - [ ] Landing pages for new cities (beyond TLV and Eilat) — Haifa meta upgraded 2026-07-17; watch "מסיבות בחיפה"
 - [ ] Consider an "אפטרים בתל אביב" page — new query at position 14 with a click, no dedicated page yet
-- [ ] Genre pages for underserved genres (techno, hip-hop, etc.) — techno signals emerging 2026-07-18: "טכנו בתל אביב" (1 click, pos 9.8), "מועדוני טכנו בתל אביב" (10 impressions, pos 42), "מסיבות טכנו תל אביב" (1 click, pos 9)
+- [x] Genre page for techno already existed (`/genre/techno-music`) but title/description were English-only — Hebrew techno queries ("טכנו בתל אביב", "מועדוני טכנו בתל אביב", "מסיבות טכנו תל אביב") have now shown up two cycles running; retitled to lead with "מסיבות טכנו בתל אביב ובישראל" (2026-07-21). Monitor next cycle.
 - [ ] Consider a "מסיבות 35+" audience page — "מסיבות 35+ תל אביב" got 2 clicks on 2 impressions (pos 41) with no dedicated page (first seen 2026-07-17, confirmed 2026-07-18)
 - [ ] "Best parties this week in [city]" dynamic pages
 
@@ -170,6 +170,7 @@ For AI search engines to surface parties247.co.il:
 
 | Date | What Changed |
 |---|---|
+| 2026-07-21 | Unattended scheduled run. 28d (06-21→07-18, GSC lag): ~504 clicks, ~8,720 impressions, CTR ~5.8% flat, new best day 2026-07-18 (51 clicks, 778 impressions). Jimmy Who/Moon Child rewrites from 07-17 still show ~0 CTR, but GSC lag means only ~1 day of post-fix data has landed — too early to judge, left alone this cycle. Applied 1 change: `/genre/techno-music` title/description were English-only ("Techno Parties in Israel") despite three Hebrew techno queries recurring two cycles running ("טכנו בתל אביב" pos 9.7, "מועדוני טכנו בתל אביב" pos 42, "מסיבות טכנו תל אביב" pos 11.8) — retitled to lead with "מסיבות טכנו בתל אביב ובישראל". Clarity (last 3 days, 07-19→07-21): homepage still weak (20.3% scroll, 45% quick-back on 11 sessions) — redesign work still pending, deferred as before; `/parties/18-plus-parties-tel-aviv` showed 100% quick-back (5/5 sessions) despite 50% scroll depth — new signal, small sample, watch next cycle; event-page dead/rage clicks lower this cycle than last (max 2 dead clicks per page, no rage clicks) — likely just lower traffic on expired World Cup pages rather than a fix, not conclusive. Sitemap 194 → 181 submitted, 0 errors (event-page churn). |
 | 2026-06-25 | Initial analysis. Sitemap ~123 indexed (healthy). Avg position ~20 improving to ~13. |
 | 2026-06-25 | Applied 5 changes: Jimmy Who + Echo meta descriptions rewritten; FAQ section + JSON-LD added to all club pages; Tel Aviv + Eilat city-specific meta descriptions; all-parties title now includes "בישראל". |
 | 2026-06-30 | 30d: 139 clicks (+34%), 3,288 impressions (+13%), CTR 4.2% (up from 3.6%), avg pos ~14-16. Applied 4 changes: (1) per-slug meta descriptions for catch-all club/genre pages; (2) replaced filler `buildCityBody` with real Eilat + TLV copy; (3) FAQPage JSON-LD + FAQ section added to all city pages; (4) server-rendered H1 + intro paragraph added to /all-parties above JS grid. |
