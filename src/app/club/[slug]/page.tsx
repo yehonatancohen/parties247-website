@@ -17,13 +17,13 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 
   if (!config) {
     return {
-      title: "עמוד מועדון לא נמצא | Parties 24/7",
+      title: "עמוד מועדון לא נמצא",
       description: "לא הצלחנו למצוא את עמוד המועדון המבוקש.",
     };
   }
 
   return {
-    title: `${config.title} | Parties 24/7`,
+    title: config.title,
     description: config.description,
     ...(config.ogImage ? { openGraph: { images: [{ url: config.ogImage, width: 1200, height: 630 }] } } : {}),
     alternates: {

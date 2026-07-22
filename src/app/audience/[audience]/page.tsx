@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: { params: { audience: Audienc
   const { audience } = await params;
   const config = audienceConfig[audience];
   return {
-    title: config ? `${config.title} | Parties 24/7` : "מסיבות לפי קהל יעד",
+    title: config ? config.title : "מסיבות לפי קהל יעד",
     description: config?.description,
     alternates: {
       canonical: `/audience/${audience}`,

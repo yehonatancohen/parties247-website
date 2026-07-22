@@ -34,10 +34,10 @@ const rubik = Rubik({
 
 export const metadata: Metadata = {
   title: {
-    default: "Parties247 | מסיבות וחיי לילה בישראל",
-    template: "%s | Parties247",
+    default: "Parties 24/7 | מסיבות וחיי לילה בישראל",
+    template: "%s | Parties 24/7",
   },
-  description: "Parties247 – כל המסיבות, האירועים וחיי הלילה בישראל במקום אחד. תל אביב, חיפה, ירושלים ועוד.",
+  description: "Parties 24/7 – כל המסיבות, האירועים וחיי הלילה בישראל במקום אחד. תל אביב, חיפה, ירושלים ועוד.",
   metadataBase: new URL(BASE_URL),
   icons: {
     icon: [

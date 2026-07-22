@@ -2,7 +2,7 @@ import React from 'react';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'הצהרת מקדמי אירועים | Parties 24/7',
+  title: 'הצהרת מקדמי אירועים',
   description: 'גילוי נאות ושקיפות לגבי אופן פעילות האתר כמקדמי אירועים (Promoters).',
 };
 

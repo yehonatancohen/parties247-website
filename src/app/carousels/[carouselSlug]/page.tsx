@@ -57,7 +57,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       canonical: `/carousels/${slug}`,
     },
     openGraph: {
-      title: `${carousel.title} | Parties247`,
+      title: `${carousel.title} | Parties 24/7`,
       description: `כל המסיבות בקרוסלת "${carousel.title}". הצטרפו לרייב הבא שלכם.`,
       url: `${BASE_URL}/carousels/${slug}`,
     }

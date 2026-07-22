@@ -40,13 +40,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   if (!article) {
     return {
-      title: "הכתבה לא נמצאה | Parties 24/7",
+      title: "הכתבה לא נמצאה",
       description: "לא הצלחנו למצוא את הכתבה שביקשתם.",
     };
   }
 
   return {
-    title: `${article.title} | המגזין של Parties 24/7`,
+    title: `${article.title} | המגזין`,
     description: article.summary,
     alternates: {
       canonical: `${BASE_URL}/articles/${encodeURIComponent(article.slug)}`,

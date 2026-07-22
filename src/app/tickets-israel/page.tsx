@@ -3,7 +3,7 @@ import Link from "next/link";
 import { BASE_URL } from "@/data/constants";
 
 export const metadata: Metadata = {
-  title: "כרטיסים למסיבות בישראל – המדריך לרכישה חכמה | Parties 24/7",
+  title: "כרטיסים למסיבות בישראל – המדריך לרכישה חכמה",
   description:
     "כרטיסים למסיבות בישראל: כיצד לרכוש, מתי לקנות early-bird, והיכן למצוא הנחות. המדריך המלא לכרטיסים לאירועי לילה.",
   alternates: {

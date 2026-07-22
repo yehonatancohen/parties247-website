@@ -3,7 +3,7 @@ import Link from "next/link";
 import { BASE_URL } from "@/data/constants";
 
 export const metadata: Metadata = {
-  title: "מסיבות בתל אביב סוף שבוע 2026 | Parties 24/7",
+  title: "מסיבות בתל אביב סוף שבוע 2026",
   description:
     "מסיבות בתל אביב סוף שבוע 2026 – המדריך המלא: טכנו, היפ-הופ ורייבים. ליינאפ, כרטיסים ומועדונים חמים לכל סוף שבוע בעיר.",
   alternates: {

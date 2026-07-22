@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const config = SPECIFIC_PARTIES_PAGES.find((p) => p.slug === slug);
 
   return {
-    title: config ? `${config.title} | Parties 24/7` : "מסיבות ממוקדות",
+    title: config ? config.title : "מסיבות ממוקדות",
     description: config?.description || "מצאו את המסיבה הבאה שלכם",
     alternates: {
       canonical: `/parties/${slug}`,

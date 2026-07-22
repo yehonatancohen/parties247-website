@@ -2,7 +2,7 @@ import React from 'react';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'מדיניות פרטיות | Parties 24/7',
+  title: 'מדיניות פרטיות',
   description: 'מדיניות הפרטיות והגנת המידע באתר Parties 24/7',
 };
 

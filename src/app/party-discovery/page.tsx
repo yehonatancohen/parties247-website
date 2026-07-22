@@ -58,7 +58,7 @@ const subPageLinks = [
 
 // --- Metadata ---
 export const metadata: Metadata = {
-  title: 'חיפוש מסיבות | ז׳אנרים, ערים ומועדונים | Parties 24/7',
+  title: 'חיפוש מסיבות | ז׳אנרים, ערים ומועדונים',
   description: 'חפשו כרטיסים למסיבות בישראל לפי עיר, ז׳אנר, קהל יעד או מועדון. טכנו, האוס, מיינסטרים, מסיבות נוער ועוד – כל הליינים מתעדכנים בזמן אמת.',
   alternates: {
     canonical: '/party-discovery',

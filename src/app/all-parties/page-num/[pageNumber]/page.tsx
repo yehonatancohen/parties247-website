@@ -41,7 +41,7 @@ async function getPageData() {
  * 2. SEO METADATA
  */
 export const metadata: Metadata = {
-  title: 'כל המסיבות | Parties 24/7',
+  title: 'כל המסיבות',
   description: 'מצאו את הבילוי הבא שלכם בג\'ונגל העירוני. כל המסיבות, הפסטיבלים והאירועים במקום אחד.',
   alternates: {
     canonical: '/all-parties',

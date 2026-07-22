@@ -96,7 +96,7 @@ export async function generateMetadata({ params }: { params: { day: string } }):
   const dayConfigs = getDayConfig(today.toISOString().slice(0, 10), today.getDay());
   const config = dayConfigs[day];
   if (!config) {
-    return { title: "מסיבות קרובות | Parties 24/7" };
+    return { title: "מסיבות קרובות" };
   }
 
   return {

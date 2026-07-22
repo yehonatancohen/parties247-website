@@ -6,7 +6,7 @@ import { SPECIFIC_PARTIES_PAGES } from '@/lib/seoparties';
 export const dynamic = 'force-static';
 
 export const metadata: Metadata = {
-  title: 'מסיבות לפי נושא | Parties 24/7',
+  title: 'מסיבות לפי נושא',
   description:
     'גלו מסיבות לפי סגנון מוזיקה, קהל יעד או מיקום. טכנו בתל אביב, מסיבות לחיילים, אלכוהול חופשי ועוד.',
   alternates: { canonical: '/parties' },

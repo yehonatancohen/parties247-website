@@ -3,7 +3,7 @@ import Link from "next/link";
 import { BASE_URL } from "@/data/constants";
 
 export const metadata: Metadata = {
-  title: "מסיבות יום שישי – המדריך המלא לליל שישי בישראל | Parties 24/7",
+  title: "מסיבות יום שישי – המדריך המלא לליל שישי בישראל",
   description:
     "מסיבות יום שישי בתל אביב, חיפה וכל הארץ: ליינאפ, כרטיסים ומועדוני הלילה הכי חמים. גלו את הערב הכי גדול של השבוע.",
   alternates: {

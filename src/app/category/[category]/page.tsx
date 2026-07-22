@@ -7,7 +7,7 @@ export const revalidate = 300;
 export async function generateMetadata({ params }: { params: { category: string } }): Promise<Metadata> {
   const label = decodeURIComponent(params.category);
   return {
-    title: `מסיבות ${label} | Parties247`,
+    title: `מסיבות ${label}`,
     description: `רשימת מסיבות לקטגוריה ${label}.`,
   };
 }

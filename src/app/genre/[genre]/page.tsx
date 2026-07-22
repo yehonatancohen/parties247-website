@@ -64,7 +64,7 @@ export async function generateMetadata({ params }: { params: { genre: GenreKey }
   const { genre } = await params;
   const config = genreConfig[genre];
   return {
-    title: config ? `${config.title} | Parties 24/7` : "מסיבות לפי סגנון",
+    title: config ? config.title : "מסיבות לפי סגנון",
     description: config?.description,
     alternates: {
       canonical: `/genre/${genre}`,

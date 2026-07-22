@@ -2,7 +2,7 @@ import React from 'react';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'הצהרת נגישות | Parties 24/7',
+  title: 'הצהרת נגישות',
   description: 'הסדרי הנגישות באתר Parties 24/7',
 };
 
