@@ -137,9 +137,6 @@ export function StickyPurchaseBar({
     }, [triggerId]);
 
     const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-        // Track internal analytics
-        trackPartyRedirect(partyId, slug);
-
         // Fire GTM event
         trackPurchaseButtonClick(partyName, partyId);
 
@@ -148,10 +145,16 @@ export function StickyPurchaseBar({
             e.preventDefault();
             setIsLoading(true);
 
-            // Redirect after a short delay
+            // Redirect after a short delay. Track the internal "purchase"
+            // event here, right before the real navigation, not at click
+            // time - so it's only recorded if the user actually stuck
+            // around long enough to be redirected.
             setTimeout(() => {
+                trackPartyRedirect(partyId, slug);
                 window.location.href = href;
-            }, 1500);
+            }, 400);
+        } else {
+            trackPartyRedirect(partyId, slug);
         }
     };
 

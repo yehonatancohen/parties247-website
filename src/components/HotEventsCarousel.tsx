@@ -6,7 +6,6 @@ import Image from "next/image";
 
 import { Party } from '../data/types';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
-import { trackPartyRedirect } from '../lib/analytics';
 
 const ArrowLeft: FC<{ className?: string }> = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
@@ -47,7 +46,6 @@ const CarouselPartyCard: FC<{ party: Party; directUrl: string; priority: boolean
     <a
       href={eventPageUrl}
       className="group block outline-none select-none"
-      onClick={() => trackPartyRedirect(party.id, party.slug)}
       draggable="false"
     >
       <div className="relative rounded-xl overflow-hidden shadow-lg transition-all duration-500 ease-in-out border border-wood-brown/50 transform-gpu subpixel-antialiased">

@@ -32,15 +32,21 @@ export default function PurchaseButton({
   }
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    trackPartyRedirect(partyId, slug);
     trackPurchaseButtonClick(partyName, partyId, price);
 
     if (href.includes('go-out.co') || href.includes('go-out.co.il')) {
       e.preventDefault();
       setIsLoading(true);
       setTimeout(() => {
+        // Fire right before the actual navigation, not at click time, so a
+        // "purchase" is only recorded if the user actually stuck around
+        // long enough to be redirected (e.g. didn't back out or background
+        // the tab during the loading screen).
+        trackPartyRedirect(partyId, slug);
         window.location.href = href;
-      }, 1500);
+      }, 400);
+    } else {
+      trackPartyRedirect(partyId, slug);
     }
   };
 
