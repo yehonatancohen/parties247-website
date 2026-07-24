@@ -9,6 +9,7 @@ import SeoManager from '@/components/SeoManager';
 import * as api from '@/services/api';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import AdminAnalytics from '@/components/AdminAnalytics';
+import AdminAuditLog from '@/components/AdminAuditLog';
 import { markAdminUser } from '@/lib/analytics';
 
 const JWT_TOKEN_STORAGE = 'jwtAuthToken';
@@ -59,28 +60,36 @@ const AdminPage: React.FC = () => {
       case 'authenticated':
         // 4. Determine which component to show based on pathname
         const isAnalytics = pathname === '/admin/analytics';
-        
+        const isAuditLog = pathname === '/admin/audit-log';
+
         return (
           <div className="py-8 space-y-6">
             <div className="bg-jungle-surface/60 border border-wood-brown/40 rounded-xl shadow-lg p-3 flex flex-wrap gap-2">
               <NavLink
                 href="/admin"
-                className={getNavLinkClass(pathname === '/admin')} 
+                className={getNavLinkClass(pathname === '/admin')}
               >
                 ניהול קטלוג
               </NavLink>
-              
+
               <NavLink
                 href="/admin/analytics"
                 className={getNavLinkClass(pathname === '/admin/analytics')}
               >
                 אנליטיקס
               </NavLink>
+
+              <NavLink
+                href="/admin/audit-log"
+                className={getNavLinkClass(isAuditLog)}
+              >
+                יומן פעולות
+              </NavLink>
             </div>
 
             {/* 5. Conditional Rendering instead of <Routes> */}
             <div className="mt-4">
-              {isAnalytics ? <AdminAnalytics /> : <AdminDashboard />}
+              {isAnalytics ? <AdminAnalytics /> : isAuditLog ? <AdminAuditLog /> : <AdminDashboard />}
             </div>
           </div>
         );

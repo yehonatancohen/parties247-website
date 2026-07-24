@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import LoadingSpinner from './LoadingSpinner';
 import RecentActivityFeed from './RecentActivityFeed';
 import { getAnalyticsSummary, getDetailedAnalytics, getVisitorAnalytics } from '../services/api';
-import { AnalyticsSummary, DetailedAnalyticsResponse, VisitorAnalyticsResponse, BreakdownItem } from '../data/types';
+import { AnalyticsSummary, AnalyticsSummaryParty, DetailedAnalyticsResponse, VisitorAnalyticsResponse, VisitorRecord, BreakdownItem } from '../data/types';
 import { FireIcon, TicketIcon, MegaphoneIcon } from './Icons';
 
 // --- Helpers ---
@@ -12,6 +12,62 @@ const formatNumber = (num: number) => new Intl.NumberFormat('en-US', { notation:
 const calculateCTR = (views: number, clicks: number) => {
   if (views === 0) return 0;
   return (clicks / views) * 100;
+};
+
+// --- CSV export ---
+const csvEscape = (value: unknown): string => {
+  const str = value === null || value === undefined ? '' : String(value);
+  if (/[",\n]/.test(str)) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
+};
+
+const downloadCsv = (filename: string, headers: string[], rows: (string | number)[][]) => {
+  const lines = [headers, ...rows].map(row => row.map(csvEscape).join(','));
+  const csvContent = '﻿' + lines.join('\r\n'); // BOM for Excel/Hebrew support
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
+const exportPartiesToCsv = (parties: AnalyticsSummaryParty[]) => {
+  const rows = parties.map(p => [
+    p.name,
+    p.slug,
+    p.date ? new Date(p.date).toLocaleDateString('he-IL') : '',
+    p.views,
+    p.redirects,
+    calculateCTR(p.views, p.redirects).toFixed(1) + '%',
+  ]);
+  downloadCsv(
+    `parties-performance-${new Date().toISOString().slice(0, 10)}.csv`,
+    ['שם', 'Slug', 'תאריך', 'צפיות', 'קליקים', 'CTR'],
+    rows,
+  );
+};
+
+const exportVisitorsToCsv = (visitors: VisitorRecord[]) => {
+  const rows = visitors.map(v => [
+    v.timestamp ? new Date(v.timestamp).toLocaleString('he-IL') : '',
+    v.deviceType,
+    v.browser,
+    v.os,
+    v.trafficSource,
+    v.referer || '',
+    v.language,
+  ]);
+  downloadCsv(
+    `visitors-${new Date().toISOString().slice(0, 10)}.csv`,
+    ['זמן', 'מכשיר', 'דפדפן', 'מערכת', 'מקור', 'הפניה', 'שפה'],
+    rows,
+  );
 };
 
 // Icons
@@ -224,6 +280,11 @@ const AdminAnalytics: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [timeFilter, setTimeFilter] = useState<'daily' | 'hourly'>('daily');
   const [visitorRange, setVisitorRange] = useState<'24h' | '7d' | '30d'>('24h');
+  const [visitorPage, setVisitorPage] = useState(0);
+  const VISITOR_PAGE_SIZE = 25;
+  const [partyTableSearch, setPartyTableSearch] = useState('');
+  const [partyTablePage, setPartyTablePage] = useState(0);
+  const PARTY_TABLE_PAGE_SIZE = 20;
 
   const fetchSummary = async () => {
     setIsLoading(true);
@@ -275,6 +336,7 @@ const AdminAnalytics: React.FC = () => {
 
   useEffect(() => {
     if (activeTab === 'visitors') {
+      setVisitorPage(0);
       fetchVisitorAnalytics().catch(() => { });
     }
   }, [activeTab, visitorRange]);
@@ -299,6 +361,24 @@ const AdminAnalytics: React.FC = () => {
       bestConverting: sortedByCTR[0]
     };
   }, [summary]);
+
+  const filteredPartyTableRows = useMemo(() => {
+    if (!stats) return [];
+    const term = partyTableSearch.trim().toLowerCase();
+    if (!term) return stats.sortedByViews;
+    return stats.sortedByViews.filter(p =>
+      p.name.toLowerCase().includes(term) || p.slug.toLowerCase().includes(term)
+    );
+  }, [stats, partyTableSearch]);
+
+  useEffect(() => {
+    setPartyTablePage(0);
+  }, [partyTableSearch]);
+
+  const partyTablePageRows = useMemo(() => {
+    const start = partyTablePage * PARTY_TABLE_PAGE_SIZE;
+    return filteredPartyTableRows.slice(start, start + PARTY_TABLE_PAGE_SIZE);
+  }, [filteredPartyTableRows, partyTablePage]);
 
   // Process chart data from API
   const chartData = useMemo(() => {
@@ -683,9 +763,17 @@ const AdminAnalytics: React.FC = () => {
               {/* Visitor Log Table */}
               {visitorData.visitors.length > 0 && (
                 <div className="bg-gray-900/40 border border-white/5 rounded-2xl p-6">
-                  <h3 className="text-lg text-white font-bold mb-4 flex items-center gap-2">
-                    📋 יומן מבקרים אחרון
-                  </h3>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg text-white font-bold flex items-center gap-2">
+                      📋 יומן מבקרים אחרון
+                    </h3>
+                    <button
+                      onClick={() => exportVisitorsToCsv(visitorData.visitors)}
+                      className="px-3 py-1.5 text-xs bg-white/5 hover:bg-white/10 text-gray-300 rounded-md border border-white/10 transition whitespace-nowrap"
+                    >
+                      📥 ייצוא CSV
+                    </button>
+                  </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
@@ -699,7 +787,7 @@ const AdminAnalytics: React.FC = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {visitorData.visitors.slice(0, 25).map((v, i) => (
+                        {visitorData.visitors.slice(visitorPage * VISITOR_PAGE_SIZE, (visitorPage + 1) * VISITOR_PAGE_SIZE).map((v, i) => (
                           <tr key={i} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                             <td className="py-2 px-3 text-gray-300 font-mono text-xs whitespace-nowrap">
                               {new Date(v.timestamp).toLocaleString('he-IL', {
@@ -739,10 +827,28 @@ const AdminAnalytics: React.FC = () => {
                       </tbody>
                     </table>
                   </div>
-                  {visitorData.visitors.length > 25 && (
-                    <p className="text-gray-500 text-xs text-center mt-3">
-                      מציג 25 מתוך {visitorData.visitors.length} מבקרים
-                    </p>
+                  {visitorData.visitors.length > VISITOR_PAGE_SIZE && (
+                    <div className="flex items-center justify-between mt-3">
+                      <p className="text-gray-500 text-xs">
+                        מציג {visitorPage * VISITOR_PAGE_SIZE + 1}-{Math.min((visitorPage + 1) * VISITOR_PAGE_SIZE, visitorData.visitors.length)} מתוך {visitorData.visitors.length} מבקרים
+                      </p>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => setVisitorPage(p => Math.max(0, p - 1))}
+                          disabled={visitorPage === 0}
+                          className="px-3 py-1 text-xs bg-white/5 hover:bg-white/10 text-gray-300 rounded-md border border-white/10 transition disabled:opacity-30 disabled:cursor-not-allowed"
+                        >
+                          הקודם
+                        </button>
+                        <button
+                          onClick={() => setVisitorPage(p => ((p + 1) * VISITOR_PAGE_SIZE < visitorData.visitors.length ? p + 1 : p))}
+                          disabled={(visitorPage + 1) * VISITOR_PAGE_SIZE >= visitorData.visitors.length}
+                          className="px-3 py-1 text-xs bg-white/5 hover:bg-white/10 text-gray-300 rounded-md border border-white/10 transition disabled:opacity-30 disabled:cursor-not-allowed"
+                        >
+                          הבא
+                        </button>
+                      </div>
+                    </div>
                   )}
                 </div>
               )}
@@ -778,9 +884,27 @@ const AdminAnalytics: React.FC = () => {
 
           {/* All Parties Table - Full Detail */}
           <div className="bg-gray-900/40 border border-white/5 rounded-2xl p-6">
-            <h3 className="text-lg text-white font-bold mb-4 flex items-center gap-2">
-              📋 כל האירועים - טבלת ביצועים
-            </h3>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+              <h3 className="text-lg text-white font-bold flex items-center gap-2">
+                📋 כל האירועים - טבלת ביצועים
+              </h3>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={partyTableSearch}
+                  onChange={(e) => setPartyTableSearch(e.target.value)}
+                  placeholder="חיפוש לפי שם או slug..."
+                  className="bg-white/5 border border-white/10 text-gray-200 text-sm rounded-md px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-jungle-accent w-full sm:w-56"
+                />
+                <button
+                  onClick={() => exportPartiesToCsv(filteredPartyTableRows)}
+                  disabled={filteredPartyTableRows.length === 0}
+                  className="px-3 py-1.5 text-xs bg-white/5 hover:bg-white/10 text-gray-300 rounded-md border border-white/10 transition disabled:opacity-30 disabled:cursor-not-allowed whitespace-nowrap"
+                >
+                  📥 ייצוא CSV
+                </button>
+              </div>
+            </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
@@ -794,7 +918,7 @@ const AdminAnalytics: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {stats.sortedByViews.map(party => {
+                  {partyTablePageRows.map(party => {
                     const ctr = calculateCTR(party.views, party.redirects);
                     return (
                       <tr key={party.partyId} className="border-b border-white/5 hover:bg-white/5 transition-colors">
@@ -813,9 +937,37 @@ const AdminAnalytics: React.FC = () => {
                       </tr>
                     );
                   })}
+                  {partyTablePageRows.length === 0 && (
+                    <tr>
+                      <td colSpan={6} className="py-6 text-center text-gray-500">לא נמצאו אירועים תואמים</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
+            {filteredPartyTableRows.length > PARTY_TABLE_PAGE_SIZE && (
+              <div className="flex items-center justify-between mt-3">
+                <p className="text-gray-500 text-xs">
+                  מציג {partyTablePage * PARTY_TABLE_PAGE_SIZE + 1}-{Math.min((partyTablePage + 1) * PARTY_TABLE_PAGE_SIZE, filteredPartyTableRows.length)} מתוך {filteredPartyTableRows.length} אירועים
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setPartyTablePage(p => Math.max(0, p - 1))}
+                    disabled={partyTablePage === 0}
+                    className="px-3 py-1 text-xs bg-white/5 hover:bg-white/10 text-gray-300 rounded-md border border-white/10 transition disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    הקודם
+                  </button>
+                  <button
+                    onClick={() => setPartyTablePage(p => ((p + 1) * PARTY_TABLE_PAGE_SIZE < filteredPartyTableRows.length ? p + 1 : p))}
+                    disabled={(partyTablePage + 1) * PARTY_TABLE_PAGE_SIZE >= filteredPartyTableRows.length}
+                    className="px-3 py-1 text-xs bg-white/5 hover:bg-white/10 text-gray-300 rounded-md border border-white/10 transition disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    הבא
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Best Converting vs Needs Improvement */}

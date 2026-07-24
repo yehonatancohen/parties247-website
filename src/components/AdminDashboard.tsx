@@ -299,6 +299,8 @@ const AdminDashboard: React.FC = () => {
   const [showArchived, setShowArchived] = useState(false);
   const [partySearchTerm, setPartySearchTerm] = useState('');
   const [partySort, setPartySort] = useState<{ key: 'date' | 'name', direction: 'asc' | 'desc' }>({ key: 'date', direction: 'asc' });
+  const [activePartiesPage, setActivePartiesPage] = useState(0);
+  const ACTIVE_PARTIES_PAGE_SIZE = 15;
 
   const [promotionMessages, setPromotionMessages] = useState<Record<string, PromotionMessage>>({});
   const [isRefreshingCovers, setIsRefreshingCovers] = useState(false);
@@ -355,6 +357,15 @@ const AdminDashboard: React.FC = () => {
 
     return result;
   }, [activeParties, partySearchTerm, partySort]);
+
+  useEffect(() => {
+    setActivePartiesPage(0);
+  }, [partySearchTerm, partySort]);
+
+  const activePartiesPageItems = useMemo(() => {
+    const start = activePartiesPage * ACTIVE_PARTIES_PAGE_SIZE;
+    return filteredAndSortedParties.slice(start, start + ACTIVE_PARTIES_PAGE_SIZE);
+  }, [filteredAndSortedParties, activePartiesPage]);
 
   const sortedArchivedParties = useMemo(() =>
     [...archivedParties].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
@@ -1108,8 +1119,31 @@ const AdminDashboard: React.FC = () => {
             </div>
           </div>
           <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2">
-            {filteredAndSortedParties.map(party => <PartyListItem key={party.id} party={party} />)}
+            {activePartiesPageItems.map(party => <PartyListItem key={party.id} party={party} />)}
           </div>
+          {filteredAndSortedParties.length > ACTIVE_PARTIES_PAGE_SIZE && (
+            <div className="flex items-center justify-between mt-2">
+              <p className="text-xs text-jungle-text/60">
+                {activePartiesPage * ACTIVE_PARTIES_PAGE_SIZE + 1}-{Math.min((activePartiesPage + 1) * ACTIVE_PARTIES_PAGE_SIZE, filteredAndSortedParties.length)} מתוך {filteredAndSortedParties.length}
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setActivePartiesPage(p => Math.max(0, p - 1))}
+                  disabled={activePartiesPage === 0}
+                  className="px-3 py-1 text-xs bg-jungle-deep hover:bg-jungle-deep/70 text-jungle-text/80 rounded-md border border-wood-brown transition disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  Prev
+                </button>
+                <button
+                  onClick={() => setActivePartiesPage(p => ((p + 1) * ACTIVE_PARTIES_PAGE_SIZE < filteredAndSortedParties.length ? p + 1 : p))}
+                  disabled={(activePartiesPage + 1) * ACTIVE_PARTIES_PAGE_SIZE >= filteredAndSortedParties.length}
+                  className="px-3 py-1 text-xs bg-jungle-deep hover:bg-jungle-deep/70 text-jungle-text/80 rounded-md border border-wood-brown transition disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
 
           <div className="mt-4">
             <button onClick={() => setShowArchived(!showArchived)} className="w-full text-left text-jungle-accent font-semibold p-2 rounded-md hover:bg-jungle-deep flex items-center justify-between">

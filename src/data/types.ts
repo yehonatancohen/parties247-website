@@ -137,10 +137,23 @@ export interface RecentActivityEvent {
   partyId?: string;
   timestamp: string;
   details?: string;
+  device?: string;
+  source?: string;
 }
 
 export interface RecentActivityResponse {
   events: RecentActivityEvent[];
+  total: number;
+  hasMore: boolean;
+}
+
+export interface RecentActivityFilters {
+  types?: Array<'view' | 'purchase' | 'visit'>;
+  devices?: string[];
+  sources?: string[];
+  limit?: number;
+  offset?: number;
+  hours?: number;
 }
 
 export interface VisitorRecord {
@@ -173,4 +186,21 @@ export interface VisitorAnalyticsResponse {
   languages: BreakdownItem[];
   topReferrers: BreakdownItem[];
   visitors: VisitorRecord[];
+}
+
+export interface AuditLogEntry {
+  id: string;
+  action: string;
+  targetType?: string | null;
+  targetId?: string | null;
+  ip?: string | null;
+  userAgent?: string | null;
+  details?: Record<string, unknown> | null;
+  timestamp: string;
+}
+
+export interface AuditLogResponse {
+  entries: AuditLogEntry[];
+  total: number;
+  hasMore: boolean;
 }

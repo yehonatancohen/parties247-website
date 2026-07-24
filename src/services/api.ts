@@ -1,4 +1,4 @@
-import { Party, Carousel, AnalyticsSummary, AnalyticsSummaryParty, DetailedAnalyticsResponse, RecentActivityEvent, VisitorAnalyticsResponse } from '../data/types';
+import { Party, Carousel, AnalyticsSummary, AnalyticsSummaryParty, DetailedAnalyticsResponse, RecentActivityResponse, RecentActivityFilters, VisitorAnalyticsResponse, AuditLogResponse } from '../data/types';
 import { SeoPageConfig } from '../lib/seoparties';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
@@ -533,21 +533,37 @@ export const getDetailedAnalytics = async (
   };
 };
 
-export const getRecentActivity = async (): Promise<RecentActivityEvent[]> => {
+export const getRecentActivity = async (
+  filters: RecentActivityFilters = {}
+): Promise<RecentActivityResponse> => {
+  const { types, devices, sources, limit, offset, hours } = filters;
+  const params = new URLSearchParams();
+  if (types && types.length > 0) params.set('type', types.join(','));
+  if (devices && devices.length > 0) params.set('device', devices.join(','));
+  if (sources && sources.length > 0) params.set('source', sources.join(','));
+  if (limit != null) params.set('limit', String(limit));
+  if (offset != null) params.set('offset', String(offset));
+  if (hours != null) params.set('hours', String(hours));
+
+  const query = params.toString();
   try {
-    const response = await fetch(`${ANALYTICS_API_BASE}/recent`, {
+    const response = await fetch(`${ANALYTICS_API_BASE}/recent${query ? `?${query}` : ''}`, {
       headers: { ...getAuthHeader() },
     });
 
     if (response.ok) {
       const data = await response.json();
-      return Array.isArray(data.events) ? data.events : [];
+      return {
+        events: Array.isArray(data.events) ? data.events : [],
+        total: typeof data.total === 'number' ? data.total : 0,
+        hasMore: Boolean(data.hasMore),
+      };
     }
   } catch (error) {
     console.warn("Failed to fetch recent activity from API.", error);
   }
 
-  return [];
+  return { events: [], total: 0, hasMore: false };
 };
 
 export const getVisitorAnalytics = async (
@@ -575,6 +591,35 @@ export const getVisitorAnalytics = async (
     };
   } catch (error) {
     console.error("Critical error in getVisitorAnalytics:", error);
+    throw error;
+  }
+};
+
+export const getAuditLog = async (
+  filters: { actions?: string[]; limit?: number; offset?: number } = {}
+): Promise<AuditLogResponse> => {
+  const { actions, limit, offset } = filters;
+  const params = new URLSearchParams();
+  if (actions && actions.length > 0) params.set('action', actions.join(','));
+  if (limit != null) params.set('limit', String(limit));
+  if (offset != null) params.set('offset', String(offset));
+
+  const query = params.toString();
+  try {
+    const response = await fetch(`${API_URL}/admin/audit-log${query ? `?${query}` : ''}`, {
+      headers: { ...getAuthHeader() },
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.message || 'Failed to fetch audit log');
+
+    return {
+      entries: Array.isArray(data.entries) ? data.entries : [],
+      total: normalizeCount(data.total),
+      hasMore: Boolean(data.hasMore),
+    };
+  } catch (error) {
+    console.error("Critical error in getAuditLog:", error);
     throw error;
   }
 };
