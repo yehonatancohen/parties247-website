@@ -53,6 +53,29 @@ export default async function ClubPage({ params }: { params: { slug: string } })
   const body = config?.body || buildClubBody(config?.label || slug);
   const faqItems = config?.faq || [];
 
+  const venueParty = filteredParties.find((p) => p.location?.address || p.location?.geo);
+
+  const nightClubJsonLd = venueParty ? {
+    '@context': 'https://schema.org',
+    '@type': 'NightClub',
+    'name': config?.label || slug,
+    'url': `${BASE_URL}${config?.path || `/club/${slug}`}`,
+    ...(config?.ogImage ? { 'image': config.ogImage } : {}),
+    'address': {
+      '@type': 'PostalAddress',
+      'streetAddress': venueParty.location.address || venueParty.location.name,
+      'addressLocality': venueParty.location.name,
+      'addressCountry': 'IL',
+    },
+    ...(venueParty.location.geo ? {
+      'geo': {
+        '@type': 'GeoCoordinates',
+        'latitude': venueParty.location.geo.latitude,
+        'longitude': venueParty.location.geo.longitude,
+      },
+    } : {}),
+  } : null;
+
   const itemListJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
@@ -93,6 +116,7 @@ export default async function ClubPage({ params }: { params: { slug: string } })
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       {faqJsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />}
+      {nightClubJsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(nightClubJsonLd) }} />}
       <PartyGrid
         parties={filteredParties}
         hotPartyIds={Array.from(new Set(hotNowCarousel?.partyIds || []))}

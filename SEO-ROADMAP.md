@@ -1,7 +1,7 @@
 # parties247.co.il — SEO & GEO Roadmap
 
-**Last updated:** 2026-07-21
-**Data range analyzed:** 2026-06-21 → 2026-07-18 (GSC lag: latest available row is 07-18)
+**Last updated:** 2026-07-24
+**Data range analyzed:** 2026-06-24 → 2026-07-21 (GSC lag: latest available row is 07-21)
 
 ---
 
@@ -9,18 +9,18 @@
 
 | Metric | Value | Trend |
 |---|---|---|
-| Total Clicks (28d) | ~504 | ↑ New best day 2026-07-18: 51 clicks |
-| Total Impressions (28d) | ~8,720 | ↑ Three straight 600+ impression days |
+| Total Clicks (28d) | ~561 | ↑ Up from ~504 last cycle |
+| Total Impressions (28d) | ~9,660 | ↑ Up from ~8,720 last cycle |
 | Avg CTR | ~5.8% | → Flat vs last cycle |
 | Avg Position | ~8–19 (best day 8.3 on 07-16) | → Stable, still noisy day-to-day |
-| Sitemap Pages Submitted | 181, 0 errors | → Down from 194; normal event-page churn |
-| Sitemap Pages Indexed | 0 (API) | → Known API quirk; trust GSC dashboard |
+| Sitemap Pages Submitted | 189, 0 errors | → Up from 181; normal event-page churn |
+| Sitemap Pages Indexed | 0 (API) | → Known API quirk; `index_inspect` confirms individual pages (jimmy-who, moon-child) are "Submitted and indexed" — trust the GSC dashboard/inspection tool, not the sitemap API field |
 
 ---
 
 ## Sitemap Status — OK
 
-Submitted URL count 194 (down from 207 — expected churn as event pages expire), 0 errors/warnings, last downloaded 2026-07-17. The API's `indexed: 0` remains the known quirk — trust the GSC dashboard.
+Submitted URL count 189 (up from 181 — normal event-page churn), 0 errors/warnings, last downloaded 2026-07-23. The API's `indexed: 0` remains the known quirk — spot-checked via `index_inspect` on `/club/jimmy-who` and `/club/moon-child`, both confirmed "Submitted and indexed" with recent crawl dates (07-20 and 07-23) — trust the GSC dashboard/inspection tool over the sitemap API's `indexed` count.
 
 ---
 
@@ -39,9 +39,9 @@ Event pages are now the traffic engine: World Cup viewing events, pub crawls and
 
 ### Quick Win Opportunities
 
-**`/club/jimmy-who`** — The 301 consolidation worked for ranking signal: all brand queries now credit `/club/jimmy-who` and impressions roughly tripled to ~340 (biggest: "גימי הו" 101 impressions, pos 10.1). But CTR is still ~0% (1 click). Diagnosis: the snippet loses to the official Instagram/Google Maps results, and it sold tickets while searchers want practical info. 2026-07-17: description rewritten around location (רוטשילד), hours, weekly lineup and entry age; Hebrew typos in the body fixed. Monitor next cycle.
+**`/club/jimmy-who`** — Confirmed NOT an indexing problem: `index_inspect` shows the page "Submitted and indexed", last crawled 2026-07-20 (3 days after the 07-17 rewrite, so Google has the current copy). Full 5-day post-rewrite window (07-17→07-21) now in: "גימי הו" still 0/53 clicks/impressions across the window, page-wide only 2/194 clicks (1.0% CTR). Two rewrite cycles (07-02 title, 07-17 practical-info rewrite) have not moved CTR — this is a real signal, not just GSC lag. 2026-07-24: added `NightClub` JSON-LD (address + geo, sourced from real per-event venue data already in the API) to differentiate from the Instagram/Maps results that are winning the SERP. Monitor for rich-result pickup next cycle; if CTR still flat after that, the snippet approach itself needs to change (e.g. price/hours in title) rather than another description rewrite.
 
-**`/club/moon-child`** — Same pattern: "moonchild" 83 impressions, pos 10.5, 0 clicks; "moon child" 33 impressions, 1 click. 2026-07-17: description rewritten to practical-info format; fixed an FAQ that literally said "Sun Child" instead of Moon Child. Monitor next cycle.
+**`/club/moon-child`** — Same diagnosis as Jimmy Who: indexed and freshly crawled (2026-07-23), but "moonchild"/"moon child" still ~0 clicks after the 07-17 rewrite; page-wide 1/185 clicks (0.5% CTR). 2026-07-24: added `NightClub` JSON-LD alongside Jimmy Who for the same reason. Monitor next cycle.
 
 **`/cities/haifa`** — NEW opportunity: "מסיבות בחיפה" 17 impressions, pos 22.4, 1 click. Page existed with weak, half-English meta ("Haifa Parties – מסיבות בין ההר לים"). 2026-07-17: title/description rewritten to target "מסיבות בחיפה" directly. Watch position over the next 4 weeks.
 
@@ -134,7 +134,7 @@ Event pages are now the traffic engine: World Cup viewing events, pub crawls and
 GEO = optimizing for AI-powered search results (Google AI Overviews, ChatGPT, Perplexity).
 
 - [ ] Add **FAQ sections** on key pages (AI engines love structured Q&A)
-- [ ] Add **structured data (Schema.org)** — `Event`, `Organization`, `Place` schemas on event and venue pages
+- [x] Add **structured data (Schema.org)** — `Event` schema already on event pages; `Place`/`NightClub` schema added to all `/club/[slug]` venue pages (2026-07-24), sourced from real address/geo already scraped per-party (no fabricated data)
 - [ ] Write **authoritative summary paragraphs** at the top of city/genre pages (AI engines pull these as snippets)
 - [ ] Add a **"What is parties247?" explainer** on the homepage/about — helps AI engines understand and cite the site
 - [ ] Use **natural language** in page descriptions (not just keywords) — better for LLM-based search
@@ -170,6 +170,7 @@ For AI search engines to surface parties247.co.il:
 
 | Date | What Changed |
 |---|---|
+| 2026-07-24 | Unattended scheduled run. 28d (06-24→07-21, GSC lag): ~561 clicks (up from ~504), ~9,660 impressions (up from ~8,720), CTR ~5.8% flat. Sitemap 181→189 submitted, 0 errors. Root-caused the Jimmy Who/Moon Child stuck-at-0%-CTR problem: `index_inspect` confirms both pages are indexed and freshly crawled (07-20 and 07-23), so two failed rewrite cycles (07-02, 07-17) weren't an indexing or lag issue — the snippet is genuinely losing to Instagram/Maps results in the SERP. Applied 1 change: added `NightClub` JSON-LD structured data (address + geo, sourced from real per-event venue data already present in the API response — not fabricated) to all `/club/[slug]` pages, closing out the Phase 3 "Place schema on venue pages" item; targets Jimmy Who and Moon Child specifically but applies site-wide to every club page with at least one dated event. Noted a manual (non-scheduled-run) commit since last cycle: 2026-07-22 `887be49` fixed a doubled brand-suffix bug in ~20 page titles (unrelated to this cycle, done directly by the site owner). Clarity (last 3 days, 07-21→07-24): homepage still weak (21.6% scroll, 68.8% quick-back on 32 sessions) — redesign work (HomeClient/HotEventsCarousel/SocialsCta) still uncommitted locally, deferred as before; `/all-parties` improved somewhat (39.8% scroll, 55.6% quick-back on 9 sessions, vs 33%/77.8% last cycle) — still weak but trending right direction, no action, small sample; new signal: `/event/club-hop-july-2026` had 9 dead clicks in 6 sessions despite the 07-18 flyer/tag-chip fix — worth a session-recording review next cycle if the pattern repeats on other event pages, not acted on this run (single page, could be event-specific content).  |
 | 2026-07-21 | Unattended scheduled run. 28d (06-21→07-18, GSC lag): ~504 clicks, ~8,720 impressions, CTR ~5.8% flat, new best day 2026-07-18 (51 clicks, 778 impressions). Jimmy Who/Moon Child rewrites from 07-17 still show ~0 CTR, but GSC lag means only ~1 day of post-fix data has landed — too early to judge, left alone this cycle. Applied 1 change: `/genre/techno-music` title/description were English-only ("Techno Parties in Israel") despite three Hebrew techno queries recurring two cycles running ("טכנו בתל אביב" pos 9.7, "מועדוני טכנו בתל אביב" pos 42, "מסיבות טכנו תל אביב" pos 11.8) — retitled to lead with "מסיבות טכנו בתל אביב ובישראל". Clarity (last 3 days, 07-19→07-21): homepage still weak (20.3% scroll, 45% quick-back on 11 sessions) — redesign work still pending, deferred as before; `/parties/18-plus-parties-tel-aviv` showed 100% quick-back (5/5 sessions) despite 50% scroll depth — new signal, small sample, watch next cycle; event-page dead/rage clicks lower this cycle than last (max 2 dead clicks per page, no rage clicks) — likely just lower traffic on expired World Cup pages rather than a fix, not conclusive. Sitemap 194 → 181 submitted, 0 errors (event-page churn). |
 | 2026-06-25 | Initial analysis. Sitemap ~123 indexed (healthy). Avg position ~20 improving to ~13. |
 | 2026-06-25 | Applied 5 changes: Jimmy Who + Echo meta descriptions rewritten; FAQ section + JSON-LD added to all club pages; Tel Aviv + Eilat city-specific meta descriptions; all-parties title now includes "בישראל". |
