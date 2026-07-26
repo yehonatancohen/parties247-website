@@ -50,6 +50,28 @@ const nextConfig = {
         destination: '/club/moon-child',
         permanent: true,
       },
+      // The admin dashboard moved to its own app/subdomain so it stops
+      // polluting this site's analytics (GTM/GA/Clarity).
+      {
+        source: '/admin',
+        destination: 'https://admin.parties247.co.il/',
+        permanent: true,
+      },
+      {
+        source: '/admin/analytics',
+        destination: 'https://admin.parties247.co.il/analytics',
+        permanent: true,
+      },
+      {
+        source: '/admin/audit-log',
+        destination: 'https://admin.parties247.co.il/audit-log',
+        permanent: true,
+      },
+      {
+        source: '/admin/:path*',
+        destination: 'https://admin.parties247.co.il/',
+        permanent: true,
+      },
     ];
   },
 
