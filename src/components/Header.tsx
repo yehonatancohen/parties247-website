@@ -1,8 +1,7 @@
 "use client";
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import NavLink from './NavLink';
 
 const HamburgerIcon = ({ className }: { className?: string }) => (
@@ -19,31 +18,6 @@ const CloseIcon = ({ className }: { className?: string }) => (
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [logoClickCount, setLogoClickCount] = useState(0);
-  const router = useRouter();
-  const clickTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const handleLogoClick = () => {
-    setLogoClickCount(prev => prev + 1);
-
-    if (clickTimeoutRef.current) {
-      clearTimeout(clickTimeoutRef.current);
-    }
-
-    clickTimeoutRef.current = setTimeout(() => {
-      setLogoClickCount(0);
-    }, 2000); // Reset after 2 seconds
-  };
-
-  useEffect(() => {
-    if (logoClickCount === 5) {
-      router.push('/admin');
-      setLogoClickCount(0);
-      if (clickTimeoutRef.current) {
-        clearTimeout(clickTimeoutRef.current);
-      }
-    }
-  }, [logoClickCount, router]);
 
   useEffect(() => {
     // Prevent body scroll when mobile menu is open
@@ -89,7 +63,7 @@ const Header: React.FC = () => {
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center h-20">
             {/* Brand Logo */}
-            <div onClick={handleLogoClick} className="cursor-pointer flex-shrink-0 z-50">
+            <div className="flex-shrink-0 z-50">
                <Link href="/" className="flex items-center">
                  <Image
                    src="https://vjkiztnx7gionfos.public.blob.vercel-storage.com/Partieslogo.PNG"

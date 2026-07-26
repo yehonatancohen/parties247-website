@@ -42,7 +42,21 @@ export default function AllPartiesAISearch({ defaultQuery = '' }: AllPartiesAISe
             // Fetch all parties using the service
             const parties = await getParties();
 
-            // Call the chat API with the search query
+            // A direct name/location match should win outright — don't let the AI
+            // second-guess an exact or partial name the user actually typed.
+            const lowered = searchQuery.trim().toLowerCase();
+            const directMatches = parties.filter((p: any) =>
+                p.name?.toLowerCase().includes(lowered) ||
+                p.location?.name?.toLowerCase().includes(lowered)
+            );
+
+            if (directMatches.length > 0) {
+                router.push(`/all-parties?query=${encodeURIComponent(searchQuery)}`, { scroll: false });
+                return;
+            }
+
+            // No direct match — fall back to AI for natural-language queries
+            // (e.g. "מסיבות טכנו הלילה").
             const chatRes = await fetch('/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -59,18 +73,16 @@ export default function AllPartiesAISearch({ defaultQuery = '' }: AllPartiesAISe
             const chatData = await chatRes.json();
             const suggestedPartyIds = chatData.suggested_party_ids || [];
 
-            // Navigate to all-parties with the AI filter
             if (suggestedPartyIds.length > 0) {
-                router.push(`/all-parties?query=${encodeURIComponent(searchQuery)}&ai_filter=${suggestedPartyIds.join(',')}`);
+                router.push(`/all-parties?query=${encodeURIComponent(searchQuery)}&ai_filter=${suggestedPartyIds.join(',')}`, { scroll: false });
             } else {
-                // No results - show all parties with the query
-                router.push(`/all-parties?query=${encodeURIComponent(searchQuery)}`);
+                router.push(`/all-parties?query=${encodeURIComponent(searchQuery)}`, { scroll: false });
             }
 
         } catch (error) {
             console.error('Search error:', error);
             // On error, just do a regular search
-            router.push(`/all-parties?query=${encodeURIComponent(searchQuery)}`);
+            router.push(`/all-parties?query=${encodeURIComponent(searchQuery)}`, { scroll: false });
         } finally {
             setIsLoading(false);
         }

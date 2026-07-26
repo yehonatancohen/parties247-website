@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
+import Link from 'next/link';
+import Image from 'next/image';
 import PartyGrid from '@/components/PartyGrid';
-import PartyCard from '@/components/PartyCard';
 import * as api from '@/services/api';
 import { findHotNowCarousel } from '@/lib/carousels';
 
@@ -106,23 +107,6 @@ export default async function AllPartiesPage({
           </p>
         </section>
 
-        {(() => {
-          const weekendParties = getWeekendParties(data.parties) as typeof data.parties;
-          if (weekendParties.length < 3) return null;
-          return (
-            <section className="container mx-auto px-4">
-              <h2 className="text-2xl font-display text-white mb-4 text-right">הסופ״ש הקרוב 🔥</h2>
-              <div className="flex gap-4 overflow-x-auto pb-2" dir="rtl">
-                {weekendParties.slice(0, 6).map(party => (
-                  <div key={party.id} className="w-44 sm:w-56 flex-shrink-0">
-                    <PartyCard party={party} />
-                  </div>
-                ))}
-              </div>
-            </section>
-          );
-        })()}
-
         <PartyGrid
           parties={data.parties}
           hotPartyIds={Array.from(new Set(data.hotPartyIds || []))}
@@ -133,6 +117,35 @@ export default async function AllPartiesPage({
           basePath="/all-parties"
           aiFilterIds={ai_filter ? ai_filter.split(',') : undefined}
           aiQuery={query}
+          topSection={(() => {
+            const weekendParties = getWeekendParties(data.parties) as typeof data.parties;
+            if (weekendParties.length < 3) return null;
+            return (
+              <section className="mb-8">
+                <h2 className="text-lg font-display text-white mb-3 text-right">הסופ״ש הקרוב 🔥</h2>
+                <div className="flex gap-3 overflow-x-auto pb-2" dir="rtl">
+                  {weekendParties.slice(0, 8).map(party => (
+                    <Link
+                      key={party.id}
+                      href={`/event/${party.slug}`}
+                      className="group w-24 sm:w-28 flex-shrink-0 text-center"
+                    >
+                      <div className="relative w-full aspect-square rounded-xl overflow-hidden border border-white/10 group-hover:border-jungle-accent/40 transition-colors">
+                        <Image
+                          src={party.imageUrl}
+                          alt={party.name}
+                          fill
+                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                          sizes="112px"
+                        />
+                      </div>
+                      <p className="mt-1.5 text-xs text-white/90 leading-tight line-clamp-2">{party.name}</p>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            );
+          })()}
         />
 
         <section className="container mx-auto max-w-4xl px-4 pb-16">

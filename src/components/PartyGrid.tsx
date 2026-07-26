@@ -23,6 +23,7 @@ interface PartyGridProps {
   syncNavigation?: boolean;
   aiFilterIds?: string[];
   aiQuery?: string;
+  topSection?: React.ReactNode;
 }
 
 export default function PartyGrid({
@@ -39,6 +40,7 @@ export default function PartyGrid({
   syncNavigation = false,
   aiFilterIds,
   aiQuery,
+  topSection,
 }: PartyGridProps) {
 
   const searchTerm = typeof searchParams.query === 'string' ? searchParams.query : '';
@@ -135,6 +137,8 @@ export default function PartyGrid({
           <AllPartiesAISearch defaultQuery={aiQuery} />
         </div>
       )}
+
+      {topSection}
 
       {/* AI Search Results Indicator */}
       {aiFilterSet && aiQuery && (
