@@ -1,7 +1,7 @@
 import { Metadata, ResolvingMetadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { notFound, permanentRedirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { getPartyBySlug, getParties } from "@/services/api";
 import { Party } from "@/data/types";
 import { BRAND_LOGO_URL } from "@/data/constants";
@@ -181,11 +181,12 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
 
   const { party, relatedParties } = data;
 
-  // Once an event's date has passed, its one canonical URL becomes the
-  // archive page — avoids two indexed URLs for the same event.
-  if (new Date(party.date).getTime() < Date.now()) {
-    permanentRedirect(`/archive/${party.slug}`);
-  }
+  // The /event -> /archive redirect for events whose date has passed is
+  // handled in middleware.ts (redirect()/permanentRedirect() from a page
+  // Server Component doesn't produce a real HTTP redirect on this Next.js
+  // version — reproduced with a minimal isolated test page, in both dev and
+  // production builds; the NEXT_REDIRECT signal leaks into the rendered
+  // HTML instead of becoming a 3xx response).
 
   const partyDate = new Date(party.date);
   const formattedDate = new Intl.DateTimeFormat('he-IL', { dateStyle: 'full', timeZone: 'UTC' }).format(partyDate);

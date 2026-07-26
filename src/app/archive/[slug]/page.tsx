@@ -1,7 +1,7 @@
 import { Metadata, ResolvingMetadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { notFound, permanentRedirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { getPartyBySlug, getAllPartiesIncludingPast } from "@/services/api";
 import { Party } from "@/data/types";
 import { BRAND_LOGO_URL, BASE_URL } from "@/data/constants";
@@ -113,12 +113,9 @@ export default async function ArchivedEventPage({ params }: { params: Promise<{ 
 
   const { party, upcomingRelated } = data;
 
-  // An archive URL for an event that hasn't happened yet shouldn't exist —
-  // send it back to the live page instead of showing a "past event" framing
-  // for something still upcoming.
-  if (new Date(party.date).getTime() >= Date.now()) {
-    permanentRedirect(`/event/${party.slug}`);
-  }
+  // The reverse redirect (an /archive URL for a still-upcoming event, back
+  // to /event) is handled in middleware.ts — see the note in
+  // app/event/[slug]/page.tsx for why this can't be done here.
 
   const partyDate = new Date(party.date);
   const formattedDate = new Intl.DateTimeFormat('he-IL', { dateStyle: 'full', timeZone: 'UTC' }).format(partyDate);
