@@ -203,6 +203,20 @@ export const getParties = async (filters?: SeoPageConfig["apiFilters"], includeH
   return parties;
 };
 
+// Same as getParties but without the upcoming=true filter — needed for the
+// archive (past events are kept in the DB, not deleted) and so getPartyBySlug
+// below can still find an event once its date has passed.
+export const getAllPartiesIncludingPast = async (): Promise<Party[]> => {
+  const response = await fetch(`${API_URL}/parties`, {
+    next: { revalidate: 60 },
+  });
+
+  if (!response.ok) throw new Error("Failed to fetch parties");
+
+  const data = await response.json();
+  return data.map(mapPartyToFrontend).filter((party: Party) => party.slug);
+};
+
 // ... (Rest of the file: getPartyBySlug, addParty, etc. remains exactly as you provided) ...
 // Copy the rest of your provided api.ts functions here below getParties
 export const getPartyBySlug = async (slug: string): Promise<Party> => {
@@ -220,9 +234,10 @@ export const getPartyBySlug = async (slug: string): Promise<Party> => {
     }
   }
 
-  // Fallback: Fetch all parties (including hidden ones) and find by slug
-  // This is heavier but ensures we get the full Party object with all fields
-  const allParties = await getParties(undefined, true);
+  // Fallback: Fetch all parties (including hidden and past ones) and find by
+  // slug. This is heavier but ensures we get the full Party object with all
+  // fields, and it's what actually finds past events for the archive.
+  const allParties = await getAllPartiesIncludingPast();
   const party = allParties.find(p => p.slug === slug);
 
   if (!party) {

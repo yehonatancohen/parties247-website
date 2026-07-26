@@ -1,7 +1,7 @@
 import { Metadata, ResolvingMetadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { getPartyBySlug, getParties } from "@/services/api";
 import { Party } from "@/data/types";
 import { BRAND_LOGO_URL } from "@/data/constants";
@@ -180,6 +180,12 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
   }
 
   const { party, relatedParties } = data;
+
+  // Once an event's date has passed, its one canonical URL becomes the
+  // archive page — avoids two indexed URLs for the same event.
+  if (new Date(party.date).getTime() < Date.now()) {
+    permanentRedirect(`/archive/${party.slug}`);
+  }
 
   const partyDate = new Date(party.date);
   const formattedDate = new Intl.DateTimeFormat('he-IL', { dateStyle: 'full', timeZone: 'UTC' }).format(partyDate);

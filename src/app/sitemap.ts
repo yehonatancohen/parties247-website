@@ -26,6 +26,12 @@ const staticPages: MetadataRoute.Sitemap = [
     priority: 0.95,
   },
   {
+    url: `${BASE_URL}/archive`,
+    lastModified: new Date(),
+    changeFrequency: 'daily',
+    priority: 0.6,
+  },
+  {
     url: `${BASE_URL}/party-discovery`,
     lastModified: new Date(),
     changeFrequency: 'weekly',
@@ -122,7 +128,7 @@ const categoryPaths = [
   '/parties/sunset-parties',
 ];
 
-async function fetchUpcomingEvents(): Promise<MetadataRoute.Sitemap> {
+async function fetchEvents(): Promise<MetadataRoute.Sitemap> {
   try {
     const response = await fetch(`${API_URL}/parties`, {
       next: { revalidate: 3600 },
@@ -137,16 +143,17 @@ async function fetchUpcomingEvents(): Promise<MetadataRoute.Sitemap> {
     const now = Date.now();
 
     return events
-      .filter((event) => {
+      .filter((event) => Boolean(event.slug) && Number.isFinite(new Date(event.startsAt || event.date || '').getTime()))
+      .map((event): MetadataRoute.Sitemap[number] => {
         const eventDate = new Date(event.startsAt || event.date || '').getTime();
-        return Number.isFinite(eventDate) && eventDate >= now && Boolean(event.slug);
-      })
-      .map((event) => ({
-        url: `${BASE_URL}/event/${event.slug}`,
-        lastModified: new Date(event.updated_at || event.updatedAt || Date.now()),
-        changeFrequency: 'weekly' as const,
-        priority: 0.8,
-      }));
+        const isPast = eventDate < now;
+        return {
+          url: `${BASE_URL}/${isPast ? 'archive' : 'event'}/${event.slug}`,
+          lastModified: new Date(event.updated_at || event.updatedAt || Date.now()),
+          changeFrequency: isPast ? 'monthly' : 'weekly',
+          priority: isPast ? 0.4 : 0.8,
+        };
+      });
   } catch (error) {
     console.error('Error building dynamic event sitemap:', error);
     return [];
@@ -161,7 +168,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }));
 
-  const eventEntries = await fetchUpcomingEvents();
+  const eventEntries = await fetchEvents();
 
   return [...staticPages, ...categoryEntries, ...eventEntries];
 }
