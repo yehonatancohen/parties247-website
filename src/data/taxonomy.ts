@@ -1059,7 +1059,7 @@ const englishFriendlyTaxonomies: TaxonomyConfig[] = [
     slug: 'jimmy-who',
     path: '/club/jimmy-who',
     label: 'Jimmy Who תל אביב',
-    title: 'JimmyWho? Bar & Lounge תל אביב – גימי הו | כרטיסים ואירועים',
+    title: 'JimmyWho? Bar & Lounge רוטשילד ת"א – גימי הו | שעות פתיחה, שולחן VIP וכרטיסים',
     description: 'גימי הו (JimmyWho? Bar & Lounge) ברוטשילד תל אביב – שעות פתיחה, ליינאפ המסיבות של השבוע, גיל כניסה והזמנת שולחן VIP. כל המידע לפני שיוצאים, מעודכן יומי.',
     intro:
       'Jimmy Who הוא הבר-מועדון שמשלב קוקטיילים מוקפדים עם רחבה שמחה שמנגנת פופ, היפ הופ ורמיקסים ישראליים. המקום האידיאלי לערב חברתי, יום הולדת או פשוט לילה טוב עם חברים. כאן תמצאו את כל האירועים הקרובים, הזמנת שולחנות ומידע על הגעה.',
@@ -1119,7 +1119,7 @@ const englishFriendlyTaxonomies: TaxonomyConfig[] = [
     slug: 'moon-child',
     path: '/club/moon-child',
     label: 'Moon Child Club',
-    title: 'Moon Child תל אביב | Moonchild – כרטיסים ואירועים קרובים',
+    title: 'Moon Child תל אביב | Moonchild – Happy Hour, שולחנות ואירועים קרובים',
     description: 'Moonchild (מון צ׳יילד) תל אביב – שעות פתיחה, האירועים הקרובים, גיל כניסה, הזמנת שולחן ודרכי הגעה. אלקטרוניקה מלודית ואווירה אינטימית – כל הפרטים במקום אחד.',
     intro:
       'Moon Child הוא מועדון קוסמופוליטי ואינטימי עם תאורה רכה כמו אור ירח, סטים אלקטרוניים מלודיים ואווירה שמרגישה כמו סוד שחולקים רק עם המקורבים. מקום שמחבר בין ערב רגוע לרחבה חיה.',
