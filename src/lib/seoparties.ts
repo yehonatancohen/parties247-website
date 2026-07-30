@@ -79,8 +79,8 @@ export const SPECIFIC_PARTIES_PAGES: SeoPageConfig[] = [
   },
   {
     slug: 'parties-in-haifa-and-north',
-    title: 'מסיבות בחיפה ובצפון',
-    description: 'חיי הלילה של הצפון – ממועדונים בחיפה ועד מסיבות טבע בגליל.',
+    title: 'מסיבות בצפון – קריות, עכו והגליל',
+    description: 'חיי הלילה של כל הצפון – מהקריות ועד עכו והגליל. לחיפה עצמה יש מדריך ייעודי משלה.',
     apiFilters: { region: 'צפון' }
   },
   {

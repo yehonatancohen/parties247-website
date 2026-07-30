@@ -60,7 +60,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: `${carousel.title} | Parties 24/7`,
       description: `כל המסיבות בקרוסלת "${carousel.title}". הצטרפו לרייב הבא שלכם.`,
       url: `${BASE_URL}/carousels/${slug}`,
-    }
+    },
+    // Thin, auto-titled duplicate of dedicated city/genre pages (e.g. "תל אביב" carousel
+    // vs /cities/tel-aviv) — was competing with them in the SERP instead of ranking itself.
+    robots: { index: false, follow: true },
   };
 }
 
