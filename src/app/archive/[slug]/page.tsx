@@ -6,6 +6,7 @@ import { getPartyBySlug, getAllPartiesIncludingPast } from "@/services/api";
 import { Party } from "@/data/types";
 import { BRAND_LOGO_URL, BASE_URL } from "@/data/constants";
 import { CalendarIcon, LocationIcon } from "@/components/Icons";
+import FlyerToRelatedLink from "@/components/FlyerToRelatedLink";
 
 export const revalidate = 3600;
 
@@ -195,18 +196,37 @@ export default async function ArchivedEventPage({ params }: { params: Promise<{ 
           </Link>
         </div>
 
-        <div className="block rounded-2xl overflow-hidden border border-white/10 shadow-2xl mb-8 relative">
-          <Image
-            src={party.imageUrl}
-            alt={party.name}
-            title={party.name}
-            className="w-full h-auto object-contain bg-black opacity-80"
-            width={800}
-            height={1000}
-            priority
-            sizes="(max-width: 768px) 100vw, 720px"
-          />
-        </div>
+        {upcomingRelated.length > 0 ? (
+          <FlyerToRelatedLink
+            ariaLabel={`מסיבות קרובות שדומות ל${party.name}`}
+            targetId="upcoming-related"
+            className="block rounded-2xl overflow-hidden border border-white/10 shadow-2xl mb-8 relative transition-transform duration-300 active:scale-[0.98]"
+          >
+            <Image
+              src={party.imageUrl}
+              alt={party.name}
+              title={party.name}
+              className="w-full h-auto object-contain bg-black opacity-80"
+              width={800}
+              height={1000}
+              priority
+              sizes="(max-width: 768px) 100vw, 720px"
+            />
+          </FlyerToRelatedLink>
+        ) : (
+          <div className="block rounded-2xl overflow-hidden border border-white/10 shadow-2xl mb-8 relative">
+            <Image
+              src={party.imageUrl}
+              alt={party.name}
+              title={party.name}
+              className="w-full h-auto object-contain bg-black opacity-80"
+              width={800}
+              height={1000}
+              priority
+              sizes="(max-width: 768px) 100vw, 720px"
+            />
+          </div>
+        )}
 
         <div className="mb-8">
           <span className="inline-block bg-white/5 text-white/60 border border-white/10 px-3 py-1 rounded-full text-xs font-semibold mb-3">
@@ -268,7 +288,7 @@ export default async function ArchivedEventPage({ params }: { params: Promise<{ 
         )}
 
         {upcomingRelated.length > 0 && (
-          <div className="mb-8">
+          <div className="mb-8" id="upcoming-related">
             <h2 className="text-2xl md:text-3xl font-display text-white text-center mb-2">מסיבות קרובות שאולי תאהבו</h2>
             <p className="text-jungle-text/50 text-sm text-center mb-6">אירועים דומים שעדיין ניתן לקנות להם כרטיסים</p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
