@@ -123,6 +123,27 @@ async function fetchPartyData(slug: string) {
   }
 }
 
+// Clarity session recordings (2026-08-02, 5 dead clicks in one session) show users
+// repeatedly tapping the date/time chip expecting it to do something — it was a plain
+// non-interactive div. Turning it into a real "add to calendar" link gives the tap real
+// utility instead of leaving it dead.
+function toGCalUTC(d: Date): string {
+  return d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+}
+
+function buildGoogleCalendarUrl(party: Party, plainDescription: string): string {
+  const start = new Date(party.date);
+  const end = new Date(start.getTime() + 4 * 60 * 60 * 1000);
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: party.name,
+    dates: `${toGCalUTC(start)}/${toGCalUTC(end)}`,
+    details: plainDescription.substring(0, 200),
+    location: party.location.address || party.location.name,
+  });
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
+
 const getWhatsappOgImage = (imageUrl?: string) => {
   if (!imageUrl) return BRAND_LOGO_URL;
   if (imageUrl.includes("_whatsappImage")) return imageUrl;
@@ -343,12 +364,18 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
             QUICK INFO STRIP: Date / Location / Age
         ═══════════════════════════════════════════════════ */}
         <div className="flex flex-wrap gap-3 mb-6" dir="rtl">
-          <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-jungle-surface/60 px-4 py-2.5 text-sm">
+          <a
+            href={buildGoogleCalendarUrl(party, plainDescriptionForLd)}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="הוסיפו ליומן Google"
+            className="flex items-center gap-2 rounded-xl border border-white/10 bg-jungle-surface/60 px-4 py-2.5 text-sm hover:border-jungle-lime/40 hover:bg-jungle-surface transition-colors"
+          >
             <CalendarIcon className="w-4 h-4 text-jungle-lime flex-shrink-0" />
             <span className="text-white font-semibold">{formattedDate}</span>
             <span className="text-jungle-text/60">·</span>
             <span className="text-jungle-text/70">{formattedTime}</span>
-          </div>
+          </a>
           <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-jungle-surface/60 px-4 py-2.5 text-sm">
             <LocationIcon className="w-4 h-4 text-jungle-lime flex-shrink-0" />
             <span className="text-white font-semibold">{party.location.name}</span>
