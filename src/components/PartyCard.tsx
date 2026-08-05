@@ -88,11 +88,9 @@ const PartyCard: React.FC<PartyCardProps> = ({ party, showDiscountCode = false }
             </h3>
           </div>
         </div>
-      </Link>
 
-      {/* Card body */}
-      <div className="p-3 sm:p-4 flex flex-col flex-grow">
-        <div className="flex flex-col gap-1.5 text-jungle-text/80 text-xs sm:text-sm mb-3">
+        {/* Date/location — part of the same link so the area between the image and CTA isn't a dead click zone */}
+        <div className="p-3 sm:p-4 pb-0 flex flex-col gap-1.5 text-jungle-text/80 text-xs sm:text-sm">
           <div className="flex items-center gap-1.5">
             <CalendarIcon className="h-3.5 w-3.5 text-jungle-lime flex-shrink-0" />
             <span className="font-semibold whitespace-nowrap">{formattedDate} · {formattedTime}</span>
@@ -102,7 +100,10 @@ const PartyCard: React.FC<PartyCardProps> = ({ party, showDiscountCode = false }
             <span className="truncate">{party.location.name}</span>
           </div>
         </div>
+      </Link>
 
+      {/* Card body */}
+      <div className="px-3 sm:px-4 pb-3 sm:pb-4 pt-3 flex flex-col flex-grow">
         {showDiscountCode && <DiscountCodeReveal className="mb-3" />}
 
         <Link
