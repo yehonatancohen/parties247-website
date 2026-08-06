@@ -144,6 +144,16 @@ function buildGoogleCalendarUrl(party: Party, plainDescription: string): string 
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }
 
+// Same pattern as the date/time chip above: Clarity session recording (2026-08-06,
+// mess-jerusalem event page) showed 4 dead clicks in ~2s on this chip before the user
+// gave up and just selected the text — a plain non-interactive div next to a real link
+// invites the same tap. Google Maps search URL from the same address data already used
+// in the Place JSON-LD above.
+function buildGoogleMapsUrl(party: Party): string {
+  const query = party.location.address || party.location.name;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+}
+
 const getWhatsappOgImage = (imageUrl?: string) => {
   if (!imageUrl) return BRAND_LOGO_URL;
   if (imageUrl.includes("_whatsappImage")) return imageUrl;
@@ -376,10 +386,16 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
             <span className="text-jungle-text/60">·</span>
             <span className="text-jungle-text/70">{formattedTime}</span>
           </a>
-          <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-jungle-surface/60 px-4 py-2.5 text-sm">
+          <a
+            href={buildGoogleMapsUrl(party)}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="פתחו במפות Google"
+            className="flex items-center gap-2 rounded-xl border border-white/10 bg-jungle-surface/60 px-4 py-2.5 text-sm hover:border-jungle-lime/40 hover:bg-jungle-surface transition-colors"
+          >
             <LocationIcon className="w-4 h-4 text-jungle-lime flex-shrink-0" />
             <span className="text-white font-semibold">{party.location.name}</span>
-          </div>
+          </a>
           {party.age && party.age !== 'כל הגילאים' && (
             <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-jungle-surface/60 px-4 py-2.5 text-sm">
               <span className="text-jungle-lime font-bold text-base leading-none">🔞</span>
