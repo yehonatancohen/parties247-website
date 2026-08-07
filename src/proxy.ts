@@ -22,7 +22,19 @@ export async function proxy(request: NextRequest) {
     const res = await fetch(`${API_URL}/api/events/${slug}`, {
       next: { revalidate: 60 },
     });
-    if (!res.ok) return NextResponse.next();
+
+    if (!res.ok) {
+      // The party for this slug may have been deleted as a duplicate (see
+      // goout-scraper's dedupe_parties.py) and merged into a surviving
+      // party under a different slug. Check for a recorded redirect before
+      // falling through to a 404, so the old URL's SEO/traffic signal isn't
+      // just lost.
+      if (res.status === 404) {
+        const redirected = await tryRedirectSlug(section, slug, request);
+        if (redirected) return redirected;
+      }
+      return NextResponse.next();
+    }
 
     const data = await res.json();
     const isPast = data?.event?.status === 'past';
@@ -39,6 +51,27 @@ export async function proxy(request: NextRequest) {
   }
 
   return NextResponse.next();
+}
+
+async function tryRedirectSlug(
+  section: string,
+  slug: string,
+  request: NextRequest
+): Promise<NextResponse | null> {
+  try {
+    const res = await fetch(`${API_URL}/api/redirects/${slug}`, {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return null;
+
+    const data = await res.json();
+    const toSlug = data?.toSlug;
+    if (!toSlug || toSlug === slug) return null;
+
+    return NextResponse.redirect(new URL(`/${section}/${toSlug}`, request.url), 308);
+  } catch {
+    return null;
+  }
 }
 
 export const config = {
