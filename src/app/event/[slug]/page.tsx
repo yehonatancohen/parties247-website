@@ -473,8 +473,15 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
             </div>
           </div>
 
-          {/* Location */}
-          <div className="flex items-start gap-4 mb-5">
+          {/* Location — same dead-click pattern as the Quick Info Strip chip above
+              (fixed 2026-08-06): a second, duplicate non-interactive location block
+              further down the page invites the same tap. Reuses buildGoogleMapsUrl. */}
+          <a
+            href={buildGoogleMapsUrl(party)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-start gap-4 mb-5 -m-2 p-2 rounded-xl hover:bg-white/5 transition-colors"
+          >
             <div className="w-11 h-11 rounded-xl bg-jungle-lime/10 border border-jungle-lime/20 flex items-center justify-center flex-shrink-0">
               <LocationIcon className="h-5 w-5 text-jungle-lime" />
             </div>
@@ -483,7 +490,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
               <p className="font-bold text-white text-lg">{party.location.name}</p>
               {party.location.address && <p className="text-jungle-text/70">{party.location.address}</p>}
             </div>
-          </div>
+          </a>
 
 
         </div>
