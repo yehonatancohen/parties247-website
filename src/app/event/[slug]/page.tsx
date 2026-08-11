@@ -11,6 +11,7 @@ import DiscountCodeReveal from "@/components/DiscountCodeReveal";
 import RelatedPartyCard from "@/components/RelatedPartyCard";
 import FlyerToPurchaseLink from "@/components/FlyerToPurchaseLink";
 import PurchaseButton from "@/components/PurchaseButton";
+import PriceDisclaimerNote from "@/components/PriceDisclaimerNote";
 import { PeopleWatching, StickyPurchaseBar } from "@/components/UrgencyComponents";
 import PartyViewTracker from "@/components/PartyViewTracker";
 import { BASE_URL, LAST_TICKETS_TAG } from "@/data/constants";
@@ -425,7 +426,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
             <p className="text-center text-jungle-text/70 text-sm mb-5">
               הכרטיסים נמכרים דרך אתר GO-OUT. לחצו למעבר 👇
               {party.ticketPrice && (
-                <span className="block text-xs text-jungle-text/40 mt-1">* המחיר המוצג הוא מחיר התחלתי ועשוי להשתנות — המחיר הסופי נקבע ב-Go-Out</span>
+                <PriceDisclaimerNote text="* המחיר המוצג הוא מחיר התחלתי ועשוי להשתנות — המחיר הסופי נקבע ב-Go-Out" />
               )}
             </p>
           )}
