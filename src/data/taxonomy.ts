@@ -642,6 +642,40 @@ export const timeIntents: TaxonomyConfig[] = [
 export const holidayIntents: TaxonomyConfig[] = [
   {
     type: 'time',
+    slug: 'חגים/ראש-השנה',
+    path: '/מתי/חגים/ראש-השנה',
+    label: 'ראש השנה',
+    title: 'מסיבות ראש השנה 2026 – חוגגים שנה חדשה בסטייל',
+    description:
+      'כל מסיבות ראש השנה 2026 בישראל: ערבי חג במועדונים, מסיבות גג לשקיעה ראשונה של השנה ואירועי חוף לפתיחת חגים.',
+    intro:
+      'ראש השנה 2026 (י״א–י״ג בתשרי) מביא איתו סוף שבוע ארוך של חגיגות. אנו מרכזים את מסיבות ערב החג והלילות שאחריו – ערבי מועדון אלגנטיים, מסיבות גג עם נוף לשקיעה ראשונה של השנה החדשה ואירועי חוף למי שרוצה לפתוח את החג עם מוזיקה טובה. הרשימה מתעדכנת אוטומטית עם כל אירוע חדש שמתפרסם.',
+    faq: [
+      {
+        question: 'מתי חל ראש השנה 2026?',
+        answer:
+          'ראש השנה 2026 (תשפ״ז) חל בין ה-11 ל-13 בספטמבר. רוב האירועים והמסיבות מתרכזים בערבי החג עצמו ובימים שלפני ואחרי.',
+      },
+      {
+        question: 'האם יש מסיבות שמתאימות למשפחות בערב ראש השנה?',
+        answer:
+          'כן, לצד מסיבות המועדון יש גם אירועי חוף וגג פתוחים לכל הגילאים בשעות המוקדמות של הערב. נציין בכל אירוע אם הוא משפחתי או למבוגרים בלבד.',
+      },
+    ],
+    breadcrumbs: [
+      { label: 'בית', path: '/' },
+      { label: 'מתי', path: '/מתי' },
+      { label: 'חגים' },
+      { label: 'ראש השנה' },
+    ],
+    ogImage: 'https://images.unsplash.com/photo-1467810563316-b5476525c0f9?auto=format&fit=crop&w=1200&q=80',
+    relatedPaths: [
+      { label: 'חג סוכות', path: '/מתי/חגים/סוכות' },
+      { label: 'מסיבות שישי', path: '/מתי/שישי' },
+    ],
+  },
+  {
+    type: 'time',
     slug: 'חגים/סילבסטר-2026',
     path: '/מתי/חגים/סילבסטר-2026',
     label: 'סילבסטר 2026',
@@ -710,6 +744,7 @@ export const holidayIntents: TaxonomyConfig[] = [
     ],
     ogImage: 'https://images.unsplash.com/photo-1521335629791-ce4aec67dd47?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
+      { label: 'ראש השנה', path: '/מתי/חגים/ראש-השנה' },
       { label: 'חג פורים', path: '/מתי/חגים/פורים' },
       { label: 'מסיבות משפחתיות', path: '/קהל/מסיבות-נוער' },
     ],
@@ -1695,6 +1730,9 @@ const filterByTime = (parties: Party[], slug: string) => {
       });
     }
     case 'חגים': {
+      if (secondary === 'ראש-השנה') {
+        return parties.filter((party) => party.tags.some((tag) => tag.includes('ראש השנה')));
+      }
       if (secondary === 'סוכות') {
         return parties.filter((party) => party.tags.some((tag) => tag.includes('סוכות')));
       }

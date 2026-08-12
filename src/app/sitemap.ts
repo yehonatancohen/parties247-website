@@ -110,6 +110,12 @@ const categoryPaths = [
   '/moon-child',
   '/tickets-israel',
 
+  // Holidays (Hebrew taxonomy, not covered by the English category paths above)
+  '/מתי/חגים/ראש-השנה',
+  '/מתי/חגים/סוכות',
+  '/מתי/חגים/פורים',
+  '/מתי/חגים/סילבסטר-2026',
+
   // Specific party landing pages (from SPECIFIC_PARTIES_PAGES)
   '/parties/parties-in-tel-aviv-today',
   '/parties/parties-in-tel-aviv-weekend',

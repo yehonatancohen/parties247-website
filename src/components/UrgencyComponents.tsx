@@ -3,81 +3,10 @@
 import { useEffect, useState } from "react";
 import { trackPartyRedirect } from "@/lib/analytics";
 import { trackPurchaseButtonClick } from "@/lib/gtm";
-import { FireIcon, TicketIcon } from "./Icons";
+import { TicketIcon } from "./Icons";
 import RedirectOverlay from "./RedirectOverlay";
 
-// --- Fake Data for Purchasing Proof ---
-const NAMES = ["איתי", "נועה", "דניאל", "עומר", "רוני", "מאיה", "גיא", "תומר", "יובל", "עדי", "שחר", "גל", "ניב", "טל", "ליאור", "סתיו"];
-const TIMES = ["לפני דקה", "לפני 2 דקות", "לפני 5 דקות", "לפני 12 דקות", "ממש עכשיו", "לפני חצי שעה"];
-
-// --- 1. People Watching Badge ---
-export function PeopleWatching({ min = 12, max = 80 }: { min?: number; max?: number }) {
-    const [count, setCount] = useState<number | null>(null);
-
-    useEffect(() => {
-        // Deterministic random based on hour so it doesn't flicker too much, or just random on mount
-        const seed = Math.floor(Math.random() * (max - min) + min);
-        setCount(seed);
-    }, [min, max]);
-
-    if (!count) return null;
-
-    return (
-        <div className="inline-flex items-center gap-1.5 text-sm font-bold text-red-300 animate-pulse bg-red-900/20 px-3 py-1 rounded-full border border-red-500/30">
-            <div className="w-2 h-2 bg-red-500 rounded-full" />
-            {count} אנשים צופים באירוע זה כרגע
-        </div>
-    );
-}
-
-// --- 2. Recent Purchase Toast ---
-export function RecentPurchaseToast() {
-    const [visible, setVisible] = useState(false);
-    const [data, setData] = useState<{ name: string; time: string } | null>(null);
-
-    useEffect(() => {
-        // Show first toast after 3-8 seconds
-        const initialDelay = Math.random() * 5000 + 3000;
-        let interval: ReturnType<typeof setInterval> | null = null;
-
-        const showToast = () => {
-            const name = NAMES[Math.floor(Math.random() * NAMES.length)];
-            const time = TIMES[Math.floor(Math.random() * TIMES.length)];
-            setData({ name, time });
-            setVisible(true);
-            setTimeout(() => setVisible(false), 8000);
-        };
-
-        const timeout = setTimeout(() => {
-            showToast();
-            interval = setInterval(() => {
-                if (Math.random() > 0.5) showToast();
-            }, 20000);
-        }, initialDelay);
-
-        return () => {
-            clearTimeout(timeout);
-            if (interval) clearInterval(interval);
-        };
-    }, []);
-
-    if (!visible || !data) return null;
-
-    return (
-        <div className="fixed bottom-24 left-4 z-40 bg-gray-900/90 backdrop-blur border border-lime-500/30 p-3 rounded-lg shadow-xl flex items-center gap-3 animate-slide-up text-right rtl-direction max-w-[250px]">
-            <div className="bg-lime-500/20 p-2 rounded-full text-lime-400">
-                <TicketIcon className="w-5 h-5" />
-            </div>
-            <div>
-                <p className="text-white text-sm font-bold">{data.name} רכש/ה כרטיס</p>
-                <p className="text-gray-400 text-xs">{data.time}</p>
-            </div>
-        </div>
-    );
-}
-
-// --- 3. Sticky Purchase Bar ---
-// --- 3. Sticky Purchase Bar ---
+// --- Sticky Purchase Bar ---
 export function StickyPurchaseBar({
     href,
     priceLabel = "מעבר לרכישת כרטיסים →",

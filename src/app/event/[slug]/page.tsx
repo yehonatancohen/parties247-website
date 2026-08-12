@@ -12,7 +12,7 @@ import RelatedPartyCard from "@/components/RelatedPartyCard";
 import FlyerToPurchaseLink from "@/components/FlyerToPurchaseLink";
 import PurchaseButton from "@/components/PurchaseButton";
 import PriceDisclaimerNote from "@/components/PriceDisclaimerNote";
-import { PeopleWatching, StickyPurchaseBar } from "@/components/UrgencyComponents";
+import { StickyPurchaseBar } from "@/components/UrgencyComponents";
 import PartyViewTracker from "@/components/PartyViewTracker";
 import { BASE_URL, LAST_TICKETS_TAG } from "@/data/constants";
 
@@ -357,11 +357,6 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
           <h1 className="font-display text-4xl md:text-5xl text-white mb-3 leading-tight">
             {party.name}
           </h1>
-
-          {/* Social proof */}
-          <div className="mb-4">
-            <PeopleWatching />
-          </div>
 
           {hasLastTickets && (
             <div className="inline-flex items-center gap-2 rounded-xl border border-red-400/50 bg-red-500/10 px-4 py-2.5 text-red-200 text-sm font-bold">
