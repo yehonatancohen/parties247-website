@@ -457,8 +457,17 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
         ═══════════════════════════════════════════════════ */}
         <div className="rounded-2xl border border-white/10 bg-jungle-surface/50 p-6 md:p-8 mb-8">
 
-          {/* Date & Time */}
-          <div className="flex items-start gap-4 mb-5">
+          {/* Date & Time — same dead-click pattern as the Quick Info Strip chip above
+              (fixed 2026-08-02 there, missed here): Clarity session recording 2026-08-13
+              (SUMMER FESTIVAL 12.8.26) showed repeated dead/rage clicks on this exact
+              non-interactive block's date text. Reuses buildGoogleCalendarUrl, same as
+              the Quick Info Strip chip. */}
+          <a
+            href={buildGoogleCalendarUrl(party, plainDescriptionForLd)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-start gap-4 mb-5 -m-2 p-2 rounded-xl hover:bg-white/5 transition-colors"
+          >
             <div className="w-11 h-11 rounded-xl bg-jungle-lime/10 border border-jungle-lime/20 flex items-center justify-center flex-shrink-0">
               <CalendarIcon className="h-5 w-5 text-jungle-lime" />
             </div>
@@ -467,7 +476,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
               <p className="font-bold text-white text-lg">{formattedDate}</p>
               <p className="text-jungle-text/70">{formattedTime}</p>
             </div>
-          </div>
+          </a>
 
           {/* Location — same dead-click pattern as the Quick Info Strip chip above
               (fixed 2026-08-06): a second, duplicate non-interactive location block
