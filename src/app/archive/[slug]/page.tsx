@@ -31,6 +31,15 @@ function toIsraelISO(dateStr: string): string {
   return `${datePart}T${timePart}${sign}${hh}:${mm}`;
 }
 
+// Same non-interactive-div dead-click pattern already fixed on the live event page
+// (Quick Info Strip + Event Details location blocks) — Clarity session recording
+// (2026-08-15, archive/after-glow-bayz-rooftop) showed 5 dead clicks + 3 rage clicks
+// on the venue-name text here. Reuses the event page's Maps-search-URL approach.
+function buildGoogleMapsUrl(party: Party): string {
+  const query = party.location.address || party.location.name;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+}
+
 const CITY_SLUG_MAP: Record<string, string> = {
   'תל אביב': 'tel-aviv', 'תל-אביב': 'tel-aviv',
   'חיפה': 'haifa', 'ירושלים': 'jerusalem',
@@ -244,10 +253,16 @@ export default async function ArchivedEventPage({ params }: { params: Promise<{ 
             <span className="text-jungle-text/60">·</span>
             <span className="text-jungle-text/70">{formattedTime}</span>
           </div>
-          <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-jungle-surface/60 px-4 py-2.5 text-sm">
+          <a
+            href={buildGoogleMapsUrl(party)}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="פתחו במפות Google"
+            className="flex items-center gap-2 rounded-xl border border-white/10 bg-jungle-surface/60 px-4 py-2.5 text-sm hover:border-jungle-lime/40 hover:bg-jungle-surface transition-colors"
+          >
             <LocationIcon className="w-4 h-4 text-jungle-lime flex-shrink-0" />
             <span className="text-white font-semibold">{party.location.name}</span>
-          </div>
+          </a>
         </div>
 
         {party.description && (
