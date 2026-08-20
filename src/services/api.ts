@@ -220,8 +220,15 @@ export const getAllPartiesIncludingPast = async (): Promise<Party[]> => {
 // ... (Rest of the file: getPartyBySlug, addParty, etc. remains exactly as you provided) ...
 // Copy the rest of your provided api.ts functions here below getParties
 export const getPartyBySlug = async (slug: string): Promise<Party> => {
-  // Try fetching from the specific event endpoint first
-  const response = await fetch(`${API_URL}/events/${slug}`, { cache: 'no-store' });
+  // Try fetching from the specific event endpoint first.
+  // `revalidate: 60` (not `no-store`) on purpose: the backend has a ~5s latency
+  // floor on every endpoint, so an uncached fetch here opted /event/[slug] and
+  // /archive/[slug] out of ISR entirely and put that 5s in front of every visit
+  // (measured 5.6-6.5s TTFB vs 0.3s on the ISR-cached listing pages). Both pages
+  // already declare their own `revalidate`, so this just makes the fetch honor it.
+  // Price freshness is unaffected — the backend's scheduled_price_scan only
+  // refreshes ticketPrice every 30 min, far coarser than 60s.
+  const response = await fetch(`${API_URL}/events/${slug}`, { next: { revalidate: 60 } });
 
   if (response.ok) {
     const data = await response.json();
