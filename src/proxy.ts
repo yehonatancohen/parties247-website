@@ -87,9 +87,21 @@ type CachedResponse<T = EventPayload & RedirectPayload> = {
 // middleware but skips the fetch.
 //
 // Vercel's Runtime Cache is available in Routing Middleware, so use it
-// explicitly. TTL matches the 60s the original `revalidate` asked for, so
-// redirect freshness is unchanged. Any failure of the cache itself falls back
-// to a direct fetch — worst case is the old behaviour, never worse.
+// explicitly. Any failure of the cache itself falls back to a direct fetch —
+// worst case is the old behaviour, never worse.
+//
+// TTL is deliberately much longer than the 60s the old (non-functioning)
+// `revalidate` asked for. All this middleware needs from the response is
+// whether the event is `past`, which flips exactly once per event, at a known
+// time — so a stale answer costs at most a few minutes' delay on an SEO
+// canonicalisation redirect. Meanwhile the site sees single-digit sessions per
+// page per day, so at a 60s TTL virtually every visitor would still land on a
+// cold entry and eat the backend's full ~5s. A short TTL would make this fix
+// technically correct and practically useless. Errors/404s are cached far more
+// briefly so a newly-added or just-fixed slug isn't stuck behind a stale miss.
+const OK_TTL_SECONDS = 600;
+const ERROR_TTL_SECONDS = 60;
+
 async function fetchJsonCached(url: string, key: string): Promise<CachedResponse> {
   const cacheKey = `proxy:${key}`;
 
@@ -108,7 +120,10 @@ async function fetchJsonCached(url: string, key: string): Promise<CachedResponse
   };
 
   try {
-    await getCache().set(cacheKey, result, { ttl: 60, tags: ['proxy-events'] });
+    await getCache().set(cacheKey, result, {
+      ttl: result.ok ? OK_TTL_SECONDS : ERROR_TTL_SECONDS,
+      tags: ['proxy-events'],
+    });
   } catch {
     // Best-effort — a failed write just means the next request refetches.
   }
