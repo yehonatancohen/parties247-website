@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getCache } from '@vercel/functions';
 
 const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'https://parties247-backend.onrender.com/').replace(/\/$/, '');
 
@@ -19,9 +20,7 @@ export async function proxy(request: NextRequest) {
   const [, section, slug] = match;
 
   try {
-    const res = await fetch(`${API_URL}/api/events/${slug}`, {
-      next: { revalidate: 60 },
-    });
+    const res = await fetchEventCached(slug);
 
     if (!res.ok) {
       // The party for this slug may have been deleted as a duplicate (see
@@ -36,8 +35,7 @@ export async function proxy(request: NextRequest) {
       return NextResponse.next();
     }
 
-    const data = await res.json();
-    const isPast = data?.event?.status === 'past';
+    const isPast = res.data?.event?.status === 'past';
 
     if (section === 'event' && isPast) {
       return NextResponse.redirect(new URL(`/archive/${slug}`, request.url), 308);
@@ -59,19 +57,67 @@ async function tryRedirectSlug(
   request: NextRequest
 ): Promise<NextResponse | null> {
   try {
-    const res = await fetch(`${API_URL}/api/redirects/${slug}`, {
-      next: { revalidate: 60 },
-    });
+    const res = await fetchJsonCached(`${API_URL}/api/redirects/${slug}`, `redirect:${slug}`);
     if (!res.ok) return null;
 
-    const data = await res.json();
-    const toSlug = data?.toSlug;
+    const toSlug = res.data?.toSlug;
     if (!toSlug || toSlug === slug) return null;
 
     return NextResponse.redirect(new URL(`/${section}/${toSlug}`, request.url), 308);
   } catch {
     return null;
   }
+}
+
+type EventPayload = { event?: { status?: string } };
+type RedirectPayload = { toSlug?: string };
+type CachedResponse<T = EventPayload & RedirectPayload> = {
+  ok: boolean;
+  status: number;
+  data: T | null;
+};
+
+// The `next: { revalidate }` fetch option does NOT work in middleware — the
+// Next.js Data Cache isn't available in this runtime, so every request paid a
+// full uncached round-trip to the backend. That backend has a flat ~5s latency
+// floor on every endpoint regardless of payload size, and because middleware
+// runs ahead of the CDN/ISR layer it put those 5 seconds in front of every
+// /event/* and /archive/* page view, cached page or not. Measured 2026-08-20:
+// 5.41s TTFB on a slug that takes this path vs 0.68s on one that hits the same
+// middleware but skips the fetch.
+//
+// Vercel's Runtime Cache is available in Routing Middleware, so use it
+// explicitly. TTL matches the 60s the original `revalidate` asked for, so
+// redirect freshness is unchanged. Any failure of the cache itself falls back
+// to a direct fetch — worst case is the old behaviour, never worse.
+async function fetchJsonCached(url: string, key: string): Promise<CachedResponse> {
+  const cacheKey = `proxy:${key}`;
+
+  try {
+    const cached = (await getCache().get(cacheKey)) as CachedResponse | undefined;
+    if (cached) return cached;
+  } catch {
+    // Cache unavailable — fall through and fetch directly.
+  }
+
+  const res = await fetch(url);
+  const result: CachedResponse = {
+    ok: res.ok,
+    status: res.status,
+    data: res.ok ? await res.json().catch(() => null) : null,
+  };
+
+  try {
+    await getCache().set(cacheKey, result, { ttl: 60, tags: ['proxy-events'] });
+  } catch {
+    // Best-effort — a failed write just means the next request refetches.
+  }
+
+  return result;
+}
+
+function fetchEventCached(slug: string): Promise<CachedResponse> {
+  return fetchJsonCached(`${API_URL}/api/events/${slug}`, `event:${slug}`);
 }
 
 export const config = {
