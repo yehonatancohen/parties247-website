@@ -20,6 +20,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     alternates: {
       canonical: `/parties/${slug}`,
     },
+    ...(config && config.index === false ? { robots: { index: false, follow: true } } : {}),
   };
 }
 

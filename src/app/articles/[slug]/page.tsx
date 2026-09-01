@@ -1,9 +1,37 @@
 import { Metadata } from "next";
+import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from 'next/image';
 import { articles } from "@/data/articles";
 import { BASE_URL } from "@/data/constants";
+
+// Inline formatting for article body text: **bold** and [label](/href) links.
+// (Previously markdown links rendered as literal "[label](/href)" text — the
+// cross-links that make a guide article useful for SEO never actually worked.)
+const renderInline = (text: string, keyPrefix: string) => {
+  const parts: ReactNode[] = [];
+  const re = /\[([^\]]+)\]\((\/[^)\s]+)\)|\*\*([^*]+)\*\*/g;
+  let last = 0;
+  let m: RegExpExecArray | null;
+  let i = 0;
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) parts.push(text.slice(last, m.index));
+    if (m[1] && m[2]) {
+      parts.push(
+        <Link key={`${keyPrefix}-l-${i}`} href={m[2]} className="text-jungle-lime underline underline-offset-2 hover:text-white transition-colors">
+          {m[1]}
+        </Link>,
+      );
+    } else if (m[3]) {
+      parts.push(<strong key={`${keyPrefix}-b-${i}`} className="font-bold text-white">{m[3]}</strong>);
+    }
+    last = m.index + m[0].length;
+    i += 1;
+  }
+  if (last < text.length) parts.push(text.slice(last));
+  return parts.length ? parts : text;
+};
 
 const renderContent = (content: string) => {
   return content.split("\n").map((line, index) => {
@@ -14,14 +42,14 @@ const renderContent = (content: string) => {
     if (line.startsWith("### ")) {
       return (
         <h3 key={`heading-${index}`} className="text-xl font-semibold text-white">
-          {line.replace("### ", "")}
+          {renderInline(line.replace("### ", ""), `h-${index}`)}
         </h3>
       );
     }
 
     return (
       <p key={`paragraph-${index}`} className="text-base leading-relaxed text-jungle-text/90">
-        {line}
+        {renderInline(line, `p-${index}`)}
       </p>
     );
   });

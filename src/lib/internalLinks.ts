@@ -136,9 +136,17 @@ const CORE_GENRES: CrossLink[] = [
   GENRE_LINK("trance-music"),
 ];
 const CORE_CITIES: CrossLink[] = CITIES_WITH_INVENTORY.map(CITY_LINK);
-const GUIDES: CrossLink[] = [
-  { label: "מדריך מועדוני טכנו בתל אביב", href: "/articles/מדריך-מועדוני-טכנו-בתל-אביב" },
-];
+const GUIDE_TECHNO_CLUBS: CrossLink = { label: "מדריך מועדוני טכנו בתל אביב", href: "/articles/מדריך-מועדוני-טכנו-בתל-אביב" };
+const GUIDE_TLV: CrossLink = { label: "המדריך המלא למסיבות בתל אביב", href: "/articles/מדריך-מסיבות-תל-אביב" };
+const GUIDE_EILAT: CrossLink = { label: "מסיבות ופסטיבלים באילת 2026", href: "/articles/מדריך-מסיבות-אילת-2026" };
+const GUIDE_RAVES: CrossLink = { label: "רייבים בישראל – מדריך למתחילים", href: "/articles/מדריך-רייבים-בישראל" };
+
+const GUIDES_BY_CITY: Record<string, CrossLink[]> = {
+  "tel-aviv": [GUIDE_TLV, GUIDE_TECHNO_CLUBS],
+  "eilat": [GUIDE_EILAT],
+  "haifa": [GUIDE_RAVES],
+};
+const GUIDES_DEFAULT: CrossLink[] = [GUIDE_TLV, GUIDE_RAVES, GUIDE_TECHNO_CLUBS];
 const HOLIDAYS: CrossLink[] = [
   { label: "מסיבות ראש השנה 2026", href: "/rosh-hashana" },
   { label: "מסיבות סוכות 2026", href: "/sukkot" },
@@ -161,7 +169,7 @@ export function buildExploreLinks(ctx: ExploreContext): ExploreGroup[] {
       links: CORE_CITIES.filter((l) => l.href !== `/cities/${ctx.slug}`),
     });
     groups.push({ heading: "לפי קהל", links: [{ label: "מסיבות 18 פלוס בתל אביב", href: "/parties/18-plus-parties-tel-aviv" }] });
-    groups.push({ heading: "מדריכים וחגים", links: [...GUIDES, ...HOLIDAYS] });
+    groups.push({ heading: "מדריכים וחגים", links: [...(GUIDES_BY_CITY[ctx.slug] ?? GUIDES_DEFAULT), ...HOLIDAYS] });
   }
 
   if (ctx.kind === "genre") {
@@ -170,7 +178,7 @@ export function buildExploreLinks(ctx: ExploreContext): ExploreGroup[] {
       links: CORE_GENRES.filter((l) => l.href !== `/genre/${ctx.slug}`),
     });
     groups.push({ heading: "לפי עיר", links: CORE_CITIES });
-    groups.push({ heading: "מדריכים וחגים", links: [...GUIDES, ...HOLIDAYS] });
+    groups.push({ heading: "מדריכים וחגים", links: [...GUIDES_DEFAULT, ...HOLIDAYS] });
   }
 
   if (ctx.kind === "audience") {

@@ -10,6 +10,10 @@ export type SeoPageConfig = {
   faqs?: { question: string; answer: string }[];
   /** Cross-links shown when the visitor doesn't find a matching event, to keep them on-site instead of bouncing. */
   related?: { label: string; href: string }[];
+  /** When false the page is `noindex, follow` — kept for navigation/long-tail
+   *  but not submitted to search because its filter structurally resolves to
+   *  ~zero events and a cluster owner (/audience/*, /genre/*) covers the query. */
+  index?: boolean;
   apiFilters: {
     region?: string;
     cityTag?: string;     // Matches values inside 'tags' or 'city' field
@@ -161,6 +165,7 @@ export const SPECIFIC_PARTIES_PAGES: SeoPageConfig[] = [
     slug: 'soldiers-parties-weekend',
     title: 'מסיבות לחיילים בסופ״ש',
     description: 'הטבות חוגר, כניסה חינם ומסיבות שמתאימות במיוחד לחיילים.',
+    index: false, // no "soldier" inventory exists; /audience/soldier-parties owns the query
     apiFilters: { age: 'חיילים' } // Ensures mapping looks for "Soldier" related tags
   },
   {
@@ -173,6 +178,12 @@ export const SPECIFIC_PARTIES_PAGES: SeoPageConfig[] = [
     slug: '24-plus-parties-tel-aviv',
     title: 'מסיבות 24+ בתל אביב',
     description: 'קהל בוגר, אווירה איכותית ומוזיקה מדוייקת בעיר.',
+    index: false, // age '24+' filter ~never matches (data uses '21+'); /audience/24plus-parties is the owner
+    related: [
+      { label: 'מסיבות 24+ בישראל', href: '/audience/24plus-parties' },
+      { label: 'מסיבות בתל אביב', href: '/cities/tel-aviv' },
+      { label: 'מסיבות האוס', href: '/genre/house-music' },
+    ],
     apiFilters: { cityTag: 'תל אביב', age: '24+' }
   },
 
@@ -201,6 +212,7 @@ export const SPECIFIC_PARTIES_PAGES: SeoPageConfig[] = [
     slug: 'sunset-parties',
     title: 'מסיבות שקיעה וצהריים',
     description: 'אירועים שמתחילים באור יום וממשיכים לתוך הלילה.',
+    index: false, // 'שקיעה' tag rarely applied → structurally empty, no search traffic
     apiFilters: { generalTag: 'שקיעה' } // Requires tags like "Sunset", "Tzahorayim"
   },
 ];

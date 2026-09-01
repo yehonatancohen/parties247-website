@@ -1,6 +1,9 @@
 import { MetadataRoute } from 'next';
 
 import { BASE_URL } from '@/data/constants';
+import { articles } from '@/data/articles';
+import { SPECIFIC_PARTIES_PAGES } from '@/lib/seoparties';
+import { CITIES_WITH_INVENTORY } from '@/lib/internalLinks';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://parties247-backend.onrender.com/api';
 
@@ -13,151 +16,52 @@ interface BackendEvent {
 }
 
 const staticPages: MetadataRoute.Sitemap = [
-  {
-    url: `${BASE_URL}/`,
-    lastModified: new Date(),
-    changeFrequency: 'daily',
-    priority: 1.0,
-  },
-  {
-    url: `${BASE_URL}/all-parties`,
-    lastModified: new Date(),
-    changeFrequency: 'daily',
-    priority: 0.95,
-  },
-  {
-    url: `${BASE_URL}/archive`,
-    lastModified: new Date(),
-    changeFrequency: 'daily',
-    priority: 0.6,
-  },
-  {
-    url: `${BASE_URL}/party-discovery`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly',
-    priority: 0.8,
-  },
-  {
-    url: `${BASE_URL}/boutique-parties`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly',
-    priority: 0.8,
-  },
-  {
-    url: `${BASE_URL}/techno-parties`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly',
-    priority: 0.8,
-  },
-  {
-    url: `${BASE_URL}/purim`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly',
-    priority: 0.7,
-  },
-  {
-    url: `${BASE_URL}/rosh-hashana`,
-    lastModified: new Date(),
-    changeFrequency: 'daily',
-    priority: 0.9,
-  },
-  {
-    url: `${BASE_URL}/sukkot`,
-    lastModified: new Date(),
-    changeFrequency: 'daily',
-    priority: 0.9,
-  },
-  {
-    url: `${BASE_URL}/about`,
-    lastModified: new Date(),
-    changeFrequency: 'monthly',
-    priority: 0.5,
-  },
-  {
-    url: `${BASE_URL}/terms`,
-    lastModified: new Date(),
-    changeFrequency: 'yearly',
-    priority: 0.3,
-  },
-  {
-    url: `${BASE_URL}/privacy`,
-    lastModified: new Date(),
-    changeFrequency: 'yearly',
-    priority: 0.3,
-  },
+  { url: `${BASE_URL}/`, lastModified: new Date(), changeFrequency: 'daily', priority: 1.0 },
+  { url: `${BASE_URL}/all-parties`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.95 },
+  { url: `${BASE_URL}/party-discovery`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
+  { url: `${BASE_URL}/archive`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.6 },
+  { url: `${BASE_URL}/boutique-parties`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
+  { url: `${BASE_URL}/articles`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
+  { url: `${BASE_URL}/rosh-hashana`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.9 },
+  { url: `${BASE_URL}/sukkot`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.9 },
+  { url: `${BASE_URL}/purim`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.6 },
+  { url: `${BASE_URL}/tel-aviv-weekend-2026`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
+  { url: `${BASE_URL}/friday-parties-guide`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.6 },
+  { url: `${BASE_URL}/tickets-israel`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
+  { url: `${BASE_URL}/about`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
+  { url: `${BASE_URL}/terms`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
+  { url: `${BASE_URL}/privacy`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
 ];
 
-const categoryPaths = [
-  // Cities
-  '/cities/tel-aviv',
-  '/cities/haifa',
-  '/cities/jerusalem',
-  '/cities/eilat',
-  '/cities/beer-sheva',
+// Evergreen taxonomy — only routes that exist AND are indexable. City pages are
+// gated to the ones with real event inventory (the rest are noindex,follow).
+const evergreenPaths = [
+  ...CITIES_WITH_INVENTORY.map((c) => `/cities/${c}`),
 
-  // Audiences
-  '/audience/student-parties',
+  '/genre/techno-music',
+  '/genre/rave-parties',
+  '/genre/house-music',
+  '/genre/mainstream-music',
+  '/genre/trance-music',
+
   '/audience/teenage-parties',
-  '/audience/soldier-parties',
   '/audience/24plus-parties',
 
-  // Genres
-  '/genre/techno-music',
-  '/genre/trance',
-  '/genre/house-music',
-  '/genre/mainstream',
-
-  // Days
   '/friday-parties',
   '/saturday-parties',
-  '/weekend-parties',
   '/thursday-parties',
+  '/weekend-parties',
   '/day/today',
   '/day/friday',
   '/day/weekend',
-  '/day/thursday',
 
-  // Magazine & content
-  '/articles',
-  '/about',
-
-  // SEO content pages
-  '/tel-aviv-weekend-2026',
-  '/friday-parties-guide',
-  '/jimmy-who',
-  '/moon-child',
-  '/tickets-israel',
-
-  // Holidays (Hebrew taxonomy, not covered by the English category paths above)
-  '/מתי/חגים/ראש-השנה',
-  '/מתי/חגים/סוכות',
-  '/מתי/חגים/פורים',
-  '/מתי/חגים/סילבסטר-2026',
-
-  // Specific party landing pages (from SPECIFIC_PARTIES_PAGES)
-  '/parties/parties-in-tel-aviv-today',
-  '/parties/parties-in-tel-aviv-weekend',
-  '/parties/techno-parties-today',
-  '/parties/techno-parties-weekend',
-  '/parties/techno-parties-tel-aviv',
-  '/parties/mainstream-parties-tel-aviv',
-  '/parties/parties-in-haifa-and-north',
-  '/parties/parties-in-south-and-beer-sheva',
-  '/parties/18-plus-parties-tel-aviv',
-  '/parties/18-plus-parties-weekend',
-  '/parties/soldiers-parties-weekend',
-  '/parties/students-parties-tel-aviv',
-  '/parties/nature-trance-parties',
-  '/parties/after-parties-tel-aviv',
-  '/parties/sunset-parties',
+  '/club/jimmy-who',
+  '/club/moon-child',
 ];
 
 async function fetchEvents(): Promise<MetadataRoute.Sitemap> {
   try {
-    const response = await fetch(`${API_URL}/parties`, {
-      next: { revalidate: 3600 },
-    });
-
+    const response = await fetch(`${API_URL}/parties`, { next: { revalidate: 3600 } });
     if (!response.ok) {
       console.error('Failed to fetch events for sitemap:', response.statusText);
       return [];
@@ -185,14 +89,31 @@ async function fetchEvents(): Promise<MetadataRoute.Sitemap> {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const categoryEntries: MetadataRoute.Sitemap = categoryPaths.map((path) => ({
+  const evergreenEntries: MetadataRoute.Sitemap = evergreenPaths.map((path) => ({
     url: `${BASE_URL}${path}`,
     lastModified: new Date(),
     changeFrequency: 'daily' as const,
     priority: 0.9,
   }));
 
+  // /parties/* landing pages — skip the ones flagged noindex.
+  const partiesEntries: MetadataRoute.Sitemap = SPECIFIC_PARTIES_PAGES.filter((p) => p.index !== false).map((p) => ({
+    url: `${BASE_URL}/parties/${p.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'daily' as const,
+    priority: 0.8,
+  }));
+
+  // Individual magazine articles — previously only /articles (the index) was
+  // submitted, so the guides that rank well weren't in the sitemap at all.
+  const articleEntries: MetadataRoute.Sitemap = articles.map((a) => ({
+    url: `${BASE_URL}/articles/${encodeURIComponent(a.slug)}`,
+    lastModified: new Date(a.dateModified || a.datePublished || Date.now()),
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+  }));
+
   const eventEntries = await fetchEvents();
 
-  return [...staticPages, ...categoryEntries, ...eventEntries];
+  return [...staticPages, ...evergreenEntries, ...partiesEntries, ...articleEntries, ...eventEntries];
 }
