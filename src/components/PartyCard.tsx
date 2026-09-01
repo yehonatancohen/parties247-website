@@ -108,7 +108,7 @@ const PartyCard: React.FC<PartyCardProps> = ({ party, showDiscountCode = false }
 
         <Link
           href={`/event/${party.slug}`}
-          className="mt-auto flex items-center justify-center gap-2 text-center bg-gradient-to-r from-jungle-lime to-jungle-accent hover:from-jungle-lime/80 hover:to-jungle-accent/80 text-jungle-deep font-display text-lg sm:text-xl py-2.5 px-3 rounded-xl transition-all w-full group-hover:scale-[1.03] tracking-wide shadow-lg shadow-jungle-lime/10"
+          className="mt-auto flex items-center justify-center gap-2 text-center bg-gradient-to-r from-jungle-lime to-jungle-accent hover:from-jungle-lime/80 hover:to-jungle-accent/80 text-jungle-deep font-display text-lg sm:text-xl py-2.5 px-3 rounded-xl transition-colors w-full active:scale-[0.99] tracking-wide shadow-lg shadow-jungle-lime/10"
         >
           <span>פרטים וכרטיסים</span>
         </Link>

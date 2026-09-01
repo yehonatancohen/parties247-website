@@ -1,5 +1,13 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  // Wrap every hover: / group-hover: utility in `@media (hover: hover)` so hover
+  // styles never fire on touch. Fixes the "tap once to hover, tap again to
+  // activate" bug — Clarity session recordings (2026-09-01) showed the PartyCard
+  // "פרטים וכרטיסים" CTA registering a dead click on the first tap because the
+  // card's group-hover transform shifted the button under the finger mid-tap.
+  future: {
+    hoverOnlyWhenSupported: true,
+  },
   content: [
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
