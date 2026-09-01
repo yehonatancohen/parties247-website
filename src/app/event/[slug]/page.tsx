@@ -15,6 +15,7 @@ import PriceDisclaimerNote from "@/components/PriceDisclaimerNote";
 import { StickyPurchaseBar } from "@/components/UrgencyComponents";
 import PartyViewTracker from "@/components/PartyViewTracker";
 import { BASE_URL, LAST_TICKETS_TAG } from "@/data/constants";
+import { resolveCitySlug, resolveAudienceSlug, CITY_HEBREW_NAMES, AUDIENCE_HE_LABEL } from "@/lib/internalLinks";
 
 export const revalidate = 60;
 
@@ -226,6 +227,20 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
 
   const referralUrl = getReferralUrl(party.originalUrl, party.referralCode);
   const hasLastTickets = party.tags.includes(LAST_TICKETS_TAG);
+
+  // Route the "back" link (and its internal-link equity) to the relevant city
+  // listing page rather than /all-parties (position ~25, absorbs a link from
+  // every event page). Falls back to /all-parties when the city isn't resolvable.
+  const backCitySlug = resolveCitySlug({
+    areas: party.areas,
+    tags: party.tags,
+    locationName: party.location?.name,
+  });
+  const backHref = backCitySlug ? `/cities/${backCitySlug}` : "/all-parties";
+  const backLabel = backCitySlug
+    ? `← עוד מסיבות ב${CITY_HEBREW_NAMES[backCitySlug] ?? ''}`.trim()
+    : "← חזרה למסיבות";
+  const audienceSlug = resolveAudienceSlug({ age: party.age, tags: party.tags });
   const partyPageUrl = `${BASE_URL}/event/${party.slug}`;
   const whatsappMessage = encodeURIComponent(`היי, אשמח לשמור כרטיסים ל"${party.name}" ב-${formattedDate}. ${partyPageUrl}`);
   const whatsappHref = `https://wa.me/?text=${whatsappMessage}`;
@@ -308,9 +323,9 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
         <div className="mb-5">
           <Link
             className="inline-flex items-center gap-2 text-jungle-accent hover:text-white text-sm font-semibold transition-colors"
-            href="/all-parties"
+            href={backHref}
           >
-            ← חזרה למסיבות
+            {backLabel}
           </Link>
         </div>
 
@@ -565,7 +580,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
           };
           const citySlug = CITY_SLUG_MAP[party.location.name] || null;
           const genreSlug = MUSIC_GENRE_SLUG_MAP[party.musicType] || null;
-          if (!citySlug && !genreSlug) return null;
+          if (!citySlug && !genreSlug && !audienceSlug) return null;
           return (
             <div className="rounded-2xl border border-white/10 bg-jungle-surface/50 p-6 mb-8">
               <h2 className="text-lg font-display text-white mb-4">עוד מסיבות שיכולות לעניין אותך</h2>
@@ -584,6 +599,14 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
                     className="inline-flex items-center gap-2 rounded-xl border border-jungle-accent/30 bg-jungle-accent/10 px-4 py-2.5 text-sm font-semibold text-jungle-accent hover:bg-jungle-accent/20 transition-colors"
                   >
                     עוד מסיבות {party.musicType} ←
+                  </Link>
+                )}
+                {audienceSlug && (
+                  <Link
+                    href={`/audience/${audienceSlug}`}
+                    className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-semibold text-jungle-text/90 hover:bg-white/10 transition-colors"
+                  >
+                    {AUDIENCE_HE_LABEL[audienceSlug] ?? 'עוד מסיבות'} ←
                   </Link>
                 )}
               </div>

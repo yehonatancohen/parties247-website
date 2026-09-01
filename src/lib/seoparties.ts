@@ -69,6 +69,12 @@ export const SPECIFIC_PARTIES_PAGES: SeoPageConfig[] = [
     slug: 'techno-parties-tel-aviv',
     title: 'מסיבות טכנו בתל אביב',
     description: 'סצנת האנדרגראונד, מועדוני הפאר והליינים האלקטרוניים של תל אביב.',
+    related: [
+      { label: 'מסיבות טכנו ורייבים', href: '/genre/techno-music' },
+      { label: 'רייבים בישראל', href: '/genre/rave-parties' },
+      { label: 'מסיבות בתל אביב', href: '/cities/tel-aviv' },
+      { label: 'מדריך מועדוני טכנו בתל אביב', href: '/articles/מדריך-מועדוני-טכנו-בתל-אביב' },
+    ],
     apiFilters: { cityTag: 'תל אביב', musicType: 'טכנו' }
   },
   {
@@ -103,6 +109,11 @@ export const SPECIFIC_PARTIES_PAGES: SeoPageConfig[] = [
     slug: 'house-parties-tel-aviv',
     title: 'מסיבות האוס בתל אביב',
     description: 'גגות, שקיעות ומועדונים עם מוזיקת האוס ודיסקו בתל אביב.',
+    related: [
+      { label: 'מסיבות האוס', href: '/genre/house-music' },
+      { label: 'מסיבות בתל אביב', href: '/cities/tel-aviv' },
+      { label: 'אפטרים בתל אביב', href: '/parties/after-parties-tel-aviv' },
+    ],
     apiFilters: { cityTag: 'תל אביב', generalTag: 'האוס' } // Searching 'house' in tags/genre
   },
   {
@@ -131,6 +142,13 @@ export const SPECIFIC_PARTIES_PAGES: SeoPageConfig[] = [
     slug: '18-plus-parties-tel-aviv',
     title: 'מסיבות 18 פלוס בתל אביב ובכל הארץ',
     description: 'מסיבות 18 פלוס בתל אביב, במרכז ובכל הארץ – ליינים לצעירים לפני ואחרי צבא, מחירי כניסה וכרטיסים. מתעדכן כל יום.',
+    related: [
+      { label: 'מסיבות בתל אביב', href: '/cities/tel-aviv' },
+      { label: 'מסיבות מיינסטרים', href: '/genre/mainstream-music' },
+      { label: 'מסיבות טכנו ורייבים', href: '/genre/techno-music' },
+      { label: 'מסיבות 18+ לסופ״ש הקרוב', href: '/parties/18-plus-parties-weekend' },
+      { label: 'מסיבות 24+ בתל אביב', href: '/audience/24plus-parties' },
+    ],
     apiFilters: { cityTag: 'תל אביב', age: '18+' }
   },
   {

@@ -1,33 +1,13 @@
 import { Metadata } from "next";
 import PartyGrid from "@/components/PartyGrid";
+import ExploreMoreLinks from "@/components/ExploreMoreLinks";
 import { findHotNowCarousel } from "@/lib/carousels";
 import { getCarousels, getParties } from "@/services/api";
 import BackButton from "@/components/BackButton";
 import { BASE_URL } from "@/data/constants";
+import { CITY_HEBREW_NAMES, CITIES_WITH_INVENTORY } from "@/lib/internalLinks";
 
 export const revalidate = 300;
-
-// 1. Define the dictionary mapping English slugs to Hebrew names
-const CITY_HEBREW_NAMES: Record<string, string> = {
-  "tel-aviv": "תל אביב",
-  "haifa": "חיפה",
-  "jerusalem": "ירושלים",
-  "rishon-lezion": "ראשון לציון",
-  "petah-tikva": "פתח תקווה",
-  "ashdod": "אשדוד",
-  "netanya": "נתניה",
-  "beer-sheva": "באר שבע",
-  "holon": "חולון",
-  "bnei-brak": "בני ברק",
-  "ramat-gan": "רמת גן",
-  "rehovot": "רחובות",
-  "bat-yam": "בת ים",
-  "herzliya": "הרצליה",
-  "kfar-saba": "כפר סבא",
-  "eilat": "אילת",
-  "tiberias": "טבריה",
-  // Add more cities as needed
-};
 
 const formatCityName = (rawCity: string) =>
   rawCity
@@ -36,10 +16,10 @@ const formatCityName = (rawCity: string) =>
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
 
-// 2. Helper function to get Hebrew name with English fallback
+// Hebrew name with English fallback. `CITY_HEBREW_NAMES` is the shared map in
+// @/lib/internalLinks (single source of truth, also drives cross-links).
 const getCityDisplayName = (slug: string) => {
   const normalizedSlug = slug.toLowerCase().trim();
-  // Return the Hebrew name if it exists, otherwise format the English slug
   return CITY_HEBREW_NAMES[normalizedSlug] || formatCityName(slug);
 };
 
@@ -47,6 +27,8 @@ const CITY_BODIES: Record<string, string> = {
   'תל אביב': `תל אביב היא בירת הלילה של ישראל ואחת הערים התוססות ביותר בתחום המסיבות בעולם. סצנת הלילה מתרכזת בכמה אזורים מרכזיים: שכונת פלורנטין עם מועדוני האנדרגראונד, נמל תל אביב עם הפקות קיץ גדולות, והרחבות הפתוחות לאורך הצפון. בכל לילה שישי ושבת עשרות אירועים מתקיימים במקביל – מרייבים טכנו ועד מסיבות מיינסטרים.\n\nהמועדונים הבולטים של תל אביב פועלים עם ליינים בינלאומיים ומתמחים בז'אנרים שונים: טכנו, האוס, היפ הופ, מיינסטרים ועוד. כרטיסים מוקדמים נמכרים בדרך כלל שבוע עד שבועיים לפני האירוע ומחיר הדלת גבוה משמעותית מ-early bird. אם אתם מגיעים בתחבורה ציבורית, קווי הלילה של תל אביב פועלים בסופי שבוע ומחברים את עיקר האזורים.\n\nמחפשים מסיבות בתל אביב היום או הלילה? הרשימה למטה מתעדכנת מדי יום עם האירועים הקרובים בעיר – כך שתמיד תדעו מה קורה הערב, מחר ובסוף השבוע לפני שאתם קונים כרטיס.`,
 
   'אילת': `אילת היא עיר הבילוי של ישראל ובירת הפסטיבלים של הדרום – יעד שמושך תיירים ומקומיים לאורך כל השנה, ובמיוחד בחגים ובחופשות. מעבר למועדוני הלילה שלאורך החוף הדרומי, אזור אילת והערבה מארח את פסטיבלי הטבע והטראנס הגדולים של ישראל: אמנזיה בחוות הגמלים, ריטואל, ופסטיבלים נוספים שנפרשים על פני כמה ימים במתחמי מדבר פתוחים.\n\nעונת השיא נמשכת מאפריל עד ספטמבר, עם שיא בחגי תשרי – ראש השנה וסוכות – שבהם מתקיימים כמה פסטיבלים במקביל. כרטיסים לפסטיבלים ולאירועי אילת נמכרים מראש ולעיתים אוזלים שבועות לפני התאריך, כך שמומלץ מאוד לרכוש מוקדם ובמחיר Early Bird.\n\nמחפשים מסיבות באילת ב-2026 או פסטיבל בחוות הגמלים? הרשימה למטה מתעדכנת מדי יום עם כל האירועים הקרובים בעיר ובאזור – מסיבות מועדון וחוף ועד פסטיבלי מדבר של שלושה ימים.`,
+
+  'חיפה': `חיפה היא בירת הלילה של הצפון, עם סצנה עצמאית שלא מנסה לחקות את תל אביב. חיי הלילה מתרכזים בעיר התחתית ובמושבה הגרמנית – ברים חיים, מועדוני בוטיק והפקות שמושכות קהל מכל הקריות, מהעמקים ומהגליל. הקהל צעיר יחסית, בין היתר בזכות הטכניון ואוניברסיטת חיפה, וסצנת הטכנו והאלקטרוני המקומית פעילה ומגובשת.\n\nרוב האירועים מתקיימים בחמישי, שישי ושבת. מחירי הכניסה נמוכים בממוצע ממרכז הארץ, וכרטיס מוקדם משתלם במיוחד. מי שמגיע מהקריות או מהעמקים – שווה לתאם הסעה חזרה מראש, התחבורה הציבורית בלילה מוגבלת.\n\nהרשימה למטה מתעדכנת עם כל המסיבות והאירועים הקרובים בחיפה ובסביבה, כולל מיקום, גיל כניסה ומחיר עדכני, עם קישור ישיר לרכישת כרטיסים.`,
 };
 
 const buildCityBody = (cityName: string) =>
@@ -70,6 +52,20 @@ const CITY_FAQS: Record<string, { question: string; answer: string }[]> = {
     {
       question: 'מה גיל הכניסה למסיבות ובפסטיבלים באילת?',
       answer: 'ברוב האירועים גיל הכניסה הוא 18+, וחלק מהפסטיבלים 21+ ומעלה. גיל הכניסה המדויק מצוין בכל כרטיס אירוע ברשימה.',
+    },
+  ],
+  'חיפה': [
+    {
+      question: 'איפה יוצאים בלילה בחיפה?',
+      answer: 'עיקר חיי הלילה בעיר התחתית ובמושבה הגרמנית – ברים חיים ומועדוני בוטיק – וכן הפקות גדולות יותר שמושכות קהל מהקריות ומהעמקים. כל האירועים הקרובים מופיעים ברשימה למעלה עם מיקום מדויק.',
+    },
+    {
+      question: 'כמה עולה כרטיס למסיבה בחיפה?',
+      answer: 'מחירי הכניסה בחיפה נמוכים בממוצע ממרכז הארץ. כרטיס מוקדם נע לרוב בין 40 ל-90 ₪, ומחיר הדלת גבוה יותר.',
+    },
+    {
+      question: 'יש מסיבות טכנו בחיפה?',
+      answer: 'כן. לחיפה סצנת טכנו ואלקטרוני מקומית פעילה, עם אירועים קבועים במועדונים ובחללים חלופיים. אירועי הטכנו הקרובים מסומנים ברשימה.',
     },
   ],
 };
@@ -97,15 +93,18 @@ export async function generateMetadata({ params }: { params: { city: string } })
   const { city } = await params;
   const decodedSlug = decodeURIComponent(city);
   const cityName = getCityDisplayName(decodedSlug);
+  const hasInventory = (CITIES_WITH_INVENTORY as readonly string[]).includes(decodedSlug.toLowerCase());
 
   const CITY_META_DESCRIPTIONS: Record<string, string> = {
     'תל אביב': 'מסיבות בתל אביב היום, הלילה ובסוף השבוע: כל הרייבים, מועדוני הטכנו, האוס והמיינסטרים בעיר – ליינים מעודכנים יומית וכרטיסים מוקדמים במקום אחד. Parties 24/7.',
     'אילת': 'מסיבות ופסטיבלים באילת 2026 – פסטיבלי טבע וטראנס בחוות הגמלים, אמנזיה, אירועי חגים ומועדוני הלילה של אילת. ליינים מעודכנים וכרטיסים מוקדמים במקום אחד. Parties 24/7.',
+    'חיפה': 'מסיבות בחיפה ובצפון – חיי הלילה של העיר התחתית, מועדוני הבוטיק וסצנת הטכנו המקומית. ליינים מעודכנים וכרטיסים מוקדמים במקום אחד. Parties 24/7.',
   };
 
   const CITY_TITLES: Record<string, string> = {
     'תל אביב': 'מסיבות בתל אביב היום ובסוף השבוע',
     'אילת': 'מסיבות ופסטיבלים באילת 2026',
+    'חיפה': 'מסיבות בחיפה ובצפון',
   };
 
   return {
@@ -115,14 +114,16 @@ export async function generateMetadata({ params }: { params: { city: string } })
       canonical: `/cities/${decodedSlug}`,
       languages: { 'he-IL': `/cities/${decodedSlug}` },
     },
+    // Cities without reliable event inventory render a near-empty grid — keep the
+    // page reachable for navigation but out of the index until it has content.
+    ...(hasInventory ? {} : { robots: { index: false, follow: true } }),
   };
 }
 
 export default async function CityPage({ params }: { params: { city: string } }) {
   const { city } = await params;
   const citySlug = decodeURIComponent(city);
-  
-  // 3. Get the Hebrew name for display
+
   const displayCityName = getCityDisplayName(citySlug);
 
   const [parties, carousels] = await Promise.all([
@@ -130,19 +131,18 @@ export default async function CityPage({ params }: { params: { city: string } })
     getCarousels(),
   ]);
 
-  // Keep the filtering logic based on the slug/English (assuming your DB data is in English or tags match the slug)
   const lowerCity = citySlug.replace(/-/g, " ").toLowerCase();
-  
+
   const cityParties = parties.filter((party) =>
+    (party.areas ?? []).some((a) => a === lowerCity || a === citySlug) ||
     party.location.name.toLowerCase().includes(lowerCity) ||
     party.region?.toLowerCase() === lowerCity ||
-    party.tags.some((tag) => tag.toLowerCase().includes(lowerCity))
-    || party.tags.some((tag) => tag.includes(displayCityName)) 
+    party.tags.some((tag) => tag.toLowerCase().includes(lowerCity)) ||
+    party.tags.some((tag) => tag.includes(displayCityName))
   );
 
   const hotNowCarousel = findHotNowCarousel(carousels);
 
-  // Pass the Hebrew name to the body builder
   const body = buildCityBody(displayCityName);
   const faqItems = buildCityFaqs(displayCityName);
 
@@ -194,7 +194,6 @@ export default async function CityPage({ params }: { params: { city: string } })
         hotPartyIds={Array.from(new Set(hotNowCarousel?.partyIds || []))}
         showFilters={false}
         showSearch={false}
-        // Use the Hebrew name here
         title={`מסיבות ב${displayCityName}`}
         description="כל האירועים הקרובים בעיר שאתם אוהבים."
         basePath={`/cities/${citySlug}`}
@@ -213,7 +212,7 @@ export default async function CityPage({ params }: { params: { city: string } })
         </div>
       </section>
 
-      <section className="container mx-auto max-w-4xl px-4 pb-16">
+      <section className="container mx-auto max-w-4xl px-4">
         <div className="rounded-2xl border border-white/10 bg-white/5 p-8">
           <h2 className="text-2xl font-display text-white mb-6">שאלות נפוצות על מסיבות ב{displayCityName}</h2>
           <div className="space-y-6">
@@ -226,6 +225,8 @@ export default async function CityPage({ params }: { params: { city: string } })
           </div>
         </div>
       </section>
+
+      <ExploreMoreLinks context={{ kind: "city", slug: citySlug }} />
     </div>
   );
 }

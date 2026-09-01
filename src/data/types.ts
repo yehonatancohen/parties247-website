@@ -19,6 +19,10 @@ export interface Party {
   ticketPrice?: number;
   soldOut?: boolean;
   region: 'דרום' | 'מרכז' | 'צפון' | 'לא ידוע';
+  /** Lowercase English area keys from the backend (e.g. "tel aviv", "haifa", "north", "eilat", "south").
+   *  The backend geo-tags most events here even when `region` is "לא ידוע" — this is the reliable
+   *  signal for city/area listing pages. */
+  areas?: string[];
   musicType: 'מיינסטרים' | 'טכנו' | 'טראנס' | 'אחר';
   eventType: 'מסיבת בית' | 'מסיבת מועדון' | 'מסיבת טבע' | 'פסטיבל' | 'אחר';
   age: 'נוער' | '18+' | '21+' | 'כל הגילאים';

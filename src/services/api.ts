@@ -107,6 +107,9 @@ const mapPartyToFrontend = (backendParty: any): Party => {
     description: description || 'No description available.',
     originalUrl: backendParty.purchaseUrl || backendParty.originalUrl || backendParty.goOutUrl,
     region: backendParty.region || 'לא ידוע',
+    areas: Array.isArray(backendParty.areas)
+      ? backendParty.areas.map((a: unknown) => String(a).toLowerCase().trim()).filter(Boolean)
+      : [],
     musicType: backendParty.musicType || 'אחר',
     eventType: backendParty.eventType || 'אחר',
     age: age || 'כל הגילאים',
