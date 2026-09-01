@@ -105,6 +105,25 @@ export default async function AllPartiesPage({
           <p className="text-lg text-gray-300 leading-relaxed max-w-2xl mx-auto">
             הרשימה המלאה של מסיבות, רייבים ואירועי לילה בישראל – מתעדכנת בזמן אמת. סננו לפי עיר, ז'אנר מוזיקה, תאריך או קהל יעד, ורכשו כרטיסים מוקדמים ישירות מהמוכר הרשמי.
           </p>
+          <div className="mt-5 flex flex-wrap gap-2 justify-center" dir="rtl">
+            {[
+              { label: 'ראש השנה 2026', href: '/rosh-hashana' },
+              { label: 'סוכות 2026', href: '/sukkot' },
+              { label: 'מסיבות בתל אביב', href: '/cities/tel-aviv' },
+              { label: 'מסיבות באילת', href: '/cities/eilat' },
+              { label: 'מסיבות 18 פלוס', href: '/parties/18-plus-parties-tel-aviv' },
+              { label: 'טכנו וטראנס', href: '/genre/rave-parties' },
+              { label: 'סוף שבוע', href: '/day/weekend' },
+            ].map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-jungle-text/90 transition hover:border-jungle-accent hover:text-white"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
         </section>
 
         <PartyGrid

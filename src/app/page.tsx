@@ -38,8 +38,8 @@ async function getData() {
 }
 
 export const metadata: Metadata = {
-  title: 'כרטיסים למסיבות, פסטיבלים וחיי לילה | Parties24/7',
-  description: 'כל המסיבות הכי חמות בישראל – מסיבות 18 פלוס, אלכוהול חופשי, רייבים ופסטיבלים בתל אביב, חיפה, אילת ועוד. All parties & nightlife events in Israel, updated daily.',
+  title: 'מסיבות היום, הלילה וסוף השבוע בישראל | Parties24/7',
+  description: 'כל המסיבות היום, מחר ובסוף השבוע – מסיבות 18 פלוס, אלכוהול חופשי, רייבים, פסטיבלים ואירועי חגים בתל אביב, חיפה, אילת ובכל הארץ. ליינים וכרטיסים מעודכנים כל יום. Parties24/7.',
   alternates: {
     canonical: '/',
     languages: { 'he-IL': '/' },

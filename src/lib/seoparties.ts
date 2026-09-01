@@ -4,6 +4,12 @@ export type SeoPageConfig = {
   slug: string;
   title: string;
   description: string;
+  /** Unique long-form copy for the page. Paragraphs separated by a blank line. Falls back to a generic template when omitted. */
+  body?: string;
+  /** Page-specific FAQ. Rendered visibly and as FAQPage JSON-LD. */
+  faqs?: { question: string; answer: string }[];
+  /** Cross-links shown when the visitor doesn't find a matching event, to keep them on-site instead of bouncing. */
+  related?: { label: string; href: string }[];
   apiFilters: {
     region?: string;
     cityTag?: string;     // Matches values inside 'tags' or 'city' field
@@ -68,7 +74,29 @@ export const SPECIFIC_PARTIES_PAGES: SeoPageConfig[] = [
   {
     slug: 'mainstream-parties-tel-aviv',
     title: 'מסיבות מיינסטרים בתל אביב',
-    description: 'המועדונים הכי שמחים בתל אביב לקהל שאוהב לרקוד ולשיר.',
+    description: 'המועדונים הכי שמחים בתל אביב לקהל שאוהב לרקוד ולשיר – ליינים, מחירים וכרטיסים מעודכנים כל יום.',
+    body: `מסיבות מיינסטרים בתל אביב הן הבחירה הבטוחה לערב שכולו להיטים – פופ, רגאטון, מזרחית, היפ הופ ולהיטי רדיו – עם קהל שבא לרקוד, לשיר ולא להתאמץ יותר מדי. רוב האירועים מתקיימים בחמישי, שישי ושבת במועדוני מרכז העיר, בנמל תל אביב וברחבות הגג, וחלקם פתוחים כבר משעות הסאנסט.\n\nהסדרות הקבועות – כמו THURSDAY MOON, מיינסטרים בקבוע ו-FRIDAY MAINSTREAM – חוזרות כל שבוע עם ליינאפ מתחלף, כך שכדאי לבדוק את התאריך המדויק לפני שקונים. גיל הכניסה נע בדרך כלל בין 18+ ל-21+, ומחיר כרטיס מוקדם זול משמעותית ממחיר הדלת.\n\nהרשימה למטה מתעדכנת מדי יום עם כל מסיבות המיינסטרים הקרובות בתל אביב, כולל מחיר עדכני וקישור ישיר לרכישה. אם אתם מגיעים בחג – ראש השנה או סוכות – שווה לבדוק גם את עמודי החגים הייעודיים, שם מרוכזים האירועים המיוחדים של אותו סוף שבוע.`,
+    faqs: [
+      {
+        question: 'מתי יש מסיבות מיינסטרים בתל אביב?',
+        answer: 'רוב האירועים מתקיימים בלילות חמישי, שישי ושבת, עם סדרות קבועות שחוזרות מדי שבוע. בחגים ובחופשות נוספים אירועים גם באמצע השבוע. התאריכים המדויקים מופיעים בכל כרטיס אירוע ברשימה.',
+      },
+      {
+        question: 'כמה עולה כרטיס למסיבת מיינסטרים בתל אביב?',
+        answer: 'כרטיס מוקדם נע לרוב בין 60 ל-120 ₪, ולעיתים פחות בליינים קבועים. מחיר הדלת גבוה יותר ולאירועים מבוקשים הכרטיסים נגמרים מראש, לכן מומלץ לרכוש מוקדם.',
+      },
+      {
+        question: 'מה גיל הכניסה למסיבות מיינסטרים בתל אביב?',
+        answer: 'ברוב האירועים גיל הכניסה הוא 18+, וחלק מהמועדונים מגדירים 21+ ומעלה. גיל הכניסה המדויק מצוין בכל כרטיס אירוע.',
+      },
+    ],
+    related: [
+      { label: 'מסיבות 18 פלוס בתל אביב', href: '/parties/18-plus-parties-tel-aviv' },
+      { label: 'מסיבות סופ״ש בתל אביב', href: '/parties/parties-in-tel-aviv-weekend' },
+      { label: 'מסיבות בתל אביב', href: '/cities/tel-aviv' },
+      { label: 'מסיבות ראש השנה 2026', href: '/rosh-hashana' },
+      { label: 'מסיבות סוכות 2026', href: '/sukkot' },
+    ],
     apiFilters: { cityTag: 'תל אביב', musicType: 'מיינסטרים' }
   },
   {

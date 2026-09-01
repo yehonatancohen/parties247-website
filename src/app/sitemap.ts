@@ -50,6 +50,24 @@ const staticPages: MetadataRoute.Sitemap = [
     priority: 0.8,
   },
   {
+    url: `${BASE_URL}/purim`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly',
+    priority: 0.7,
+  },
+  {
+    url: `${BASE_URL}/rosh-hashana`,
+    lastModified: new Date(),
+    changeFrequency: 'daily',
+    priority: 0.9,
+  },
+  {
+    url: `${BASE_URL}/sukkot`,
+    lastModified: new Date(),
+    changeFrequency: 'daily',
+    priority: 0.9,
+  },
+  {
     url: `${BASE_URL}/about`,
     lastModified: new Date(),
     changeFrequency: 'monthly',
