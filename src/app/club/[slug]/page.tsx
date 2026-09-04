@@ -53,7 +53,15 @@ export default async function ClubPage({ params }: { params: { slug: string } })
   const body = config?.body || buildClubBody(config?.label || slug);
   const faqItems = config?.faq || [];
 
-  const venueParty = filteredParties.find((p) => p.location?.address || p.location?.geo);
+  // The backend serves `location` as a plain string, so `services/api` can only ever
+  // populate `location.name` — `address`/`geo` are undefined for every party in practice.
+  // Gating the NightClub entity on address/geo therefore suppressed it on *all* club pages.
+  // Prefer a party with real address/geo when one exists, else fall back to a usable name.
+  const hasVenueName = (p: (typeof filteredParties)[number]) =>
+    Boolean(p.location?.name) && p.location.name !== 'Location not specified';
+  const venueParty =
+    filteredParties.find((p) => p.location?.address || p.location?.geo) ||
+    filteredParties.find(hasVenueName);
 
   const nightClubJsonLd = venueParty ? {
     '@context': 'https://schema.org',
@@ -61,10 +69,13 @@ export default async function ClubPage({ params }: { params: { slug: string } })
     'name': config?.label || slug,
     'url': `${BASE_URL}${config?.path || `/club/${slug}`}`,
     ...(config?.ogImage ? { 'image': config.ogImage } : {}),
+    ...(config?.description ? { 'description': config.description } : {}),
     'address': {
       '@type': 'PostalAddress',
       'streetAddress': venueParty.location.address || venueParty.location.name,
-      'addressLocality': venueParty.location.name,
+      ...(venueParty.region && venueParty.region !== 'לא ידוע'
+        ? { 'addressRegion': venueParty.region }
+        : {}),
       'addressCountry': 'IL',
     },
     ...(venueParty.location.geo ? {
@@ -85,8 +96,28 @@ export default async function ClubPage({ params }: { params: { slug: string } })
     'itemListElement': filteredParties.slice(0, 20).map((p, i) => ({
       '@type': 'ListItem',
       'position': i + 1,
-      'name': p.name,
       'url': `${BASE_URL}/event/${p.slug}`,
+      // Full Event nodes (not bare names) so the club listing is eligible for
+      // event rich results the same way /event/[slug] pages are.
+      'item': {
+        '@type': 'Event',
+        'name': p.name,
+        'startDate': p.date,
+        'url': `${BASE_URL}/event/${p.slug}`,
+        ...(p.imageUrl ? { 'image': p.imageUrl } : {}),
+        'eventStatus': `https://schema.org/${p.eventStatus ?? 'EventScheduled'}`,
+        'eventAttendanceMode': `https://schema.org/${p.eventAttendanceMode ?? 'OfflineEventAttendanceMode'}`,
+        'location': {
+          '@type': 'Place',
+          'name': p.location?.name || config?.label || slug,
+          'address': {
+            '@type': 'PostalAddress',
+            'streetAddress': p.location?.address || p.location?.name || config?.label || slug,
+            ...(p.region && p.region !== 'לא ידוע' ? { 'addressRegion': p.region } : {}),
+            'addressCountry': 'IL',
+          },
+        },
+      },
     })),
   };
 
