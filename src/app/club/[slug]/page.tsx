@@ -5,6 +5,7 @@ import { findHotNowCarousel } from "@/lib/carousels";
 import { findTaxonomyConfig, filterPartiesByTaxonomy } from "@/data/taxonomy";
 import { getCarousels, getParties } from "@/services/api";
 import { BASE_URL } from "@/data/constants";
+import { toIsraelISO } from "@/lib/dates";
 
 export const revalidate = 300;
 
@@ -102,7 +103,7 @@ export default async function ClubPage({ params }: { params: { slug: string } })
       'item': {
         '@type': 'Event',
         'name': p.name,
-        'startDate': p.date,
+        'startDate': toIsraelISO(p.date),
         'url': `${BASE_URL}/event/${p.slug}`,
         ...(p.imageUrl ? { 'image': p.imageUrl } : {}),
         'eventStatus': `https://schema.org/${p.eventStatus ?? 'EventScheduled'}`,
