@@ -7,29 +7,9 @@ import { Party } from "@/data/types";
 import { BRAND_LOGO_URL, BASE_URL } from "@/data/constants";
 import { CalendarIcon, LocationIcon } from "@/components/Icons";
 import FlyerToRelatedLink from "@/components/FlyerToRelatedLink";
+import { toIsraelISO } from "@/lib/dates";
 
 export const revalidate = 3600;
-
-// Converts a UTC date string to a proper ISO 8601 string in Israel local time (Asia/Jerusalem).
-function toIsraelISO(dateStr: string): string {
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return dateStr;
-  const localStr = new Intl.DateTimeFormat('sv-SE', {
-    timeZone: 'Asia/Jerusalem',
-    year: 'numeric', month: '2-digit', day: '2-digit',
-    hour: '2-digit', minute: '2-digit', second: '2-digit',
-  }).format(d);
-  const [datePart, timePart] = localStr.split(' ');
-  const [year, month, day] = datePart.split('-').map(Number);
-  const [hour, min, sec] = timePart.split(':').map(Number);
-  const localAsUtcMs = Date.UTC(year, month - 1, day, hour, min, sec);
-  const offsetMinutes = Math.round((localAsUtcMs - d.getTime()) / 60000);
-  const sign = offsetMinutes >= 0 ? '+' : '-';
-  const abs = Math.abs(offsetMinutes);
-  const hh = String(Math.floor(abs / 60)).padStart(2, '0');
-  const mm = String(abs % 60).padStart(2, '0');
-  return `${datePart}T${timePart}${sign}${hh}:${mm}`;
-}
 
 // Same non-interactive-div dead-click pattern already fixed on the live event page
 // (Quick Info Strip + Event Details location blocks) — Clarity session recording

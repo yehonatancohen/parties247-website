@@ -16,32 +16,9 @@ import { StickyPurchaseBar } from "@/components/UrgencyComponents";
 import PartyViewTracker from "@/components/PartyViewTracker";
 import { BASE_URL, LAST_TICKETS_TAG } from "@/data/constants";
 import { resolveCitySlug, resolveAudienceSlug, CITY_HEBREW_NAMES, AUDIENCE_HE_LABEL } from "@/lib/internalLinks";
+import { toIsraelISO } from "@/lib/dates";
 
 export const revalidate = 60;
-
-// Converts a UTC date string to a proper ISO 8601 string in Israel local time (Asia/Jerusalem).
-// Israel is UTC+2 (IST) in winter and UTC+3 (IDT) in summer.
-function toIsraelISO(dateStr: string): string {
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return dateStr;
-  // 'sv-SE' locale produces ISO-like "YYYY-MM-DD HH:mm:ss" output
-  const localStr = new Intl.DateTimeFormat('sv-SE', {
-    timeZone: 'Asia/Jerusalem',
-    year: 'numeric', month: '2-digit', day: '2-digit',
-    hour: '2-digit', minute: '2-digit', second: '2-digit',
-  }).format(d);
-  // Reconstruct a "fake UTC" timestamp from the local parts to compute actual offset
-  const [datePart, timePart] = localStr.split(' ');
-  const [year, month, day] = datePart.split('-').map(Number);
-  const [hour, min, sec] = timePart.split(':').map(Number);
-  const localAsUtcMs = Date.UTC(year, month - 1, day, hour, min, sec);
-  const offsetMinutes = Math.round((localAsUtcMs - d.getTime()) / 60000);
-  const sign = offsetMinutes >= 0 ? '+' : '-';
-  const abs = Math.abs(offsetMinutes);
-  const hh = String(Math.floor(abs / 60)).padStart(2, '0');
-  const mm = String(abs % 60).padStart(2, '0');
-  return `${datePart}T${timePart}${sign}${hh}:${mm}`;
-}
 
 // Helper for Tag Colors
 const getTagColor = (tag: string) => {
