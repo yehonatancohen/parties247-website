@@ -7,6 +7,12 @@ export const ADMIN_USER_KEY = 'parties247.isAdminUser';
 
 const SESSION_STORAGE_KEY = 'parties247.analytics.sessionId';
 const VISITOR_RECORDED_KEY = 'parties247.analytics.visitorRecorded';
+// The WhatsApp click code from ?w=<code> on /event/<slug>. proxy.ts already
+// logs the raw click server-side (see its own comment); this is separately
+// carried through to the buy-click event so a purchase-intent click can be
+// joined back to the campaign/group. Session-scoped, not tied to the event
+// page: a visitor can land via WhatsApp, browse elsewhere, then buy.
+const WA_CODE_STORAGE_KEY = 'parties247.wa.code';
 
 let fallbackConsentGranted = false;
 let fallbackAdminUser = false;
@@ -196,6 +202,27 @@ const buildVisitorContext = (): Record<string, unknown> => {
   return ctx;
 };
 
+const captureWaCode = (): void => {
+  if (typeof window === 'undefined') return;
+  try {
+    const code = new URLSearchParams(window.location.search).get('w');
+    if (code) {
+      window.sessionStorage.setItem(WA_CODE_STORAGE_KEY, code);
+    }
+  } catch (error) {
+    console.warn('Failed to capture wa click code', error);
+  }
+};
+
+const getWaCode = (): string | undefined => {
+  if (typeof window === 'undefined') return undefined;
+  try {
+    return window.sessionStorage.getItem(WA_CODE_STORAGE_KEY) || undefined;
+  } catch {
+    return undefined;
+  }
+};
+
 export const initializeAnalytics = (): boolean => {
   if (isAdminUser()) {
     return false;
@@ -203,6 +230,7 @@ export const initializeAnalytics = (): boolean => {
 
   if (!analyticsReady) {
     ensureSessionId();
+    captureWaCode();
     analyticsReady = true;
   }
 
@@ -233,8 +261,9 @@ export const trackPartyRedirect = (partyId: string, partySlug: string): boolean 
   initializeAnalytics();
   const sessionId = ensureSessionId();
   const referrer = typeof document !== 'undefined' ? document.referrer : undefined;
+  const waCode = getWaCode();
 
-  void recordPartyRedirect({ partyId, partySlug, sessionId, referrer }).catch((error) => {
+  void recordPartyRedirect({ partyId, partySlug, sessionId, referrer, waCode }).catch((error) => {
     console.debug('Failed to record party redirect', error);
   });
   return true;

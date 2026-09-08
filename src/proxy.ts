@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getCache } from '@vercel/functions';
+import { getCache, waitUntil } from '@vercel/functions';
 
 const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'https://parties247-backend.onrender.com/').replace(/\/$/, '');
 
@@ -18,6 +18,18 @@ export async function proxy(request: NextRequest) {
   if (!match) return NextResponse.next();
 
   const [, section, slug] = match;
+
+  // WhatsApp campaign click tracking: parties247.co.il/event/<slug>?w=<code>.
+  // Logged server-side here, not from the browser, deliberately — a
+  // client-side beacon to the Flask backend would sit behind its flat ~5s
+  // latency floor on the critical path (see the fetchJsonCached comment
+  // below); waitUntil lets this happen after the response is already on its
+  // way to the visitor. Never blocks or redirects; a failure here is
+  // invisible to the visitor and only costs one campaign click count.
+  const waCode = request.nextUrl.searchParams.get('w');
+  if (waCode) {
+    waitUntil(logWaClick(waCode, request));
+  }
 
   try {
     const res = await fetchEventCached(slug);
@@ -49,6 +61,27 @@ export async function proxy(request: NextRequest) {
   }
 
   return NextResponse.next();
+}
+
+async function logWaClick(code: string, request: NextRequest): Promise<void> {
+  try {
+    // Forward the real visitor's IP explicitly — this fetch originates from
+    // Vercel's edge, not the visitor's browser, so without this the backend
+    // would hash the edge's own IP for every click. extract_client_ip() on
+    // the backend already reads X-Forwarded-For first.
+    const forwardedFor = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '';
+    await fetch(`${API_URL}/api/wa/click`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': request.headers.get('user-agent') || '',
+        ...(forwardedFor ? { 'X-Forwarded-For': forwardedFor } : {}),
+      },
+      body: JSON.stringify({ code }),
+    });
+  } catch {
+    // Best-effort only — see the call site comment.
+  }
 }
 
 async function tryRedirectSlug(
