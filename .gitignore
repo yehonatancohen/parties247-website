@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# backend admin JWT used by the unattended /seo-update run
+.admin-token
+.admin-token.tmp

@@ -56,6 +56,21 @@ Always use `endDate` as yesterday or earlier for reliable data.
 
 ---
 
+## Backend admin token for the revenue half of `/seo-update`
+
+The routine reads `/api/admin/analytics/{funnel,sales}` with the JWT in `.admin-token`
+(repo root, gitignored). Tokens last 30 days. Refresh it at the start of every run:
+
+```
+scripts/refresh-admin-token.sh
+```
+
+It swaps a valid or ≤14-days-expired token for a fresh one (no password needed). If it
+exits 1 the token is too old — log in once with the admin password (the script prints the
+`curl`) and save the token back into `.admin-token`.
+
+---
+
 ## How to Ask Claude to Analyze GSC
 
 Quickest way — just run the custom command:
