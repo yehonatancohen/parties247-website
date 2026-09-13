@@ -1094,8 +1094,8 @@ const englishFriendlyTaxonomies: TaxonomyConfig[] = [
     slug: 'jimmy-who',
     path: '/club/jimmy-who',
     label: 'Jimmy Who תל אביב',
-    title: 'JimmyWho? Bar & Lounge רוטשילד ת"א – גימי הו | שעות פתיחה, שולחן VIP וכרטיסים',
-    description: 'גימי הו (JimmyWho? Bar & Lounge) ברוטשילד תל אביב – שעות פתיחה, ליינאפ המסיבות של השבוע, גיל כניסה והזמנת שולחן VIP. כל המידע לפני שיוצאים, מעודכן יומי.',
+    title: 'ג׳ימי הו תל אביב – האירועים הקרובים והזמנת שולחן VIP | Parties24/7',
+    description: 'ג׳ימי הו (JimmyWho? Bar & Lounge) רוטשילד ת"א – כל האירועים והמסיבות הקרובות, מחירי כרטיסים והזמנת שולחן VIP. הרשימה מתעדכנת כל יום.',
     intro:
       'Jimmy Who הוא הבר-מועדון שמשלב קוקטיילים מוקפדים עם רחבה שמחה שמנגנת פופ, היפ הופ ורמיקסים ישראליים. המקום האידיאלי לערב חברתי, יום הולדת או פשוט לילה טוב עם חברים. כאן תמצאו את כל האירועים הקרובים, הזמנת שולחנות ומידע על הגעה.',
     body:
@@ -1326,6 +1326,33 @@ const englishFriendlyTaxonomies: TaxonomyConfig[] = [
       { label: 'בית', path: '/' },
       { label: 'חיפוש מסיבות', path: '/party-discovery' },
       { label: 'GOAT TLV' },
+    ],
+    ogImage: 'https://images.unsplash.com/photo-1571266028243-d220c9e97c3b?auto=format&fit=crop&w=1200&q=80',
+    relatedPaths: [
+      { label: 'מסיבות תל אביב', path: '/cities/tel-aviv' },
+      { label: 'Mainstream Parties', path: '/genre/mainstream-music' },
+    ],
+  },
+  {
+    type: 'club',
+    slug: 'room-48',
+    path: '/club/room-48',
+    label: 'Room 48 תל אביב',
+    title: 'Room 48 תל אביב – מועדון ברחוב המלך ג׳ורג׳, כרטיסים ואירועים קרובים',
+    description: 'Room 48 תל אביב, רחוב המלך ג׳ורג׳ 48 – ליינים קרובים, כרטיסים מוקדמים ופרטי כניסה למועדון החדש בלב העיר.',
+    intro:
+      'Room 48 הוא מועדון חדש בלב תל אביב, ברחוב המלך ג׳ורג׳ 48 – ממוקם במרכז העיר עם נגישות נוחה לתחבורה ציבורית. כאן תמצאו את כל האירועים הקרובים והכרטיסים.',
+    body:
+      'Room 48 נפתח ברחוב המלך ג׳ורג׳ 48 בתל אביב כתוספת חדשה למפת הליינים של העיר, עם ליינאפ שכולל אמנים מוזמנים לצד עורכי סטים מקומיים. כמו במועדונים חדשים אחרים, פרטי הכניסה, קוד הלבוש וגיל הכניסה משתנים בין אירוע לאירוע – מומלץ לבדוק את עמוד האירוע הספציפי לפני שרוכשים כרטיס.\n\nהמיקום במרכז תל אביב הופך את המועדון לנגיש בקלות מכל אזורי העיר, בין אם מגיעים ברגל, באופניים חשמליים או בתחבורה ציבורית. מומלץ לעקוב אחרי עמוד המועדון כדי להתעדכן בכל האירועים החדשים שמתווספים.',
+    faq: [
+      { question: 'איפה נמצא Room 48?', answer: 'ברחוב המלך ג׳ורג׳ 48, תל אביב-יפו.' },
+      { question: 'מה גיל הכניסה ל-Room 48?', answer: 'משתנה בין אירועים. מדיניות הגיל המדויקת מצוינת בעמוד כל אירוע.' },
+      { question: 'איך מגיעים ל-Room 48 בתחבורה ציבורית?', answer: 'המועדון ממוקם במרכז תל אביב ונגיש בקלות בתחבורה ציבורית. פרטי הגעה מדויקים מצוינים בכל עמוד אירוע.' },
+    ],
+    breadcrumbs: [
+      { label: 'בית', path: '/' },
+      { label: 'חיפוש מסיבות', path: '/party-discovery' },
+      { label: 'Room 48' },
     ],
     ogImage: 'https://images.unsplash.com/photo-1571266028243-d220c9e97c3b?auto=format&fit=crop&w=1200&q=80',
     relatedPaths: [
@@ -1655,6 +1682,7 @@ const clubMappings: Record<string, string[]> = {
   'anna-loulou': ['anna loulou', 'אנה לולו', 'anna-loulou', 'אנא לולו'],
   bahia: ['bahia', 'בהיה', 'bahia beach', 'בהיה הרצליה'],
   goat: ['goat', 'גואט', 'goat tlv', 'גואט תל אביב'],
+  'room-48': ['room 48', 'room48', 'רום 48'],
 };
 
 const filterByClub = (parties: Party[], slug: string) => {

@@ -145,7 +145,7 @@ const mapCarouselToFrontend = (backendCarousel: any): Carousel => {
 export const getParties = async (filters?: SeoPageConfig["apiFilters"], includeHidden = false): Promise<Party[]> => {
   // Use 'upcoming=true' by default, if we also want past parties we need another param
   const response = await fetch(`${API_URL}/parties?upcoming=true`, {
-    next: { revalidate: 60 },
+    next: { revalidate: 300 },
   });
 
   if (!response.ok) throw new Error("Failed to fetch parties");

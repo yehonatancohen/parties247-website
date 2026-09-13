@@ -57,6 +57,7 @@ const evergreenPaths = [
 
   '/club/jimmy-who',
   '/club/moon-child',
+  '/club/room-48',
 ];
 
 async function fetchEvents(): Promise<MetadataRoute.Sitemap> {
