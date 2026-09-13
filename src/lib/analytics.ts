@@ -1,5 +1,6 @@
 import { recordPartyRedirect, recordPartyView, recordVisitor } from '../services/api';
 import { pushToDataLayer } from './gtm';
+import { captureWaCodeFromUrl, readWaAttribution, type WaAttribution } from './waAttribution';
 
 export const COOKIE_CONSENT_KEY = 'cookieConsent_v2';
 export const ANALYTICS_CONSENT_EVENT = 'analytics:consentGranted';
@@ -7,12 +8,6 @@ export const ADMIN_USER_KEY = 'parties247.isAdminUser';
 
 const SESSION_STORAGE_KEY = 'parties247.analytics.sessionId';
 const VISITOR_RECORDED_KEY = 'parties247.analytics.visitorRecorded';
-// The WhatsApp click code from ?w=<code> on /event/<slug>. proxy.ts already
-// logs the raw click server-side (see its own comment); this is separately
-// carried through to the buy-click event so a purchase-intent click can be
-// joined back to the campaign/group. Session-scoped, not tied to the event
-// page: a visitor can land via WhatsApp, browse elsewhere, then buy.
-const WA_CODE_STORAGE_KEY = 'parties247.wa.code';
 
 let fallbackConsentGranted = false;
 let fallbackAdminUser = false;
@@ -202,22 +197,25 @@ const buildVisitorContext = (): Record<string, unknown> => {
   return ctx;
 };
 
+// Old (pre-2026-09) sessionStorage-only key, kept as a read-only fallback so
+// a tab that captured a code before this rollout doesn't lose it mid-session.
+// Never written to anymore — see waAttribution.ts for why localStorage with
+// an explicit expiry replaced it (WhatsApp's in-app browser closing used to
+// wipe sessionStorage before a delayed purchase could carry the code along).
+const LEGACY_WA_CODE_SESSION_KEY = 'parties247.wa.code';
+
 const captureWaCode = (): void => {
   if (typeof window === 'undefined') return;
-  try {
-    const code = new URLSearchParams(window.location.search).get('w');
-    if (code) {
-      window.sessionStorage.setItem(WA_CODE_STORAGE_KEY, code);
-    }
-  } catch (error) {
-    console.warn('Failed to capture wa click code', error);
-  }
+  captureWaCodeFromUrl(window.location.search, window.localStorage);
 };
 
-const getWaCode = (): string | undefined => {
+const getWaAttribution = (): WaAttribution | undefined => {
   if (typeof window === 'undefined') return undefined;
+  const attribution = readWaAttribution(window.localStorage);
+  if (attribution) return attribution;
   try {
-    return window.sessionStorage.getItem(WA_CODE_STORAGE_KEY) || undefined;
+    const legacyCode = window.sessionStorage.getItem(LEGACY_WA_CODE_SESSION_KEY);
+    return legacyCode ? { code: legacyCode, firstSeenAt: '' } : undefined;
   } catch {
     return undefined;
   }
@@ -261,9 +259,13 @@ export const trackPartyRedirect = (partyId: string, partySlug: string): boolean 
   initializeAnalytics();
   const sessionId = ensureSessionId();
   const referrer = typeof document !== 'undefined' ? document.referrer : undefined;
-  const waCode = getWaCode();
+  const waAttribution = getWaAttribution();
 
-  void recordPartyRedirect({ partyId, partySlug, sessionId, referrer, waCode }).catch((error) => {
+  void recordPartyRedirect({
+    partyId, partySlug, sessionId, referrer,
+    waCode: waAttribution?.code,
+    waFirstSeenAt: waAttribution?.firstSeenAt || undefined,
+  }).catch((error) => {
     console.debug('Failed to record party redirect', error);
   });
   return true;
@@ -277,8 +279,16 @@ export const trackPartyView = (partyId: string, partySlug: string): boolean => {
   initializeAnalytics();
   const sessionId = ensureSessionId();
   const referrer = typeof document !== 'undefined' ? document.referrer : undefined;
+  // Attached here too (not just on the buy-click redirect) so "viewed party
+  // A via WhatsApp, bought party B" is visible instead of only ever seeing
+  // the WhatsApp touch on whichever party happened to convert.
+  const waAttribution = getWaAttribution();
 
-  recordPartyView({ partyId, partySlug, sessionId, referrer }).catch((error) => {
+  recordPartyView({
+    partyId, partySlug, sessionId, referrer,
+    waCode: waAttribution?.code,
+    waFirstSeenAt: waAttribution?.firstSeenAt || undefined,
+  }).catch((error) => {
     console.debug('Failed to record party view', error);
   });
   return true;

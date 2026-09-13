@@ -33,10 +33,13 @@ type PartyAnalyticsPayload = {
   partySlug: string;
   sessionId?: string;
   referrer?: string;
-  // Set only on the redirect (buy-click) call, when the visit carries a
-  // WhatsApp campaign click code — joins this purchase-intent event back to
-  // the campaign/group that drove it. See lib/analytics.ts.
+  // Set on both the view and redirect calls when the visit carries a
+  // WhatsApp campaign click code — joins the event back to the campaign/
+  // group that drove it, even after navigating away before buying. See
+  // lib/waAttribution.ts.
   waCode?: string;
+  // When that code was first captured (ISO string), for recency weighting.
+  waFirstSeenAt?: string;
 };
 
 const mapPartyToFrontend = (backendParty: any): Party => {
