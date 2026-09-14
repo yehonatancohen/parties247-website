@@ -126,13 +126,20 @@ type CachedResponse<T = EventPayload & RedirectPayload> = {
 // TTL is deliberately much longer than the 60s the old (non-functioning)
 // `revalidate` asked for. All this middleware needs from the response is
 // whether the event is `past`, which flips exactly once per event, at a known
-// time — so a stale answer costs at most a few minutes' delay on an SEO
-// canonicalisation redirect. Meanwhile the site sees single-digit sessions per
-// page per day, so at a 60s TTL virtually every visitor would still land on a
-// cold entry and eat the backend's full ~5s. A short TTL would make this fix
-// technically correct and practically useless. Errors/404s are cached far more
-// briefly so a newly-added or just-fixed slug isn't stuck behind a stale miss.
-const OK_TTL_SECONDS = 600;
+// time — so a stale answer costs at most an hour's delay on an SEO
+// canonicalisation redirect (same staleness the page component itself already
+// tolerates via its own `revalidate = 3600`). Meanwhile the site sees
+// single-digit sessions per page per day, so even the original 600s TTL left
+// most real visits landing on a cold Runtime Cache entry and eating the
+// backend's full ~5-7s — measured 2026-09-14: 7.2-7.7s TTFB on cold
+// long-tail /archive/* slugs vs 0.6-0.7s warm, which is enough on its own to
+// blow a 4s mobile LCP budget (flagged by Search Console). Raised to 3600s to
+// meaningfully cut the miss rate; this does not fully close the gap (a page
+// untouched for over an hour still pays the cold cost) — see proxy.ts's
+// module comment for the real fix (avoid the live backend round-trip on
+// cache miss entirely). Errors/404s are cached far more briefly so a
+// newly-added or just-fixed slug isn't stuck behind a stale miss.
+const OK_TTL_SECONDS = 3600;
 const ERROR_TTL_SECONDS = 60;
 
 async function fetchJsonCached(url: string, key: string): Promise<CachedResponse> {
