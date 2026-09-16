@@ -1,5 +1,5 @@
-import LoadingJungle from "@/components/LoadingJungle";
+import PageLoading from "@/components/loading/PageLoading";
 
 export default function RootLoading() {
-  return <LoadingJungle />;
+  return <PageLoading />;
 }

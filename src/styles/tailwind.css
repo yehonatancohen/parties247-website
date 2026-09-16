@@ -148,6 +148,17 @@
     animation: skeleton-sweep 1.6s cubic-bezier(0.28, 0.11, 0.32, 1) infinite;
   }
 
+  /* Neutral route loading: a slim line sweeping under the header. */
+  @keyframes loading-line {
+    from { transform: translateX(150%); }
+    to { transform: translateX(-350%); }
+  }
+
+  .loading-line {
+    right: 0;
+    animation: loading-line 1.1s cubic-bezier(0.28, 0.11, 0.32, 1) infinite;
+  }
+
   .no-scrollbar {
     scrollbar-width: none;
   }
@@ -160,7 +171,8 @@
     .animate-wall,
     .animate-wall-reverse,
     .animate-wall-in,
-    .skeleton {
+    .skeleton,
+    .loading-line {
       animation: none;
     }
   }

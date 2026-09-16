@@ -7,7 +7,7 @@ const Bar = ({ className }: { className: string }) => (
   <div className={`skeleton rounded-full ${className}`} />
 );
 
-export default function LoadingJungle() {
+export default function ListingLoading() {
   return (
     <div className="font-apple min-h-screen bg-stage text-ink" role="status" aria-live="polite">
       <span className="sr-only">טוען מסיבות…</span>
