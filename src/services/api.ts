@@ -1,5 +1,6 @@
 import { Party, Carousel, AnalyticsSummary, AnalyticsSummaryParty, DetailedAnalyticsResponse, RecentActivityResponse, RecentActivityFilters, VisitorAnalyticsResponse, AuditLogResponse } from '../data/types';
 import { SeoPageConfig } from '../lib/seoparties';
+import { isBuildPhase, withBuildBudget } from '@/lib/buildBudget';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
   ? `${process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')}/api`
@@ -145,11 +146,12 @@ const mapCarouselToFrontend = (backendCarousel: any): Carousel => {
 // --- UPDATED API Functions ---
 
 
-export const getParties = async (filters?: SeoPageConfig["apiFilters"], includeHidden = false): Promise<Party[]> => {
+const getPartiesRaw = async (filters?: SeoPageConfig["apiFilters"], includeHidden = false): Promise<Party[]> => {
   // Use 'upcoming=true' by default, if we also want past parties we need another param
-  const response = await fetch(`${API_URL}/parties?upcoming=true`, {
-    next: { revalidate: 300 },
-  });
+  const response = await withBuildBudget(
+    fetch(`${API_URL}/parties?upcoming=true`, { next: { revalidate: 300 } }),
+    'GET /parties'
+  );
 
   if (!response.ok) throw new Error("Failed to fetch parties");
 
@@ -216,10 +218,11 @@ export const getParties = async (filters?: SeoPageConfig["apiFilters"], includeH
 // Same as getParties but without the upcoming=true filter — needed for the
 // archive (past events are kept in the DB, not deleted) and so getPartyBySlug
 // below can still find an event once its date has passed.
-export const getAllPartiesIncludingPast = async (): Promise<Party[]> => {
-  const response = await fetch(`${API_URL}/parties`, {
-    next: { revalidate: 60 },
-  });
+const getAllPartiesIncludingPastRaw = async (): Promise<Party[]> => {
+  const response = await withBuildBudget(
+    fetch(`${API_URL}/parties`, { next: { revalidate: 60 } }),
+    'GET /parties (incl. past)'
+  );
 
   if (!response.ok) throw new Error("Failed to fetch parties");
 
@@ -390,8 +393,8 @@ export const setDefaultReferral = async (code: string): Promise<void> => {
   if (!response.ok) throw new Error('Failed to set default referral code');
 };
 
-export const getCarousels = async (): Promise<Carousel[]> => {
-  const response = await fetch(`${API_URL}/carousels`);
+const getCarouselsRaw = async (): Promise<Carousel[]> => {
+  const response = await withBuildBudget(fetch(`${API_URL}/carousels`), 'GET /carousels');
   if (!response.ok) throw new Error('Failed to fetch carousels');
   const data = await response.json();
   return Array.isArray(data) ? data.map(mapCarouselToFrontend) : [];
@@ -656,3 +659,27 @@ export const getAuditLog = async (
   }
 };
 
+
+
+// --- Build-safe list fetchers ---
+// During `next build` only, a slow or failing backend yields an empty list instead
+// of an error, so one sick backend response can't fail the whole Vercel deploy
+// (2026-09-16: /api/parties took 80s). ISR refills these pages on the first
+// requests after deploy. At runtime errors still propagate, so a failed
+// regeneration keeps serving the last good page instead of caching an empty one.
+const buildSafe = <A extends unknown[], T>(fn: (...args: A) => Promise<T[]>) =>
+  async (...args: A): Promise<T[]> => {
+    try {
+      return await fn(...args);
+    } catch (error) {
+      if (isBuildPhase()) {
+        console.warn('[build] backend fetch failed, rendering empty:', (error as Error).message);
+        return [];
+      }
+      throw error;
+    }
+  };
+
+export const getParties = buildSafe(getPartiesRaw);
+export const getAllPartiesIncludingPast = buildSafe(getAllPartiesIncludingPastRaw);
+export const getCarousels = buildSafe(getCarouselsRaw);

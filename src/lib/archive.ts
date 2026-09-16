@@ -1,10 +1,20 @@
 import { Party } from '@/data/types';
 import { getAllPartiesIncludingPast } from '@/services/api';
+import { isBuildPhase } from './buildBudget';
 
 export const ARCHIVE_PAGE_SIZE = 20;
 
 export async function getPastParties(): Promise<Party[]> {
-  const parties = await getAllPartiesIncludingPast();
+  let parties: Party[];
+  try {
+    parties = await getAllPartiesIncludingPast();
+  } catch (error) {
+    // At build time a slow backend must not fail the deploy (see buildBudget.ts):
+    // render empty and let ISR fill it in. At runtime, rethrow so ISR keeps
+    // serving the last good page instead of caching an empty archive.
+    if (isBuildPhase()) return [];
+    throw error;
+  }
   const now = Date.now();
   return parties
     .filter(p => new Date(p.date).getTime() < now)

@@ -3,6 +3,7 @@ import HomeLaunch, { HomeHoliday } from '@/components/home/HomeLaunch';
 import { BASE_URL, BRAND_LOGO_URL, SOCIAL_LINKS } from '@/data/constants';
 import { Party } from '@/data/types';
 import { HOLIDAYS, filterPartiesInHolidayWindow, getHolidayWindow, isHolidayApproaching } from '@/lib/holidays';
+import { withBuildBudget } from '@/lib/buildBudget';
 
 const HOLIDAY_BANNER_LEAD_DAYS = 30;
 
@@ -46,13 +47,14 @@ async function getData() {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://parties247-backend.onrender.com/';
 
   try {
-    const partiesRes = await fetch(`${apiUrl}/api/parties?upcoming=true`, {
-      next: { revalidate: 60 }
-    });
-
-    const carouselsRes = await fetch(`${apiUrl}/api/carousels`, {
-      next: { revalidate: 60 }
-    });
+    // In parallel: sequentially these two stacked to 100s+ on a slow backend.
+    const [partiesRes, carouselsRes] = await withBuildBudget(
+      Promise.all([
+        fetch(`${apiUrl}/api/parties?upcoming=true`, { next: { revalidate: 60 } }),
+        fetch(`${apiUrl}/api/carousels`, { next: { revalidate: 60 } }),
+      ]),
+      'home data'
+    );
 
     // Check if both succeeded
     if (!partiesRes.ok || !carouselsRes.ok) {
@@ -60,8 +62,10 @@ async function getData() {
       return { parties: [], carousels: [] };
     }
 
-    const rawParties: Array<Party & { _id: string }> = await partiesRes.json();
-    const carousels = await carouselsRes.json();
+    const [rawParties, carousels]: [Array<Party & { _id: string }>, unknown] = await withBuildBudget(
+      Promise.all([partiesRes.json(), carouselsRes.json()]),
+      'home data body'
+    );
     const parties: Party[] = Array.isArray(rawParties)
       ? rawParties.map(p => ({ ...p, id: p._id })).filter((p) => !p.tags?.includes('promotion'))
       : [];

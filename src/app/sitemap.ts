@@ -4,6 +4,7 @@ import { BASE_URL } from '@/data/constants';
 import { articles } from '@/data/articles';
 import { SPECIFIC_PARTIES_PAGES } from '@/lib/seoparties';
 import { CITIES_WITH_INVENTORY } from '@/lib/internalLinks';
+import { withBuildBudget } from '@/lib/buildBudget';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://parties247-backend.onrender.com/api';
 
@@ -66,7 +67,10 @@ const evergreenPaths = [
 
 async function fetchEvents(): Promise<MetadataRoute.Sitemap> {
   try {
-    const response = await fetch(`${API_URL}/parties`, { next: { revalidate: 3600 } });
+    const response = await withBuildBudget(
+      fetch(`${API_URL}/parties`, { next: { revalidate: 3600 } }),
+      'sitemap GET /parties'
+    );
     if (!response.ok) {
       console.error('Failed to fetch events for sitemap:', response.statusText);
       return [];
