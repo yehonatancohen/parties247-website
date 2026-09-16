@@ -3,7 +3,7 @@ import HomeLaunch, { HomeHoliday } from '@/components/home/HomeLaunch';
 import { BASE_URL, BRAND_LOGO_URL, SOCIAL_LINKS } from '@/data/constants';
 import { Party } from '@/data/types';
 import { HOLIDAYS, filterPartiesInHolidayWindow, getHolidayWindow, isHolidayApproaching } from '@/lib/holidays';
-import { withBuildBudget } from '@/lib/buildBudget';
+import { isBuildPhase, withBuildBudget } from '@/lib/buildBudget';
 
 const HOLIDAY_BANNER_LEAD_DAYS = 30;
 
@@ -58,8 +58,7 @@ async function getData() {
 
     // Check if both succeeded
     if (!partiesRes.ok || !carouselsRes.ok) {
-      console.error("Failed to fetch one of the endpoints");
-      return { parties: [], carousels: [] };
+      throw new Error(`Backend responded ${partiesRes.status}/${carouselsRes.status}`);
     }
 
     const [rawParties, carousels]: [Array<Party & { _id: string }>, unknown] = await withBuildBudget(
@@ -77,7 +76,11 @@ async function getData() {
 
   } catch (error) {
     console.error("Data fetch error:", error);
-    return { parties: [] as Party[], carousels: [] };
+    // Build: render empty rather than fail the deploy; ISR refills it.
+    // Runtime: rethrow so a failed regeneration keeps the last good home page
+    // cached instead of replacing it with an empty one.
+    if (isBuildPhase()) return { parties: [] as Party[], carousels: [] };
+    throw error;
   }
 }
 

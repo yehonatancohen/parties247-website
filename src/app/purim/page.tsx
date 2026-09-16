@@ -34,7 +34,9 @@ async function getData() {
     return filterPartiesInHolidayWindow(allParties, DEF);
   } catch (error) {
     console.error('Failed to fetch Purim data:', error);
-    return [];
+    // Rethrow: during ISR regeneration an error keeps the last good page cached
+    // instead of replacing it with an empty one (build time is handled in api.ts).
+    throw error;
   }
 }
 

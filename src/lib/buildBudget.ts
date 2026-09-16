@@ -10,7 +10,8 @@
  * At runtime nothing changes: the promise is returned as-is, so a slow backend
  * never replaces a good cached page with an empty one.
  */
-export const BUILD_FETCH_BUDGET_MS = 20_000;
+// Leaves headroom under Next's 60s-per-page limit while waiting out most slow spells.
+export const BUILD_FETCH_BUDGET_MS = 40_000;
 
 export const isBuildPhase = () => process.env.NEXT_PHASE === 'phase-production-build';
 

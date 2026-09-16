@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Metadata } from 'next';
-import { Carousel, Party } from '@/data/types';
+import { Party } from '@/data/types';
 import { getCarousels, getParties } from '@/services/api';
 import AllPartiesAISearch from '@/components/AllPartiesAISearch';
 import FlyerFan from '@/components/home/FlyerFan';
@@ -89,8 +89,9 @@ function Section({ id, title, children }: { id: string; title: string; children:
 
 export default async function PartyDiscoveryPage() {
   const [parties, carousels] = await Promise.all([
-    getParties().catch((): Party[] => []),
-    getCarousels().catch((): Carousel[] => []),
+    // No runtime catch on purpose: a failed regeneration keeps the last good page.
+    getParties(),
+    getCarousels(),
   ]);
 
   const upcoming = sortForDisplay(parties);
