@@ -55,6 +55,11 @@ const formatOffset = (offsetMinutes: number): string => {
 const NAIVE_RE = /^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})(?::(\d{2}))?/;
 const HAS_OFFSET_RE = /(?:Z|[+-]\d{2}:?\d{2})$/;
 
+/** The calendar date (YYYY-MM-DD) in Asia/Jerusalem for a given absolute instant. */
+export function getIsraelDateString(instant: Date): string {
+  return jerusalemParts(instant).datePart;
+}
+
 export function toIsraelISO(dateStr: string): string {
   if (typeof dateStr !== 'string') return dateStr;
   const trimmed = dateStr.trim();

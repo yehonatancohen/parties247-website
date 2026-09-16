@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { trackPartyRedirect } from "@/lib/analytics";
+import { trackPartyRedirect, trackBuyClickWithCoupon, trackWhatsappClick } from "@/lib/analytics";
 import { trackPurchaseButtonClick } from "@/lib/gtm";
-import { TicketIcon } from "./Icons";
+import { COUPON_CODE, SOCIAL_LINKS } from "@/data/constants";
+import { TicketIcon, WhatsAppIcon } from "./Icons";
 import RedirectOverlay from "./RedirectOverlay";
 
 // --- Sticky Purchase Bar ---
@@ -15,6 +16,7 @@ export function StickyPurchaseBar({
     slug,
     partyName,
     soldOut = false,
+    couponEligible = false,
 }: {
     href: string;
     priceLabel?: string;
@@ -23,9 +25,11 @@ export function StickyPurchaseBar({
     slug: string;
     partyName?: string;
     soldOut?: boolean;
+    couponEligible?: boolean;
 }) {
     const [isVisible, setIsVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [couponCopied, setCouponCopied] = useState(false);
 
     useEffect(() => {
         // If no trigger ID, fall back to scroll position
@@ -69,6 +73,15 @@ export function StickyPurchaseBar({
         // Fire GTM event
         trackPurchaseButtonClick(partyName, partyId);
 
+        if (couponEligible) {
+            trackBuyClickWithCoupon(partyId);
+            try {
+                navigator.clipboard?.writeText(COUPON_CODE).then(() => setCouponCopied(true));
+            } catch {
+                // Fails open — the visible coupon UI elsewhere on the page still works.
+            }
+        }
+
         // Show loading screen if going to go-out
         if (href.includes('go-out.co') || href.includes('go-out.co.il')) {
             e.preventDefault();
@@ -96,7 +109,9 @@ export function StickyPurchaseBar({
                     <div className="container mx-auto flex items-center justify-between gap-4">
                         <div className="hidden sm:block">
                             <p className="text-white font-bold text-lg">שריינו מקום עכשיו</p>
-                            <p className="text-sm text-gray-400">הכרטיסים נחטפים מהר!</p>
+                            <p className="text-sm text-gray-400">
+                                {couponEligible ? '🎟️ הנחה עם קוד — הכרטיסים נחטפים מהר!' : 'הכרטיסים נחטפים מהר!'}
+                            </p>
                         </div>
                         {soldOut ? (
                             <div className="flex-1 sm:flex-none bg-white/5 border border-white/10 text-white/40 font-bold text-lg py-3 px-8 rounded-xl text-center flex items-center justify-center gap-2 cursor-not-allowed">
@@ -141,7 +156,23 @@ export function StickyPurchaseBar({
                             <p className="text-jungle-lime/90 font-medium">
                                 לרכישת כרטיסים מאובטחת...
                             </p>
+                            {couponEligible && couponCopied && (
+                                <p className="text-sm text-jungle-lime font-semibold">
+                                    הקוד {COUPON_CODE} הועתק, הדבק אותו בקופה
+                                </p>
+                            )}
                         </div>
+
+                        <a
+                            href={SOCIAL_LINKS.whatsapp}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => trackWhatsappClick('a')}
+                            className="flex items-center gap-2 text-sm text-green-200/80 hover:text-green-100 transition-colors"
+                        >
+                            <WhatsAppIcon className="w-4 h-4" />
+                            רוצה לשמוע ראשון על ההפקות הבאות?
+                        </a>
                     </div>
                 </div>
             )}

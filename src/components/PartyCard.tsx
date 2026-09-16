@@ -2,16 +2,16 @@ import React from 'react';
 import Link from 'next/link'
 import Image from 'next/image'
 import { Party } from '../data/types';
-import { LAST_TICKETS_TAG } from '../data/constants';
+import { LAST_TICKETS_TAG, isCouponEligible } from '../data/constants';
 import { CalendarIcon, LocationIcon, FireIcon, PartyPopperIcon } from './Icons';
 import DiscountCodeReveal from './DiscountCodeReveal';
 
 interface PartyCardProps {
   party: Party;
-  showDiscountCode?: boolean;
 }
 
-const PartyCard: React.FC<PartyCardProps> = ({ party, showDiscountCode = false }) => {
+const PartyCard: React.FC<PartyCardProps> = ({ party }) => {
+  const showDiscountCode = isCouponEligible(party.referralCode);
   const partyDate = new Date(party.date);
 
   // FIX: Use compact date format to fit in cards
@@ -104,7 +104,13 @@ const PartyCard: React.FC<PartyCardProps> = ({ party, showDiscountCode = false }
 
       {/* Card body */}
       <div className="px-3 sm:px-4 pb-3 sm:pb-4 pt-3 flex flex-col flex-grow">
-        {showDiscountCode && <DiscountCodeReveal className="mb-3" />}
+        {showDiscountCode && (
+          <div className="mb-1.5 flex items-center justify-center gap-1 text-[11px] font-bold text-jungle-lime">
+            <span>🎟️</span>
+            <span>הנחה עם קוד</span>
+          </div>
+        )}
+        {showDiscountCode && <DiscountCodeReveal className="mb-3" partyId={party.id} />}
 
         <Link
           href={`/event/${party.slug}`}

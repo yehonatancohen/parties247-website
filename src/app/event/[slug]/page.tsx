@@ -14,9 +14,11 @@ import PurchaseButton from "@/components/PurchaseButton";
 import PriceDisclaimerNote from "@/components/PriceDisclaimerNote";
 import { StickyPurchaseBar } from "@/components/UrgencyComponents";
 import PartyViewTracker from "@/components/PartyViewTracker";
-import { BASE_URL, LAST_TICKETS_TAG } from "@/data/constants";
+import WhatsappNudge from "@/components/WhatsappNudge";
+import { BASE_URL, LAST_TICKETS_TAG, isCouponEligible } from "@/data/constants";
 import { resolveCitySlug, resolveAudienceSlug, CITY_HEBREW_NAMES, AUDIENCE_HE_LABEL } from "@/lib/internalLinks";
 import { toIsraelISO } from "@/lib/dates";
+import { HOLIDAYS, getHolidayWindow } from "@/lib/holidays";
 
 export const revalidate = 60;
 
@@ -221,7 +223,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
   const partyPageUrl = `${BASE_URL}/event/${party.slug}`;
   const whatsappMessage = encodeURIComponent(`היי, אשמח לשמור כרטיסים ל"${party.name}" ב-${formattedDate}. ${partyPageUrl}`);
   const whatsappHref = `https://wa.me/?text=${whatsappMessage}`;
-  const showDiscountCode = false;
+  const showDiscountCode = isCouponEligible(party.referralCode);
 
   const plainDescriptionForLd = party.description.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 
@@ -419,7 +421,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
           )}
 
           <div className="flex flex-col gap-3">
-            <PurchaseButton partyId={party.id} slug={party.slug} href={referralUrl} partyName={party.name} price={party.ticketPrice} soldOut={party.soldOut} />
+            <PurchaseButton partyId={party.id} slug={party.slug} href={referralUrl} partyName={party.name} price={party.ticketPrice} soldOut={party.soldOut} couponEligible={showDiscountCode} />
 
             <a
               href={whatsappHref}
@@ -511,11 +513,16 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
 
         {showDiscountCode && (
           <div className="mb-8">
-            <DiscountCodeReveal variant="expanded" />
+            <DiscountCodeReveal variant="expanded" partyId={party.id} />
           </div>
         )}
 
-
+        {/* ═══════════════════════════════════════════════════
+            WHATSAPP NUDGE — quiet footer block, dismissible
+        ═══════════════════════════════════════════════════ */}
+        <div className="mb-8">
+          <WhatsappNudge source="b" />
+        </div>
 
         {/* ═══════════════════════════════════════════════════
             SECTION 6: MAP
@@ -557,11 +564,24 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
           };
           const citySlug = CITY_SLUG_MAP[party.location.name] || null;
           const genreSlug = MUSIC_GENRE_SLUG_MAP[party.musicType] || null;
-          if (!citySlug && !genreSlug && !audienceSlug) return null;
+          const partyYmd = (party.date || '').slice(0, 10);
+          const activeHoliday = Object.values(HOLIDAYS).find((def) => {
+            const w = getHolidayWindow(def);
+            return partyYmd >= w.start && partyYmd <= w.end;
+          });
+          if (!citySlug && !genreSlug && !audienceSlug && !activeHoliday) return null;
           return (
             <div className="rounded-2xl border border-white/10 bg-jungle-surface/50 p-6 mb-8">
               <h2 className="text-lg font-display text-white mb-4">עוד מסיבות שיכולות לעניין אותך</h2>
               <div className="flex flex-wrap gap-3">
+                {activeHoliday && (
+                  <Link
+                    href={`/${activeHoliday.slug}`}
+                    className="inline-flex items-center gap-2 rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-2.5 text-sm font-semibold text-red-200 hover:bg-red-500/20 transition-colors"
+                  >
+                    עוד מסיבות {activeHoliday.hebrewName} ←
+                  </Link>
+                )}
                 {citySlug && (
                   <Link
                     href={`/cities/${citySlug}`}
@@ -615,6 +635,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
         partyName={party.name}
         priceLabel={party.soldOut ? 'הכרטיסים אזלו' : party.ticketPrice ? `לרכישת כרטיסים החל מ-${party.ticketPrice} ₪` : undefined}
       soldOut={party.soldOut}
+      couponEligible={showDiscountCode}
       />
 
     </div >

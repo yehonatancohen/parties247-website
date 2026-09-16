@@ -12,6 +12,8 @@
 // We only ever link to a page that actually renders inventory — linking to an
 // empty listing page is a net-negative quality signal.
 
+import { HOLIDAYS as HOLIDAYS_MODULE, getHolidayWindow } from './holidays';
+
 export type CrossLink = { label: string; href: string };
 
 // ---- City ----------------------------------------------------------------
@@ -147,10 +149,23 @@ const GUIDES_BY_CITY: Record<string, CrossLink[]> = {
   "haifa": [GUIDE_RAVES],
 };
 const GUIDES_DEFAULT: CrossLink[] = [GUIDE_TLV, GUIDE_RAVES, GUIDE_TECHNO_CLUBS];
-const HOLIDAYS: CrossLink[] = [
-  { label: "מסיבות ראש השנה 2026", href: "/rosh-hashana" },
-  { label: "מסיבות סוכות 2026", href: "/sukkot" },
-];
+// Computed per-call (not a module-level const) so the year in each label always
+// reflects the holiday's next upcoming occurrence — see src/lib/holidays.ts.
+// rosh-hashana isn't in HOLIDAYS (src/lib/holidays.ts only covers the 6 pages
+// that use the date-window pattern), so it keeps its own static entry.
+function getHolidayLinks(): CrossLink[] {
+  const links: CrossLink[] = [{ label: "מסיבות ראש השנה", href: "/rosh-hashana" }];
+  for (const def of Object.values(HOLIDAYS_MODULE)) {
+    try {
+      const { year } = getHolidayWindow(def);
+      links.push({ label: `מסיבות ${def.hebrewName} ${year}`, href: `/${def.slug}` });
+    } catch {
+      // Skip a holiday whose window couldn't be resolved rather than breaking
+      // every cross-link block on the site over one bad entry.
+    }
+  }
+  return links;
+}
 
 export type ExploreContext =
   | { kind: "city"; slug: string }
@@ -169,7 +184,7 @@ export function buildExploreLinks(ctx: ExploreContext): ExploreGroup[] {
       links: CORE_CITIES.filter((l) => l.href !== `/cities/${ctx.slug}`),
     });
     groups.push({ heading: "לפי קהל", links: [{ label: "מסיבות 18 פלוס בתל אביב", href: "/parties/18-plus-parties-tel-aviv" }] });
-    groups.push({ heading: "מדריכים וחגים", links: [...(GUIDES_BY_CITY[ctx.slug] ?? GUIDES_DEFAULT), ...HOLIDAYS] });
+    groups.push({ heading: "מדריכים וחגים", links: [...(GUIDES_BY_CITY[ctx.slug] ?? GUIDES_DEFAULT), ...getHolidayLinks()] });
   }
 
   if (ctx.kind === "genre") {
@@ -178,7 +193,7 @@ export function buildExploreLinks(ctx: ExploreContext): ExploreGroup[] {
       links: CORE_GENRES.filter((l) => l.href !== `/genre/${ctx.slug}`),
     });
     groups.push({ heading: "לפי עיר", links: CORE_CITIES });
-    groups.push({ heading: "מדריכים וחגים", links: [...GUIDES_DEFAULT, ...HOLIDAYS] });
+    groups.push({ heading: "מדריכים וחגים", links: [...GUIDES_DEFAULT, ...getHolidayLinks()] });
   }
 
   if (ctx.kind === "audience") {

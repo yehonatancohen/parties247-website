@@ -2,8 +2,11 @@
 "use client";
 
 import { useState } from "react";
-import { trackPartyRedirect } from "@/lib/analytics";
+import { trackPartyRedirect, trackBuyClickWithCoupon, trackWhatsappClick } from "@/lib/analytics";
 import { trackPurchaseButtonClick } from "@/lib/gtm";
+import { COUPON_CODE } from "@/data/constants";
+import { SOCIAL_LINKS } from "@/data/constants";
+import { WhatsAppIcon } from "./Icons";
 
 export default function PurchaseButton({
   partyId,
@@ -12,6 +15,7 @@ export default function PurchaseButton({
   partyName,
   price,
   soldOut = false,
+  couponEligible = false,
 }: {
   partyId: string;
   slug: string;
@@ -19,8 +23,11 @@ export default function PurchaseButton({
   partyName?: string;
   price?: number;
   soldOut?: boolean;
+  /** account1 event — auto-copies the discount code to the clipboard on click. */
+  couponEligible?: boolean;
 }) {
   const [isLoading, setIsLoading] = useState(false);
+  const [couponCopied, setCouponCopied] = useState(false);
 
   if (soldOut) {
     return (
@@ -33,6 +40,16 @@ export default function PurchaseButton({
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     trackPurchaseButtonClick(partyName, partyId, price);
+
+    if (couponEligible) {
+      trackBuyClickWithCoupon(partyId);
+      try {
+        navigator.clipboard?.writeText(COUPON_CODE).then(() => setCouponCopied(true));
+      } catch {
+        // Clipboard access denied/unavailable — the visible badge with a manual
+        // copy button (DiscountCodeReveal) is still there as a fallback.
+      }
+    }
 
     if (href.includes('go-out.co') || href.includes('go-out.co.il')) {
       e.preventDefault();
@@ -52,6 +69,12 @@ export default function PurchaseButton({
 
   return (
     <>
+      {couponEligible && (
+        <div className="flex items-center justify-center gap-1.5 mb-2 text-xs font-bold text-jungle-lime">
+          <span>🎟️</span>
+          <span>הנחה עם קוד</span>
+        </div>
+      )}
       <a
         href={href}
         target={href.includes('go-out') ? "_self" : "_blank"}
@@ -91,7 +114,23 @@ export default function PurchaseButton({
               <p className="text-jungle-lime/90 font-medium">
                 לרכישת כרטיסים מאובטחת...
               </p>
+              {couponEligible && couponCopied && (
+                <p className="text-sm text-jungle-lime font-semibold">
+                  הקוד {COUPON_CODE} הועתק, הדבק אותו בקופה
+                </p>
+              )}
             </div>
+
+            <a
+              href={SOCIAL_LINKS.whatsapp}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackWhatsappClick('a')}
+              className="flex items-center gap-2 text-sm text-green-200/80 hover:text-green-100 transition-colors"
+            >
+              <WhatsAppIcon className="w-4 h-4" />
+              רוצה לשמוע ראשון על ההפקות הבאות?
+            </a>
           </div>
         </div>
       )}

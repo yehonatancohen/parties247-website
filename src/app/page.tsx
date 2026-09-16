@@ -1,6 +1,21 @@
 import { Metadata } from 'next';
+import Link from 'next/link';
 import HomeClient from '../components/HomeClient';
 import { BASE_URL, BRAND_LOGO_URL, SOCIAL_LINKS } from '@/data/constants';
+import { HOLIDAYS, getHolidayWindow, isHolidayApproaching } from '@/lib/holidays';
+
+const HOLIDAY_BANNER_LEAD_DAYS = 30;
+
+// Computed server-side (not inside the client-rendered HomeClient) so hebcal
+// never ships to the client bundle, and so it's independent of HomeClient's
+// in-progress redesign. Only the first holiday within the lead window shows.
+function getApproachingHoliday() {
+  const candidates = Object.values(HOLIDAYS)
+    .filter((def) => isHolidayApproaching(def, HOLIDAY_BANNER_LEAD_DAYS))
+    .map((def) => ({ def, window: getHolidayWindow(def) }))
+    .sort((a, b) => (a.window.start < b.window.start ? -1 : 1));
+  return candidates[0] ?? null;
+}
 
 // Homepage FAQ — visible below and mirrored into FAQPage JSON-LD. Answers the
 // broad-intent questions ("is it free?", "which cities?", "how do I buy?") that
@@ -125,6 +140,21 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
+      {(() => {
+        const approaching = getApproachingHoliday();
+        if (!approaching) return null;
+        return (
+          <div className="container mx-auto px-4 mt-6">
+            <Link
+              href={`/${approaching.def.slug}`}
+              className="flex items-center justify-center gap-2 rounded-2xl border border-jungle-accent/40 bg-gradient-to-r from-jungle-lime/15 to-jungle-accent/15 px-5 py-3 text-center text-sm sm:text-base font-bold text-jungle-lime hover:from-jungle-lime/25 hover:to-jungle-accent/25 transition-colors"
+            >
+              🎉 מסיבות {approaching.def.hebrewName} {approaching.window.year} כבר כאן — לחצו לצפייה ←
+            </Link>
+          </div>
+        );
+      })()}
+
       {/* Pass the server-fetched data to the client component */}
       <HomeClient
         initialParties={data.parties || []}

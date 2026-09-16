@@ -294,6 +294,47 @@ export const trackPartyView = (partyId: string, partySlug: string): boolean => {
   return true;
 };
 
+/**
+ * Fires a Microsoft Clarity custom event. Clarity's event API has no payload —
+ * `clarity('event', name)` is just a boolean counter — so a `source`/label is
+ * attached via `clarity('set', ...)` session tags, which Clarity's dashboard
+ * lets you filter/segment sessions by. Also mirrors to GTM's dataLayer for
+ * consistency with the existing `trackPurchaseButtonClick` dual-tracking
+ * pattern. No-ops without consent or for admin users, same gate as everywhere
+ * else in this file.
+ */
+const fireClarityEvent = (eventName: string, tags: Record<string, string> = {}): void => {
+  if (typeof window === 'undefined' || isAdminUser() || !hasAnalyticsConsent()) {
+    return;
+  }
+  try {
+    const clarity = (window as unknown as { clarity?: (...args: unknown[]) => void }).clarity;
+    for (const [key, value] of Object.entries(tags)) {
+      clarity?.('set', key, value);
+    }
+    clarity?.('event', eventName);
+  } catch (error) {
+    console.debug(`Failed to fire Clarity event "${eventName}"`, error);
+  }
+  pushToDataLayer({ event: eventName, ...tags });
+};
+
+/** Coupon badge/copy button on an account1 event page or card was copied. */
+export const trackCouponCopy = (partyId: string): void => {
+  fireClarityEvent('coupon_copy', { party_id: partyId });
+};
+
+/** Purchase button was clicked while the coupon was auto-copied to the clipboard. */
+export const trackBuyClickWithCoupon = (partyId: string): void => {
+  fireClarityEvent('buy_click_with_coupon', { party_id: partyId });
+};
+
+/** WhatsApp group nudge was clicked. `source`: a = post-purchase-click, b = quiet
+ * footer block, c = holiday page empty state. */
+export const trackWhatsappClick = (source: 'a' | 'b' | 'c'): void => {
+  fireClarityEvent('whatsapp_click', { whatsapp_source: source });
+};
+
 export const grantAnalyticsConsent = (): void => {
   if (typeof window === 'undefined') {
     return;

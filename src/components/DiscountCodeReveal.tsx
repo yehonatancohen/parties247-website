@@ -1,16 +1,21 @@
 'use client';
 import React, { useState } from 'react';
+import { COUPON_CODE } from '@/data/constants';
+import { trackCouponCopy } from '@/lib/analytics';
 
 interface DiscountCodeRevealProps {
   couponCode?: string;
   variant?: 'compact' | 'expanded';
   className?: string;
+  /** When given, a successful copy fires the `coupon_copy` Clarity event for this party. */
+  partyId?: string;
 }
 
 const DiscountCodeReveal: React.FC<DiscountCodeRevealProps> = ({
-  couponCode = 'parties24.7',
+  couponCode = COUPON_CODE,
   variant = 'compact',
   className,
+  partyId,
 }) => {
   const [revealed, setRevealed] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -40,6 +45,7 @@ const DiscountCodeReveal: React.FC<DiscountCodeRevealProps> = ({
         throw new Error('Clipboard API not available');
       }
       setCopied(true);
+      if (partyId) trackCouponCopy(partyId);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
       console.error('Failed to copy coupon code', error);
