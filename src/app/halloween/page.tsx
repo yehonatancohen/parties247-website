@@ -68,7 +68,7 @@ export default async function HalloweenPage() {
         <>
           נשפי תחפושות, רייבים ומסיבות תמטיות ללילה הכי מפחיד ומטורף בשנה.
           <br />
-          <span className="font-bold text-jungle-lime">בחרו תחפושת, אנחנו נדאג למסיבה.</span>
+          <span className="font-semibold text-ink">בחרו תחפושת, אנחנו נדאג למסיבה.</span>
         </>
       }
       introHeading="חוגגים את האלווין עם Parties24/7"
@@ -77,7 +77,7 @@ export default async function HalloweenPage() {
         <React.Fragment key="p2">
           ב-Parties24/7 ריכזנו עבורכם את כל <strong>מסיבות האלווין {window.year}</strong> במקום אחד, ממוינות לפי תאריך, עם מחיר כרטיס עדכני וקישור ישיר לרכישה.
         </React.Fragment>,
-        <span key="p3" className="font-bold text-jungle-lime">
+        <span key="p3" className="font-semibold text-ink">
           טיפ מאיתנו: מסיבות התחפושות הפופולריות נגמרות מהר — שריינו כרטיס מראש ולא בערב האחרון.
         </span>,
       ]}

@@ -43,3 +43,8 @@ next-env.d.ts
 # backend admin JWT used by the unattended /seo-update run
 .admin-token
 .admin-token.tmp
+
+# impeccable design-review artifacts (local only)
+.impeccable/review/
+.impeccable/build/
+.impeccable/*.patch

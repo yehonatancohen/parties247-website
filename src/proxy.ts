@@ -32,7 +32,17 @@ export async function proxy(request: NextRequest) {
   }
 
   try {
-    const res = await fetchEventCached(slug);
+    // Never let the canonical-URL check hold the page hostage. On a Runtime Cache
+    // miss /api/events/<slug> has taken 5-20s (measured 2026-09-16), which made
+    // every tap on a party card look dead. Give it a short budget; if the backend
+    // is slower, render the page now and let the lookup finish in the background
+    // (waitUntil) so the cache is warm — and the redirect applies — next time.
+    const lookup = fetchEventCached(slug);
+    const res = await withinBudget(lookup, LOOKUP_BUDGET_MS);
+    if (!res) {
+      waitUntil(lookup.catch(() => undefined));
+      return NextResponse.next();
+    }
 
     if (!res.ok) {
       // The party for this slug may have been deleted as a duplicate (see
@@ -41,8 +51,10 @@ export async function proxy(request: NextRequest) {
       // falling through to a 404, so the old URL's SEO/traffic signal isn't
       // just lost.
       if (res.status === 404) {
-        const redirected = await tryRedirectSlug(section, slug, request);
+        const redirectLookup = tryRedirectSlug(section, slug, request);
+        const redirected = await withinBudget(redirectLookup, LOOKUP_BUDGET_MS);
         if (redirected) return redirected;
+        if (redirected === undefined) waitUntil(redirectLookup.catch(() => undefined));
       }
       return NextResponse.next();
     }
@@ -61,6 +73,16 @@ export async function proxy(request: NextRequest) {
   }
 
   return NextResponse.next();
+}
+
+const LOOKUP_BUDGET_MS = 800;
+
+/** Resolves to the promise's value, or `undefined` if it takes longer than `ms`. */
+function withinBudget<T>(promise: Promise<T>, ms: number): Promise<T | undefined> {
+  return Promise.race([
+    promise,
+    new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), ms)),
+  ]);
 }
 
 async function logWaClick(code: string, request: NextRequest): Promise<void> {

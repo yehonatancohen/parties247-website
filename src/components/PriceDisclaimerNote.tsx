@@ -16,12 +16,12 @@ export default function PriceDisclaimerNote({ text }: { text: string }) {
     <button
       type="button"
       onClick={() => setExpanded((v) => !v)}
-      className="block w-full text-xs text-jungle-text/40 mt-1 underline decoration-dotted underline-offset-2 hover:text-jungle-text/60 transition-colors"
+      className="block w-full text-xs text-ink-3 mt-2 underline decoration-dotted underline-offset-2 hover:text-ink-2 transition-colors"
       aria-expanded={expanded}
     >
       {text}
       {expanded && (
-        <span className="block mt-1 text-jungle-text/60 normal-case">
+        <span className="block mt-1 text-ink-2 normal-case">
           המחיר הסופי, כולל עמלות, מוצג בעמוד התשלום ב-Go-Out לפני האישור הסופי — אתם לא מחויבים בכלום עד שם.
         </span>
       )}

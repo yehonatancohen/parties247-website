@@ -168,9 +168,9 @@ export default async function DayPartiesPage({ params }: { params: { day: string
         syncNavigation
       />
 
-      <section className="container mx-auto max-w-4xl rounded-2xl border border-white/10 bg-white/5 p-8 text-jungle-text">
-        <h2 className="text-2xl font-display text-white mb-4">מה מחכה לכם ביום הזה?</h2>
-        <div className="space-y-4 leading-relaxed text-base text-jungle-text/90">
+      <section className="mx-4 max-w-[860px] rounded-[28px] bg-tile p-6 text-ink-2 sm:p-10 md:mx-auto">
+        <h2 className="text-[24px] font-bold text-ink sm:text-[28px] mb-4">מה מחכה לכם ביום הזה?</h2>
+        <div className="space-y-4 leading-relaxed text-base text-ink-2">
           {(dayBodies[day] || "").split("\n\n").map((paragraph) => (
             <p key={paragraph.slice(0, 20)}>{paragraph}</p>
           ))}

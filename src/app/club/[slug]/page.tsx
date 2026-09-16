@@ -160,9 +160,9 @@ export default async function ClubPage({ params }: { params: { slug: string } })
         syncNavigation
       />
 
-      <section className="container mx-auto max-w-4xl rounded-2xl border border-white/10 bg-white/5 p-8 text-jungle-text">
-        <h2 className="text-2xl font-display text-white mb-4">הכירו את המועדון</h2>
-        <div className="space-y-4 leading-relaxed text-base text-jungle-text/90">
+      <section className="mx-4 max-w-[860px] rounded-[28px] bg-tile p-6 text-ink-2 sm:p-10 md:mx-auto">
+        <h2 className="text-[24px] font-bold text-ink sm:text-[28px] mb-4">הכירו את המועדון</h2>
+        <div className="space-y-4 leading-relaxed text-base text-ink-2">
           {body
             .split("\n\n")
             .filter(Boolean)
@@ -173,13 +173,13 @@ export default async function ClubPage({ params }: { params: { slug: string } })
       </section>
 
       {faqItems.length > 0 && (
-        <section className="container mx-auto max-w-4xl rounded-2xl border border-white/10 bg-white/5 p-8 text-jungle-text">
-          <h2 className="text-2xl font-display text-white mb-6">שאלות נפוצות</h2>
+        <section className="mx-4 max-w-[860px] rounded-[28px] bg-tile p-6 text-ink-2 sm:p-10 md:mx-auto">
+          <h2 className="text-[24px] font-bold text-ink sm:text-[28px] mb-6">שאלות נפוצות</h2>
           <div className="space-y-6">
             {faqItems.map((item) => (
               <div key={item.question}>
-                <h3 className="text-lg font-bold text-white mb-2">{item.question}</h3>
-                <p className="text-jungle-text/80 leading-relaxed">{item.answer}</p>
+                <h3 className="text-[17px] font-semibold text-ink mb-2">{item.question}</h3>
+                <p className="text-ink-2 leading-relaxed">{item.answer}</p>
               </div>
             ))}
           </div>

@@ -23,21 +23,25 @@ const CookieBanner: React.FC = () => {
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-jungle-surface/95 backdrop-blur-md p-5 z-[99] text-white border-t-2 border-jungle-lime/30 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]" dir="rtl">
-      <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 max-w-5xl">
-        <p className="text-base text-jungle-text/90 text-center sm:text-right leading-relaxed flex-1">
-          אנחנו משתמשים בעוגיות (cookies) כדי לשפר את חווית הגלישה שלך ולנתח את תנועת הגולשים באתר.
-          <Link href="/privacy" className="text-jungle-lime hover:text-white transition-colors underline underline-offset-4 mr-2 font-medium">למדיניות הפרטיות</Link>
+    <div
+      role="region"
+      aria-label="הודעת עוגיות"
+      className="font-apple fixed inset-x-3 bottom-3 z-[99] mx-auto max-w-[680px] rounded-[18px] border border-hairline bg-tile/95 px-5 py-4 text-ink shadow-[0_12px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl sm:bottom-5"
+      dir="rtl"
+    >
+      <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-5">
+        <p className="flex-1 text-center text-[13px] leading-relaxed text-ink-2 sm:text-right">
+          אנחנו משתמשים בעוגיות (cookies) כדי לשפר את חווית הגלישה ולנתח את תנועת הגולשים באתר.{' '}
+          <Link href="/privacy" className="whitespace-nowrap text-link hover:underline underline-offset-2">
+            למדיניות הפרטיות
+          </Link>
         </p>
         <button
+          type="button"
           onClick={handleAccept}
-          className="bg-jungle-lime text-jungle-deep font-bold py-3 px-10 text-lg rounded-xl shadow-lg shadow-jungle-lime/20 hover:scale-[1.05] active:scale-[0.95] flex items-center justify-center gap-2 transition-all flex-shrink-0 w-full sm:w-auto overflow-hidden relative group"
+          className="w-full shrink-0 rounded-full bg-action px-6 py-2 text-[14px] font-medium text-on-action transition-colors hover:bg-action-hover sm:w-auto"
         >
-          <span className="absolute inset-0 bg-white/20 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] skew-x-12"></span>
-          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-          </svg>
-          <span className="relative z-10">אישור והמשך</span>
+          אישור
         </button>
       </div>
     </div>

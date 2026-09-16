@@ -59,12 +59,12 @@ const guides = [
 
 export default function ArticlesIndexPage() {
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="font-apple mx-auto max-w-[1100px] px-4 py-12 sm:px-6 sm:py-20">
       <header className="text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-display text-white mb-4">
+        <h1 className="text-[34px] font-bold leading-tight text-ink sm:text-[48px] mb-4">
           המגזין
         </h1>
-        <p className="text-jungle-text/80 text-lg">
+        <p className="text-ink-2 text-lg">
           כל מה שחם בעולם המסיבות
         </p>
       </header>
@@ -73,7 +73,7 @@ export default function ArticlesIndexPage() {
         {articles.map((article, index) => (
           <article 
             key={article.slug} 
-            className="bg-jungle-surface rounded-xl overflow-hidden border border-wood-brown/30 hover:border-jungle-accent transition-all duration-300 flex flex-col"
+            className="group flex flex-col overflow-hidden rounded-[22px] bg-tile transition-colors duration-300 hover:bg-tile-hover"
           >
             <Link
               href={`/articles/${encodeURIComponent(article.slug)}`}
@@ -86,24 +86,24 @@ export default function ArticlesIndexPage() {
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 quality={40}
                 priority={index < 3}
-                className="object-cover transition-transform duration-500 hover:scale-105"
+                className="object-cover transition-transform duration-700 ease-apple group-hover:scale-[1.03]"
               />
             </Link>
 
             <div className="p-6 flex flex-col flex-grow">
-              <h2 className="text-xl font-display text-white mb-3">
-                <Link href={`/articles/${encodeURIComponent(article.slug)}`} className="hover:text-jungle-accent transition-colors">
+              <h2 className="text-[21px] font-bold text-ink mb-3">
+                <Link href={`/articles/${encodeURIComponent(article.slug)}`} className="transition-colors hover:text-link">
                   {article.title}
                 </Link>
               </h2>
-              <p className="text-jungle-text/80 text-sm mb-4 line-clamp-3">
+              <p className="text-ink-2 text-sm mb-4 line-clamp-3">
                 {article.summary}
               </p>
               <Link
                 href={`/articles/${encodeURIComponent(article.slug)}`}
-                className="inline-block text-jungle-accent font-semibold hover:text-white transition-colors mt-auto"
+                className="mt-auto inline-flex items-center gap-1 text-[15px] text-link hover:underline underline-offset-4"
               >
-                קרא עוד &larr;
+                לקריאה <svg viewBox="0 0 24 24" className="h-[0.8em] w-[0.8em]" fill="none" stroke="currentColor" strokeWidth={2.6} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M15 6l-6 6 6 6" /></svg>
               </Link>
             </div>
           </article>
@@ -112,21 +112,20 @@ export default function ArticlesIndexPage() {
 
       {/* Guides section */}
       <section className="mt-16">
-        <h2 className="text-3xl font-display text-white mb-2">מדריכים ועמודי ז׳אנר</h2>
-        <p className="text-jungle-text/70 text-sm mb-8">עמודי תוכן מעמיקים על מועדונים, ז׳אנרים וסצנות</p>
+        <h2 className="text-[28px] font-bold text-ink sm:text-[36px] mb-2">מדריכים ועמודי ז׳אנר</h2>
+        <p className="text-ink-3 text-sm mb-8">עמודי תוכן מעמיקים על מועדונים, ז׳אנרים וסצנות</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {guides.map((guide) => (
             <Link
               key={guide.href}
               href={guide.href}
-              className="group flex flex-col gap-3 rounded-xl border border-white/10 bg-jungle-surface/60 p-5 transition-all hover:border-jungle-accent/40 hover:bg-jungle-surface hover:-translate-y-0.5"
+              className="group flex flex-col gap-2 rounded-[22px] bg-tile p-5 transition-colors hover:bg-tile-hover"
             >
-              <span className="text-3xl">{guide.emoji}</span>
-              <h3 className="text-lg font-display text-white group-hover:text-jungle-accent transition-colors">
+              <h3 className="text-[19px] font-bold text-ink">
                 {guide.title}
               </h3>
-              <p className="text-sm text-jungle-text/70 leading-relaxed flex-grow">{guide.description}</p>
-              <span className="text-jungle-accent text-sm font-semibold">קרא עוד ←</span>
+              <p className="text-sm text-ink-3 leading-relaxed flex-grow">{guide.description}</p>
+              <span className="inline-flex items-center gap-1 text-[15px] text-link group-hover:underline underline-offset-4">לקריאה <svg viewBox="0 0 24 24" className="h-[0.8em] w-[0.8em]" fill="none" stroke="currentColor" strokeWidth={2.6} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M15 6l-6 6 6 6" /></svg></span>
             </Link>
           ))}
         </div>

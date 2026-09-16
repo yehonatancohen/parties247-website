@@ -9,11 +9,11 @@ export const metadata: Metadata = {
 export default function PromoterDisclaimerPage() {
   return (
     <div className="container mx-auto px-4 py-12 max-w-4xl">
-      <div className="bg-jungle-surface/50 border border-wood-brown/30 rounded-2xl p-8 md:p-12 text-right dir-rtl" dir="rtl">
-        <h1 className="text-3xl md:text-4xl font-display text-white mb-2">הצהרת מקדמי אירועים (Promoters)</h1>
-        <p className="text-jungle-text/60 mb-8 text-sm">שקיפות היא שם המשחק אצלנו.</p>
+      <div className="bg-tile border border-hairline rounded-[22px] p-8 md:p-12 text-right dir-rtl" dir="rtl">
+        <h1 className="text-[34px] font-bold leading-tight text-ink sm:text-[48px] mb-2">הצהרת מקדמי אירועים (Promoters)</h1>
+        <p className="text-ink-3 mb-8 text-sm">שקיפות היא שם המשחק אצלנו.</p>
 
-        <div className="space-y-8 text-jungle-text/90 leading-relaxed">
+        <div className="space-y-8 text-ink-2 leading-relaxed">
           
           <section>
             <h2 className="text-xl font-bold text-jungle-accent mb-3">1. אנחנו המתווכים, לא המפיקים</h2>
@@ -38,7 +38,7 @@ export default function PromoterDisclaimerPage() {
             <p>
               אחת השאלות הנפוצות ביותר היא לגבי אישורי כניסה. חשוב לדעת:
             </p>
-            <ul className="list-disc list-inside space-y-2 mr-2 mt-2 bg-jungle-bg/30 p-4 rounded-lg border border-wood-brown/10">
+            <ul className="list-disc list-inside space-y-2 mr-2 mt-2 bg-jungle-bg/30 p-4 rounded-lg border border-hairline">
               <li><strong>ההחלטה הבלעדית היא של המפיק:</strong> לנו כאתר אין גישה למערכת אישורי הכרטיסים ואין לנו יכולת לאשר או לדחות כניסה של בליינים.</li>
               <li><strong>מדיניות הכניסה:</strong> הגילאים, קוד הלבוש והאיזון המגדרי נקבעים על ידי המועדון או המפיק בלבד.</li>
               <li><strong>סירוב כניסה:</strong> במידה ורכשתם כרטיס ולא קיבלתם אישור, או שלא הוכנסתם בכניסה למועדון, הכתובת לבירור היא מול שירות הלקוחות של אתר הכרטיסים (כגון GoOut/Zygo) או הפקת האירוע.</li>
@@ -62,8 +62,8 @@ export default function PromoterDisclaimerPage() {
             </p>
           </section>
 
-          <div className="mt-12 pt-8 border-t border-wood-brown/30 text-center md:text-right">
-            <p className="font-bold text-white">תודה שאתם בוחרים לחגוג דרכנו!</p>
+          <div className="mt-12 pt-8 border-t border-hairline text-center md:text-right">
+            <p className="font-bold text-ink">תודה שאתם בוחרים לחגוג דרכנו!</p>
             <p className="text-sm mt-1">אנחנו כאן כדי לעזור לכם למצוא את המסיבה הבאה, ונמשיך לעבוד קשה כדי להביא לכם את האירועים הכי טובים.</p>
           </div>
 

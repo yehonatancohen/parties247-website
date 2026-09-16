@@ -68,7 +68,7 @@ export default async function HanukkahPage() {
         <>
           שמונה ימי חופש, שמונה ימים של מסיבות — לפי תאריך, בכל הארץ.
           <br />
-          <span className="font-bold text-jungle-lime">מדליקים נר, יוצאים למסיבה.</span>
+          <span className="font-semibold text-ink">מדליקים נר, יוצאים למסיבה.</span>
         </>
       }
       introHeading="חוגגים את חנוכה עם Parties24/7"
@@ -77,7 +77,7 @@ export default async function HanukkahPage() {
         <React.Fragment key="p2">
           ב-Parties24/7 ריכזנו עבורכם את כל <strong>מסיבות חנוכה {window.year}</strong> במקום אחד, ממוינות לפי תאריך, עם מחיר כרטיס עדכני וקישור ישיר לרכישה.
         </React.Fragment>,
-        <span key="p3" className="font-bold text-jungle-lime">
+        <span key="p3" className="font-semibold text-ink">
           טיפ מאיתנו: סופי השבוע שבתוך חופשת החנוכה הם העמוסים ביותר — שריינו כרטיס מראש.
         </span>,
       ]}

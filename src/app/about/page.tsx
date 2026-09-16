@@ -48,10 +48,10 @@ const AboutPage: React.FC = () => {
         jsonLd={faqJsonLd}
       />
       <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto text-jungle-text/90">
-          <h1 className="text-5xl font-display text-center mb-8 text-white">הסיפור שלנו</h1>
+        <div className="max-w-4xl mx-auto text-ink-2">
+          <h1 className="text-5xl font-display text-center mb-8 text-ink">הסיפור שלנו</h1>
 
-          <div className="space-y-6 bg-jungle-surface p-8 rounded-lg border border-wood-brown/50">
+          <div className="space-y-6 bg-tile p-8 rounded-lg border border-hairline">
             <p className="text-lg">
               Parties 24/7 נולד מתוך תשוקה אמיתית למוזיקה, ריקודים וחיבור בין אנשים. ראינו את סצנת חיי הלילה בישראל, תוססת ומלאת אנרגיה, אבל גם מפוזרת וקשה לניווט. החלום שלנו היה ליצור מקום אחד, פלטפורמה מרכזית שתאחד את כל המסיבות, הרייבים והפסטיבלים הכי שווים, ותנגיש אותם לקהל הרחב בצורה פשוטה, נוחה ומהנה.
             </p>
@@ -69,12 +69,12 @@ const AboutPage: React.FC = () => {
 
           {/* FAQ section — also powers FAQ schema for Google & AI assistants */}
           <div className="mt-12">
-            <h2 className="text-3xl font-display text-white mb-6">שאלות נפוצות</h2>
+            <h2 className="text-[28px] font-bold text-ink sm:text-[36px] mb-6">שאלות נפוצות</h2>
             <div className="space-y-4">
               {faqItems.map((item) => (
-                <div key={item.q} className="bg-jungle-surface rounded-lg border border-wood-brown/30 p-6">
+                <div key={item.q} className="bg-tile rounded-lg border border-hairline p-6">
                   <h3 className="text-lg font-bold text-jungle-accent mb-2">{item.q}</h3>
-                  <p className="text-jungle-text/85 leading-relaxed">{item.a}</p>
+                  <p className="text-ink-2 leading-relaxed">{item.a}</p>
                 </div>
               ))}
             </div>

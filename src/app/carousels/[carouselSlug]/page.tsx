@@ -80,11 +80,11 @@ export default async function CarouselPage({ params }: Props) {
     // Or you can return a custom UI here like in your original code:
     return (
       <div className="container mx-auto px-4 text-center py-16">
-        <h2 className="text-2xl font-bold text-white">לא מצאנו את הקרוסלה הזו</h2>
-        <p className="text-jungle-text/80 mt-2">
+        <h2 className="text-2xl font-bold text-ink">לא מצאנו את הקרוסלה הזו</h2>
+        <p className="text-ink-2 mt-2">
           ייתכן שהמסיבה כבר הסתיימה או שהקישור השתנה.
         </p>
-        <Link href="/" className="mt-6 inline-block text-jungle-accent hover:text-white">
+        <Link href="/" className="mt-6 inline-block text-link hover:underline underline-offset-4">
           חזרה לעמוד הבית
         </Link>
       </div>
@@ -135,10 +135,10 @@ export default async function CarouselPage({ params }: Props) {
       />
 
       <div className="container mx-auto px-4">
-        <h1 className="text-3xl md:text-4xl font-display text-center mb-2 text-white">
+        <h1 className="text-3xl md:text-4xl font-display text-center mb-2 text-ink">
           {carousel.title}
         </h1>
-        <p className="text-center text-jungle-text/80 mb-6 max-w-lg mx-auto">
+        <p className="text-center text-ink-2 mb-6 max-w-lg mx-auto">
           כל המסיבות החמות של "{carousel.title}" במקום אחד.
         </p>
         

@@ -68,7 +68,7 @@ export default async function SukkotPage() {
         <>
           שבוע שלם של חול המועד – פסטיבלים, מסיבות טבע ואירועי open air לפי תאריך.
           <br />
-          <span className="font-bold text-jungle-lime">שבעה ימים, המון ליינים.</span>
+          <span className="font-semibold text-ink">שבעה ימים, המון ליינים.</span>
         </>
       }
       introHeading="חוגגים את סוכות עם Parties24/7"
@@ -77,7 +77,7 @@ export default async function SukkotPage() {
         <React.Fragment key="p2">
           ב-Parties24/7 ריכזנו עבורכם את כל <strong>מסיבות סוכות {window.year}</strong> במקום אחד, ממוינות לפי תאריך, עם מחיר כרטיס עדכני וקישור ישיר לרכישה. בין אם אתם מתכננים פסטיבל שלושה ימים במדבר, מסיבת טבע על הכנרת או ערב מיינסטרים בעיר – כאן תמצאו את כל האפשרויות לחול המועד.
         </React.Fragment>,
-        <span key="p3" className="font-bold text-jungle-lime">
+        <span key="p3" className="font-semibold text-ink">
           טיפ מאיתנו: הפסטיבלים הגדולים של סוכות נמכרים מראש ואוזלים לפני החג. שריינו כרטיס מוקדם ככל האפשר.
         </span>,
       ]}

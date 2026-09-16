@@ -1,14 +1,13 @@
 import { Metadata } from 'next';
-import Link from 'next/link';
-import HomeClient from '../components/HomeClient';
+import HomeLaunch, { HomeHoliday } from '@/components/home/HomeLaunch';
 import { BASE_URL, BRAND_LOGO_URL, SOCIAL_LINKS } from '@/data/constants';
-import { HOLIDAYS, getHolidayWindow, isHolidayApproaching } from '@/lib/holidays';
+import { Party } from '@/data/types';
+import { HOLIDAYS, filterPartiesInHolidayWindow, getHolidayWindow, isHolidayApproaching } from '@/lib/holidays';
 
 const HOLIDAY_BANNER_LEAD_DAYS = 30;
 
-// Computed server-side (not inside the client-rendered HomeClient) so hebcal
-// never ships to the client bundle, and so it's independent of HomeClient's
-// in-progress redesign. Only the first holiday within the lead window shows.
+// Computed server-side so hebcal never ships to the client bundle. Only the
+// first holiday within the lead window shows.
 function getApproachingHoliday() {
   const candidates = Object.values(HOLIDAYS)
     .filter((def) => isHolidayApproaching(def, HOLIDAY_BANNER_LEAD_DAYS))
@@ -61,20 +60,20 @@ async function getData() {
       return { parties: [], carousels: [] };
     }
 
-    let rawParties = await partiesRes.json();
+    const rawParties: Array<Party & { _id: string }> = await partiesRes.json();
     const carousels = await carouselsRes.json();
-    const parties = Array.isArray(rawParties)
-      ? rawParties.map(p => ({ ...p, id: p._id })).filter((p: any) => !p.tags?.includes('promotion'))
+    const parties: Party[] = Array.isArray(rawParties)
+      ? rawParties.map(p => ({ ...p, id: p._id })).filter((p) => !p.tags?.includes('promotion'))
       : [];
 
     return {
-      parties: Array.isArray(parties) ? parties : [],
+      parties,
       carousels: Array.isArray(carousels) ? carousels : []
     };
 
   } catch (error) {
     console.error("Data fetch error:", error);
-    return { parties: [], carousels: [] };
+    return { parties: [] as Party[], carousels: [] };
   }
 }
 
@@ -87,9 +86,18 @@ export const metadata: Metadata = {
   },
 };
 
-// 3. The Page Component
 export default async function HomePage() {
   const data = await getData();
+
+  const approaching = getApproachingHoliday();
+  const holiday: HomeHoliday | null = approaching
+    ? {
+        slug: approaching.def.slug,
+        hebrewName: approaching.def.hebrewName,
+        year: approaching.window.year,
+        parties: filterPartiesInHolidayWindow(data.parties, approaching.def),
+      }
+    : null;
 
   // JSON-LD for SEO
   const websiteJsonLd = {
@@ -140,46 +148,30 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
-      {(() => {
-        const approaching = getApproachingHoliday();
-        if (!approaching) return null;
-        return (
-          <div className="container mx-auto px-4 mt-6">
-            <Link
-              href={`/${approaching.def.slug}`}
-              className="flex items-center justify-center gap-2 rounded-2xl border border-jungle-accent/40 bg-gradient-to-r from-jungle-lime/15 to-jungle-accent/15 px-5 py-3 text-center text-sm sm:text-base font-bold text-jungle-lime hover:from-jungle-lime/25 hover:to-jungle-accent/25 transition-colors"
-            >
-              🎉 מסיבות {approaching.def.hebrewName} {approaching.window.year} כבר כאן — לחצו לצפייה ←
-            </Link>
-          </div>
-        );
-      })()}
+      <HomeLaunch parties={data.parties} carousels={data.carousels} holiday={holiday} />
 
-      {/* Pass the server-fetched data to the client component */}
-      <HomeClient
-        initialParties={data.parties || []}
-        initialCarousels={data.carousels || []}
-      />
-
-      {/* Server-rendered homepage FAQ — indexable text + matches the FAQPage
-          JSON-LD above. Lives here (Server Component) so it ships independently
-          of the in-progress redesign inside HomeClient. */}
-      <div className="container mx-auto px-4 mt-16 mb-20">
-        <section
-          className="max-w-4xl mx-auto rounded-2xl border border-white/10 bg-white/5 p-8 text-jungle-text"
-          dir="rtl"
-        >
-          <h2 className="text-3xl font-display text-white mb-6">שאלות נפוצות</h2>
-          <div className="space-y-6">
+      {/* Server-rendered FAQ — indexable text matching the FAQPage JSON-LD above.
+          <details> keeps every answer in the HTML while collapsed. */}
+      <section className="font-apple bg-stage pb-24 text-ink sm:pb-32" aria-labelledby="faq-heading">
+        <div className="mx-auto max-w-[860px] px-4 sm:px-6">
+          <h2 id="faq-heading" className="text-center text-[28px] font-bold leading-tight sm:text-[40px]">
+            שאלות נפוצות
+          </h2>
+          <div className="mt-10 border-t border-hairline">
             {HOME_FAQS.map((f) => (
-              <div key={f.question}>
-                <h3 className="text-lg font-bold text-white mb-2">{f.question}</h3>
-                <p className="text-jungle-text/85 leading-relaxed">{f.answer}</p>
-              </div>
+              <details key={f.question} className="group border-b border-hairline">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-5 text-[17px] font-semibold text-ink transition-colors hover:text-ink sm:text-[19px] [&::-webkit-details-marker]:hidden">
+                  {f.question}
+                  <svg viewBox="0 0 24 24" className="h-5 w-5 shrink-0 text-ink-3 transition-transform duration-300 ease-apple group-open:rotate-45" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
+                    <path strokeLinecap="round" d="M12 5v14M5 12h14" />
+                  </svg>
+                </summary>
+                <p className="-mt-1 pb-6 text-[17px] leading-[1.7] text-ink-2">{f.answer}</p>
+              </details>
             ))}
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </>
   );
 }

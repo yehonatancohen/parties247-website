@@ -105,16 +105,16 @@ export function StickyPurchaseBar({
     return (
         <>
             {isVisible && (
-                <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#0c1713]/95 backdrop-blur border-t border-white/10 p-4 pb-6 sm:pb-4 shadow-2xl animate-slide-up">
-                    <div className="container mx-auto flex items-center justify-between gap-4">
+                <div className="font-apple fixed inset-x-0 bottom-0 z-50 border-t border-hairline bg-stage/85 p-3 pb-5 backdrop-blur-xl backdrop-saturate-150 animate-slide-up sm:p-4">
+                    <div className="mx-auto flex max-w-[1024px] items-center justify-between gap-4 sm:px-2">
                         <div className="hidden sm:block">
-                            <p className="text-white font-bold text-lg">שריינו מקום עכשיו</p>
-                            <p className="text-sm text-gray-400">
-                                {couponEligible ? '🎟️ הנחה עם קוד — הכרטיסים נחטפים מהר!' : 'הכרטיסים נחטפים מהר!'}
+                            <p className="text-[17px] font-semibold text-ink">{partyName ?? 'שריינו מקום'}</p>
+                            <p className="text-[13px] text-ink-3">
+                                {couponEligible ? 'הנחה עם קוד בקופה · מעבר לאתר המכירה הרשמי' : 'מעבר לאתר המכירה הרשמי'}
                             </p>
                         </div>
                         {soldOut ? (
-                            <div className="flex-1 sm:flex-none bg-white/5 border border-white/10 text-white/40 font-bold text-lg py-3 px-8 rounded-xl text-center flex items-center justify-center gap-2 cursor-not-allowed">
+                            <div className="flex flex-1 cursor-not-allowed items-center justify-center gap-2 rounded-full bg-tile-raised px-8 py-3 text-center text-[17px] font-semibold text-ink-3 sm:flex-none">
                                 <TicketIcon className="w-5 h-5" />
                                 הכרטיסים אזלו
                             </div>
@@ -124,7 +124,7 @@ export function StickyPurchaseBar({
                                 target={href.includes('go-out') ? "_self" : "_blank"}
                                 rel="nofollow noreferrer"
                                 onClick={handleClick}
-                                className="flex-1 sm:flex-none bg-gradient-to-r from-jungle-lime to-jungle-accent hover:from-jungle-lime/80 hover:to-jungle-accent/80 text-jungle-deep font-bold text-lg py-3 px-8 rounded-xl shadow-lg shadow-lime-900/20 transition transform hover:scale-105 active:scale-95 text-center flex items-center justify-center gap-2"
+                                className="flex flex-1 items-center justify-center gap-2 rounded-full bg-action px-8 py-3 text-center text-[17px] font-semibold text-on-action transition-colors hover:bg-action-hover active:scale-[0.99] sm:flex-none"
                             >
                                 <TicketIcon className="w-5 h-5" />
                                 {priceLabel}
@@ -136,28 +136,28 @@ export function StickyPurchaseBar({
 
             {/* Modern Loading Overlay for go-out */}
             {isLoading && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-jungle-deep/80 backdrop-blur-md transition-opacity duration-300" dir="rtl">
-                    <div className="flex flex-col items-center gap-6 p-8 bg-jungle-surface/90 rounded-2xl border border-jungle-lime/30 shadow-2xl shadow-jungle-lime/20 max-w-sm mx-4 transform animate-in fade-in zoom-in duration-300">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-stage/80 backdrop-blur-md transition-opacity duration-300" dir="rtl">
+                    <div className="mx-4 flex max-w-sm flex-col items-center gap-6 rounded-[28px] border border-hairline bg-tile p-8 shadow-[0_24px_60px_rgba(0,0,0,0.5)]">
                         <div className="relative">
                             {/* Spinner */}
-                            <div className="w-16 h-16 rounded-full border-4 border-jungle-lime/20 border-t-jungle-lime animate-spin"></div>
+                            <div className="w-16 h-16 rounded-full border-[3px] border-hairline border-t-action animate-spin"></div>
                             {/* Secure Lock Icon inside spinner */}
                             <div className="absolute inset-0 flex items-center justify-center">
-                                <svg className="w-5 h-5 text-jungle-lime" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg className="w-5 h-5 text-action" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                 </svg>
                             </div>
                         </div>
 
                         <div className="flex flex-col gap-2 text-center">
-                            <h3 className="text-xl font-display text-white font-bold tracking-wide">
+                            <h3 className="text-[21px] font-semibold text-ink">
                                 מעביר אותך ל-Go-Out
                             </h3>
-                            <p className="text-jungle-lime/90 font-medium">
+                            <p className="text-ink-2">
                                 לרכישת כרטיסים מאובטחת...
                             </p>
                             {couponEligible && couponCopied && (
-                                <p className="text-sm text-jungle-lime font-semibold">
+                                <p className="text-[14px] font-semibold text-link">
                                     הקוד {COUPON_CODE} הועתק, הדבק אותו בקופה
                                 </p>
                             )}
@@ -168,7 +168,7 @@ export function StickyPurchaseBar({
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={() => trackWhatsappClick('a')}
-                            className="flex items-center gap-2 text-sm text-green-200/80 hover:text-green-100 transition-colors"
+                            className="flex items-center gap-2 text-[14px] text-ink-3 transition-colors hover:text-ink"
                         >
                             <WhatsAppIcon className="w-4 h-4" />
                             רוצה לשמוע ראשון על ההפקות הבאות?

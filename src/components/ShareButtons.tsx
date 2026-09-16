@@ -35,7 +35,7 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ partyName, shareUrl }) => {
 
   return (
     <div className="flex items-center gap-2">
-      <span className="text-sm font-semibold text-jungle-text/80">שתפו:</span>
+      <span className="text-[14px] text-ink-3">שתפו</span>
       {platforms.map(platform => (
         <a
           key={platform.name}
@@ -43,7 +43,7 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ partyName, shareUrl }) => {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`Share on ${platform.name}`}
-          className="bg-jungle-deep p-2 rounded-full hover:bg-jungle-accent hover:text-jungle-deep transition-colors text-white"
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-tile text-ink transition-colors hover:bg-tile-raised"
         >
           {platform.icon}
         </a>
@@ -52,7 +52,7 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ partyName, shareUrl }) => {
          <button
            onClick={handleNativeShare}
            aria-label="More share options"
-           className="bg-jungle-deep p-2 rounded-full hover:bg-jungle-accent hover:text-jungle-deep transition-colors text-white"
+           className="flex h-10 w-10 items-center justify-center rounded-full bg-tile text-ink transition-colors hover:bg-tile-raised"
          >
            <ShareIcon className="w-5 h-5" />
          </button>

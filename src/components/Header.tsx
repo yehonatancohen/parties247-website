@@ -4,17 +4,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import NavLink from './NavLink';
 
-const HamburgerIcon = ({ className }: { className?: string }) => (
-  <svg className={className} stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-    <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path>
-  </svg>
-);
-
-const CloseIcon = ({ className }: { className?: string }) => (
-    <svg className={className} stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
-    </svg>
-);
+const NAV_ITEMS = [
+  { href: '/', label: 'עמוד הבית', end: true },
+  { href: '/all-parties', label: 'כל המסיבות' },
+  { href: '/party-discovery', label: 'חיפוש מסיבות' },
+  { href: '/articles', label: 'כתבות' },
+  { href: '/about', label: 'עלינו' },
+];
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -26,86 +22,116 @@ const Header: React.FC = () => {
       document.body.style.overflow = 'unset';
     };
   }, [isMenuOpen]);
-  
-  const NavLinks: React.FC<{ onLinkClick?: () => void }> = ({ onLinkClick }) => (
-    <>
-      <li>
-        <NavLink href="/" end onClick={onLinkClick} className={({ isActive }: { isActive: boolean }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
-          עמוד הבית
-        </NavLink>
-      </li>
-      <li>
-        <NavLink href="/party-discovery" onClick={onLinkClick} className={({ isActive }: { isActive: boolean }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
-          חיפוש מסיבות
-        </NavLink>
-      </li>
-      <li>
-        <NavLink href="/articles" onClick={onLinkClick} className={({ isActive }: { isActive: boolean }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
-          כתבות
-        </NavLink>
-      </li>
-      <li>
-        <NavLink href="/all-parties" onClick={onLinkClick} className={({ isActive }: { isActive: boolean }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
-          כל המסיבות
-        </NavLink>
-      </li>
-      <li>
-        <NavLink href="/about" onClick={onLinkClick} className={({ isActive }: { isActive: boolean }) => `block py-2 text-jungle-text hover:text-white transition-colors tracking-wide ${isActive ? 'text-jungle-accent' : ''}`}>
-          עלינו
-        </NavLink>
-      </li>
-    </>
-  );
+
+  useEffect(() => {
+    if (!isMenuOpen) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setIsMenuOpen(false);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isMenuOpen]);
 
   return (
     <>
-      <header className="bg-jungle-surface/80 backdrop-blur-sm sticky top-0 z-50 shadow-lg border-b-2 border-wood-brown/50" aria-label="Main Navigation">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center h-20">
-            {/* Brand Logo */}
-            <div className="flex-shrink-0 z-50">
-               <Link href="/" className="flex items-center">
-                 <Image
-                   src="https://vjkiztnx7gionfos.public.blob.vercel-storage.com/Partieslogo.PNG"
-                   alt="Parties 24/7 Logo"
-                   className="h-16 w-auto"
-                   loading="lazy"
-                   decoding="async"
-                   width={160}
-                   height={64}
-                 />
-               </Link>
-            </div>
+    <header
+      className="font-apple sticky top-0 z-50 border-b border-hairline bg-stage/80 backdrop-blur-xl backdrop-saturate-[1.8]"
+      aria-label="Main Navigation"
+    >
+      <div className="mx-auto flex h-12 max-w-[1024px] items-center justify-between px-4 sm:px-6">
+        <Link href="/" className="relative z-50 flex shrink-0 items-center" aria-label="Parties 24/7 — עמוד הבית">
+          <Image
+            src="https://vjkiztnx7gionfos.public.blob.vercel-storage.com/Partieslogo.PNG"
+            alt="Parties 24/7"
+            className="h-11 w-auto"
+            priority
+            width={110}
+            height={44}
+          />
+        </Link>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden md:block">
-              <ul className="flex items-center gap-6 font-display text-xl">
-                <NavLinks />
-              </ul>
-            </nav>
-            
-            {/* Mobile Menu Button */}
-            <div className="md:hidden z-50">
-               <button onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle menu" className="text-white text-3xl">
-                 {isMenuOpen ? <CloseIcon /> : <HamburgerIcon />}
-               </button>
-            </div>
-          </div>
-        </div>
-      </header>
+        {/* Desktop navigation */}
+        <nav className="hidden md:block" aria-label="ניווט ראשי">
+          <ul className="flex items-center gap-8 text-[13px]">
+            {NAV_ITEMS.map((item) => (
+              <li key={item.href}>
+                <NavLink
+                  href={item.href}
+                  end={item.end}
+                  className={({ isActive }) =>
+                    `transition-colors duration-200 ${isActive ? 'text-ink' : 'text-ink/75 hover:text-ink'}`
+                  }
+                >
+                  {item.label}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </nav>
 
-      {/* Mobile Menu Overlay */}
-      {isMenuOpen && (
-        <div className="mobile-menu fixed inset-0 bg-jungle-deep/95 backdrop-blur-md z-40 md:hidden">
-          <div className="h-full w-full max-w-sm mx-auto px-6">
-            <nav className="h-full overflow-y-auto py-16">
-              <ul className="min-h-full flex flex-col items-center justify-center gap-6 font-display text-3xl">
-                <NavLinks onLinkClick={() => setIsMenuOpen(false)} />
-              </ul>
-            </nav>
-          </div>
-        </div>
-      )}
+        <Link
+          href="/all-parties"
+          className="hidden rounded-full bg-action px-3.5 py-1 text-[12px] font-medium text-on-action transition-colors hover:bg-action-hover md:inline-block"
+        >
+          לכל המסיבות
+        </Link>
+
+        {/* Mobile menu button: two bars morph into a cross */}
+        <button
+          type="button"
+          onClick={() => setIsMenuOpen((open) => !open)}
+          aria-label={isMenuOpen ? 'סגירת תפריט' : 'פתיחת תפריט'}
+          aria-expanded={isMenuOpen}
+          aria-controls="mobile-menu"
+          className="relative z-50 -ml-2 flex h-11 w-11 items-center justify-center md:hidden"
+        >
+          <span className="relative block h-3 w-[18px]">
+            <span
+              className={`absolute left-0 h-[1.5px] w-full rounded-full bg-ink transition-transform duration-300 ease-apple ${
+                isMenuOpen ? 'top-1/2 -translate-y-1/2 rotate-45' : 'top-0'
+              }`}
+            />
+            <span
+              className={`absolute left-0 h-[1.5px] w-full rounded-full bg-ink transition-transform duration-300 ease-apple ${
+                isMenuOpen ? 'top-1/2 -translate-y-1/2 -rotate-45' : 'bottom-0'
+              }`}
+            />
+          </span>
+        </button>
+      </div>
+    </header>
+
+      {/* Mobile menu — outside <header>: its backdrop-filter would otherwise
+          become the containing block and clip this fixed overlay to 48px. */}
+      <div
+        id="mobile-menu"
+        className={`fixed inset-x-0 top-0 z-40 h-[100dvh] bg-black transition-opacity duration-300 ease-apple md:hidden ${
+          isMenuOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
+        }`}
+        aria-hidden={!isMenuOpen}
+      >
+        <nav className="px-10 pt-20" aria-label="ניווט ראשי">
+          <ul className="flex flex-col gap-4">
+            {NAV_ITEMS.map((item, i) => (
+              <li
+                key={item.href}
+                className={`transition-all duration-500 ease-apple ${isMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-2 opacity-0'}`}
+                style={{ transitionDelay: isMenuOpen ? `${60 + i * 35}ms` : '0ms' }}
+              >
+                <NavLink
+                  href={item.href}
+                  end={item.end}
+                  tabIndex={isMenuOpen ? undefined : -1}
+                  onClick={() => setIsMenuOpen(false)}
+                  className={({ isActive }) =>
+                    `block py-1 text-[28px] font-semibold leading-tight transition-colors ${isActive ? 'text-ink' : 'text-ink/80 hover:text-ink'}`
+                  }
+                >
+                  {item.label}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
     </>
   );
 };

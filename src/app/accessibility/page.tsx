@@ -9,11 +9,11 @@ export const metadata: Metadata = {
 export default function AccessibilityPage() {
   return (
     <div className="container mx-auto px-4 py-12 max-w-4xl">
-      <div className="bg-jungle-surface/50 border border-wood-brown/30 rounded-2xl p-8 md:p-12 text-right dir-rtl" dir="rtl">
-        <h1 className="text-3xl md:text-4xl font-display text-white mb-2">הצהרת נגישות</h1>
-        <p className="text-jungle-text/60 mb-8 text-sm">עודכן לאחרונה: ינואר 2026</p>
+      <div className="bg-tile border border-hairline rounded-[22px] p-8 md:p-12 text-right dir-rtl" dir="rtl">
+        <h1 className="text-[34px] font-bold leading-tight text-ink sm:text-[48px] mb-2">הצהרת נגישות</h1>
+        <p className="text-ink-3 mb-8 text-sm">עודכן לאחרונה: ינואר 2026</p>
 
-        <div className="space-y-8 text-jungle-text/90 leading-relaxed">
+        <div className="space-y-8 text-ink-2 leading-relaxed">
           
           <section>
             <h2 className="text-xl font-bold text-jungle-accent mb-3">1. כללי</h2>
@@ -62,8 +62,8 @@ export default function AccessibilityPage() {
             </p>
           </section>
 
-          <div className="mt-8 bg-jungle-bg/40 p-6 rounded-xl border border-wood-brown/20">
-            <h3 className="font-bold text-white mb-2">פרטי רכז הנגישות באתר:</h3>
+          <div className="mt-8 bg-jungle-bg/40 p-6 rounded-xl border border-hairline">
+            <h3 className="font-bold text-ink mb-2">פרטי רכז הנגישות באתר:</h3>
             <ul className="space-y-1 text-sm">
               <li><strong>שם:</strong> יהונתן כהן</li>
               <li><strong>דוא"ל:</strong> <a href="mailto:yoncohenyon@gmail.com" className="text-jungle-accent hover:underline">yoncohenyon@gmail.com</a></li>

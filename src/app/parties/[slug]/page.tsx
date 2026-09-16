@@ -67,7 +67,7 @@ export default async function SpecificPartyPage({ params }: { params: { slug: st
     : null;
 
   return (
-    <div className="space-y-10 min-h-screen bg-[#0c1713]">
+    <div className="space-y-10 min-h-screen bg-stage">
       {faqJsonLd && (
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
       )}
@@ -93,7 +93,7 @@ export default async function SpecificPartyPage({ params }: { params: { slug: st
               <Link
                 key={link.href}
                 href={link.href}
-                className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-jungle-text/90 transition hover:border-jungle-accent hover:text-white"
+                className="rounded-full border border-hairline px-4 py-2 text-[14px] text-ink transition-colors hover:border-white/25 hover:bg-tile"
               >
                 {link.label}
               </Link>
@@ -103,22 +103,22 @@ export default async function SpecificPartyPage({ params }: { params: { slug: st
       )}
 
       <section className="container mx-auto px-4 pb-16">
-        <div className="max-w-4xl mx-auto rounded-2xl border border-white/10 bg-white/5 p-8 text-jungle-text">
-          <h2 className="text-2xl font-display text-white mb-4">אודות {config.title}</h2>
-          <div className="space-y-4 leading-relaxed text-base text-jungle-text/90" dir="rtl">
+        <div className="max-w-4xl mx-auto rounded-[28px] bg-tile p-6 sm:p-10 text-ink">
+          <h2 className="text-[24px] font-bold text-ink sm:text-[28px] mb-4">אודות {config.title}</h2>
+          <div className="space-y-4 leading-relaxed text-base text-ink-2" dir="rtl">
             {bodyParagraphs.map((p) => (
               <p key={p.slice(0, 32)}>{p}</p>
             ))}
           </div>
 
           {config.faqs && config.faqs.length > 0 && (
-            <div className="mt-8 border-t border-white/10 pt-6">
-              <h3 className="text-xl font-display text-white mb-4">שאלות נפוצות</h3>
+            <div className="mt-8 border-t border-hairline pt-6">
+              <h3 className="text-[21px] font-bold text-ink mb-4">שאלות נפוצות</h3>
               <div className="space-y-5">
                 {config.faqs.map((f) => (
                   <div key={f.question} dir="rtl">
-                    <h4 className="text-base font-bold text-white mb-1">{f.question}</h4>
-                    <p className="text-jungle-text/80 leading-relaxed">{f.answer}</p>
+                    <h4 className="text-[16px] font-semibold text-ink mb-1">{f.question}</h4>
+                    <p className="text-ink-2 leading-relaxed">{f.answer}</p>
                   </div>
                 ))}
               </div>

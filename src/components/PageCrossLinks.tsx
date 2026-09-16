@@ -19,28 +19,28 @@ const PageCrossLinks: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 mt-12">
-      <div className="bg-jungle-surface/70 border border-wood-brown/50 rounded-2xl p-6 shadow-lg space-y-4">
-        <div className="flex items-center justify-between gap-4 flex-wrap">
-          <h2 className="font-display text-2xl text-white">עוד עמודים שכדאי לבדוק</h2>
-          <p className="text-jungle-text/70 text-sm">קישורי המשך כדי לגלות עוד מסיבות והמלצות.</p>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {suggestedLinks.map((option) => (
-            <Link
-              key={option.path}
-              href={option.path}
-              className="block bg-jungle-deep border border-wood-brown/60 rounded-xl p-4 hover:border-jungle-accent hover:shadow-jungle-glow transition group"
-            >
-              <p className="font-semibold text-white group-hover:text-jungle-accent transition-colors">{option.label}</p>
-              {option.description ? (
-                <p className="text-sm text-jungle-text/70 mt-2 leading-snug">{option.description}</p>
-              ) : null}
+    <nav className="font-apple mx-auto mt-12 max-w-[1024px] px-4 pb-4 sm:px-6" aria-labelledby="cross-links-heading">
+      <h2 id="cross-links-heading" className="text-[21px] font-semibold text-ink">
+        עוד עמודים שכדאי לבדוק
+      </h2>
+      <ul className="mt-4 grid border-t border-hairline sm:grid-cols-2 sm:gap-x-8">
+        {suggestedLinks.map((option) => (
+          <li key={option.path} className="border-b border-hairline">
+            <Link href={option.path} className="group flex items-center justify-between gap-4 py-4">
+              <span>
+                <span className="block text-[17px] font-medium text-ink transition-colors group-hover:text-link">{option.label}</span>
+                {option.description ? (
+                  <span className="mt-0.5 block text-[14px] leading-snug text-ink-3">{option.description}</span>
+                ) : null}
+              </span>
+              <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 text-ink-3 transition-transform duration-200 group-hover:-translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2.4} aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 6l-6 6 6 6" />
+              </svg>
             </Link>
-          ))}
-        </div>
-      </div>
-    </div>
+          </li>
+        ))}
+      </ul>
+    </nav>
   );
 };
 

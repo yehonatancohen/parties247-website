@@ -72,14 +72,13 @@ export default function FridayPartiesGuidePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <main className="container mx-auto max-w-4xl px-4 py-12 space-y-10" dir="rtl">
+      <main className="font-apple mx-auto max-w-[860px] px-4 py-12 sm:px-6 sm:py-20 space-y-10" dir="rtl">
         {/* Hero */}
         <header className="space-y-4 text-center">
-          <p className="text-sm uppercase tracking-wide text-jungle-text/60">מדריך</p>
-          <h1 className="text-3xl md:text-4xl font-display text-white">
+          <h1 className="text-[34px] font-bold leading-tight text-ink sm:text-[48px]">
             מסיבות יום שישי
           </h1>
-          <p className="text-jungle-text/80 text-base md:text-lg max-w-2xl mx-auto">
+          <p className="text-ink-2 text-base md:text-lg max-w-2xl mx-auto">
             יום שישי הוא ללא עוררין הלילה הגדול של ישראל. מהשקיעה ועד
             הזריחה, העיר מתמלאת בסאונד, אנרגיה וקהל שיודע למה הוא יצא.
             במדריך הזה תמצאו את כל מה שצריך לדעת כדי לבנות ערב שישי מושלם –
@@ -89,7 +88,7 @@ export default function FridayPartiesGuidePage() {
         </header>
 
         {/* Intro */}
-        <section className="rounded-2xl border border-white/10 bg-white/5 p-6 space-y-4 text-jungle-text/90 text-base leading-relaxed">
+        <section className="rounded-[22px] border border-hairline bg-tile p-6 space-y-4 text-ink-2 text-base leading-relaxed">
           <p>
             בישראל, יום שישי הוא ערב שמתחיל כבר בשעות הצהריים המאוחרות ומסתיים
             לפעמים רק ביום שבת בצהריים. הסצנה גדולה ומגוונת: טכנו כבד בדרום
@@ -106,121 +105,121 @@ export default function FridayPartiesGuidePage() {
 
         {/* Sections */}
         <section className="space-y-6">
-          <h2 className="text-2xl font-display text-white">
+          <h2 className="text-[24px] font-bold text-ink sm:text-[28px]">
             4 עולמות של מסיבות שישי שכדאי להכיר
           </h2>
 
           {/* TLV */}
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6 space-y-3">
-            <h3 className="text-xl font-semibold text-white">
+          <div className="rounded-[22px] border border-hairline bg-tile p-6 space-y-3">
+            <h3 className="text-xl font-semibold text-ink">
               1. מסיבות שישי בתל אביב – מהגג עד המרתף
             </h3>
-            <p className="text-jungle-text/90 leading-relaxed">
+            <p className="text-ink-2 leading-relaxed">
               תל אביב מציעה כמעט כל סגנון אפשרי בכל שישי. הדרום – פלורנטין,
               קריית מלאכה ונמל יפו – מארח את הרייבים הגדולים עם מוזיקה
               אלקטרונית כבדה. המרכז, שדרות רוטשילד ואזור השוק, מציע ברים עם
               DJ לייב ומסיבות האוס אינטימיות. הצפון, כולל נמל תל אביב
               והרמות, מארח אירועים רחבים יותר עם קהל מגוון.
             </p>
-            <p className="text-jungle-text/90 leading-relaxed">
+            <p className="text-ink-2 leading-relaxed">
               בשישי הממוצע, תל אביב מציעה בין 15 ל-30 אירועים מוזיקליים
               שונים – ממסיבה ביתית עם 50 אנשים ועד פסטיבל עם אלפים.
               הכרטיסים עם מחיר early-bird זמינים בדרך כלל עד 22:00 של אותו
               ערב. לאחר מכן, מחיר הכניסה עולה בדלת.
             </p>
-            <p className="text-jungle-text/80 text-sm">
+            <p className="text-ink-2 text-sm">
               סגנונות: כל הסגנונות | שעות: 22:00-08:00 | מחיר: 40-200 ₪
             </p>
           </div>
 
           {/* Beach Parties */}
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6 space-y-3">
-            <h3 className="text-xl font-semibold text-white">
+          <div className="rounded-[22px] border border-hairline bg-tile p-6 space-y-3">
+            <h3 className="text-xl font-semibold text-ink">
               2. מסיבות חוף שישי – שקיעה, גלים וסאונד
             </h3>
-            <p className="text-jungle-text/90 leading-relaxed">
+            <p className="text-ink-2 leading-relaxed">
               בחודשי הקיץ (אפריל עד אוקטובר) ומעבר להם, חופי ישראל הופכים
               לבמות מסיבה חיצוניות. מסיבות שישי על החוף מתחילות לרוב בשעות
               אחר הצהריים עם סט שקיעה, ממשיכות לשעות הערב ולעיתים עוברות
               למקום מקורה ממנו ממשיך המחול. הפיתוי להישאר עם הרגליים בחול
               בזמן שהבאסים מרטיטים – הוא פיתוי שקשה לעמוד בו.
             </p>
-            <p className="text-jungle-text/90 leading-relaxed">
+            <p className="text-ink-2 leading-relaxed">
               הפקות חוף פופולריות כוללות אירועים בחופי תל אביב, הרצליה,
               נתניה וחיפה. כרטיסים אלה נמכרים לרוב מהר, וחלקם כוללים מינימום
               צריכה בבר. בדקו את פרטי האירוע לפני שמגיעים כדי לדעת מה לצפות.
             </p>
-            <p className="text-jungle-text/80 text-sm">
+            <p className="text-ink-2 text-sm">
               זמן: 15:00-23:00 | סגנון: האוס, טכנו, מיינסטרים | כרטיסים: 50-120 ₪
             </p>
           </div>
 
           {/* Haifa */}
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6 space-y-3">
-            <h3 className="text-xl font-semibold text-white">
+          <div className="rounded-[22px] border border-hairline bg-tile p-6 space-y-3">
+            <h3 className="text-xl font-semibold text-ink">
               3. מסיבות שישי בחיפה – הצפון שמרקיד
             </h3>
-            <p className="text-jungle-text/90 leading-relaxed">
+            <p className="text-ink-2 leading-relaxed">
               חיפה היא עיר עם סצנת לילה חזקה ומגוונת שלא תמיד מקבלת את
               הקרדיט המגיע לה. שוק תלפיות וסביבתו הפכו למוקד של מסיבות
               אלקטרוניות ורייבים, בעוד שהכרמל מציע ברים אינטימיים עם DJ
               רזידנט ומפגשים קהילתיים. העיר התחתית ונמל חיפה אף הם מוסיפים
               מקומות חדשים בכל עונה.
             </p>
-            <p className="text-jungle-text/90 leading-relaxed">
+            <p className="text-ink-2 leading-relaxed">
               מסיבות שישי בחיפה כוללות לרוב תמהיל של קהל סטודנטים מהטכניון
               ואוניברסיטת חיפה, צעירים מקומיים ואנשים שמגיעים מהצפון. הסגנון
               הכללי נוטה לטכנו, האוס ומוזיקה אלקטרונית, אבל יש גם ערבי
               מיינסטרים ו-R&B פופולריים.
             </p>
-            <p className="text-jungle-text/80 text-sm">
+            <p className="text-ink-2 text-sm">
               עיר: חיפה | סגנון: טכנו, האוס, מיינסטרים | גיל: 18+
             </p>
           </div>
 
           {/* Jerusalem */}
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6 space-y-3">
-            <h3 className="text-xl font-semibold text-white">
+          <div className="rounded-[22px] border border-hairline bg-tile p-6 space-y-3">
+            <h3 className="text-xl font-semibold text-ink">
               4. מסיבות שישי בירושלים – הסצנה ששומרת על עצמה
             </h3>
-            <p className="text-jungle-text/90 leading-relaxed">
+            <p className="text-ink-2 leading-relaxed">
               ירושלים מציעה חיי לילה שונים מהותית מתל אביב – אינטימיים יותר,
               קהילתיים יותר, ולעיתים ניסיוניים ואמנותיים יותר. מחנה יהודה
               ואזור נחלאות הם לב הסצנה – עם ברים שמציעים הופעות חיות, מסיבות
               שישי קטנות ואירועי תרבות-לילה שמשלבים מוזיקה עם אמנות.
             </p>
-            <p className="text-jungle-text/90 leading-relaxed">
+            <p className="text-ink-2 leading-relaxed">
               מסיבות שישי בירושלים מתחילות לרוב מוקדם יותר (21:00-22:00)
               ומסתיימות בשעות סבירות יותר. הן פחות מסחריות ויותר קהילתיות,
               ואלה שמגיעים לרוב יוצאים עם ידידים חדשים ושאלות ישנות.
             </p>
-            <p className="text-jungle-text/80 text-sm">
+            <p className="text-ink-2 text-sm">
               עיר: ירושלים | סגנון: מגוון, עצמאי | שעות: 21:00-03:00
             </p>
           </div>
         </section>
 
         {/* Internal Links */}
-        <section className="rounded-2xl border border-white/10 bg-white/5 p-6">
-          <h2 className="text-xl font-display text-white mb-4">
+        <section className="rounded-[22px] border border-hairline bg-tile p-6">
+          <h2 className="text-[21px] font-bold text-ink mb-4">
             קיצורים שימושיים
           </h2>
           <div className="flex flex-wrap gap-3">
             <Link
               href="/day/friday"
-              className="rounded-full border border-white/20 px-4 py-2 text-sm text-jungle-text/90 hover:bg-white/10 transition"
+              className="rounded-full border border-hairline px-4 py-2 text-sm text-ink-2 hover:bg-white/10 transition"
             >
               מסיבות שישי הקרוב
             </Link>
             <Link
               href="/day/weekend"
-              className="rounded-full border border-white/20 px-4 py-2 text-sm text-jungle-text/90 hover:bg-white/10 transition"
+              className="rounded-full border border-hairline px-4 py-2 text-sm text-ink-2 hover:bg-white/10 transition"
             >
               מסיבות סוף שבוע
             </Link>
             <Link
               href="/all-parties"
-              className="rounded-full border border-white/20 px-4 py-2 text-sm text-jungle-text/90 hover:bg-white/10 transition"
+              className="rounded-full border border-hairline px-4 py-2 text-sm text-ink-2 hover:bg-white/10 transition"
             >
               כל המסיבות
             </Link>
@@ -229,28 +228,28 @@ export default function FridayPartiesGuidePage() {
 
         {/* FAQ */}
         <section className="space-y-4">
-          <h2 className="text-2xl font-display text-white">
+          <h2 className="text-[24px] font-bold text-ink sm:text-[28px]">
             שאלות נפוצות – מסיבות יום שישי
           </h2>
           <div className="space-y-3">
             {faqs.map(({ q, a }, i) => (
               <div
                 key={i}
-                className="rounded-2xl border border-white/10 bg-white/5 p-5 space-y-2"
+                className="rounded-[22px] border border-hairline bg-tile p-5 space-y-2"
               >
-                <h3 className="font-semibold text-white">{q}</h3>
-                <p className="text-jungle-text/80 text-sm leading-relaxed">{a}</p>
+                <h3 className="font-semibold text-ink">{q}</h3>
+                <p className="text-ink-2 text-sm leading-relaxed">{a}</p>
               </div>
             ))}
           </div>
         </section>
 
         {/* CTA */}
-        <section className="rounded-2xl border border-jungle-accent/30 bg-jungle-accent/10 p-8 text-center space-y-4">
-          <h2 className="text-2xl font-display text-white">
+        <section className="rounded-[22px] border border-jungle-accent/30 bg-jungle-accent/10 p-8 text-center space-y-4">
+          <h2 className="text-[24px] font-bold text-ink sm:text-[28px]">
             מה קורה השישי הקרוב?
           </h2>
-          <p className="text-jungle-text/80">
+          <p className="text-ink-2">
             Parties 24/7 מעדכן את כל הליינים של יום שישי בזמן אמת. חפשו
             לפי עיר וז&apos;אנר, ורכשו כרטיסים בקישור ישיר ממש עכשיו.
           </p>
@@ -263,7 +262,7 @@ export default function FridayPartiesGuidePage() {
             </Link>
             <Link
               href="/all-parties"
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-ink transition hover:bg-white/10"
             >
               לכל המסיבות
             </Link>

@@ -19,12 +19,12 @@ const renderInline = (text: string, keyPrefix: string) => {
     if (m.index > last) parts.push(text.slice(last, m.index));
     if (m[1] && m[2]) {
       parts.push(
-        <Link key={`${keyPrefix}-l-${i}`} href={m[2]} className="text-jungle-lime underline underline-offset-2 hover:text-white transition-colors">
+        <Link key={`${keyPrefix}-l-${i}`} href={m[2]} className="text-link underline underline-offset-2 transition-colors">
           {m[1]}
         </Link>,
       );
     } else if (m[3]) {
-      parts.push(<strong key={`${keyPrefix}-b-${i}`} className="font-bold text-white">{m[3]}</strong>);
+      parts.push(<strong key={`${keyPrefix}-b-${i}`} className="font-bold text-ink">{m[3]}</strong>);
     }
     last = m.index + m[0].length;
     i += 1;
@@ -41,14 +41,14 @@ const renderContent = (content: string) => {
 
     if (line.startsWith("### ")) {
       return (
-        <h3 key={`heading-${index}`} className="text-xl font-semibold text-white">
+        <h3 key={`heading-${index}`} className="text-xl font-semibold text-ink">
           {renderInline(line.replace("### ", ""), `h-${index}`)}
         </h3>
       );
     }
 
     return (
-      <p key={`paragraph-${index}`} className="text-base leading-relaxed text-jungle-text/90">
+      <p key={`paragraph-${index}`} className="text-base leading-relaxed text-ink-2">
         {renderInline(line, `p-${index}`)}
       </p>
     );
@@ -123,19 +123,18 @@ export default async function ArticlePage({
   };
 
   return (
-    <main className="container mx-auto max-w-4xl px-4 py-12 space-y-8">
+    <main className="font-apple mx-auto max-w-[860px] px-4 py-12 sm:px-6 sm:py-20 space-y-8">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
       />
       <header className="space-y-4 text-center">
-        <p className="text-sm uppercase tracking-wide text-jungle-text/60">המגזין</p>
-        <h1 className="text-3xl md:text-4xl font-display text-white">{article.title}</h1>
-        <p className="text-jungle-text/80 text-base md:text-lg">{article.summary}</p>
+        <h1 className="text-[34px] font-bold leading-tight text-ink sm:text-[48px]">{article.title}</h1>
+        <p className="text-ink-2 text-base md:text-lg">{article.summary}</p>
       </header>
 
       {article.imageUrl && (
-        <div className="overflow-hidden rounded-2xl border border-white/10 shadow-xl">
+        <div className="overflow-hidden rounded-[22px] border border-hairline">
           <Image
             src={article.imageUrl}
             alt={article.title}
@@ -148,7 +147,7 @@ export default async function ArticlePage({
         </div>
       )}
 
-      <article className="space-y-4 rounded-2xl border border-white/10 bg-white/5 p-6 shadow">
+      <article className="space-y-4 rounded-[22px] border border-hairline bg-tile p-6 shadow">
         {renderContent(article.content || "")}
       </article>
 

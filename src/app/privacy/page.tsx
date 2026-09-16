@@ -9,11 +9,11 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <div className="container mx-auto px-4 py-12 max-w-4xl">
-      <div className="bg-jungle-surface/50 border border-wood-brown/30 rounded-2xl p-8 md:p-12 text-right dir-rtl" dir="rtl">
-        <h1 className="text-3xl md:text-4xl font-display text-white mb-2">מדיניות פרטיות</h1>
-        <p className="text-jungle-text/60 mb-8 text-sm">עודכן לאחרונה: ינואר 2026</p>
+      <div className="bg-tile border border-hairline rounded-[22px] p-8 md:p-12 text-right dir-rtl" dir="rtl">
+        <h1 className="text-[34px] font-bold leading-tight text-ink sm:text-[48px] mb-2">מדיניות פרטיות</h1>
+        <p className="text-ink-3 mb-8 text-sm">עודכן לאחרונה: ינואר 2026</p>
 
-        <div className="space-y-8 text-jungle-text/90 leading-relaxed">
+        <div className="space-y-8 text-ink-2 leading-relaxed">
           
           <section>
             <h2 className="text-xl font-bold text-jungle-accent mb-3">1. מבוא</h2>
@@ -34,7 +34,7 @@ export default function PrivacyPage() {
                 <strong>פניות יזומות:</strong> אם בחרת ליצור איתנו קשר דרך המייל או הרשתות החברתיות, נשמור את פרטי ההתקשרות שמסרת לנו לצורך מענה לפנייתך.
               </li>
             </ul>
-            <p className="mt-2 text-sm text-jungle-text/70">
+            <p className="mt-2 text-sm text-ink-3">
               * איננו אוספים פרטי אשראי או מידע פיננסי. רכישת הכרטיסים מתבצעת כולה באתרים חיצוניים.
             </p>
           </section>
@@ -79,8 +79,8 @@ export default function PrivacyPage() {
             </p>
           </section>
 
-          <div className="mt-12 pt-8 border-t border-wood-brown/30 text-center md:text-right">
-            <p className="font-bold text-white">יצירת קשר</p>
+          <div className="mt-12 pt-8 border-t border-hairline text-center md:text-right">
+            <p className="font-bold text-ink">יצירת קשר</p>
             <p>בכל שאלה בנוגע למדיניות הפרטיות, ניתן לפנות אלינו בדוא"ל או בעמוד יצירת הקשר באתר.</p>
           </div>
 

@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-16T00:00:00Z",
+  "title": "Design System: Parties 24/7",
+  "extensions": {
+    "colorMeta": {
+      "stage": { "role": "neutral", "displayName": "Night Stage", "canonical": "#06110d", "tonalRamp": ["#06110d", "#0f1f19", "#1a3129", "#2a4538", "#4a6a5b", "#7a9a8b", "#b3cabf", "#e6f0ea"] },
+      "tile": { "role": "neutral", "displayName": "Understory Tile", "canonical": "#0f1f19", "tonalRamp": ["#06110d", "#0f1f19", "#1a3129", "#2a4538", "#4a6a5b", "#7a9a8b", "#b3cabf", "#e6f0ea"] },
+      "tile-hover": { "role": "neutral", "displayName": "Understory Tile, Hover", "canonical": "#132720", "tonalRamp": ["#08140f", "#132720", "#1e3a30", "#2f4f42", "#507466", "#80a395", "#b8d0c5", "#e8f2ec"] },
+      "tile-raised": { "role": "neutral", "displayName": "Raised Leaf", "canonical": "#1a3129", "tonalRamp": ["#0a1712", "#13271f", "#1a3129", "#2a4538", "#4a6a5b", "#7a9a8b", "#b3cabf", "#e6f0ea"] },
+      "ink": { "role": "neutral", "displayName": "Moonlit Ink", "canonical": "#eef6f0", "tonalRamp": ["#1c2a22", "#34463c", "#506459", "#6f8478", "#8fa498", "#b1c3b8", "#d2e0d7", "#eef6f0"] },
+      "ink-2": { "role": "neutral", "displayName": "Fog Ink", "canonical": "#a9bdb2", "tonalRamp": ["#1e2a24", "#36453d", "#526259", "#6f8177", "#8ea096", "#a9bdb2", "#cbd9d1", "#eaf1ed"] },
+      "ink-3": { "role": "neutral", "displayName": "Deep Fog Ink", "canonical": "#8aa197", "tonalRamp": ["#1b2622", "#303f38", "#4a5c54", "#667a71", "#8aa197", "#a9bcb3", "#cad8d1", "#e9f0ec"] },
+      "hairline": { "role": "neutral", "displayName": "Hairline", "canonical": "rgba(196, 255, 218, 0.11)", "tonalRamp": ["rgba(196,255,218,0.04)", "rgba(196,255,218,0.07)", "rgba(196,255,218,0.11)", "rgba(196,255,218,0.16)", "rgba(196,255,218,0.24)", "rgba(196,255,218,0.36)", "rgba(196,255,218,0.55)", "rgba(196,255,218,0.8)"] },
+      "action": { "role": "primary", "displayName": "Jungle Green", "canonical": "#76c893", "tonalRamp": ["#0d2a18", "#1a4a2c", "#2c6d43", "#45935d", "#76c893", "#8fd8a8", "#b8e9c7", "#e3f7e9"] },
+      "action-hover": { "role": "primary", "displayName": "Lit Jungle Green", "canonical": "#8fd8a8", "tonalRamp": ["#0f2d1b", "#1d4f30", "#307348", "#4d9a64", "#76c893", "#8fd8a8", "#bdecca", "#e6f8ec"] },
+      "on-action": { "role": "primary", "displayName": "Canopy Black", "canonical": "#04120c", "tonalRamp": ["#04120c", "#0c2419", "#173a2a", "#28533f", "#437059", "#6b9480", "#a4c1b3", "#e0ece6"] },
+      "link": { "role": "primary", "displayName": "Moss Link", "canonical": "#8ddca6", "tonalRamp": ["#0e2d1a", "#1c4f2f", "#2f7447", "#4c9b63", "#6fc088", "#8ddca6", "#bbecc9", "#e5f8eb"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Home H1 only. Two-tone (ink / ink-3); clamp(34px,10.4vw,44px) on mobile, 68px at sm, 92px at lg." },
+      "headline": { "displayName": "Headline", "purpose": "Section headings, centered: 28px to 40px; main section 32px to 48px; event/listing H1 34px to 48px." },
+      "title": { "displayName": "Title", "purpose": "Card titles (2-line clamp), FAQ questions, event fact lines." },
+      "body": { "displayName": "Body", "purpose": "Long SEO prose in Fog Ink, max 760px. Hero lead 18px to 23px at 1.45." },
+      "label": { "displayName": "Label", "purpose": "Card meta, counts, desktop nav (13px), footer (12px). tabular-nums for figures." }
+    },
+    "shadows": [
+      { "name": "segment-lift", "value": "0 3px 8px rgba(0,0,0,0.35)", "purpose": "Selected night in the segmented switch." },
+      { "name": "badge-lift", "value": "0 4px 12px rgba(0,0,0,0.35)", "purpose": "Coupon badge over a flyer." },
+      { "name": "paddle-float", "value": "0 4px 16px rgba(0,0,0,0.5)", "purpose": "Shelf previous/next paddles." },
+      { "name": "banner-float", "value": "0 12px 40px rgba(0,0,0,0.5)", "purpose": "Cookie banner." },
+      { "name": "fan-flyer", "value": "0 18px 40px rgba(0,0,0,0.55)", "purpose": "Each flyer in a FlyerFan stack on tiles." },
+      { "name": "dialog", "value": "0 24px 60px rgba(0,0,0,0.5)", "purpose": "GoOut redirect overlay card." },
+      { "name": "hero-flyer", "value": "0 30px 80px rgba(0,0,0,0.45)", "purpose": "Event page main flyer." },
+      { "name": "hero-top-light", "value": "radial-gradient(ellipse 55% 60% at 50% 0%, rgba(118,200,147,0.17), transparent 72%)", "purpose": "Soft green light falling on the hero stage (a background, not a box-shadow)." }
+    ],
+    "motion": [
+      { "name": "ease-apple", "value": "cubic-bezier(0.28, 0.11, 0.32, 1)", "purpose": "The one easing curve for state transitions, card image zoom, fan lift, menu, FAQ icon, skeleton sweep." },
+      { "name": "wall-drift", "value": "translate3d(0,0,0) to translate3d(50%,0,0), linear infinite, 7s per flyer (row A) / 8s per flyer (row B, reversed)", "purpose": "Flyer wall loop; paused on hover and focus-within; disabled under reduced motion." },
+      { "name": "wall-in", "value": "opacity 0 + translateY(24px) to rest, 1.2s cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Flyer wall entrance; disabled under reduced motion." },
+      { "name": "skeleton-sweep", "value": "background-position 150% to -50%, 1.6s ease-apple infinite", "purpose": "Loading skeleton light sweep; disabled under reduced motion." },
+      { "name": "duration-state", "value": "200ms (fills, links), 300ms (tiles, segments, overlays), 500-700ms (imagery lift and zoom)", "purpose": "Duration tiers." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Action Pill",
+      "kind": "button",
+      "refersTo": "button-action",
+      "description": "The one filled call to action per viewport (hero, cookie accept, header compact).",
+      "html": "<a class=\"ds-btn-action\" href=\"#\">לכל המסיבות</a>",
+      "css": ".ds-btn-action { display: inline-block; background: #76c893; color: #04120c; padding: 12px 24px; border-radius: 9999px; font-family: Heebo, system-ui, sans-serif; font-size: 17px; font-weight: 500; text-decoration: none; transition: background-color 200ms; } .ds-btn-action:hover { background: #8fd8a8; } .ds-btn-action:focus-visible { outline: 2px solid #8ddca6; outline-offset: 3px; } .ds-btn-action:active { transform: scale(0.99); }"
+    },
+    {
+      "name": "Chevron Link",
+      "kind": "custom",
+      "refersTo": "link",
+      "description": "Default secondary action everywhere: Moss Link text and a left chevron (RTL).",
+      "html": "<a class=\"ds-chevron-link\" href=\"#\" dir=\"rtl\">מה קורה הלילה<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.6\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M15 6l-6 6 6 6\"/></svg></a>",
+      "css": ".ds-chevron-link { display: inline-flex; align-items: center; gap: 4px; color: #8ddca6; font-family: Heebo, system-ui, sans-serif; font-size: 17px; text-decoration: none; text-underline-offset: 4px; } .ds-chevron-link svg { width: 0.8em; height: 0.8em; transition: transform 200ms; } .ds-chevron-link:hover { text-decoration: underline; } .ds-chevron-link:hover svg { transform: translateX(-2px); } .ds-chevron-link:focus-visible { outline: 2px solid #8ddca6; outline-offset: 3px; }"
+    },
+    {
+      "name": "Purchase Button",
+      "kind": "button",
+      "refersTo": "button-purchase",
+      "description": "Full-width event-page purchase pill to GoOut.",
+      "html": "<a class=\"ds-btn-purchase\" href=\"#\" dir=\"rtl\">לרכישת כרטיסים החל מ-80 ₪</a>",
+      "css": ".ds-btn-purchase { display: flex; width: 100%; align-items: center; justify-content: center; background: #76c893; color: #04120c; padding: 16px 24px; border-radius: 9999px; font-family: Heebo, system-ui, sans-serif; font-size: 19px; font-weight: 600; text-decoration: none; transition: background-color 200ms; } .ds-btn-purchase:hover { background: #8fd8a8; } .ds-btn-purchase:active { transform: scale(0.99); } .ds-btn-purchase:focus-visible { outline: 2px solid #8ddca6; outline-offset: 3px; }"
+    },
+    {
+      "name": "Browse Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Hairline-bordered pill for day / genre / city shortcuts.",
+      "html": "<a class=\"ds-chip\" href=\"#\">טכנו</a>",
+      "css": ".ds-chip { display: inline-block; border: 1px solid rgba(196,255,218,0.11); color: #eef6f0; padding: 10px 20px; border-radius: 9999px; font-family: Heebo, system-ui, sans-serif; font-size: 15px; text-decoration: none; transition: background-color 200ms, border-color 200ms; } .ds-chip:hover { border-color: rgba(255,255,255,0.3); background: #0f1f19; } .ds-chip:focus-visible { outline: 2px solid #8ddca6; outline-offset: 3px; }"
+    },
+    {
+      "name": "Night Switch",
+      "kind": "custom",
+      "refersTo": "night-switch-selected",
+      "description": "Segmented radio switch; the chosen night is struck forward.",
+      "html": "<div class=\"ds-night\" role=\"radiogroup\" dir=\"rtl\"><label class=\"ds-night-seg\"><input type=\"radio\" name=\"n\" checked>הלילה</label><label class=\"ds-night-seg\"><input type=\"radio\" name=\"n\">מחר</label><label class=\"ds-night-seg\"><input type=\"radio\" name=\"n\">סוף השבוע</label></div>",
+      "css": ".ds-night { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); max-width: 520px; background: #0f1f19; padding: 3px; border-radius: 9999px; font-family: Heebo, system-ui, sans-serif; } .ds-night-seg { position: relative; display: flex; min-height: 40px; align-items: center; justify-content: center; border-radius: 9999px; font-size: 15px; font-weight: 600; color: #a9bdb2; cursor: pointer; transition: background-color 300ms cubic-bezier(0.28,0.11,0.32,1), color 300ms cubic-bezier(0.28,0.11,0.32,1), box-shadow 300ms cubic-bezier(0.28,0.11,0.32,1); } .ds-night-seg input { position: absolute; opacity: 0; width: 1px; height: 1px; } .ds-night-seg:hover { color: #eef6f0; } .ds-night-seg:has(input:checked) { background: #1a3129; color: #eef6f0; box-shadow: 0 3px 8px rgba(0,0,0,0.35); } .ds-night-seg:has(input:focus-visible) { outline: 2px solid #8ddca6; }"
+    },
+    {
+      "name": "Party Card",
+      "kind": "card",
+      "refersTo": "party-card-image",
+      "description": "LaunchPartyCard: square flyer, meta, title, price, chevron CTA; coupon badge for account1.",
+      "html": "<a class=\"ds-card\" href=\"#\" dir=\"rtl\"><div class=\"ds-card-img\"><span class=\"ds-card-badge\">קוד הנחה</span></div><div class=\"ds-card-body\"><p class=\"ds-card-meta\">חמישי 18.9 · 23:00</p><h3 class=\"ds-card-title\">מסיבת טכנו על הגג</h3><p class=\"ds-card-meta\">Gagarin</p><div class=\"ds-card-foot\"><span class=\"ds-card-price\">החל מ-<b>80 ₪</b></span><span class=\"ds-card-cta\">כרטיסים ›</span></div></div></a>",
+      "css": ".ds-card { display: flex; flex-direction: column; width: 260px; border-radius: 22px; color: #eef6f0; text-decoration: none; font-family: Heebo, system-ui, sans-serif; } .ds-card-img { position: relative; aspect-ratio: 1; border-radius: 18px; overflow: hidden; background: #0f1f19; transition: transform 700ms cubic-bezier(0.28,0.11,0.32,1); } .ds-card:hover .ds-card-img { transform: scale(1.035); } .ds-card-badge { position: absolute; left: 12px; top: 12px; background: #76c893; color: #04120c; border-radius: 9999px; padding: 4px 10px; font-size: 12px; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.35); } .ds-card-body { padding: 12px 4px 0; } .ds-card-meta { margin: 0; font-size: 13px; font-weight: 500; color: #8aa197; } .ds-card-title { margin: 4px 0 2px; font-size: 17px; font-weight: 600; line-height: 1.3; } .ds-card-foot { display: flex; justify-content: space-between; padding-top: 12px; } .ds-card-price { font-size: 15px; color: #a9bdb2; } .ds-card-price b { color: #eef6f0; font-weight: 600; } .ds-card-cta { font-size: 15px; font-weight: 500; color: #8ddca6; text-underline-offset: 4px; } .ds-card:hover .ds-card-cta { text-decoration: underline; } .ds-card:focus-visible { outline: 2px solid #8ddca6; outline-offset: 4px; }"
+    },
+    {
+      "name": "Stage Tile",
+      "kind": "card",
+      "refersTo": "stage-tile",
+      "description": "Section shortcut tile with bold title, count, and a lifting flyer fan.",
+      "html": "<a class=\"ds-tile\" href=\"#\" dir=\"rtl\"><h2>תל אביב</h2><p>24 מסיבות קרובות</p><div class=\"ds-tile-fan\"><span></span><span></span><span></span></div></a>",
+      "css": ".ds-tile { display: flex; flex-direction: column; align-items: center; background: #0f1f19; color: #eef6f0; border-radius: 28px; padding: 48px 24px 40px; text-align: center; text-decoration: none; overflow: hidden; font-family: Heebo, system-ui, sans-serif; transition: background-color 300ms; } .ds-tile:hover { background: #132720; } .ds-tile h2 { margin: 0; font-size: 40px; font-weight: 700; line-height: 1.2; } .ds-tile p { margin: 6px 0 0; font-size: 17px; color: #a9bdb2; } .ds-tile-fan { display: flex; margin-top: 40px; transition: transform 700ms cubic-bezier(0.28,0.11,0.32,1); } .ds-tile:hover .ds-tile-fan { transform: translateY(-8px); } .ds-tile-fan span { width: 110px; height: 110px; margin-left: -36px; border-radius: 18px; background: #1a3129; box-shadow: 0 18px 40px rgba(0,0,0,0.55); } .ds-tile-fan span:nth-child(1) { transform: translateY(8px) rotate(-5deg) scale(0.94); } .ds-tile-fan span:nth-child(3) { transform: translateY(8px) rotate(5deg) scale(0.94); } .ds-tile:focus-visible { outline: 2px solid #8ddca6; outline-offset: 3px; }"
+    },
+    {
+      "name": "Search Field",
+      "kind": "input",
+      "refersTo": "search-input",
+      "description": "Pill search on tile; hairline ring at rest, 2px green ring on focus.",
+      "html": "<label class=\"ds-search\" dir=\"rtl\"><input type=\"text\" placeholder=\"למשל: מסיבות טכנו בתל אביב...\" aria-label=\"חיפוש מסיבות\"></label>",
+      "css": ".ds-search { display: flex; max-width: 680px; background: #0f1f19; border-radius: 9999px; box-shadow: 0 0 0 1px rgba(196,255,218,0.11); transition: box-shadow 300ms; } .ds-search:focus-within { box-shadow: 0 0 0 2px #76c893; } .ds-search input { flex: 1; background: transparent; border: 0; outline: none; color: #eef6f0; padding: 16px 48px 16px 12px; font-family: Heebo, system-ui, sans-serif; font-size: 17px; } .ds-search input::placeholder { color: #8aa197; }"
+    },
+    {
+      "name": "Global Nav",
+      "kind": "nav",
+      "refersTo": "nav-global",
+      "description": "48px sticky translucent header with 13px links and a compact action pill.",
+      "html": "<header class=\"ds-nav\" dir=\"rtl\"><strong class=\"ds-nav-logo\">Parties 24/7</strong><nav><a href=\"#\" aria-current=\"page\">עמוד הבית</a><a href=\"#\">כל המסיבות</a><a href=\"#\">כתבות</a></nav><a class=\"ds-nav-cta\" href=\"#\">לכל המסיבות</a></header>",
+      "css": ".ds-nav { display: flex; height: 48px; align-items: center; justify-content: space-between; padding: 0 24px; background: rgba(6,17,13,0.8); backdrop-filter: blur(24px) saturate(1.8); border-bottom: 1px solid rgba(196,255,218,0.11); font-family: Heebo, system-ui, sans-serif; color: #eef6f0; } .ds-nav nav { display: flex; gap: 32px; font-size: 13px; } .ds-nav nav a { color: rgba(238,246,240,0.75); text-decoration: none; transition: color 200ms; } .ds-nav nav a:hover, .ds-nav nav a[aria-current] { color: #eef6f0; } .ds-nav nav a:focus-visible { outline: 2px solid #8ddca6; outline-offset: 3px; } .ds-nav-cta { background: #76c893; color: #04120c; border-radius: 9999px; padding: 4px 14px; font-size: 12px; font-weight: 500; text-decoration: none; transition: background-color 200ms; } .ds-nav-cta:hover { background: #8fd8a8; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Launch Stage in Jungle Night",
+    "overview": "Apple product-launch grammar, where the product is tonight's parties. The whole site sits on a deep green-black stage. Big, calm, centered headlines float over it, and real flyers do the selling: a drifting wall of them in the hero, fanned stacks on the tiles, square covers on every card. The palette stays close to the old jungle identity, but it is disciplined. There is one green action color, three levels of ink, and hairline separators. Depth comes from light on the stage, not from ornament.\n\nDensity is generous. Sections are separated by a lot of air (80px on mobile, 112px on desktop) rather than by boxes. Rounded tiles and pills are the only containers. Color stays quiet so the flyers carry the saturation. Motion is slow and physical: one curve, movement through transform and opacity only, and state changes as short color cross-fades. Every animation has a reduced-motion fallback.\n\nThe system is Hebrew and right-to-left everywhere (`direction: rtl` on body, `color-scheme: dark`). Chevrons point left, and shelves page toward the left.",
+    "keyCharacteristics": [
+      "One family (Heebo, a variable font via next/font); all headlines are bold (700).",
+      "One filled action color (jungle green) per viewport. Everything else is a chevron text link.",
+      "Real flyer imagery is the hero, the proof, and the decoration.",
+      "Pills for actions, 28px stage tiles for sections, 18–22px corners for cards and flyers.",
+      "Hairline separators, and soft black diffuse shadows only under lifted imagery and floating chrome.",
+      "One easing curve, cubic-bezier(0.28, 0.11, 0.32, 1)."
+    ],
+    "rules": [
+      { "name": "The One Filled Action Rule", "body": "Jungle Green fills at most one call to action per viewport: the hero pill, or the purchase button on an event page. Card CTAs are green chevron text links, never filled pills. The coupon badge is the one small exception, because it is status, not action.", "section": "colors" },
+      { "name": "The Alias Rule", "body": "`jungle-deep`, `jungle-surface`, `jungle-accent`, `jungle-lime`, `jungle-text` and `wood-brown` exist in the Tailwind config only as aliases, so older markup lands on this palette. They are not tokens. New code uses the names in this file.", "section": "colors" },
+      { "name": "The One Family Rule", "body": "Heebo is the only face. `font-display`, `font-sans` and `font-apple` all resolve to the same stack. Don't add a display face for emphasis.", "section": "typography" },
+      { "name": "The Bold Headline Rule", "body": "Headlines ship at 700, not semibold. Heebo's Hebrew semibold reads thin on black at display sizes.", "section": "typography" },
+      { "name": "The Air Not Boxes Rule", "body": "Separate sections with space and at most a hairline. Don't wrap a section in a bordered card.", "section": "layout" },
+      { "name": "The Black Shadow Rule", "body": "Shadows are soft, diffuse and pure black, and they sit only under imagery or floating chrome. No colored shadows, no glows, no hard offset shadows.", "section": "elevation" },
+      { "name": "The Light Not Paint Rule", "body": "Gradients appear only as light (the hero top-light), as a scrim (a black-to-transparent caption fade on flyers) or as a mask (the wall's edge fade). Never use them as a surface fill or on text.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do use the token names (stage, tile, tile-hover, tile-raised, ink, ink-2, ink-3, hairline, action, action-hover, on-action, link) in all new markup.",
+      "Do keep a single filled Jungle Green pill per viewport, and make every other action a Moss Link chevron link.",
+      "Do set headlines in Heebo 700, centered, with at least 80px of air between sections (112px from sm).",
+      "Do let real flyers carry the color: square, 16–22px corners, on a tile placeholder.",
+      "Do move things with transform and opacity only (state fills may cross-fade color) on cubic-bezier(0.28, 0.11, 0.32, 1), and give every looping or entrance animation a prefers-reduced-motion fallback.",
+      "Do use LaunchPartyCard for every party listing, and put account1 parties first within a night, never out of date order.",
+      "Do use `tabular-nums` for counts, prices and dates."
+    ],
+    "donts": [
+      "Don't use the `jungle-*` or `wood-brown` alias names in new code.",
+      "Don't use colored or glowing shadows, glow rings, or hard offset shadows. Shadows are black and diffuse, under imagery or floating chrome only.",
+      "Don't use gradient text or gradient surface fills. Gradients are for light, scrim and mask only.",
+      "Don't use emoji as icons. Use inline stroke SVGs.",
+      "Don't add a second typeface or semibold display headlines.",
+      "Don't fill card CTAs. On cards, \"כרטיסים ›\" stays a text link.",
+      "Don't hardcode hex values in class names. Reach for the tokens."
+    ]
+  }
+}

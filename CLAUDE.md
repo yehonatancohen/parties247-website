@@ -59,7 +59,15 @@ verification of SEO output: `curl -s localhost:3000/event/<slug> | grep -o '"sta
 
 ## Rules
 
-- All visible copy is Hebrew, RTL. Keep existing tone (jungle theme, casual).
+- All visible copy is Hebrew, RTL, casual tone.
+- Visual system (since 2026-09-16): Apple launch-page grammar in a "jungle night" palette —
+  use the Tailwind tokens (`stage`, `tile`, `tile-hover`, `tile-raised`, `ink`, `ink-2`, `ink-3`,
+  `hairline`, `action`, `on-action`, `link`) and Heebo; see `PRODUCT.md` / `DESIGN.md`. The old
+  `jungle-*` / `wood-brown` names are aliases kept for legacy markup — don't use them in new code.
+  No emoji as icons, no gradient text, no glow shadows. Shared party card: `components/home/LaunchPartyCard.tsx`.
+- Party dates in UI: format via `lib/nights.ts` (wall-clock parsing), never `new Date(naiveString)`.
+- account1 parties (coupon) are promoted via `sortPromotedWithinNight` / `isPromoted` in
+  `components/home/homeData.ts` — within a night only, never out of date order.
 - Don't add social-proof numbers that aren't backed by real data.
 - Every new indexable route must be added to `src/app/sitemap.ts` and get breadcrumb + a
   cross-links block (`ExploreMoreLinks` / `PageCrossLinks`).

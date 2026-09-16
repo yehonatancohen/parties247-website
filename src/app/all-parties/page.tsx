@@ -94,15 +94,15 @@ export default async function AllPartiesPage({
   const query = typeof resolvedSearchParams.query === 'string' ? resolvedSearchParams.query : undefined;
   const ai_filter = typeof resolvedSearchParams.ai_filter === 'string' ? resolvedSearchParams.ai_filter : undefined;
 
-  if (!data) return <div className="text-center text-white p-10">Error loading parties</div>;
+  if (!data) return <div className="text-center text-ink p-10">Error loading parties</div>;
 
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
       <div className="space-y-10">
         <section className="container mx-auto max-w-4xl px-4 pt-10 text-center">
-          <h1 className="text-3xl md:text-4xl font-display text-white mb-4">כל המסיבות בישראל</h1>
-          <p className="text-lg text-gray-300 leading-relaxed max-w-2xl mx-auto">
+          <h1 className="text-[34px] font-bold leading-tight text-ink sm:text-[48px] mb-4">כל המסיבות בישראל</h1>
+          <p className="text-lg text-ink-2 leading-relaxed max-w-2xl mx-auto">
             הרשימה המלאה של מסיבות, רייבים ואירועי לילה בישראל – מתעדכנת בזמן אמת. סננו לפי עיר, ז'אנר מוזיקה, תאריך או קהל יעד, ורכשו כרטיסים מוקדמים ישירות מהמוכר הרשמי.
           </p>
           <div className="mt-5 flex flex-wrap gap-2 justify-center" dir="rtl">
@@ -118,7 +118,7 @@ export default async function AllPartiesPage({
               <Link
                 key={link.href}
                 href={link.href}
-                className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-jungle-text/90 transition hover:border-jungle-accent hover:text-white"
+                className="rounded-full border border-hairline px-4 py-2 text-[14px] text-ink transition-colors hover:border-white/25 hover:bg-tile"
               >
                 {link.label}
               </Link>
@@ -141,7 +141,7 @@ export default async function AllPartiesPage({
             if (weekendParties.length < 3) return null;
             return (
               <section className="mb-8">
-                <h2 className="text-lg font-display text-white mb-3 text-right">הסופ״ש הקרוב 🔥</h2>
+                <h2 className="mb-4 text-right text-[21px] font-bold text-ink">הסופ״ש הקרוב</h2>
                 <div className="flex gap-3 overflow-x-auto pb-2" dir="rtl">
                   {weekendParties.slice(0, 8).map(party => (
                     <Link
@@ -149,7 +149,7 @@ export default async function AllPartiesPage({
                       href={`/event/${party.slug}`}
                       className="group w-24 sm:w-28 flex-shrink-0 text-center"
                     >
-                      <div className="relative w-full aspect-square rounded-xl overflow-hidden border border-white/10 group-hover:border-jungle-accent/40 transition-colors">
+                      <div className="relative aspect-square w-full overflow-hidden rounded-[14px] bg-tile">
                         <Image
                           src={party.imageUrl}
                           alt={party.name}
@@ -158,7 +158,7 @@ export default async function AllPartiesPage({
                           sizes="112px"
                         />
                       </div>
-                      <p className="mt-1.5 text-xs text-white/90 leading-tight line-clamp-2">{party.name}</p>
+                      <p className="mt-1.5 text-xs text-ink-2 leading-tight line-clamp-2">{party.name}</p>
                     </Link>
                   ))}
                 </div>
@@ -168,13 +168,13 @@ export default async function AllPartiesPage({
         />
 
         <section className="container mx-auto max-w-4xl px-4 pb-16">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-8">
-            <h2 className="text-2xl font-display text-white mb-6">שאלות נפוצות על כרטיסים למסיבות</h2>
+          <div className="rounded-[28px] bg-tile p-6 sm:p-10">
+            <h2 className="text-[24px] font-bold text-ink sm:text-[28px] mb-6">שאלות נפוצות על כרטיסים למסיבות</h2>
             <div className="space-y-6">
               {faqItems.map((item) => (
                 <div key={item.question}>
-                  <h3 className="text-lg font-bold text-white mb-2">{item.question}</h3>
-                  <p className="text-jungle-text/80 leading-relaxed">{item.answer}</p>
+                  <h3 className="text-[17px] font-semibold text-ink mb-2">{item.question}</h3>
+                  <p className="text-ink-2 leading-relaxed">{item.answer}</p>
                 </div>
               ))}
             </div>

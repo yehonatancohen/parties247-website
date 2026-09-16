@@ -3,7 +3,6 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { Party } from "@/data/types";
 import PartyGrid from '@/components/PartyGrid';
-import JungleDecorations from '@/components/JungleDecorations';
 import * as api from '@/services/api';
 import { BASE_URL } from '@/data/constants';
 
@@ -124,41 +123,37 @@ export default async function RoshHashanaPage() {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
             />
 
-            <main className="min-h-screen bg-jungle-deep text-white pb-20 relative overflow-x-hidden -mt-20">
-                <JungleDecorations />
+            <main className="font-apple min-h-screen bg-stage text-ink pb-20 relative overflow-x-hidden">
 
                 {/* HERO SECTION */}
-                <section className="relative h-[48vh] md:h-[52vh] md:min-h-[440px] pt-10 flex flex-col items-center justify-center overflow-hidden">
-                    <div className="absolute inset-0 z-0 bg-gradient-to-br from-jungle-deep via-jungle-surface to-jungle-deep">
-                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(191,255,0,0.14),transparent_55%)]"></div>
-                        <div className="absolute inset-0 bg-gradient-to-b from-jungle-deep/40 via-jungle-deep/50 to-jungle-deep/90"></div>
-                    </div>
+                <section className="relative overflow-hidden pb-12 pt-12 text-center sm:pb-16 sm:pt-20">
+                    <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[460px] bg-[radial-gradient(ellipse_55%_60%_at_50%_0%,rgba(118,200,147,0.17),transparent_72%)]" />
 
                     <div className="relative z-10 container mx-auto px-4 text-center pb-8">
-                        <h1 className="text-4xl md:text-6xl font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-jungle-lime to-jungle-accent drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)] mb-6">
+                        <h1 className="text-balance text-[clamp(36px,11vw,48px)] font-bold leading-[1.05] sm:text-[72px]">
                             מסיבות ראש השנה 2026
                         </h1>
-                        <p className="text-lg md:text-2xl text-white max-w-2xl mx-auto font-light leading-relaxed drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                        <p className="mx-auto mt-5 max-w-[640px] text-balance text-[18px] leading-[1.5] text-ink-2 sm:text-[22px]">
                             כל הפסטיבלים, מסיבות המועדון ואירועי הטבע של החג – מרוכזים לפי תאריך.
                             <br />
-                            <span className="font-bold text-jungle-lime">סוף שבוע ארוך אחד, אינסוף אפשרויות.</span>
+                            <span className="font-semibold text-ink">סוף שבוע ארוך אחד, אינסוף אפשרויות.</span>
                         </p>
                     </div>
                 </section>
 
                 {/* CONTENT & INFO SECTION */}
                 <section className="container mx-auto px-4 mt-8 relative z-20 mb-16">
-                    <div className="bg-jungle-surface/80 backdrop-blur-md border border-jungle-accent/20 rounded-2xl p-8 md:p-12 shadow-2xl max-w-4xl mx-auto text-center md:text-right">
-                        <h2 className="text-3xl font-display text-white mb-6 text-center">חוגגים את ראש השנה עם Parties24/7</h2>
+                    <div className="rounded-[28px] bg-tile p-6 sm:p-10 max-w-4xl mx-auto text-center md:text-right">
+                        <h2 className="text-[28px] font-bold text-ink sm:text-[36px] mb-6 text-center">חוגגים את ראש השנה עם Parties24/7</h2>
 
-                        <div className="space-y-4 text-lg text-jungle-text/90 leading-relaxed dir-rtl">
+                        <div className="space-y-4 text-lg text-ink-2 leading-relaxed dir-rtl">
                             <p>
                                 ראש השנה 2026 חל בסוף שבוע ארוך – ערב החג ביום שישי, 11 בספטמבר, והחג נמשך עד מוצאי שבת. זה אחד מעומסי היציאה הגדולים של השנה: פסטיבלי טבע וטראנס באילת ובכנרת, מסיבות מועדון ורוף-טופ בתל אביב, ואירועי open air בצפון ובדרום – הכל מתרכז לאותם שלושה ימים.
                             </p>
                             <p>
                                 ב-Parties24/7 ריכזנו עבורכם את כל <strong>מסיבות ראש השנה 2026</strong> במקום אחד, ממוינות לפי תאריך. המערכת מתעדכנת בזמן אמת עם האירועים החמים ביותר, כולל מחיר כרטיס עדכני וקישור ישיר לרכישה. בין אם אתם מחפשים פסטיבל מדברי, מסיבת סאנסט על הגג או ליין מיינסטרים בלב העיר – כאן תמצאו את הבילוי המתאים לחג.
                             </p>
-                            <p className="font-bold text-jungle-lime">
+                            <p className="font-semibold text-ink">
                                 טיפ מאיתנו: סוף השבוע של ראש השנה נמכר מראש כמעט תמיד. שריינו כרטיס ברגע שסוגרים אירוע – מחירי ה-Early Bird נגמרים מוקדם.
                             </p>
                         </div>
@@ -167,7 +162,7 @@ export default async function RoshHashanaPage() {
 
                 {/* PARTIES GRID */}
                 <section id="parties" className="container mx-auto px-4">
-                    <h2 className="text-3xl md:text-4xl font-display text-white mb-10 text-center border-b border-wood-brown/50 pb-4 inline-block mx-auto min-w-[300px]">
+                    <h2 className="mb-2 text-center text-[28px] font-bold text-ink sm:text-[40px]">
                         לוח מסיבות ראש השנה
                     </h2>
 
@@ -179,10 +174,10 @@ export default async function RoshHashanaPage() {
                             title=""
                         />
                     ) : (
-                        <div className="text-center py-20 bg-jungle-surface/30 rounded-xl border border-dashed border-wood-brown/30">
-                            <h3 className="text-2xl text-white mb-2">טרם פורסמו מסיבות לראש השנה 2026</h3>
-                            <p className="text-jungle-text">המערכת מתעדכנת 24/7. שווה לחזור ולהתעדכן בקרוב!</p>
-                            <Link href="/all-parties" className="mt-6 inline-block px-6 py-3 bg-jungle-accent text-jungle-deep font-bold rounded-full hover:bg-white transition-colors">
+                        <div className="mx-auto max-w-[680px] rounded-[28px] bg-tile px-6 py-14 text-center">
+                            <h3 className="text-2xl text-ink mb-2">טרם פורסמו מסיבות לראש השנה 2026</h3>
+                            <p className="text-ink">המערכת מתעדכנת 24/7. שווה לחזור ולהתעדכן בקרוב!</p>
+                            <Link href="/all-parties" className="mt-6 inline-block px-6 py-3 bg-action text-on-action font-medium rounded-full hover:bg-action-hover transition-colors">
                                 לכל המסיבות באתר
                             </Link>
                         </div>
@@ -191,13 +186,13 @@ export default async function RoshHashanaPage() {
 
                 {/* FAQ SECTION */}
                 <section className="container mx-auto px-4 mt-16">
-                    <div className="bg-jungle-surface/70 backdrop-blur-md border border-jungle-accent/20 rounded-2xl p-8 md:p-12 shadow-2xl max-w-4xl mx-auto dir-rtl">
-                        <h2 className="text-3xl font-display text-white mb-8 text-center">שאלות נפוצות – מסיבות ראש השנה</h2>
+                    <div className="rounded-[28px] bg-tile p-6 sm:p-10 max-w-4xl mx-auto dir-rtl">
+                        <h2 className="text-[28px] font-bold text-ink sm:text-[36px] mb-8 text-center">שאלות נפוצות – מסיבות ראש השנה</h2>
                         <div className="space-y-6">
                             {FAQS.map((f) => (
                                 <div key={f.question}>
-                                    <h3 className="text-xl font-bold text-jungle-lime mb-2">{f.question}</h3>
-                                    <p className="text-jungle-text/90 leading-relaxed">{f.answer}</p>
+                                    <h3 className="mb-2 text-[17px] font-semibold text-ink">{f.question}</h3>
+                                    <p className="text-ink-2 leading-relaxed">{f.answer}</p>
                                 </div>
                             ))}
                         </div>

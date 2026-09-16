@@ -68,7 +68,7 @@ export default async function SylvesterPage() {
         <>
           המסיבות הגדולות של ליל 31 בדצמבר — לפי תאריך, בכל הארץ.
           <br />
-          <span className="font-bold text-jungle-lime">נפרדים מהשנה הישנה בסטייל.</span>
+          <span className="font-semibold text-ink">נפרדים מהשנה הישנה בסטייל.</span>
         </>
       }
       introHeading="חוגגים סילבסטר עם Parties24/7"
@@ -77,7 +77,7 @@ export default async function SylvesterPage() {
         <React.Fragment key="p2">
           ב-Parties24/7 ריכזנו עבורכם את כל <strong>מסיבות סילבסטר {window.year}</strong> במקום אחד, ממוינות לפי תאריך, עם מחיר כרטיס עדכני וקישור ישיר לרכישה.
         </React.Fragment>,
-        <span key="p3" className="font-bold text-jungle-lime">
+        <span key="p3" className="font-semibold text-ink">
           טיפ מאיתנו: מסיבות הסילבסטר נמכרות מראש ואוזלות שבועות לפני החג — אל תחכו לרגע האחרון.
         </span>,
       ]}

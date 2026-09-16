@@ -2,6 +2,7 @@ import React from 'react';
 import Link from "next/link";
 import { Party, FilterState } from '@/data/types'; // Adjust path
 import PartyCard from './PartyCard';
+import { sortPromotedWithinNight } from './home/homeData';
 
 // These must be Client Components that read/write to the URL
 import AdvancedFilter from './AdvancedFilter';
@@ -61,7 +62,7 @@ export default function PartyGrid({
   // If AI filter is active, use those specific party IDs
   const aiFilterSet = aiFilterIds ? new Set(aiFilterIds) : null;
 
-  const filteredParties = parties
+  const filteredParties = sortPromotedWithinNight(parties
     .filter((party) => new Date(party.date) >= now) // Filter past events
     .filter((party) => {
       // AI Filter takes priority - if AI filter is active, only show those parties
@@ -95,7 +96,7 @@ export default function PartyGrid({
 
       return true;
     })
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+);
 
   // 3. Pagination Logic
   const totalPages = Math.max(1, Math.ceil(filteredParties.length / pageSize));
@@ -123,11 +124,11 @@ export default function PartyGrid({
   };
 
   return (
-    <div id="party-grid-container" className="container mx-auto px-4 pt-10 md:pt-14">
+    <div id="party-grid-container" className="font-apple mx-auto max-w-[1200px] px-4 pt-10 sm:px-6 md:pt-14">
       {(title || description) && (
-        <div className="text-center mb-6">
-          {title && <h1 className="text-3xl md:text-4xl font-display text-white mb-2">{title}</h1>}
-          {description && <p className="text-center text-jungle-text/80 max-w-xl mx-auto">{description}</p>}
+        <div className="mb-8 text-center">
+          {title && <h1 className="text-balance text-[34px] font-bold leading-tight text-ink sm:text-[48px]">{title}</h1>}
+          {description && <p className="mx-auto mt-3 max-w-xl text-[17px] text-ink-2 sm:text-[19px]">{description}</p>}
         </div>
       )}
 
@@ -142,22 +143,22 @@ export default function PartyGrid({
       {/* AI Search Results Indicator */}
       {aiFilterSet && aiQuery && (
         <div className="mb-6 max-w-4xl mx-auto">
-          <div className="bg-gradient-to-r from-jungle-surface/80 to-jungle-deep/80 border-2 border-jungle-accent/50 rounded-xl p-4 backdrop-blur">
+          <div className="rounded-[22px] bg-tile p-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-jungle-accent to-jungle-lime flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5 text-jungle-deep" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-tile-raised text-link">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                 </svg>
               </div>
               <div className="flex-grow">
-                <p className="text-jungle-accent font-bold text-sm mb-1">חיפוש מופעל AI</p>
-                <p className="text-jungle-text/90 text-sm">
-                  מציג {filteredParties.length} מסיבות שנמצאו עבור: <span className="text-white font-semibold">"{aiQuery}"</span>
+                <p className="mb-0.5 text-[13px] font-semibold text-ink-3">חיפוש חכם</p>
+                <p className="text-[15px] text-ink-2">
+                  מציג {filteredParties.length} מסיבות שנמצאו עבור: <span className="font-semibold text-ink">"{aiQuery}"</span>
                 </p>
               </div>
               <Link
                 href="/all-parties"
-                className="px-4 py-2 bg-jungle-surface/60 hover:bg-jungle-surface border border-jungle-accent/30 hover:border-jungle-accent text-jungle-accent rounded-lg text-sm transition-all whitespace-nowrap"
+                className="whitespace-nowrap text-[14px] text-link hover:underline underline-offset-4"
               >
                 נקה חיפוש
               </Link>
@@ -174,7 +175,7 @@ export default function PartyGrid({
       )}
 
       {paginatedParties.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 gap-x-3 gap-y-8 sm:grid-cols-3 sm:gap-x-5 sm:gap-y-10 lg:grid-cols-4 xl:grid-cols-5">
           {paginatedParties.map((party) => (
             <PartyCard
               key={party.id}
@@ -183,11 +184,11 @@ export default function PartyGrid({
           ))}
         </div>
       ) : (
-        <div className="text-center py-16 text-white/60">
+        <div className="rounded-[22px] bg-tile py-16 text-center text-[17px] text-ink-2">
           <p>לא נמצאו מסיבות התואמות את החיפוש שלך.</p>
           <Link
             href={basePath}
-            className="mt-4 inline-block text-jungle-accent underline"
+            className="mt-3 inline-block text-link hover:underline underline-offset-4"
           >
             נקה סינונים
           </Link>
@@ -195,23 +196,23 @@ export default function PartyGrid({
       )}
 
       {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-4 mt-8">
+        <nav className="mt-14 flex items-center justify-center gap-4" aria-label="עמודים">
           {/* Previous Button */}
           {safeCurrentPage > 1 ? (
             <Link
               href={createPageLink(safeCurrentPage - 1)}
-              className="px-4 py-2 bg-jungle-surface text-white rounded transition hover:bg-white/10"
+              className="rounded-full bg-tile px-5 py-2 text-[15px] text-ink transition-colors hover:bg-tile-hover"
               scroll={false} // Optional: prevents scroll jump to top
             >
               הקודם
             </Link>
           ) : (
-            <button disabled className="px-4 py-2 bg-jungle-surface text-white/50 rounded cursor-not-allowed">
+            <button disabled className="cursor-not-allowed rounded-full bg-tile px-5 py-2 text-[15px] text-ink-3/60">
               הקודם
             </button>
           )}
 
-          <span className="text-white">
+          <span className="text-[14px] tabular-nums text-ink-3">
             עמוד {safeCurrentPage} מתוך {totalPages}
           </span>
 
@@ -219,17 +220,17 @@ export default function PartyGrid({
           {safeCurrentPage < totalPages ? (
             <Link
               href={createPageLink(safeCurrentPage + 1)}
-              className="px-4 py-2 bg-jungle-surface text-white rounded transition hover:bg-white/10"
+              className="rounded-full bg-tile px-5 py-2 text-[15px] text-ink transition-colors hover:bg-tile-hover"
               scroll={false}
             >
               הבא
             </Link>
           ) : (
-            <button disabled className="px-4 py-2 bg-jungle-surface text-white/50 rounded cursor-not-allowed">
+            <button disabled className="cursor-not-allowed rounded-full bg-tile px-5 py-2 text-[15px] text-ink-3/60">
               הבא
             </button>
           )}
-        </div>
+        </nav>
       )}
     </div>
   );

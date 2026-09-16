@@ -16,20 +16,24 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
   }
 
   return (
-    <nav aria-label="breadcrumbs" className="text-sm text-jungle-text/70 mb-6">
-      <ol className="flex flex-wrap gap-1 items-center">
+    <nav aria-label="breadcrumbs" className="mb-6 text-[13px] text-ink-3">
+      <ol className="flex flex-wrap items-center gap-1.5">
         {items.map((item, index) => {
           const isLast = index === items.length - 1;
           return (
-            <li key={`${item.label}-${index}`} className="flex items-center gap-1">
+            <li key={`${item.label}-${index}`} className="flex items-center gap-1.5">
               {item.path && !isLast ? (
-                <Link href={item.path} className="hover:text-jungle-accent transition-colors">
+                <Link href={item.path} className="transition-colors hover:text-ink">
                   {item.label}
                 </Link>
               ) : (
-                <span className="text-jungle-text">{item.label}</span>
+                <span className="text-ink-2" aria-current={isLast ? 'page' : undefined}>{item.label}</span>
               )}
-              {!isLast && <span className="text-jungle-text/40">›</span>}
+              {!isLast && (
+                <svg viewBox="0 0 24 24" className="h-3 w-3 text-ink-3/70" fill="none" stroke="currentColor" strokeWidth={2.4} aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 6l-6 6 6 6" />
+                </svg>
+              )}
             </li>
           );
         })}

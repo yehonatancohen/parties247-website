@@ -22,5 +22,8 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         };
     }, []);
 
-    return <PartyProvider>{children}</PartyProvider>;
+    // No page reads this context on first load (ChatWidget, its only consumer,
+    // isn't mounted), so don't pull the whole catalogue from the ~5s backend in
+    // every visitor's browser.
+    return <PartyProvider initialState={{ disableInitialFetch: true }}>{children}</PartyProvider>;
 }

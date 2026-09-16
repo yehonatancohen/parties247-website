@@ -68,7 +68,7 @@ export default async function YomHaatzmautPage() {
         <>
           חגיגות רחוב, פסטיבלים ומסיבות מועדון לכבוד יום הולדת המדינה.
           <br />
-          <span className="font-bold text-jungle-lime">מיום הזיכרון ישר לחגיגה.</span>
+          <span className="font-semibold text-ink">מיום הזיכרון ישר לחגיגה.</span>
         </>
       }
       introHeading="חוגגים את יום העצמאות עם Parties24/7"
@@ -77,7 +77,7 @@ export default async function YomHaatzmautPage() {
         <React.Fragment key="p2">
           ב-Parties24/7 ריכזנו עבורכם את כל <strong>מסיבות יום העצמאות {window.year}</strong> במקום אחד, ממוינות לפי תאריך, עם מחיר כרטיס עדכני וקישור ישיר לרכישה.
         </React.Fragment>,
-        <span key="p3" className="font-bold text-jungle-lime">
+        <span key="p3" className="font-semibold text-ink">
           טיפ מאיתנו: האירועים הפופולריים נמכרים מראש — שריינו כרטיס לפני החג עצמו.
         </span>,
       ]}

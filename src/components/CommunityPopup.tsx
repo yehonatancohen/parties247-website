@@ -30,13 +30,13 @@ const CommunityPopup: React.FC = () => {
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[100]" dir="rtl">
-      <div className="bg-jungle-surface rounded-xl shadow-lg w-full max-w-md m-4 p-8 text-center relative transform transition-all animate-fade-in-up border-2 border-wood-brown">
-        <button onClick={handleClose} className="absolute top-4 left-4 text-jungle-text/70 hover:text-white transition-colors">
+      <div className="bg-tile rounded-xl shadow-lg w-full max-w-md m-4 p-8 text-center relative transform transition-all animate-fade-in-up border border-hairline">
+        <button onClick={handleClose} className="absolute top-4 left-4 text-ink-3 hover:text-white transition-colors">
           <CloseIcon className="h-6 w-6" />
         </button>
         
-        <h2 className="text-4xl font-display mb-2 text-white">הצטרפו לקהילה!</h2>
-        <p className="text-lg text-jungle-text/80 mb-6">אל תפספסו אף מסיבה, עדכון או הטבה מיוחדת.</p>
+        <h2 className="text-4xl font-display mb-2 text-ink">הצטרפו לקהילה!</h2>
+        <p className="text-lg text-ink-2 mb-6">אל תפספסו אף מסיבה, עדכון או הטבה מיוחדת.</p>
         
         <div className="flex flex-col gap-4">
           <a
@@ -44,7 +44,7 @@ const CommunityPopup: React.FC = () => {
             target="_blank"
             rel="noopener noreferrer"
             onClick={handleClose}
-            className="flex items-center justify-center gap-2 bg-emerald-500 text-white font-semibold px-6 py-4 rounded-lg shadow-lg hover:scale-105 transition-transform"
+            className="flex items-center justify-center gap-2 bg-emerald-500 text-ink font-semibold px-6 py-4 rounded-lg shadow-lg hover:scale-105 transition-transform"
           >
             <WhatsAppIcon className="h-6 w-6" />
             <span>הצטרפו לקהילת הוואטסאפ</span>
@@ -54,7 +54,7 @@ const CommunityPopup: React.FC = () => {
             target="_blank"
             rel="noopener noreferrer"
             onClick={handleClose}
-            className="flex items-center justify-center gap-2 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white font-semibold px-6 py-4 rounded-lg shadow-lg hover:scale-105 transition-transform"
+            className="flex items-center justify-center gap-2 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-ink font-semibold px-6 py-4 rounded-lg shadow-lg hover:scale-105 transition-transform"
           >
             <InstagramIcon className="h-6 w-6" />
             <span>עקבו באינסטגרם</span>
@@ -64,7 +64,7 @@ const CommunityPopup: React.FC = () => {
             target="_blank"
             rel="noopener noreferrer"
             onClick={handleClose}
-            className="flex items-center justify-center gap-2 bg-black text-white font-semibold px-6 py-3 rounded-lg hover:scale-105 transition-transform border border-white/20"
+            className="flex items-center justify-center gap-2 bg-black text-ink font-semibold px-6 py-3 rounded-lg hover:scale-105 transition-transform border border-hairline"
           >
             <TikTokIcon className="h-5 w-5" />
             <span>או בטיקטוק</span>

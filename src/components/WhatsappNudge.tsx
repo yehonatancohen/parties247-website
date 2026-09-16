@@ -59,10 +59,10 @@ export default function WhatsappNudge({ source, message, className }: WhatsappNu
   return (
     <div
       dir="rtl"
-      className={`relative flex items-center gap-3 rounded-2xl border border-green-400/25 bg-green-500/5 p-4 md:p-5 ${className ?? ''}`}
+      className={`relative flex items-center gap-3 rounded-[22px] bg-tile p-4 md:p-5 ${className ?? ''}`}
     >
-      <WhatsAppIcon className="w-6 h-6 text-green-400 flex-shrink-0" />
-      <p className="flex-1 min-w-0 text-sm text-green-100/90">
+      <WhatsAppIcon className="w-6 h-6 text-action flex-shrink-0" />
+      <p className="flex-1 min-w-0 text-[14px] leading-snug text-ink-2">
         {message ?? 'רוצים לשמוע ראשונים על הפקות חדשות? הצטרפו לקבוצת הוואטסאפ שלנו.'}
       </p>
       <a
@@ -70,7 +70,7 @@ export default function WhatsappNudge({ source, message, className }: WhatsappNu
         target="_blank"
         rel="noopener noreferrer"
         onClick={handleJoin}
-        className="flex-shrink-0 rounded-lg border border-green-400/40 bg-green-500/20 px-3 py-1.5 text-sm font-bold text-green-100 transition-colors hover:bg-green-500/30"
+        className="flex-shrink-0 rounded-full bg-action px-4 py-1.5 text-[14px] font-semibold text-on-action transition-colors hover:bg-action-hover"
       >
         הצטרפות
       </a>
@@ -78,9 +78,11 @@ export default function WhatsappNudge({ source, message, className }: WhatsappNu
         type="button"
         onClick={handleDismiss}
         aria-label="סגירה"
-        className="flex-shrink-0 px-1 text-lg leading-none text-green-100/50 transition-colors hover:text-green-100"
+        className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-ink-3 transition-colors hover:bg-tile-hover hover:text-ink"
       >
-        ×
+        <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2.2} aria-hidden>
+          <path strokeLinecap="round" d="M6 6l12 12M18 6L6 18" />
+        </svg>
       </button>
     </div>
   );

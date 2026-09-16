@@ -63,7 +63,7 @@ export default async function AllPartiesPaginatedPage({ params, searchParams }: 
     return (
       <div className="container mx-auto px-4 text-center py-16">
         <h2 className="text-2xl font-bold text-red-400">שגיאה בטעינת המסיבות</h2>
-        <p className="text-white/80">אנא נסו לרענן את העמוד</p>
+        <p className="text-ink-2">אנא נסו לרענן את העמוד</p>
       </div>
     );
   }

@@ -2,15 +2,13 @@
 import type { Metadata } from "next";
 import "../styles/tailwind.css"; // Ensure this path is correct
 import Providers from "./providers";
-import SwiperRegister from "../components/SwiperRegister";
-import { Assistant, Rubik } from "next/font/google";
+import { Heebo } from "next/font/google";
 import { BASE_URL, BRAND_LOGO_URL } from "@/data/constants";
 import Script from "next/script";
 
 // Component Imports
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import JungleDecorations from '../components/JungleDecorations';
 
 import CookieBanner from '../components/CookieBanner';
 import ScrollToTop from '../components/ScrollToTop';
@@ -18,18 +16,11 @@ import PrefetchLinks from '../components/PrefetchLinks';
 import PageCrossLinks from '../components/PageCrossLinks';
 import AnalyticsTracker from '../components/AnalyticsTracker';
 
-const assistant = Assistant({
+// Site-wide face. Variable font: one file, all weights.
+const heebo = Heebo({
   subsets: ["latin", "hebrew"],
-  weight: ["400", "600", "700"],
   display: "swap",
-  variable: "--font-assistant",
-});
-
-const rubik = Rubik({
-  subsets: ["latin", "hebrew"],
-  weight: ["800"],
-  display: "swap",
-  variable: "--font-rubik",
+  variable: "--font-heebo",
 });
 
 export const metadata: Metadata = {
@@ -90,7 +81,7 @@ const organizationJsonLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="he" dir="rtl" className={`${assistant.variable} ${rubik.variable}`}>
+    <html lang="he" dir="rtl" className={heebo.variable}>
       {/* Google Tag Manager */}
       <Script id="gtm-head" strategy="afterInteractive">
         {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -113,13 +104,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
         />
-        <SwiperRegister />
         <Providers>
           {/* Global Decorations/Logic */}
           <PrefetchLinks />
           <AnalyticsTracker />
           <ScrollToTop />
-          <JungleDecorations />
 
           {/* Main Layout Structure */}
           <div className="min-h-screen flex flex-col relative z-10">

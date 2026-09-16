@@ -12,30 +12,27 @@ export default function ExploreMoreLinks({ context }: { context: ExploreContext 
   if (groups.length === 0) return null;
 
   return (
-    <section
-      className="container mx-auto max-w-4xl rounded-2xl border border-white/10 bg-white/5 p-8 text-jungle-text"
-      dir="rtl"
-    >
-      <h2 className="text-2xl font-display text-white mb-6">להמשיך לגלות</h2>
-      <div className="space-y-5">
-        {groups.map((group) => (
-          <div key={group.heading}>
-            <h3 className="text-xs uppercase tracking-wider text-jungle-text/50 mb-2">
-              {group.heading}
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {group.links.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-jungle-text/90 transition hover:border-jungle-accent hover:text-white"
-                >
-                  {link.label}
-                </Link>
-              ))}
+    <section className="mx-auto max-w-[1024px] px-4 sm:px-6" dir="rtl">
+      <div className="rounded-[28px] bg-tile p-6 sm:p-10">
+        <h2 className="text-[24px] font-bold text-ink sm:text-[28px]">להמשיך לגלות</h2>
+        <div className="mt-6 space-y-6">
+          {groups.map((group) => (
+            <div key={group.heading}>
+              <h3 className="mb-3 text-[13px] font-semibold text-ink-3">{group.heading}</h3>
+              <div className="flex flex-wrap gap-2">
+                {group.links.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="rounded-full border border-hairline px-4 py-2 text-[14px] text-ink transition-colors hover:border-white/25 hover:bg-tile-hover"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </section>
   );

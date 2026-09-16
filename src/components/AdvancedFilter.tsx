@@ -93,12 +93,12 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({ defaultFilters }) => {
   };
 
   // Styles
-  const inputBaseClasses = "bg-jungle-surface border border-wood-brown text-white text-sm rounded-lg focus:ring-jungle-lime focus:border-jungle-lime block w-full p-2.5";
-  const labelBaseClasses = "block mb-1 text-sm font-medium text-jungle-text/70";
+  const inputBaseClasses = "block w-full rounded-[12px] border border-hairline bg-tile-raised px-3 py-2.5 text-[15px] text-ink focus:border-action focus:outline-none focus:ring-1 focus:ring-action";
+  const labelBaseClasses = "mb-1.5 block text-[13px] font-medium text-ink-3";
   const tags = ['אלכוהול חופשי', 'בחוץ', 'אילת', 'תל אביב'];
 
   return (
-    <div className="bg-jungle-surface/50 p-4 rounded-lg mb-8 backdrop-blur-sm relative z-10 border border-wood-brown/50">
+    <div className="relative z-10 mb-10 rounded-[22px] bg-tile p-4 sm:p-6">
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         
         {/* Region Filter */}
@@ -185,7 +185,7 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({ defaultFilters }) => {
                 ? new Date(defaultFilters.date).toLocaleDateString('he-IL', {timeZone: 'UTC'}) 
                 : 'בחר תאריך'}
             </span>
-            <CalendarIcon className="h-4 w-4 text-gray-400" />
+            <CalendarIcon className="h-4 w-4 text-ink-3" />
           </button>
           
           {isDatePickerOpen && (
@@ -210,9 +210,9 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({ defaultFilters }) => {
                   // Check if tag exists in the array passed from props
                   checked={defaultFilters.tags.includes(tag)} 
                   onChange={handleTagChange} 
-                  className="w-4 h-4 text-jungle-lime bg-jungle-deep border-wood-brown rounded focus:ring-jungle-lime" 
+                  className="h-4 w-4 rounded border-hairline bg-tile-raised accent-[#76c893]" 
                 />
-                <label htmlFor={`tag-${tag}`} className="mr-2 text-sm font-medium text-jungle-text">{tag}</label>
+                <label htmlFor={`tag-${tag}`} className="mr-2 text-[14px] text-ink">{tag}</label>
               </div>
             ))}
         </div>
@@ -222,7 +222,7 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({ defaultFilters }) => {
       <div className="mt-4 flex justify-between items-center">
         <button 
           onClick={clearFilters} 
-          className="text-jungle-accent hover:text-white text-sm font-semibold transition-colors"
+          className="text-[14px] text-link transition-colors hover:underline underline-offset-4"
         >
             נקה סינון
         </button>

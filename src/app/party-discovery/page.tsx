@@ -1,62 +1,15 @@
 import React from 'react';
 import Link from 'next/link';
-import { Carousel } from '@/data/types';
 import { Metadata } from 'next';
-import { createCarouselSlug } from '@/lib/carousels';
-import { getCarousels } from '@/services/api';
-import SmoothScrollAnchors from '@/components/SmoothScrollAnchors';
-import BackButton from '@/components/BackButton';
+import { Carousel, Party } from '@/data/types';
+import { getCarousels, getParties } from '@/services/api';
+import AllPartiesAISearch from '@/components/AllPartiesAISearch';
+import FlyerFan from '@/components/home/FlyerFan';
+import { buildShelves, sortForDisplay } from '@/components/home/homeData';
+import { currentNight, isInRange, nightOf, rangeNights, weekdayOf } from '@/lib/nights';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
-// --- Static Data ---
-const quickLinks = [
-  { label: 'כל המסיבות', emoji: '🎉', to: '/all-parties', desc: 'רשימה מתעדכנת עם חיפוש מתקדם' },
-  { label: 'מסיבות חמישי', emoji: '🔥', to: '/day/thursday', desc: 'לילה פותח סופ״ש' },
-  { label: 'מסיבות שישי', emoji: '🪩', to: '/day/friday', desc: 'הרחבות המבוקשות' },
-  { label: 'סוף שבוע', emoji: '🌴', to: '/day/weekend', desc: 'שישי + שבת במקום אחד' },
-  { label: 'הערב', emoji: '⚡', to: '/day/today', desc: 'מה קורה היום' },
-];
-
-const audienceLinks = [
-  { title: 'מסיבות נוער', to: '/audience/teenage-parties', blurb: 'אירועים מפוקחים עם פירוט אבטחה וגיל כניסה.', emoji: '🎓' },
-  { title: 'מסיבות סטודנטים', to: '/audience/student-parties', blurb: 'ליינים אקדמיים, הנחות ושאטלים מקמפוסים.', emoji: '📚' },
-  { title: 'מסיבות חיילים', to: '/audience/soldier-parties', blurb: 'הטבות חיילים, שעות מאוחרות ושמירת ציוד.', emoji: '🎖️' },
-  { title: 'מסיבות 24+', to: '/audience/24plus-parties', blurb: 'וייב בוגר, שירות מוקפד וקוקטיילים.', emoji: '🍸' },
-];
-
-const cityLinks = [
-  { title: 'תל אביב', to: '/cities/tel-aviv', blurb: 'טכנו בדרום, גגות במרכז והכל בעדכון יומיומי.', emoji: '🌃' },
-  { title: 'חיפה', to: '/cities/haifa', blurb: 'חוף, כרמל ושוק תלפיות – כל הוייבים.', emoji: '⛵' },
-];
-
-const styleLinks = [
-  { title: 'טכנו', to: '/genre/techno-music', blurb: 'רייבי מחסן, חופים ומועדוני ענק.', emoji: '🔊' },
-  { title: 'האוס וגרוב', to: '/genre/house-music', blurb: 'גגות שקיעה, ברים אינטימיים.', emoji: '🎧' },
-  { title: 'מיינסטרים ופופ', to: '/genre/mainstream-music', blurb: 'להיטים, רגאטון וקריוקי.', emoji: '🎤' },
-];
-
-const clubLinks = [
-  { title: 'ECHO Club', to: '/club/echo', blurb: 'רחבה דרומית עם טכנו, האוס והופעות לייב.' },
-  { title: 'Jimmy Who', to: '/club/jimmy-who', blurb: 'בר-מועדון תל אביבי עם להיטים ורחבה שמחה.' },
-  { title: 'Gagarin', to: '/club/gagarin', blurb: 'חלל אנדרגראונד עם במה להופעות חיות.' },
-  { title: 'Moon Child', to: '/club/moon-child', blurb: 'וייב ירח עם קוקטיילים וגרוב מלודי.' },
-];
-
-const helperLinks = [
-  { title: 'בלוג וטיפים', to: '/articles', blurb: 'מדריכים, ראיונות ותחקירי ליינים.' },
-  { title: 'הצהרת מקדמי אירועים', to: '/promoter-disclaimer', blurb: 'שקיפות מלאה מול מפיקים ושותפים.' },
-];
-
-const subPageLinks = [
-  {
-    title: 'חיפוש ממוקד וקטגוריות מיוחדות',
-    description: 'מסיבות טכנו בתל אביב, 18+ עם אלכוהול חופשי, מסיבות לחיילים, סופ"ש בצפון ועוד.',
-    to: '/parties',
-  },
-];
-
-// --- Metadata ---
 export const metadata: Metadata = {
   title: 'חיפוש מסיבות | ז׳אנרים, ערים ומועדונים',
   description: 'חפשו כרטיסים למסיבות בישראל לפי עיר, ז׳אנר, קהל יעד או מועדון. טכנו, האוס, מיינסטרים, מסיבות נוער ועוד – כל הליינים מתעדכנים בזמן אמת.',
@@ -65,223 +18,239 @@ export const metadata: Metadata = {
   },
 };
 
-// --- Helper: Section wrapper ---
-function Section({ id, title, subtitle, children }: { id?: string; title: string; subtitle?: string; children: React.ReactNode }) {
+const CONTAINER = 'mx-auto w-full max-w-[1100px] px-4 sm:px-6';
+
+const Chevron = () => (
+  <svg viewBox="0 0 24 24" className="h-[0.8em] w-[0.8em]" fill="none" stroke="currentColor" strokeWidth={2.6} aria-hidden>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15 6l-6 6 6 6" />
+  </svg>
+);
+
+const countLabel = (n: number) => (n === 0 ? 'יתעדכן בקרוב' : n === 1 ? 'מסיבה אחת קרובה' : `${n} מסיבות קרובות`);
+
+/** A browse tile: title, live count, and a fan of the real flyers behind it. */
+function BrowseTile({ href, title, parties, flyers, wide = false }: { href: string; title: string; parties: Party[]; flyers: Party[]; wide?: boolean }) {
   return (
-    <section id={id} className="mb-14 scroll-mt-24">
-      <div className="mb-6">
-        <h2 className="text-3xl font-display text-white">{title}</h2>
-        {subtitle && <p className="text-jungle-text/60 text-sm mt-1">{subtitle}</p>}
-      </div>
+    <Link
+      href={href}
+      prefetch={false}
+      className={`group flex flex-col items-center overflow-hidden rounded-[22px] bg-tile px-3 pb-6 pt-6 text-center transition-colors duration-300 hover:bg-tile-hover sm:rounded-[28px] sm:px-6 sm:pb-8 sm:pt-9 ${wide ? 'col-span-2' : ''}`}
+    >
+      <h3 className="text-[19px] font-bold leading-tight text-ink sm:text-[28px]">{title}</h3>
+      <p className="mt-1 text-[13px] text-ink-2 sm:text-[15px]">
+        <span className="tabular-nums">{countLabel(parties.length)}</span>
+      </p>
+      {flyers.length > 0 ? (
+        <div className="mt-5 transition-transform duration-700 ease-apple group-hover:-translate-y-1.5 sm:mt-8">
+          <FlyerFan parties={flyers} size="md" />
+        </div>
+      ) : (
+        <span className="mt-4 inline-flex items-center gap-1 text-[15px] text-link">
+          לעמוד <Chevron />
+        </span>
+      )}
+    </Link>
+  );
+}
+
+function ListRows({ items }: { items: { href: string; title: string; blurb: string; count?: number }[] }) {
+  return (
+    <ul className="divide-y divide-hairline border-y border-hairline">
+      {items.map((item) => (
+        <li key={item.href}>
+          <Link href={item.href} prefetch={false} className="group flex items-center justify-between gap-4 py-4 sm:py-5">
+            <span className="min-w-0">
+              <span className="block text-[17px] font-semibold text-ink transition-colors group-hover:text-link">{item.title}</span>
+              <span className="mt-0.5 block text-[14px] leading-snug text-ink-3">{item.blurb}</span>
+            </span>
+            <span className="flex shrink-0 items-center gap-3 text-ink-3">
+              {typeof item.count === 'number' && item.count > 0 && (
+                <span className="text-[13px] tabular-nums">{item.count}</span>
+              )}
+              <Chevron />
+            </span>
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
+  return (
+    <section id={id} className="scroll-mt-20 pb-16 sm:pb-24" aria-labelledby={`${id}-heading`}>
+      <h2 id={`${id}-heading`} className="mb-6 text-[26px] font-bold leading-tight text-ink sm:mb-8 sm:text-[36px]">
+        {title}
+      </h2>
       {children}
     </section>
   );
 }
 
-// --- Helper: Link card ---
-function LinkCard({ href, title, blurb, emoji, accent }: { href: string; title: string; blurb: string; emoji?: string; accent?: string }) {
-  return (
-    <Link
-      href={href}
-      prefetch={false}
-      className={`group block rounded-2xl border border-white/8 bg-jungle-surface/60 p-5 transition-all duration-200 hover:border-jungle-lime/40 hover:bg-jungle-surface/90 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-jungle-lime/5`}
-    >
-      <div className="flex items-start gap-3">
-        {emoji && <span className="text-2xl mt-0.5 flex-shrink-0">{emoji}</span>}
-        <div className="min-w-0">
-          <h3 className={`text-lg font-bold text-white group-hover:text-jungle-lime transition-colors ${accent || ''}`}>{title}</h3>
-          <p className="text-sm text-jungle-text/70 mt-1 leading-relaxed">{blurb}</p>
-        </div>
-      </div>
-    </Link>
-  );
-}
-
-// --- Main Component ---
 export default async function PartyDiscoveryPage() {
-  let carousels: Carousel[] = [];
-  try {
-    const data = await getCarousels();
-    if (Array.isArray(data)) {
-      carousels = data;
-    }
-  } catch (error) {
-    console.error("Failed to fetch carousels for SSR", error);
-  }
+  const [parties, carousels] = await Promise.all([
+    getParties().catch((): Party[] => []),
+    getCarousels().catch((): Carousel[] => []),
+  ]);
 
-  const carouselLinks = carousels
-    .sort((a: any, b: any) => a.order - b.order)
-    .map((carousel: any) => {
-      const isPurim = carousel.title.toLowerCase().includes('purim') || carousel.title.includes('פורים');
-      return {
-        title: carousel.title,
-        to: isPurim ? '/purim' : `/carousels/${createCarouselSlug(carousel.title)}`,
-      };
+  const upcoming = sortForDisplay(parties);
+  const tonight = currentNight();
+  const onWeekday = (wd: number) =>
+    upcoming.filter((p) => {
+      const n = nightOf(p.date);
+      return n !== null && n >= tonight && n <= rangeNights('week', tonight)[1] && weekdayOf(n) === wd;
     });
+  const inArea = (...keys: string[]) => upcoming.filter((p) => p.areas?.some((a) => keys.includes(a)));
+  const ofMusic = (type: string) => upcoming.filter((p) => p.musicType === type);
+  const withTag = (needle: string) => upcoming.filter((p) => p.tags?.some((t) => t.includes(needle)));
+
+  const nights = [
+    { href: '/day/today', title: 'הלילה', parties: upcoming.filter((p) => isInRange(p.date, rangeNights('tonight', tonight))) },
+    { href: '/day/thursday', title: 'חמישי', parties: onWeekday(4) },
+    { href: '/day/friday', title: 'שישי', parties: onWeekday(5) },
+    { href: '/day/weekend', title: 'סוף השבוע', parties: upcoming.filter((p) => isInRange(p.date, rangeNights('weekend', tonight))) },
+  ];
+
+  const cities = [
+    { href: '/cities/tel-aviv', title: 'תל אביב', parties: inArea('tel aviv') },
+    { href: '/cities/haifa', title: 'חיפה והצפון', parties: inArea('haifa', 'north') },
+    { href: '/cities/jerusalem', title: 'ירושלים', parties: inArea('jerusalem') },
+    { href: '/cities/eilat', title: 'אילת', parties: inArea('eilat') },
+  ];
+
+  const styles = [
+    { href: '/genre/mainstream-music', title: 'מיינסטרים', parties: ofMusic('מיינסטרים') },
+    { href: '/genre/techno-music', title: 'טכנו', parties: ofMusic('טכנו') },
+    { href: '/genre/trance-music', title: 'טראנס', parties: ofMusic('טראנס') },
+    { href: '/genre/house-music', title: 'האוס', parties: withTag('האוס') },
+  ];
+
+  const audiences = [
+    { title: 'מסיבות סטודנטים', href: '/audience/student-parties', blurb: 'ליינים אקדמיים, הנחות ושאטלים מקמפוסים.' },
+    { title: 'מסיבות חיילים', href: '/audience/soldier-parties', blurb: 'הטבות חיילים, שעות מאוחרות ושמירת ציוד.' },
+    { title: 'מסיבות 24+', href: '/audience/24plus-parties', blurb: 'וייב בוגר, שירות מוקפד וקוקטיילים.' },
+    { title: 'מסיבות נוער', href: '/audience/teenage-parties', blurb: 'אירועים מפוקחים עם פירוט אבטחה וגיל כניסה.' },
+  ];
+
+  const clubs = [
+    { title: 'ECHO Club', href: '/club/echo', blurb: 'רחבה דרומית עם טכנו, האוס והופעות לייב.' },
+    { title: 'Jimmy Who', href: '/club/jimmy-who', blurb: 'בר-מועדון תל אביבי עם להיטים ורחבה שמחה.' },
+    { title: 'Gagarin', href: '/club/gagarin', blurb: 'חלל אנדרגראונד עם במה להופעות חיות.' },
+    { title: 'Moon Child', href: '/club/moon-child', blurb: 'וייב ירח עם קוקטיילים וגרוב מלודי.' },
+  ];
+
+  // Fan flyers: each tile prefers flyers no earlier tile on the page already showed.
+  const used = new Set<string>();
+  const withFlyers = <T extends { parties: Party[] }>(tiles: T[]) =>
+    tiles.map((tile) => {
+      const pool = tile.parties.filter((p) => !p.soldOut && p.imageUrl);
+      const fresh = pool.filter((p) => !used.has(p.id));
+      const flyers = (fresh.length >= 2 ? fresh : pool).slice(0, 3);
+      flyers.forEach((p) => used.add(p.id));
+      return { ...tile, flyers };
+    });
+  const nonEmpty = <T extends { parties: Party[] }>(tiles: T[]) => tiles.filter((t) => t.parties.length > 0);
+  const nightTiles = withFlyers(nonEmpty(nights));
+  const cityTiles = withFlyers(nonEmpty(cities));
+  const styleTiles = withFlyers(nonEmpty(styles));
+
+  const tileTitles = new Set([...nights, ...cities, ...styles].map((t) => t.title));
+  const collections = buildShelves(carousels, parties).filter((c) => c.parties.length >= 3 && !tileTitles.has(c.title));
 
   return (
-    <div id="top" className="min-h-screen bg-jungle-deep text-white scroll-smooth">
-      <SmoothScrollAnchors />
-
-      <div className="max-w-5xl mx-auto px-4 pb-16 pt-10 md:pt-14">
-
-        {/* Back */}
-        <div className="mb-8">
-          <BackButton fallbackHref="/" label="חזרה" />
-        </div>
-
-        {/* ══════════════════════════════════════════════
-            HERO
-        ══════════════════════════════════════════════ */}
-        <header className="text-center mb-14">
-          <p className="inline-block text-xs font-semibold uppercase tracking-[0.25em] text-jungle-accent/80 mb-4">
-            Party Discovery
-          </p>
-          <h1 className="text-4xl md:text-6xl font-display text-white leading-tight mb-4">
-            מוצאים את המסיבה<br className="hidden md:block" /> הבאה שלכם
+    <div className="font-apple min-h-screen bg-stage text-ink">
+      {/* ─── Hero: search first ─── */}
+      <section className="relative overflow-hidden pb-14 pt-12 sm:pb-20 sm:pt-20">
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-[radial-gradient(ellipse_55%_60%_at_50%_0%,rgba(118,200,147,0.15),transparent_72%)]" />
+        <div className={`${CONTAINER} relative text-center`}>
+          <h1 className="text-balance text-[clamp(34px,10vw,44px)] font-bold leading-[1.05] sm:text-[64px]">
+            איזו מסיבה <span className="text-ink-3">בא לכם?</span>
           </h1>
-          <p className="text-lg text-jungle-text/70 max-w-2xl mx-auto leading-relaxed">
-            כל הליינים, הערים, הסגנונות והמועדונים — במקום אחד.
-            <br />בחרו קטגוריה ותעברו ישר לעמוד הרלוונטי.
+          <p className="mx-auto mt-4 max-w-[560px] text-balance text-[17px] text-ink-2 sm:text-[21px]">
+            כתבו מה אתם מחפשים, או בחרו לפי ערב, עיר, סגנון ומועדון.
           </p>
-
-          {/* Anchor nav */}
-          <nav className="flex flex-wrap justify-center gap-2 mt-8" aria-label="קישורי ניווט מהיר">
+          <div className="mt-8 sm:mt-10">
+            <AllPartiesAISearch />
+          </div>
+          <nav className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-[15px]" aria-label="קפיצה לקטגוריה">
             {[
-              { label: 'קהל יעד', hash: '#audiences' },
+              { label: 'ערבים', hash: '#nights' },
               { label: 'ערים', hash: '#cities' },
               { label: 'סגנונות', hash: '#styles' },
+              { label: 'קהלים', hash: '#audiences' },
               { label: 'מועדונים', hash: '#clubs' },
-            ].map(item => (
-              <a
-                key={item.hash}
-                href={item.hash}
-                className="rounded-full border border-white/15 px-4 py-2 text-sm font-medium text-jungle-text/80 hover:border-jungle-lime/50 hover:text-jungle-lime transition-colors"
-              >
+            ].map((item) => (
+              <a key={item.hash} href={item.hash} className="text-link hover:underline underline-offset-4">
                 {item.label}
               </a>
             ))}
           </nav>
-        </header>
+        </div>
+      </section>
 
-        {/* ══════════════════════════════════════════════
-            QUICK ACCESS — pill-style links
-        ══════════════════════════════════════════════ */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mb-14">
-          {quickLinks.map(item => (
-            <Link
-              key={item.to}
-              href={item.to}
-              prefetch={false}
-              className="group flex flex-col items-center gap-2 rounded-2xl border border-white/8 bg-jungle-surface/40 py-5 px-3 text-center transition-all hover:border-jungle-lime/40 hover:bg-jungle-surface/70 hover:-translate-y-0.5"
-            >
-              <span className="text-3xl">{item.emoji}</span>
-              <span className="text-sm font-bold text-white group-hover:text-jungle-lime transition-colors">{item.label}</span>
-              <span className="text-[11px] text-jungle-text/50 leading-tight">{item.desc}</span>
-            </Link>
-          ))}
+      <div className={CONTAINER}>
+        <Section id="nights" title="מתי יוצאים?">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+            {nightTiles.map((tile) => (
+              <BrowseTile key={tile.href} {...tile} />
+            ))}
+          </div>
+        </Section>
+
+        <Section id="cities" title="איפה?">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+            {cityTiles.map((tile) => (
+              <BrowseTile key={tile.href} {...tile} />
+            ))}
+          </div>
+        </Section>
+
+        <Section id="styles" title="איזה סאונד?">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+            {styleTiles.map((tile) => (
+              <BrowseTile key={tile.href} {...tile} />
+            ))}
+          </div>
+        </Section>
+
+        <div className="grid gap-x-12 md:grid-cols-2">
+          <Section id="audiences" title="למי זה מתאים?">
+            <ListRows items={audiences} />
+          </Section>
+          <Section id="clubs" title="מועדונים">
+            <ListRows items={clubs} />
+          </Section>
         </div>
 
-        {/* ══════════════════════════════════════════════
-            FOCUSED SEARCH CTA
-        ══════════════════════════════════════════════ */}
-        {subPageLinks.map(item => (
-          <Link
-            key={item.to}
-            href={item.to}
-            prefetch={false}
-            className="group block rounded-2xl border border-jungle-accent/20 bg-gradient-to-r from-jungle-surface/80 to-jungle-deep p-6 md:p-8 mb-14 transition-all hover:border-jungle-accent/40 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-jungle-accent/5"
-          >
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div>
-                <h2 className="text-2xl font-display text-jungle-lime mb-1">{item.title}</h2>
-                <p className="text-jungle-text/70 text-sm max-w-xl">{item.description}</p>
-              </div>
-              <span className="inline-flex items-center gap-2 rounded-full bg-jungle-accent/15 border border-jungle-accent/30 px-5 py-2.5 text-sm font-bold text-jungle-accent group-hover:bg-jungle-accent group-hover:text-jungle-deep transition-colors whitespace-nowrap self-start md:self-center">
-                לקטגוריות מיוחדות ↗
-              </span>
-            </div>
-          </Link>
-        ))}
-
-        {/* ══════════════════════════════════════════════
-            AUDIENCE
-        ══════════════════════════════════════════════ */}
-        <Section id="audiences" title="לפי קהל יעד" subtitle="מצאו אירועים שמותאמים בדיוק לגיל ולוייב שלכם.">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {audienceLinks.map(item => (
-              <LinkCard key={item.to} href={item.to} title={item.title} blurb={item.blurb} emoji={item.emoji} />
-            ))}
-          </div>
-        </Section>
-
-        {/* ══════════════════════════════════════════════
-            CITIES
-        ══════════════════════════════════════════════ */}
-        <Section id="cities" title="לפי עיר" subtitle="כל המסיבות באזור שלכם.">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {cityLinks.map(item => (
-              <LinkCard key={item.to} href={item.to} title={item.title} blurb={item.blurb} emoji={item.emoji} />
-            ))}
-          </div>
-        </Section>
-
-        {/* ══════════════════════════════════════════════
-            STYLES / GENRES
-        ══════════════════════════════════════════════ */}
-        <Section id="styles" title="לפי סגנון מוזיקה" subtitle="טכנו, האוס, פופ — בחרו את הסאונד שלכם.">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {styleLinks.map(item => (
-              <LinkCard key={item.to} href={item.to} title={item.title} blurb={item.blurb} emoji={item.emoji} />
-            ))}
-          </div>
-        </Section>
-
-        {/* ══════════════════════════════════════════════
-            CLUBS
-        ══════════════════════════════════════════════ */}
-        <Section id="clubs" title="מועדונים" subtitle="עמודים ייעודיים לכל מועדון עם כל האירועים הקרובים.">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {clubLinks.map(item => (
-              <LinkCard key={item.to} href={item.to} title={item.title} blurb={item.blurb} emoji="🏛️" />
-            ))}
-          </div>
-        </Section>
-
-        {/* ══════════════════════════════════════════════
-            CAROUSELS (Dynamic)
-        ══════════════════════════════════════════════ */}
-        {carouselLinks.length > 0 && (
-          <Section id="carousels" title="קרוסלות נבחרות" subtitle="אוספים שנבחרו במיוחד עם הליינים הכי חמים.">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {carouselLinks.map(item => (
-                <LinkCard key={item.to} href={item.to} title={item.title} blurb="כל הליינים החמים בקרוסלה אחת." emoji="🎠" />
-              ))}
-            </div>
+        {collections.length > 0 && (
+          <Section id="collections" title="אוספים נבחרים">
+            <ListRows
+              items={collections.map((c) => ({
+                href: c.href,
+                title: c.title,
+                blurb: `${c.parties.length} מסיבות באוסף`,
+              }))}
+            />
           </Section>
         )}
 
-        {/* ══════════════════════════════════════════════
-            RESOURCES
-        ══════════════════════════════════════════════ */}
-        <Section title="עוד משאבים">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {helperLinks.map(item => (
-              <LinkCard key={item.to} href={item.to} title={item.title} blurb={item.blurb} emoji="📄" />
-            ))}
+        <section className="pb-20 text-center sm:pb-28">
+          <h2 className="text-[26px] font-bold sm:text-[36px]">מחפשים משהו ספציפי?</h2>
+          <p className="mx-auto mt-3 max-w-[520px] text-[17px] text-ink-2">
+            מסיבות טכנו בתל אביב, 18+ עם אלכוהול חופשי, סופ״ש בצפון ועוד קטגוריות ממוקדות.
+          </p>
+          <div className="mt-7 flex flex-wrap items-center justify-center gap-x-7 gap-y-4">
+            <Link href="/all-parties" prefetch={false} className="rounded-full bg-action px-6 py-3 text-[17px] font-medium text-on-action transition-colors hover:bg-action-hover">
+              לכל המסיבות
+            </Link>
+            <Link href="/parties" prefetch={false} className="inline-flex items-center gap-1 text-[17px] text-link hover:underline underline-offset-4">
+              לקטגוריות המיוחדות <Chevron />
+            </Link>
+            <Link href="/articles" prefetch={false} className="inline-flex items-center gap-1 text-[17px] text-link hover:underline underline-offset-4">
+              מדריכים וטיפים <Chevron />
+            </Link>
           </div>
-        </Section>
-
-        {/* Bottom CTA */}
-        <div className="text-center pt-4 pb-8">
-          <Link
-            href="/all-parties"
-            prefetch={false}
-            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-jungle-lime to-jungle-accent px-8 py-3.5 text-lg font-bold text-jungle-deep shadow-lg shadow-jungle-lime/20 transition-all hover:scale-105 hover:shadow-jungle-lime/30"
-          >
-            🎉 לכל המסיבות
-          </Link>
-        </div>
+        </section>
       </div>
     </div>
   );

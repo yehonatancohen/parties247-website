@@ -9,11 +9,11 @@ export const metadata: Metadata = {
 export default function TermsPage() {
   return (
     <div className="container mx-auto px-4 py-12 max-w-4xl">
-      <div className="bg-jungle-surface/50 border border-wood-brown/30 rounded-2xl p-8 md:p-12 text-right dir-rtl" dir="rtl">
-        <h1 className="text-3xl md:text-4xl font-display text-white mb-2">תנאי שימוש</h1>
-        <p className="text-jungle-text/60 mb-8 text-sm">עודכן לאחרונה: ינואר 2026</p>
+      <div className="bg-tile border border-hairline rounded-[22px] p-8 md:p-12 text-right dir-rtl" dir="rtl">
+        <h1 className="text-[34px] font-bold leading-tight text-ink sm:text-[48px] mb-2">תנאי שימוש</h1>
+        <p className="text-ink-3 mb-8 text-sm">עודכן לאחרונה: ינואר 2026</p>
 
-        <div className="space-y-8 text-jungle-text/90 leading-relaxed">
+        <div className="space-y-8 text-ink-2 leading-relaxed">
           
           <section>
             <h2 className="text-xl font-bold text-jungle-accent mb-3">1. כללי</h2>
@@ -80,8 +80,8 @@ export default function TermsPage() {
             </p>
           </section>
 
-          <div className="mt-12 pt-8 border-t border-wood-brown/30 text-center md:text-right">
-            <p className="font-bold text-white">יש לכם שאלות?</p>
+          <div className="mt-12 pt-8 border-t border-hairline text-center md:text-right">
+            <p className="font-bold text-ink">יש לכם שאלות?</p>
             <p>ניתן ליצור קשר דרך עמוד האינסטגרם שלנו או במייל.</p>
           </div>
 

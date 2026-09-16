@@ -1,6 +1,7 @@
 import { Metadata, ResolvingMetadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import RelatedPartyCard from "@/components/RelatedPartyCard";
 import { notFound } from "next/navigation";
 import { getPartyBySlug, getAllPartiesIncludingPast } from "@/services/api";
 import { Party } from "@/data/types";
@@ -165,7 +166,7 @@ export default async function ArchivedEventPage({ params }: { params: Promise<{ 
   const genreSlug = MUSIC_GENRE_SLUG_MAP[party.musicType] || null;
 
   return (
-    <div className="min-h-screen bg-jungle-deep text-white overflow-x-hidden pb-24">
+    <div className="font-apple min-h-screen overflow-x-hidden bg-stage pb-24 text-ink">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(eventJsonLd) }}
@@ -175,13 +176,13 @@ export default async function ArchivedEventPage({ params }: { params: Promise<{ 
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
-      <div className="max-w-3xl mx-auto px-4 pt-6 pb-8">
+      <div className="mx-auto max-w-[860px] px-4 pb-8 pt-6 sm:px-6 sm:pt-10">
         <div className="mb-5">
           <Link
-            className="inline-flex items-center gap-2 text-jungle-accent hover:text-white text-sm font-semibold transition-colors"
+            className="inline-flex items-center gap-1 text-[15px] text-link hover:underline underline-offset-4"
             href="/archive"
           >
-            ← חזרה לארכיון המסיבות
+            לארכיון המסיבות <svg viewBox="0 0 24 24" className="h-[0.8em] w-[0.8em]" fill="none" stroke="currentColor" strokeWidth={2.6} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M15 6l-6 6 6 6" /></svg>
           </Link>
         </div>
 
@@ -189,7 +190,7 @@ export default async function ArchivedEventPage({ params }: { params: Promise<{ 
           <FlyerToRelatedLink
             ariaLabel={`מסיבות קרובות שדומות ל${party.name}`}
             targetId="upcoming-related"
-            className="block rounded-2xl overflow-hidden border border-white/10 shadow-2xl mb-8 relative transition-transform duration-300 active:scale-[0.98]"
+            className="block rounded-[22px] overflow-hidden border border-hairline mb-8 relative transition-transform duration-300 active:scale-[0.98]"
           >
             <Image
               src={party.imageUrl}
@@ -203,7 +204,7 @@ export default async function ArchivedEventPage({ params }: { params: Promise<{ 
             />
           </FlyerToRelatedLink>
         ) : (
-          <div className="block rounded-2xl overflow-hidden border border-white/10 shadow-2xl mb-8 relative">
+          <div className="block rounded-[22px] overflow-hidden border border-hairline mb-8 relative">
             <Image
               src={party.imageUrl}
               alt={party.name}
@@ -218,64 +219,61 @@ export default async function ArchivedEventPage({ params }: { params: Promise<{ 
         )}
 
         <div className="mb-8">
-          <span className="inline-block bg-white/5 text-white/60 border border-white/10 px-3 py-1 rounded-full text-xs font-semibold mb-3">
+          <span className="mb-3 inline-block rounded-full border border-hairline px-3 py-1 text-[13px] text-ink-3">
             אירוע שהתקיים
           </span>
-          <h1 className="font-display text-4xl md:text-5xl text-white mb-3 leading-tight">
+          <h1 className="mb-3 text-balance text-[34px] font-bold leading-[1.1] sm:text-[48px]" dir="auto">
             {party.name}
           </h1>
         </div>
 
         <div className="flex flex-wrap gap-3 mb-6" dir="rtl">
-          <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-jungle-surface/60 px-4 py-2.5 text-sm">
-            <CalendarIcon className="w-4 h-4 text-jungle-lime flex-shrink-0" />
-            <span className="text-white font-semibold">{formattedDate}</span>
-            <span className="text-jungle-text/60">·</span>
-            <span className="text-jungle-text/70">{formattedTime}</span>
+          <div className="flex items-center gap-2 rounded-full bg-tile px-4 py-2.5 text-[15px]">
+            <CalendarIcon className="h-4 w-4 flex-shrink-0 text-action" />
+            <span className="text-ink font-semibold">{formattedDate}</span>
+            <span className="text-ink-3">·</span>
+            <span className="text-ink-3">{formattedTime}</span>
           </div>
           <a
             href={buildGoogleMapsUrl(party)}
             target="_blank"
             rel="noopener noreferrer"
             title="פתחו במפות Google"
-            className="flex items-center gap-2 rounded-xl border border-white/10 bg-jungle-surface/60 px-4 py-2.5 text-sm hover:border-jungle-lime/40 hover:bg-jungle-surface transition-colors"
+            className="flex items-center gap-2 rounded-full bg-tile px-4 py-2.5 text-[15px] transition-colors hover:bg-tile-hover"
           >
-            <LocationIcon className="w-4 h-4 text-jungle-lime flex-shrink-0" />
-            <span className="text-white font-semibold">{party.location.name}</span>
+            <LocationIcon className="h-4 w-4 flex-shrink-0 text-action" />
+            <span className="text-ink font-semibold">{party.location.name}</span>
           </a>
         </div>
 
         {party.description && (
-          <div className="rounded-2xl border border-white/10 bg-jungle-surface/50 p-6 md:p-8 mb-8">
-            <h2 className="text-lg font-display text-white mb-4">על האירוע</h2>
+          <div className="mb-4 rounded-[28px] bg-tile p-6 sm:p-8">
+            <h2 className="text-[19px] font-bold text-ink mb-4">על האירוע</h2>
             <div
-              className="text-jungle-text/85 leading-relaxed
-                [&_h2]:text-white [&_h2]:font-display [&_h2]:font-bold [&_h2]:text-2xl [&_h2]:tracking-tight [&_h2]:mb-3 [&_h2]:mt-6 [&_h2:first-child]:mt-0
-                [&_h3]:text-white [&_h3]:font-black [&_h3]:text-xl [&_h3]:tracking-tight [&_h3]:mb-2 [&_h3]:mt-4 [&_h3:first-child]:mt-0
-                [&_p]:mb-3 [&_p:last-child]:mb-0"
+              className="text-ink-2 leading-relaxed [&_h2]:text-ink [&_h2]:font-bold [&_h2]:text-[21px] [&_h2]:tracking-tight [&_h2]:mb-3 [&_h2]:mt-6 [&_h2:first-child]:mt-0 [&_h3]:text-ink [&_h3]:font-bold [&_h3]:text-[19px] [&_h3]:tracking-tight [&_h3]:mb-2 [&_h3]:mt-4 [&_h3:first-child]:mt-0 [&_p]:mb-3 [&_p:last-child]:mb-0"
               dangerouslySetInnerHTML={{ __html: party.description }}
             />
           </div>
         )}
 
         {(citySlug || genreSlug) && (
-          <div className="rounded-2xl border border-white/10 bg-jungle-surface/50 p-6 mb-8">
-            <h2 className="text-lg font-display text-white mb-4">מחפשים את המסיבה הבאה?</h2>
+          <div className="mb-8 rounded-[28px] bg-tile p-6 sm:p-8">
+            <h2 className="text-[19px] font-bold text-ink mb-4">מחפשים את המסיבה הבאה?</h2>
             <div className="flex flex-wrap gap-3">
               {citySlug && (
                 <Link
                   href={`/cities/${citySlug}`}
-                  className="inline-flex items-center gap-2 rounded-xl border border-jungle-lime/30 bg-jungle-lime/10 px-4 py-2.5 text-sm font-semibold text-jungle-lime hover:bg-jungle-lime/20 transition-colors"
+                  className="inline-flex items-center gap-1 rounded-full bg-action px-4 py-2 text-[15px] font-medium text-on-action transition-colors hover:bg-action-hover"
                 >
-                  מסיבות קרובות ב{party.location.name} ←
+                  מסיבות קרובות ב{party.location.name}
                 </Link>
               )}
               {genreSlug && (
                 <Link
                   href={`/genre/${genreSlug}`}
-                  className="inline-flex items-center gap-2 rounded-xl border border-jungle-accent/30 bg-jungle-accent/10 px-4 py-2.5 text-sm font-semibold text-jungle-accent hover:bg-jungle-accent/20 transition-colors"
+                  className="inline-flex items-center gap-1 rounded-full border border-hairline px-4 py-2 text-[15px] text-ink transition-colors hover:bg-tile-hover"
                 >
-                  מסיבות {party.musicType} קרובות ←
+                  מסיבות {party.musicType} קרובות
                 </Link>
               )}
             </div>
@@ -284,27 +282,11 @@ export default async function ArchivedEventPage({ params }: { params: Promise<{ 
 
         {upcomingRelated.length > 0 && (
           <div className="mb-8" id="upcoming-related">
-            <h2 className="text-2xl md:text-3xl font-display text-white text-center mb-2">מסיבות קרובות שאולי תאהבו</h2>
-            <p className="text-jungle-text/50 text-sm text-center mb-6">אירועים דומים שעדיין ניתן לקנות להם כרטיסים</p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <h2 className="mb-2 text-center text-[28px] font-bold sm:text-[36px]">מסיבות קרובות שאולי תאהבו</h2>
+            <p className="text-ink-3 text-sm text-center mb-6">אירועים דומים שעדיין ניתן לקנות להם כרטיסים</p>
+            <div className="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-5 md:grid-cols-4">
               {upcomingRelated.map(relatedParty => (
-                <Link
-                  key={relatedParty.id}
-                  href={`/event/${relatedParty.slug}`}
-                  className="group relative bg-jungle-surface rounded-2xl overflow-hidden border border-white/5 hover:border-jungle-accent/30 transition-colors"
-                >
-                  <Image
-                    src={relatedParty.imageUrl}
-                    alt={relatedParty.name}
-                    className="w-full aspect-[3/4] object-cover"
-                    width={300}
-                    height={400}
-                  />
-                  <div className="p-2.5">
-                    <p className="text-white text-sm font-semibold truncate">{relatedParty.name}</p>
-                    <p className="text-jungle-text/60 text-xs">{relatedParty.location.name}</p>
-                  </div>
-                </Link>
+                <RelatedPartyCard key={relatedParty.id} party={relatedParty} />
               ))}
             </div>
           </div>

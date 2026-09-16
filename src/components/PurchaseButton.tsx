@@ -16,6 +16,7 @@ export default function PurchaseButton({
   price,
   soldOut = false,
   couponEligible = false,
+  showPriceInLabel = true,
 }: {
   partyId: string;
   slug: string;
@@ -25,13 +26,15 @@ export default function PurchaseButton({
   soldOut?: boolean;
   /** account1 event — auto-copies the discount code to the clipboard on click. */
   couponEligible?: boolean;
+  /** Off when the price is already stated right above the button. */
+  showPriceInLabel?: boolean;
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const [couponCopied, setCouponCopied] = useState(false);
 
   if (soldOut) {
     return (
-      <div className="w-full flex items-center justify-center gap-3 text-center bg-white/5 border border-white/10 text-white/40 font-display text-2xl sm:text-3xl py-4 px-6 rounded-xl tracking-wider cursor-not-allowed select-none">
+      <div className="flex w-full cursor-not-allowed select-none items-center justify-center gap-2.5 rounded-full bg-tile-raised px-6 py-4 text-center text-[19px] font-semibold text-ink-3">
         <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
         <span>הכרטיסים אזלו</span>
       </div>
@@ -69,53 +72,50 @@ export default function PurchaseButton({
 
   return (
     <>
-      {couponEligible && (
-        <div className="flex items-center justify-center gap-1.5 mb-2 text-xs font-bold text-jungle-lime">
-          <span>🎟️</span>
-          <span>הנחה עם קוד</span>
-        </div>
-      )}
       <a
         href={href}
         target={href.includes('go-out') ? "_self" : "_blank"}
         rel="noopener noreferrer"
         onClick={handleClick}
-        className="group/btn relative w-full flex items-center justify-center gap-3 text-center bg-gradient-to-r from-jungle-lime to-jungle-accent text-jungle-deep font-display text-2xl sm:text-3xl py-4 px-6 rounded-xl transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] tracking-wider shadow-lg shadow-jungle-lime/20 hover:shadow-jungle-lime/40 overflow-hidden"
+        className="relative flex w-full items-center justify-center rounded-full bg-action px-6 py-4 text-center text-[18px] font-semibold text-on-action transition-colors duration-200 hover:bg-action-hover active:scale-[0.99] sm:text-[19px]"
       >
-        {/* Shimmer effect */}
-        <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 ease-in-out" />
-        <span className="relative z-10 flex items-center gap-3">
+        <span className="flex items-center gap-2.5">
           <span>
-            {price ? `לרכישת כרטיסים החל מ-${price} ₪` : 'מעבר לרכישת כרטיסים'}
+            {price && showPriceInLabel ? `לרכישת כרטיסים החל מ-${price} ₪` : 'מעבר לרכישת כרטיסים'}
           </span>
           <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
         </span>
       </a>
+      {couponEligible && (
+        <p className="mt-2 text-right text-[13px] font-medium text-link">
+          הנחה עם קוד בקופה, הקוד מועתק אוטומטית בלחיצה
+        </p>
+      )}
 
       {/* Modern Loading Overlay for go-out */}
       {isLoading && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-jungle-deep/80 backdrop-blur-md transition-opacity duration-300" dir="rtl">
-          <div className="flex flex-col items-center gap-6 p-8 bg-jungle-surface/90 rounded-2xl border border-jungle-lime/30 shadow-2xl shadow-jungle-lime/20 max-w-sm mx-4 transform animate-in fade-in zoom-in duration-300">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-stage/80 backdrop-blur-md transition-opacity duration-300" dir="rtl">
+          <div className="mx-4 flex max-w-sm flex-col items-center gap-6 rounded-[28px] border border-hairline bg-tile p-8 shadow-[0_24px_60px_rgba(0,0,0,0.5)]">
             <div className="relative">
               {/* Spinner */}
-              <div className="w-16 h-16 rounded-full border-4 border-jungle-lime/20 border-t-jungle-lime animate-spin"></div>
+              <div className="w-16 h-16 rounded-full border-[3px] border-hairline border-t-action animate-spin"></div>
               {/* Secure Lock Icon inside spinner */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <svg className="w-5 h-5 text-jungle-lime" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-5 h-5 text-action" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
               </div>
             </div>
 
             <div className="flex flex-col gap-2 text-center">
-              <h3 className="text-xl font-display text-white font-bold tracking-wide">
+              <h3 className="text-[21px] font-semibold text-ink">
                 מעביר אותך ל-Go-Out
               </h3>
-              <p className="text-jungle-lime/90 font-medium">
+              <p className="text-ink-2">
                 לרכישת כרטיסים מאובטחת...
               </p>
               {couponEligible && couponCopied && (
-                <p className="text-sm text-jungle-lime font-semibold">
+                <p className="text-[14px] font-semibold text-link">
                   הקוד {COUPON_CODE} הועתק, הדבק אותו בקופה
                 </p>
               )}
@@ -126,7 +126,7 @@ export default function PurchaseButton({
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => trackWhatsappClick('a')}
-              className="flex items-center gap-2 text-sm text-green-200/80 hover:text-green-100 transition-colors"
+              className="flex items-center gap-2 text-[14px] text-ink-3 transition-colors hover:text-ink"
             >
               <WhatsAppIcon className="w-4 h-4" />
               רוצה לשמוע ראשון על ההפקות הבאות?

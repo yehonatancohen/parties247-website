@@ -33,7 +33,7 @@ export default function BackButton({
     <button
       type="button"
       onClick={handleClick}
-      className={`inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-jungle-accent hover:bg-white/10 ${className}`}
+      className={`inline-flex items-center gap-1.5 text-[15px] text-link transition-colors hover:underline underline-offset-4 ${className}`}
     >
       <ArrowLeftIcon className="h-4 w-4" />
       <span>{label}</span>

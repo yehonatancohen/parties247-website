@@ -49,8 +49,8 @@ export default function EventCountdown({ targetDate }: { targetDate: string }) {
     ];
 
     return (
-        <div className="rounded-2xl border border-jungle-accent/20 bg-gradient-to-r from-jungle-surface/80 via-jungle-deep/60 to-jungle-surface/80 backdrop-blur-sm p-5 md:p-6">
-            <p className="text-center text-sm text-jungle-text/70 mb-3 font-semibold uppercase tracking-wider">
+        <div className="rounded-[22px] border border-jungle-accent/20 bg-gradient-to-r from-jungle-surface/80 via-jungle-deep/60 to-jungle-surface/80 backdrop-blur-sm p-5 md:p-6">
+            <p className="text-center text-sm text-ink-3 mb-3 font-semibold uppercase tracking-wider">
                 ⏳ האירוע מתחיל בעוד
             </p>
             <div className="flex items-center justify-center gap-3 md:gap-5" dir="ltr">
@@ -58,7 +58,7 @@ export default function EventCountdown({ targetDate }: { targetDate: string }) {
                     <div key={unit.label} className="flex items-center gap-3 md:gap-5">
                         <div className="flex flex-col items-center">
                             <div className="relative">
-                                <div className="w-14 h-14 md:w-20 md:h-20 rounded-xl bg-jungle-deep/80 border border-jungle-accent/30 flex items-center justify-center shadow-lg shadow-jungle-accent/5">
+                                <div className="w-14 h-14 md:w-20 md:h-20 rounded-xl bg-stage border border-jungle-accent/30 flex items-center justify-center shadow-lg">
                                     <span className="font-display text-2xl md:text-4xl text-jungle-lime tabular-nums">
                                         {String(unit.value).padStart(2, '0')}
                                     </span>
@@ -66,7 +66,7 @@ export default function EventCountdown({ targetDate }: { targetDate: string }) {
                                 {/* Glow effect */}
                                 <div className="absolute inset-0 rounded-xl bg-jungle-lime/5 blur-md -z-10" />
                             </div>
-                            <span className="text-[10px] md:text-xs text-jungle-text/50 mt-1.5 uppercase tracking-wider">
+                            <span className="text-[10px] md:text-xs text-ink-3 mt-1.5 uppercase tracking-wider">
                                 {unit.label}
                             </span>
                         </div>

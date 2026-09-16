@@ -69,7 +69,7 @@ export default async function PurimPage() {
         <>
           המדריך המלא למסיבות, הנשפים והפסטיבלים הכי שווים של החג.
           <br />
-          <span className="font-bold text-jungle-lime">כי בפורים הזה לא נשארים בבית!</span>
+          <span className="font-semibold text-ink">כי בפורים הזה לא נשארים בבית!</span>
         </>
       }
       introHeading="חוגגים את פורים עם Parties24/7"
@@ -78,7 +78,7 @@ export default async function PurimPage() {
         <React.Fragment key="p2">
           ב-Parties24/7 ריכזנו עבורכם את כל <strong>מסיבות פורים {window.year}</strong> השוות ביותר במקום אחד. המערכת שלנו מתעדכנת בזמן אמת עם האירועים החמים ביותר בתל אביב, חיפה, והדרום. בין אם אתם מחפשים נשף תחפושות יוקרתי, רייב המוני תחת כיפת השמיים או מסיבת מחתרת אינטימית - כאן תמצאו את הבילוי המושלם לחג.
         </React.Fragment>,
-        <span key="p3" className="font-bold text-jungle-lime">
+        <span key="p3" className="font-semibold text-ink">
           טיפ מאיתנו: הכרטיסים למסיבות פורים נחטפים במהירות שיא. אל תחכו לרגע האחרון – שריינו מקום עוד היום!
         </span>,
       ]}

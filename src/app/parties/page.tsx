@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 export default function PartyDiscoverySpecificLanding() {
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0c1713] via-[#0c1713] to-black text-white">
+    <div className="font-apple min-h-screen bg-stage text-ink">
       <div className="container mx-auto px-4 pb-16 pt-14 md:pt-16">
 
         {/* Navigation */}
@@ -25,13 +25,10 @@ export default function PartyDiscoverySpecificLanding() {
 
         {/* Header */}
         <div className="mx-auto mb-12 max-w-5xl space-y-4 text-center">
-          <p className="inline-flex items-center gap-2 rounded-full bg-emerald-950/50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-300 border border-emerald-900/20">
-            קטגוריות מיוחדות
-          </p>
-          <h1 className="text-4xl md:text-5xl font-display text-white leading-tight">
+          <h1 className="text-[34px] font-bold leading-tight text-ink sm:text-[48px] leading-tight">
             מצאו את המסיבה המדויקת שלכם
           </h1>
-          <p className="text-lg text-gray-300 leading-relaxed max-w-2xl mx-auto">
+          <p className="text-lg text-ink-2 leading-relaxed max-w-2xl mx-auto">
             אנחנו יודעים בדיוק מה אתם מחפשים. יצרנו עבורכם רשימות ממוקדות לפי ז'אנר,
             אזור, גיל וסגנון בילוי. בחרו את הקטגוריה ותתחילו לחגוג.
           </p>
@@ -47,24 +44,22 @@ export default function PartyDiscoverySpecificLanding() {
                 // Example: /parties/techno-tel-aviv
                 href={`/parties/${page.slug}`}
                 prefetch={false}
-                className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 via-white/5 to-transparent p-6 text-right shadow-lg backdrop-blur transition-all duration-300 hover:-translate-y-1 hover:shadow-emerald-500/20 hover:border-emerald-500/30"
+                className="group flex flex-col rounded-[22px] bg-tile p-6 text-right transition-colors duration-300 hover:bg-tile-hover"
               >
-                {/* Hover Effect Background - Green Radial Gradient */}
-                <div className="absolute inset-0 opacity-0 transition group-hover:opacity-20 bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.4),transparent_50%)]" />
 
                 <div className="relative z-10 flex flex-col h-full justify-between">
                   <div>
-                    <h2 className="text-2xl font-display text-white group-hover:text-emerald-300 transition-colors mb-2">
+                    <h2 className="text-[24px] font-bold text-ink sm:text-[28px] group-hover:text-link transition-colors mb-2">
                       {page.title}
                     </h2>
-                    <p className="text-sm text-gray-400 leading-relaxed">
+                    <p className="text-sm text-ink-3 leading-relaxed">
                       {page.description}
                     </p>
                   </div>
 
                   <div className="mt-6 flex items-center justify-between">
-                    <span className="inline-flex items-center gap-2 text-xs font-bold text-emerald-400 uppercase tracking-wider group-hover:text-emerald-300">
-                      צפה במסיבות <span aria-hidden="true" className="transition-transform group-hover:-translate-x-1">←</span>
+                    <span className="inline-flex items-center gap-1 text-[15px] text-link group-hover:underline underline-offset-4">
+                      לצפייה במסיבות <svg viewBox="0 0 24 24" className="h-[0.8em] w-[0.8em]" fill="none" stroke="currentColor" strokeWidth={2.6} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M15 6l-6 6 6 6" /></svg>
                     </span>
                   </div>
                 </div>
@@ -74,9 +69,9 @@ export default function PartyDiscoverySpecificLanding() {
         </section>
 
         {/* SEO Footer Text */}
-        <section className="text-center mt-20 border-t border-white/5 pt-10">
-          <p className="text-sm text-gray-500">
-            לא מצאתם את מה שחיפשתם? נסו את <Link href="/party-discovery" className="text-emerald-400 hover:underline">מנוע החיפוש הראשי</Link> שלנו.
+        <section className="text-center mt-20 border-t border-hairline pt-10">
+          <p className="text-sm text-ink-3">
+            לא מצאתם את מה שחיפשתם? נסו את <Link href="/party-discovery" className="text-link hover:underline">מנוע החיפוש הראשי</Link> שלנו.
           </p>
         </section>
       </div>

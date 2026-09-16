@@ -53,9 +53,9 @@ const DatePicker: React.FC<DatePickerProps> = ({ selectedDate, onDateSelect }) =
         today.getUTCFullYear() === year;
 
       const dayClasses = `w-8 h-8 flex items-center justify-center rounded-full cursor-pointer transition-colors text-sm
-        ${isSelected ? 'bg-jungle-lime text-jungle-deep font-bold' : ''}
-        ${!isSelected && isToday ? 'border border-jungle-accent text-jungle-accent' : ''}
-        ${!isSelected && !isToday ? 'hover:bg-jungle-surface' : ''}
+        ${isSelected ? 'bg-action text-on-action font-semibold' : ''}
+        ${!isSelected && isToday ? 'border border-action text-link' : ''}
+        ${!isSelected && !isToday ? 'hover:bg-tile-hover' : ''}
       `;
       days.push(
         <button key={day} onClick={() => handleDateClick(day)} className={dayClasses}>
@@ -67,10 +67,10 @@ const DatePicker: React.FC<DatePickerProps> = ({ selectedDate, onDateSelect }) =
   };
 
   return (
-    <div className="absolute top-full right-0 mt-2 bg-jungle-deep border border-wood-brown rounded-lg p-4 shadow-2xl z-50 w-64">
+    <div className="absolute right-0 top-full z-50 mt-2 w-64 rounded-[18px] border border-hairline bg-tile-raised p-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
       <div className="flex justify-between items-center mb-4">
         <button onClick={handlePrevMonth} className="p-1 rounded-full hover:bg-jungle-surface text-lg">‹</button>
-        <div className="font-bold text-white">
+        <div className="font-semibold text-ink">
           {new Intl.DateTimeFormat('he-IL', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(viewDate)}
         </div>
         <button onClick={handleNextMonth} className="p-1 rounded-full hover:bg-jungle-surface text-lg">›</button>

@@ -20,20 +20,38 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'jungle-deep': '#0a1a1a',
-        'jungle-surface': '#162b2b',
+        // Jungle-night launch world — see DESIGN.md. Legacy jungle-* names are
+        // kept as aliases so older markup lands on the same palette.
+        stage: '#06110d',
+        tile: '#0f1f19',
+        'tile-hover': '#132720',
+        'tile-raised': '#1a3129',
+        ink: '#eef6f0',
+        'ink-2': '#a9bdb2',
+        'ink-3': '#8aa197',
+        hairline: 'rgba(196, 255, 218, 0.11)',
+        action: '#76c893',
+        'action-hover': '#8fd8a8',
+        'on-action': '#04120c',
+        link: '#8ddca6',
+        'jungle-deep': '#06110d',
+        'jungle-surface': '#0f1f19',
         'jungle-accent': '#76c893',
-        'jungle-lime': '#a7ff83',
-        'jungle-text': '#e0f0e3',
-        'wood-brown': '#4d3b2a',
+        'jungle-lime': '#9fe6b4',
+        'jungle-text': '#eef6f0',
+        'wood-brown': '#23392f',
       },
       fontFamily: {
-        sans: ['var(--font-assistant)', '"Assistant"', 'sans-serif'],
-        display: ['var(--font-rubik)', '"Rubik"', 'sans-serif'],
+        sans: ['var(--font-heebo)', '"Heebo"', 'system-ui', 'sans-serif'],
+        display: ['var(--font-heebo)', '"Heebo"', 'system-ui', 'sans-serif'],
+        apple: ['var(--font-heebo)', '"Heebo"', 'system-ui', 'sans-serif'],
+      },
+      transitionTimingFunction: {
+        apple: 'cubic-bezier(0.28, 0.11, 0.32, 1)',
       },
       boxShadow: {
         'jungle-glow':
-          '0 0 15px theme("colors.jungle-lime"), 0 0 25px theme("colors.jungle-lime/60")',
+          '0 10px 30px rgba(0, 0, 0, 0.45)',
       },
     },
   },
