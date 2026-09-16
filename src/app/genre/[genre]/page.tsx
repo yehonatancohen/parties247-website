@@ -44,7 +44,7 @@ const genreConfig: Record<
   },
   "rave-parties": {
     title: "רייבים בישראל",
-    description: "רייבים בישראל – כל הרייבים הקרובים: טכנו, טראנס ואנדרגראונד במחסנים, חניונים ואתרי טבע. כרטיסים וליינים מתעדכנים.",
+    description: "מחפשים רייב? כל הרייבים הקרובים בישראל: טכנו, טראנס ואנדרגראונד במחסנים, חניונים ואתרי טבע. כרטיסים וליינים מתעדכנים.",
     filter: (party) =>
       party.tags.some((tag: string) =>
         tag.toLowerCase().includes("rave") ||
