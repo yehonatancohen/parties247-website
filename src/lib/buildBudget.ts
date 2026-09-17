@@ -15,11 +15,23 @@ export const BUILD_FETCH_BUDGET_MS = 40_000;
 
 export const isBuildPhase = () => process.env.NEXT_PHASE === 'phase-production-build';
 
-export function withBuildBudget<T>(promise: Promise<T>, label: string, ms = BUILD_FETCH_BUDGET_MS): Promise<T> {
-  if (!isBuildPhase()) return promise;
+
+/**
+ * Runtime cap for backend reads. On 2026-09-17 the backend stopped answering
+ * entirely and on-demand pages (/all-parties, first visits to city pages) sat on
+ * the fetch until Vercel's 300s function timeout. A cached Data Cache entry
+ * returns immediately and never hits this; only a truly cold, hung fetch does,
+ * and then the page fails fast (ISR keeps serving its last good copy) while the
+ * original fetch keeps running and fills the cache if the backend recovers.
+ */
+export const RUNTIME_FETCH_BUDGET_MS = 12_000;
+
+export function withFetchBudget<T>(promise: Promise<T>, label: string): Promise<T> {
+  const ms = isBuildPhase() ? BUILD_FETCH_BUDGET_MS : RUNTIME_FETCH_BUDGET_MS;
   let timer: ReturnType<typeof setTimeout> | undefined;
   const timeout = new Promise<never>((_, reject) => {
-    timer = setTimeout(() => reject(new Error(`${label} exceeded the ${ms}ms build budget`)), ms);
+    timer = setTimeout(() => reject(new Error(`${label} exceeded ${ms}ms`)), ms);
   });
   return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
 }
+

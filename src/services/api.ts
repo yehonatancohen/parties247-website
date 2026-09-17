@@ -1,6 +1,6 @@
 import { Party, Carousel, AnalyticsSummary, AnalyticsSummaryParty, DetailedAnalyticsResponse, RecentActivityResponse, RecentActivityFilters, VisitorAnalyticsResponse, AuditLogResponse } from '../data/types';
 import { SeoPageConfig } from '../lib/seoparties';
-import { isBuildPhase, withBuildBudget } from '@/lib/buildBudget';
+import { isBuildPhase, withFetchBudget } from '@/lib/buildBudget';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
   ? `${process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')}/api`
@@ -148,7 +148,7 @@ const mapCarouselToFrontend = (backendCarousel: any): Carousel => {
 
 const getPartiesRaw = async (filters?: SeoPageConfig["apiFilters"], includeHidden = false): Promise<Party[]> => {
   // Use 'upcoming=true' by default, if we also want past parties we need another param
-  const response = await withBuildBudget(
+  const response = await withFetchBudget(
     fetch(`${API_URL}/parties?upcoming=true`, { next: { revalidate: 300 } }),
     'GET /parties'
   );
@@ -219,7 +219,7 @@ const getPartiesRaw = async (filters?: SeoPageConfig["apiFilters"], includeHidde
 // archive (past events are kept in the DB, not deleted) and so getPartyBySlug
 // below can still find an event once its date has passed.
 const getAllPartiesIncludingPastRaw = async (): Promise<Party[]> => {
-  const response = await withBuildBudget(
+  const response = await withFetchBudget(
     fetch(`${API_URL}/parties`, { next: { revalidate: 60 } }),
     'GET /parties (incl. past)'
   );
@@ -394,7 +394,11 @@ export const setDefaultReferral = async (code: string): Promise<void> => {
 };
 
 const getCarouselsRaw = async (): Promise<Carousel[]> => {
-  const response = await withBuildBudget(fetch(`${API_URL}/carousels`), 'GET /carousels');
+  const response = await withFetchBudget(
+    // Cached like the party list: uncached, every on-demand render waited on it.
+    fetch(`${API_URL}/carousels`, { next: { revalidate: 300 } }),
+    'GET /carousels'
+  );
   if (!response.ok) throw new Error('Failed to fetch carousels');
   const data = await response.json();
   return Array.isArray(data) ? data.map(mapCarouselToFrontend) : [];
@@ -682,4 +686,13 @@ const buildSafe = <A extends unknown[], T>(fn: (...args: A) => Promise<T[]>) =>
 
 export const getParties = buildSafe(getPartiesRaw);
 export const getAllPartiesIncludingPast = buildSafe(getAllPartiesIncludingPastRaw);
-export const getCarousels = buildSafe(getCarouselsRaw);
+// Carousels only decorate pages (hot badges, shelves), so they are never allowed
+// to take a page down: any failure, build or runtime, yields an empty list.
+export const getCarousels = async (): Promise<Carousel[]> => {
+  try {
+    return await getCarouselsRaw();
+  } catch (error) {
+    console.warn('carousels unavailable, rendering without them:', (error as Error).message);
+    return [];
+  }
+};

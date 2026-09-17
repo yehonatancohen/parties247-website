@@ -94,7 +94,17 @@ export default async function AllPartiesPage({
   const query = typeof resolvedSearchParams.query === 'string' ? resolvedSearchParams.query : undefined;
   const ai_filter = typeof resolvedSearchParams.ai_filter === 'string' ? resolvedSearchParams.ai_filter : undefined;
 
-  if (!data) return <div className="text-center text-ink p-10">Error loading parties</div>;
+  if (!data) return (
+      <div className="font-apple mx-auto flex min-h-[60vh] max-w-[560px] flex-col items-center justify-center px-4 py-20 text-center text-ink">
+        <h1 className="text-[28px] font-bold sm:text-[36px]">הרשימה לא נטענה כרגע</h1>
+        <p className="mt-3 text-[17px] text-ink-2">שרת המסיבות מתעכב. נסו לרענן בעוד רגע, או התחילו מעמוד הבית.</p>
+        <div className="mt-7 flex flex-wrap items-center justify-center gap-x-7 gap-y-4">
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- full reload is the retry */}
+          <a href="/all-parties" className="rounded-full bg-action px-6 py-3 text-[17px] font-medium text-on-action transition-colors hover:bg-action-hover">לנסות שוב</a>
+          <Link href="/" className="text-[17px] text-link hover:underline underline-offset-4">לעמוד הבית</Link>
+        </div>
+      </div>
+    );
 
   return (
     <>

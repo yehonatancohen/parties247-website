@@ -3,7 +3,7 @@ import HomeLaunch, { HomeHoliday } from '@/components/home/HomeLaunch';
 import { BASE_URL, BRAND_LOGO_URL, SOCIAL_LINKS } from '@/data/constants';
 import { Party } from '@/data/types';
 import { HOLIDAYS, filterPartiesInHolidayWindow, getHolidayWindow, isHolidayApproaching } from '@/lib/holidays';
-import { isBuildPhase, withBuildBudget } from '@/lib/buildBudget';
+import { isBuildPhase, withFetchBudget } from '@/lib/buildBudget';
 
 const HOLIDAY_BANNER_LEAD_DAYS = 30;
 
@@ -48,7 +48,7 @@ async function getData() {
 
   try {
     // In parallel: sequentially these two stacked to 100s+ on a slow backend.
-    const [partiesRes, carouselsRes] = await withBuildBudget(
+    const [partiesRes, carouselsRes] = await withFetchBudget(
       Promise.all([
         fetch(`${apiUrl}/api/parties?upcoming=true`, { next: { revalidate: 60 } }),
         fetch(`${apiUrl}/api/carousels`, { next: { revalidate: 60 } }),
@@ -61,7 +61,7 @@ async function getData() {
       throw new Error(`Backend responded ${partiesRes.status}/${carouselsRes.status}`);
     }
 
-    const [rawParties, carousels]: [Array<Party & { _id: string }>, unknown] = await withBuildBudget(
+    const [rawParties, carousels]: [Array<Party & { _id: string }>, unknown] = await withFetchBudget(
       Promise.all([partiesRes.json(), carouselsRes.json()]),
       'home data body'
     );
