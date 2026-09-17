@@ -62,7 +62,7 @@ verification of SEO output: `curl -s localhost:3000/event/<slug> | grep -o '"sta
 - All visible copy is Hebrew, RTL, casual tone.
 - Visual system (since 2026-09-16): Apple launch-page grammar in a "jungle night" palette —
   use the Tailwind tokens (`stage`, `tile`, `tile-hover`, `tile-raised`, `ink`, `ink-2`, `ink-3`,
-  `hairline`, `action`, `on-action`, `link`) and Heebo; see `PRODUCT.md` / `DESIGN.md`. The old
+  `hairline`, `action`, `on-action`, `link`) and Heebo (the home hero H1 alone is Rubik 800, over a blurred-flyer glow); see `PRODUCT.md` / `DESIGN.md`. The old
   `jungle-*` / `wood-brown` names are aliases kept for legacy markup — don't use them in new code.
   No emoji as icons, no gradient text, no glow shadows. Shared party card: `components/home/LaunchPartyCard.tsx`.
 - Party dates in UI: format via `lib/nights.ts` (wall-clock parsing), never `new Date(naiveString)`.

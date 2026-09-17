@@ -16,11 +16,11 @@ colors:
   link: "#8ddca6"
 typography:
   display:
-    fontFamily: "Heebo, system-ui, sans-serif"
+    fontFamily: "Rubik, system-ui, sans-serif"
     fontSize: "clamp(34px, 10.4vw, 44px)"
-    fontWeight: 700
+    fontWeight: 800
     lineHeight: 1.05
-    letterSpacing: "-0.01em"
+    letterSpacing: "-0.02em"
   headline:
     fontFamily: "Heebo, system-ui, sans-serif"
     fontSize: "28px"
@@ -123,7 +123,7 @@ Density is generous. Sections are separated by a lot of air (80px on mobile, 112
 The system is Hebrew and right-to-left everywhere (`direction: rtl` on body, `color-scheme: dark`). Chevrons point left, and shelves page toward the left.
 
 **Key Characteristics:**
-- One family (Heebo, a variable font via next/font); all headlines are bold (700).
+- Heebo everywhere (a variable font via next/font), with one exception: the home hero H1 is Rubik 800. All other headlines are Heebo bold (700).
 - One filled action color (jungle green) per viewport. Everything else is a chevron text link.
 - Real flyer imagery is the hero, the proof, and the decoration.
 - Pills for actions, 28px stage tiles for sections, 18–22px corners for cards and flyers.
@@ -157,20 +157,20 @@ This is a near-monochrome green-black night. A single luminous jungle green is r
 
 ## Typography
 
-**Display Font:** Heebo (with system-ui, sans-serif)
+**Display Font:** Rubik 800, home hero H1 only (`components/home/heroFont.ts`, loaded on the home page only)
 **Body Font:** Heebo (the same family, loaded once as a variable font through `--font-heebo`)
 
-**Character:** Heebo is used in a single family and set big and bold. It is Hebrew-first and warm, and it reads like launch-page copy, not like a nightlife poster. Hierarchy comes from size and ink level (ink, ink-2, ink-3), never from a second face.
+**Character:** Heebo is used and set big and bold. It is Hebrew-first and warm, and it reads like launch-page copy, not like a nightlife poster. Hierarchy comes from size and ink level (ink, ink-2, ink-3), never from a second face.
 
 ### Hierarchy
-- **Display** (700, clamp(34px, 10.4vw, 44px) → 68px at sm → 92px at lg, line-height 1.05, -0.01em): The home H1 only. It is two-tone: the first line in Moonlit Ink and the second in Deep Fog Ink. Sized so "המסיבה הבאה שלך" holds one line at 360–390px.
+- **Display** (Rubik 800, -0.02em, clamp(34px, 10.4vw, 44px) → 68px at sm → 92px at lg, line-height 1.05, -0.01em): The home H1 only. It is two-tone: the first line in Moonlit Ink and the second in Deep Fog Ink. Sized so "המסיבה הבאה שלך" holds one line at 360–390px.
 - **Headline** (700, 28px → 40px; 32px → 48px for the main section heading; line-height tight): Section headings, centered over their content. Event and listing H1s use 34px → 48px at line-height 1.1. Stage-tile titles run 34px → 56px for the holiday tile and 21px → 40px for category tiles.
 - **Title** (600, 15px → 17px, line-height 1.3): Card titles (line-clamped to 2), FAQ questions, and event fact lines. 21–24px bold for headings inside tiles.
 - **Body** (400, 17px, line-height 1.75, Fog Ink): Long SEO prose, max 760px wide. Lead copy under the H1 is 18px → 23px at line-height 1.45, max 680px.
 - **Label** (500, 12–13px): Card date and venue meta, counts, footer text (12px, line-height 1.35), and the 13px desktop nav. Figures use `tabular-nums`.
 
 ### Named Rules
-**The One Family Rule.** Heebo is the only face. `font-display`, `font-sans` and `font-apple` all resolve to the same stack. Don't add a display face for emphasis.
+**The Two Faces Rule.** Heebo is the site's face; `font-display`, `font-sans` and `font-apple` all resolve to it. The only other face is Rubik 800 on the home hero H1 (chosen by the owner 2026-09-17). Don't add a third face or spread Rubik to other headings without asking.
 
 **The Bold Headline Rule.** Headlines ship at 700, not semibold. Heebo's Hebrew semibold reads thin on black at display sizes.
 
@@ -205,7 +205,7 @@ This is a hybrid system. Surfaces are flat, tonal layers (stage → tile → til
 ### Named Rules
 **The Black Shadow Rule.** Shadows are soft, diffuse and pure black, and they sit only under imagery or floating chrome. No colored shadows, no glows, no hard offset shadows.
 
-**The Light Not Paint Rule.** Gradients appear only as light (the hero top-light), as a scrim (a black-to-transparent caption fade on flyers) or as a mask (the wall's edge fade). Never use them as a surface fill or on text.
+**The Light Not Paint Rule.** Gradients and blur appear only as light (the hero top-light, and the hero flyer glow: the first three wall flyers blurred 56–64px at 55% opacity behind a dark scrim, `components/home/HeroGlow.tsx`), as a scrim (a black-to-transparent caption fade on flyers) or as a mask (the wall's edge fade). Never use them as a surface fill or on text.
 
 ## Shapes
 
@@ -258,7 +258,7 @@ Skeletons shaped like the listing page (pills and 18px squares) on tile. A faint
 ### Do:
 - **Do** use the token names (stage, tile, tile-hover, tile-raised, ink, ink-2, ink-3, hairline, action, action-hover, on-action, link) in all new markup.
 - **Do** keep a single filled Jungle Green pill per viewport, and make every other action a Moss Link chevron link.
-- **Do** set headlines in Heebo 700, centered, with at least 80px of air between sections (112px from sm).
+- **Do** set headlines in Heebo 700 (the home hero H1 is Rubik 800), centered, with at least 80px of air between sections (112px from sm).
 - **Do** let real flyers carry the color: square, 16–22px corners, on a tile placeholder.
 - **Do** animate only transform and opacity on cubic-bezier(0.28, 0.11, 0.32, 1), and give every looping or entrance animation a prefers-reduced-motion fallback.
 - **Do** use LaunchPartyCard for every party listing, and put account1 parties first within a night, never out of date order.

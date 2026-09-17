@@ -5,6 +5,8 @@ import { InstagramIcon, TikTokIcon, WhatsAppIcon } from '@/components/Icons';
 import { currentNight, isInRange, NightRange, rangeNights } from '@/lib/nights';
 import FlyerFan from './FlyerFan';
 import FlyerWall from './FlyerWall';
+import HeroGlow from './HeroGlow';
+import { heroFont } from './heroFont';
 import LaunchPartyCard from './LaunchPartyCard';
 import NightPicker, { NightPanel } from './NightPicker';
 import ShelfRow from './ShelfRow';
@@ -144,8 +146,9 @@ export default function HomeLaunch({ parties, carousels, holiday }: HomeLaunchPr
       {/* ─── Hero stage ─── */}
       <section className="relative overflow-hidden pb-14 pt-10 sm:pb-24 sm:pt-20">
         <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(ellipse_55%_60%_at_50%_0%,rgba(118,200,147,0.17),transparent_72%)]" />
+        <HeroGlow parties={wallParties} />
         <div className={`${CONTAINER} relative text-center`}>
-          <h1 className="text-balance text-[clamp(34px,10.4vw,44px)] font-bold leading-[1.05] tracking-[-0.01em] sm:text-[68px] lg:text-[92px]">
+          <h1 className={`${heroFont.className} text-balance text-[clamp(34px,10.4vw,44px)] font-extrabold leading-[1.05] tracking-[-0.02em] sm:text-[68px] lg:text-[92px]`}>
             <span className="block text-ink">המסיבה הבאה שלך</span>
             <span className="block text-ink-3">מתחילה כאן.</span>
           </h1>
