@@ -1,6 +1,7 @@
 import { recordPartyRedirect, recordPartyView, recordVisitor } from '../services/api';
 import { pushToDataLayer } from './gtm';
 import { captureWaCodeFromUrl, readWaAttribution, type WaAttribution } from './waAttribution';
+import { captureFirstTouch, readFirstTouch } from './firstTouch';
 
 export const COOKIE_CONSENT_KEY = 'cookieConsent_v2';
 export const ANALYTICS_CONSENT_EVENT = 'analytics:consentGranted';
@@ -207,6 +208,26 @@ const LEGACY_WA_CODE_SESSION_KEY = 'parties247.wa.code';
 const captureWaCode = (): void => {
   if (typeof window === 'undefined') return;
   captureWaCodeFromUrl(window.location.search, window.localStorage);
+  captureFirstTouch(
+    window.location.search,
+    window.location.pathname,
+    document.referrer || undefined,
+    window.localStorage,
+  );
+};
+
+/** First-touch fields spread onto view/redirect beacons. Empty when unavailable. */
+const getFirstTouchFields = () => {
+  if (typeof window === 'undefined') return {};
+  const touch = readFirstTouch(window.localStorage);
+  if (!touch) return {};
+  return {
+    firstSource: touch.source,
+    firstMedium: touch.medium,
+    firstCampaign: touch.campaign,
+    firstReferrerHost: touch.referrerHost,
+    landingPath: touch.landingPath,
+  };
 };
 
 const getWaAttribution = (): WaAttribution | undefined => {
@@ -265,6 +286,7 @@ export const trackPartyRedirect = (partyId: string, partySlug: string): boolean 
     partyId, partySlug, sessionId, referrer,
     waCode: waAttribution?.code,
     waFirstSeenAt: waAttribution?.firstSeenAt || undefined,
+    ...getFirstTouchFields(),
   }).catch((error) => {
     console.debug('Failed to record party redirect', error);
   });
@@ -288,6 +310,7 @@ export const trackPartyView = (partyId: string, partySlug: string): boolean => {
     partyId, partySlug, sessionId, referrer,
     waCode: waAttribution?.code,
     waFirstSeenAt: waAttribution?.firstSeenAt || undefined,
+    ...getFirstTouchFields(),
   }).catch((error) => {
     console.debug('Failed to record party view', error);
   });

@@ -41,6 +41,14 @@ type PartyAnalyticsPayload = {
   waCode?: string;
   // When that code was first captured (ISO string), for recency weighting.
   waFirstSeenAt?: string;
+  // Original acquisition touch (30d, localStorage) — see lib/firstTouch.ts.
+  // Lets a click-out be attributed to Google/Instagram/etc. rather than to
+  // whichever of our own pages the visitor happened to be on.
+  firstSource?: string;
+  firstMedium?: string;
+  firstCampaign?: string;
+  firstReferrerHost?: string;
+  landingPath?: string;
 };
 
 const mapPartyToFrontend = (backendParty: any): Party => {
