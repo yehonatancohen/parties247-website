@@ -25,15 +25,25 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 // Main Page Component
-export default async function SpecificPartyPage({ params }: { params: { slug: string } }) {
+export default async function SpecificPartyPage({
+  params,
+  searchParams,
+}: {
+  params: { slug: string };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   const { slug } = await params;
-  
+  const resolvedSearchParams = await searchParams;
+
   // 1. Find the configuration for this page
   const config = SPECIFIC_PARTIES_PAGES.find((p) => p.slug === slug);
-  
+
   if (!config) {
     notFound();
   }
+
+  const pageParam = typeof resolvedSearchParams.page === 'string' ? parseInt(resolvedSearchParams.page, 10) : 1;
+  const currentPage = Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1;
 
   // 2. Fetch Data (Parties filtered by the config, and Carousels for "Hot Now")
   const [parties, carousels] = await Promise.all([
@@ -82,7 +92,9 @@ export default async function SpecificPartyPage({ params }: { params: { slug: st
         showSearch={false}
         title={config.title}
         description={config.description}
-        basePath={`/parties/find/${slug}`}
+        basePath={`/parties/${slug}`}
+        currentPage={currentPage}
+        paginationMode="query"
         syncNavigation
       />
 

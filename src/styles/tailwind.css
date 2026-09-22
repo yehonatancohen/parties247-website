@@ -122,7 +122,9 @@
   .wall-row:hover .animate-wall,
   .wall-row:hover .animate-wall-reverse,
   .wall-row:focus-within .animate-wall,
-  .wall-row:focus-within .animate-wall-reverse {
+  .wall-row:focus-within .animate-wall-reverse,
+  .wall-row:active .animate-wall,
+  .wall-row:active .animate-wall-reverse {
     animation-play-state: paused;
   }
 

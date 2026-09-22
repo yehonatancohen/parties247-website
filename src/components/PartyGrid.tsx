@@ -25,6 +25,14 @@ interface PartyGridProps {
   aiFilterIds?: string[];
   aiQuery?: string;
   topSection?: React.ReactNode;
+  /**
+   * How page 2+ links are built. 'path' (default) uses `${basePath}/page-num/N` —
+   * only correct when that nested route actually exists (currently just
+   * /all-parties and /archive). Every other basePath has no such route, so
+   * pass 'query' there to paginate via `?page=N` on the same route instead —
+   * otherwise "next page" 404s into the [...path] catch-all.
+   */
+  paginationMode?: 'path' | 'query';
 }
 
 export default function PartyGrid({
@@ -42,6 +50,7 @@ export default function PartyGrid({
   aiFilterIds,
   aiQuery,
   topSection,
+  paginationMode = 'path',
 }: PartyGridProps) {
 
   const searchTerm = typeof searchParams.query === 'string' ? searchParams.query : '';
@@ -112,8 +121,16 @@ export default function PartyGrid({
   // Helper to generate pagination links while keeping current search params
   const createPageLink = (page: number) => {
     const params = new URLSearchParams(searchParams as Record<string, string>);
-    // If you use query params for pages: params.set('page', page.toString());
-    // If you use path based pages (/page/2), we handle it in the return string:
+
+    if (paginationMode === 'query') {
+      if (page > 1) {
+        params.set('page', String(page));
+      } else {
+        params.delete('page');
+      }
+      const queryString = params.toString() ? `?${params.toString()}` : '';
+      return `${basePath}${queryString}`;
+    }
 
     // Construct Query String (query=techno&region=center...)
     const queryString = params.toString() ? `?${params.toString()}` : '';

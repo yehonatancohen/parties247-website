@@ -120,9 +120,18 @@ export async function generateMetadata({ params }: { params: { city: string } })
   };
 }
 
-export default async function CityPage({ params }: { params: { city: string } }) {
+export default async function CityPage({
+  params,
+  searchParams,
+}: {
+  params: { city: string };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   const { city } = await params;
+  const resolvedSearchParams = await searchParams;
   const citySlug = decodeURIComponent(city);
+  const pageParam = typeof resolvedSearchParams.page === 'string' ? parseInt(resolvedSearchParams.page, 10) : 1;
+  const currentPage = Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1;
 
   const displayCityName = getCityDisplayName(citySlug);
 
@@ -197,6 +206,8 @@ export default async function CityPage({ params }: { params: { city: string } })
         title={`מסיבות ב${displayCityName}`}
         description="כל האירועים הקרובים בעיר שאתם אוהבים."
         basePath={`/cities/${citySlug}`}
+        currentPage={currentPage}
+        paginationMode="query"
         syncNavigation
       />
 

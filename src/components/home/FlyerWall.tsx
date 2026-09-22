@@ -42,7 +42,13 @@ function FlyerSet({ parties, duplicate, sizes }: { parties: Party[]; duplicate: 
 
 function WallRow({ parties, reverse, duration, sizes }: { parties: Party[]; reverse?: boolean; duration: string; sizes: string }) {
   return (
-    <div className="wall-row overflow-hidden motion-reduce:no-scrollbar motion-reduce:overflow-x-auto">
+    // Auto-drifts via the CSS transform animation on the inner track, but the
+    // row itself stays a real native horizontal scroller (no-scrollbar just
+    // hides the bar) — so a drag/swipe/wheel always overrides the animation
+    // immediately, same as any other horizontal list on the site. Previously
+    // this was overflow-hidden outside of prefers-reduced-motion, so touch and
+    // mouse users had no way to stop or skip the rotation at all.
+    <div className="wall-row no-scrollbar overflow-x-auto [touch-action:pan-x]">
       <div
         className={`flex w-max ${reverse ? 'animate-wall-reverse' : 'animate-wall'}`}
         style={{ ['--wall-duration' as string]: duration }}

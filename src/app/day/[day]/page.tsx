@@ -109,8 +109,15 @@ export async function generateMetadata({ params }: { params: { day: string } }):
   };
 }
 
-export default async function DayPartiesPage({ params }: { params: { day: string } }) {
+export default async function DayPartiesPage({
+  params,
+  searchParams,
+}: {
+  params: { day: string };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   const { day } = await params;
+  const resolvedSearchParams = await searchParams;
   const today = new Date();
   const normalizedToday = today.toISOString().slice(0, 10);
   const dayConfigs = getDayConfig(normalizedToday, today.getDay());
@@ -118,6 +125,9 @@ export default async function DayPartiesPage({ params }: { params: { day: string
   if (!config) {
     notFound();
   }
+
+  const pageParam = typeof resolvedSearchParams.page === 'string' ? parseInt(resolvedSearchParams.page, 10) : 1;
+  const currentPage = Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1;
 
   const [parties, carousels] = await Promise.all([
     getParties(),
@@ -165,6 +175,8 @@ export default async function DayPartiesPage({ params }: { params: { day: string
         title={config.title}
         description={config.description}
         basePath={config.basePath}
+        currentPage={currentPage}
+        paginationMode="query"
         syncNavigation
       />
 

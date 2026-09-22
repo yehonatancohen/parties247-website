@@ -1,7 +1,7 @@
 // src/app/events/[slug]/PurchaseButton.tsx
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { trackPartyRedirect, trackBuyClickWithCoupon, trackWhatsappClick } from "@/lib/analytics";
 import { trackPurchaseButtonClick } from "@/lib/gtm";
 import { COUPON_CODE } from "@/data/constants";
@@ -31,6 +31,20 @@ export default function PurchaseButton({
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const [couponCopied, setCouponCopied] = useState(false);
+
+  // `window.location.href = href` navigates the same tab to GoOut, so hitting the
+  // browser's back button afterwards restores this page from bfcache — with
+  // `isLoading` still frozen `true` from right before the navigation. Without this,
+  // the "מעביר אותך ל-Go-Out" overlay is stuck on screen forever after going back.
+  useEffect(() => {
+    const handlePageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) {
+        setIsLoading(false);
+      }
+    };
+    window.addEventListener("pageshow", handlePageShow);
+    return () => window.removeEventListener("pageshow", handlePageShow);
+  }, []);
 
   if (soldOut) {
     return (
