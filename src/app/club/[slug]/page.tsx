@@ -34,13 +34,23 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function ClubPage({ params }: { params: { slug: string } }) {
+export default async function ClubPage({
+  params,
+  searchParams,
+}: {
+  params: { slug: string };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   const slug = decodeURIComponent((await params).slug);
+  const resolvedSearchParams = await searchParams;
   const config = findTaxonomyConfig(`/club/${slug}`);
 
   if (!config) {
     notFound();
   }
+
+  const pageParam = typeof resolvedSearchParams.page === 'string' ? parseInt(resolvedSearchParams.page, 10) : 1;
+  const currentPage = Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1;
 
   const [parties, carousels] = await Promise.all([
     getParties(),
@@ -157,6 +167,8 @@ export default async function ClubPage({ params }: { params: { slug: string } })
         title={config?.title || `מועדון ${config?.label || slug}`}
         description={config?.description || "כל האירועים הקרובים במועדון."}
         basePath={config?.path || `/club/${slug}`}
+        currentPage={currentPage}
+        paginationMode="query"
         syncNavigation
       />
 

@@ -122,12 +122,22 @@ export async function generateMetadata({ params }: { params: { audience: Audienc
   };
 }
 
-export default async function AudiencePage({ params }: { params: { audience: AudienceKey } }) {
+export default async function AudiencePage({
+  params,
+  searchParams,
+}: {
+  params: { audience: AudienceKey };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   const { audience } = await params;
+  const resolvedSearchParams = await searchParams;
   const config = audienceConfig[audience];
   if (!config) {
     notFound();
   }
+
+  const pageParam = typeof resolvedSearchParams.page === 'string' ? parseInt(resolvedSearchParams.page, 10) : 1;
+  const currentPage = Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1;
 
   const [parties, carousels] = await Promise.all([
     getParties(),
@@ -186,6 +196,8 @@ export default async function AudiencePage({ params }: { params: { audience: Aud
         title={config.title}
         description={config.description}
         basePath={config.basePath}
+        currentPage={currentPage}
+        paginationMode="query"
         syncNavigation
       />
 

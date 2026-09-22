@@ -169,12 +169,22 @@ export async function generateMetadata({ params }: { params: { genre: GenreKey }
   };
 }
 
-export default async function GenrePage({ params }: { params: { genre: GenreKey } }) {
+export default async function GenrePage({
+  params,
+  searchParams,
+}: {
+  params: { genre: GenreKey };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   const { genre } = await params;
+  const resolvedSearchParams = await searchParams;
   const config = genreConfig[genre];
   if (!config) {
     notFound();
   }
+
+  const pageParam = typeof resolvedSearchParams.page === 'string' ? parseInt(resolvedSearchParams.page, 10) : 1;
+  const currentPage = Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1;
 
   const [parties, carousels] = await Promise.all([
     getParties(),
@@ -233,6 +243,8 @@ export default async function GenrePage({ params }: { params: { genre: GenreKey 
         title={config.title}
         description={config.description}
         basePath={config.basePath}
+        currentPage={currentPage}
+        paginationMode="query"
         syncNavigation
       />
 

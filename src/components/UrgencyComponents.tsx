@@ -31,6 +31,20 @@ export function StickyPurchaseBar({
     const [isLoading, setIsLoading] = useState(false);
     const [couponCopied, setCouponCopied] = useState(false);
 
+    // `window.location.href = href` navigates the same tab to GoOut, so hitting the
+    // browser's back button afterwards restores this page from bfcache — with
+    // `isLoading` still frozen `true` from right before the navigation. Without this,
+    // the "מעביר אותך ל-Go-Out" overlay is stuck on screen forever after going back.
+    useEffect(() => {
+        const handlePageShow = (event: PageTransitionEvent) => {
+            if (event.persisted) {
+                setIsLoading(false);
+            }
+        };
+        window.addEventListener("pageshow", handlePageShow);
+        return () => window.removeEventListener("pageshow", handlePageShow);
+    }, []);
+
     useEffect(() => {
         // If no trigger ID, fall back to scroll position
         if (!triggerId) {
