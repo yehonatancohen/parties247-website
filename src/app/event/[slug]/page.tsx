@@ -1,5 +1,6 @@
 import { Metadata, ResolvingMetadata } from "next";
 import Link from "next/link";
+import { cleanPartyDescription, PURCHASE_ANCHOR_ID } from "@/lib/partyDescription";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getPartyBySlug, getParties } from "@/services/api";
@@ -162,7 +163,7 @@ export async function generateMetadata(
   if (!data?.party) return { title: "אירוע לא נמצא" };
   const { party } = data;
   const ogImage = getWhatsappOgImage(party.imageUrl);
-  const plainDescription = party.description.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  const plainDescription = cleanPartyDescription(party.description, 'strip').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 
   const eventDate = new Date(party.date);
   const heDate = new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'long', timeZone: 'Asia/Jerusalem' }).format(eventDate);
@@ -234,7 +235,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
   const whatsappHref = `https://wa.me/?text=${whatsappMessage}`;
   const showDiscountCode = isCouponEligible(party.referralCode);
 
-  const plainDescriptionForLd = party.description.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  const plainDescriptionForLd = cleanPartyDescription(party.description, 'strip').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 
   const eventJsonLd: Record<string, unknown> = {
     '@context': 'https://schema.org',
@@ -410,7 +411,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
             </div>
 
             {/* ═══ Main call to action ═══ */}
-            <div className="mt-6 rounded-[28px] transition-shadow duration-300" id="main-purchase-button">
+            <div className="mt-6 rounded-[28px] transition-shadow duration-300" id={PURCHASE_ANCHOR_ID}>
               {party.soldOut ? (
                 <p className="mb-4 text-[21px] font-semibold text-ink-2">הכרטיסים אזלו</p>
               ) : party.ticketPrice ? (
@@ -462,7 +463,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
               <h2 className="mb-4 text-[24px] font-bold">על האירוע</h2>
               <div
                 className="text-[17px] leading-[1.75] text-ink-2 [&_h2]:mb-3 [&_h2]:mt-6 [&_h2]:text-[21px] [&_h2]:font-bold [&_h2]:text-ink [&_h2:first-child]:mt-0 [&_h3]:mb-2 [&_h3]:mt-4 [&_h3]:text-[19px] [&_h3]:font-bold [&_h3]:text-ink [&_h3:first-child]:mt-0 [&_p]:mb-3 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-none [&_ul]:space-y-1.5 [&_li]:font-medium [&_li]:text-ink"
-                dangerouslySetInnerHTML={{ __html: party.description }}
+                dangerouslySetInnerHTML={{ __html: cleanPartyDescription(party.description, party.soldOut ? 'strip' : 'purchase-link') }}
               />
             </section>
           )}

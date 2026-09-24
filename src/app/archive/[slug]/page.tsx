@@ -1,5 +1,6 @@
 import { Metadata, ResolvingMetadata } from "next";
 import Link from "next/link";
+import { cleanPartyDescription } from "@/lib/partyDescription";
 import Image from "next/image";
 import RelatedPartyCard from "@/components/RelatedPartyCard";
 import { notFound } from "next/navigation";
@@ -69,7 +70,7 @@ export async function generateMetadata(
   if (!data?.party) return { title: "אירוע לא נמצא" };
   const { party } = data;
   const ogImage = party.imageUrl || BRAND_LOGO_URL;
-  const plainDescription = party.description.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  const plainDescription = cleanPartyDescription(party.description, 'strip').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 
   const eventDate = new Date(party.date);
   const heDate = new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Jerusalem' }).format(eventDate);
@@ -112,7 +113,7 @@ export default async function ArchivedEventPage({ params }: { params: Promise<{ 
   const formattedDate = new Intl.DateTimeFormat('he-IL', { dateStyle: 'full', timeZone: 'UTC' }).format(partyDate);
   const formattedTime = new Intl.DateTimeFormat('he-IL', { timeStyle: 'short', timeZone: 'UTC' }).format(partyDate);
 
-  const plainDescriptionForLd = party.description.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  const plainDescriptionForLd = cleanPartyDescription(party.description, 'strip').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 
   // Standard Event schema with the real (past) date — schema.org has no
   // "EventCompleted" status, and Google's own guidance is that rich results
@@ -251,7 +252,7 @@ export default async function ArchivedEventPage({ params }: { params: Promise<{ 
             <h2 className="text-[19px] font-bold text-ink mb-4">על האירוע</h2>
             <div
               className="text-ink-2 leading-relaxed [&_h2]:text-ink [&_h2]:font-bold [&_h2]:text-[21px] [&_h2]:tracking-tight [&_h2]:mb-3 [&_h2]:mt-6 [&_h2:first-child]:mt-0 [&_h3]:text-ink [&_h3]:font-bold [&_h3]:text-[19px] [&_h3]:tracking-tight [&_h3]:mb-2 [&_h3]:mt-4 [&_h3:first-child]:mt-0 [&_p]:mb-3 [&_p:last-child]:mb-0"
-              dangerouslySetInnerHTML={{ __html: party.description }}
+              dangerouslySetInnerHTML={{ __html: cleanPartyDescription(party.description, 'strip') }}
             />
           </div>
         )}
