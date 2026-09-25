@@ -41,11 +41,16 @@ async function getData() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { year } = getHolidayWindow(DEF);
+  const { year, end } = getHolidayWindow(DEF);
+  // trailDays is 0, so `end` is Halloween night itself. Noon UTC + timeZone UTC
+  // keeps the formatted day stable regardless of the server's TZ.
+  const night = new Date(`${end}T12:00:00Z`);
+  const weekday = night.toLocaleDateString('he-IL', { weekday: 'long', timeZone: 'UTC' });
+  const dayMonth = night.toLocaleDateString('he-IL', { day: 'numeric', month: 'long', timeZone: 'UTC' });
   return {
     title: `מסיבות האלווין ${year} | Halloween Parties - Parties24/7`,
-    description: `כל מסיבות האלווין ${year} במקום אחד! נשפי תחפושות, רייבים ומסיבות טכנו תמטיות לליל כל הקדושים בתל אביב ובכל הארץ. כרטיסים ועדכונים בזמן אמת.`,
-    keywords: ['מסיבות האלווין', `האלווין ${year}`, 'Halloween party israel', 'מסיבות תחפושות', 'מסיבות האלווין תל אביב'],
+    description: `האלווין ${year} (הלוואין) חל ב${weekday}, ${dayMonth}. כל מסיבות האלווין במקום אחד: נשפי תחפושות, רייבים ומסיבות טכנו תמטיות בתל אביב ובכל הארץ, עם כרטיסים ועדכונים בזמן אמת.`,
+    keywords: ['מסיבות האלווין', `האלווין ${year}`, `הלוואין ${year}`, 'Halloween party israel', 'מסיבות תחפושות', 'מסיבות האלווין תל אביב'],
     alternates: { canonical: '/halloween' },
     openGraph: {
       title: `מסיבות האלווין ${year} | Parties24/7`,
