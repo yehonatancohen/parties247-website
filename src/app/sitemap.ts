@@ -5,8 +5,10 @@ import { articles } from '@/data/articles';
 import { SPECIFIC_PARTIES_PAGES } from '@/lib/seoparties';
 import { CITIES_WITH_INVENTORY } from '@/lib/internalLinks';
 import { withFetchBudget } from '@/lib/buildBudget';
+import { ARTISTS } from '@/data/artists';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://parties247-backend.onrender.com/api';
+const apiBase = (process.env.NEXT_PUBLIC_API_URL || 'https://parties247-backend.onrender.com').replace(/\/$/, '');
+const API_URL = apiBase.endsWith('/api') ? apiBase : `${apiBase}/api`;
 
 interface BackendEvent {
   slug?: string;
@@ -41,6 +43,9 @@ const staticPages: MetadataRoute.Sitemap = [
 // Evergreen taxonomy — only routes that exist AND are indexable. City pages are
 // gated to the ones with real event inventory (the rest are noindex,follow).
 const evergreenPaths = [
+  '/djs',
+  ...ARTISTS.map(artist => `/dj/${artist.slug}`),
+  '/genre/hip-hop-music',
   ...CITIES_WITH_INVENTORY.map((c) => `/cities/${c}`),
 
   '/genre/techno-music',

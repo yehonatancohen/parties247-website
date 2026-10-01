@@ -41,6 +41,11 @@ const nextConfig = {
   async redirects() {
     return [
       {
+        source: encodeURI('/זאנרים/היפ-הופ'),
+        destination: '/genre/hip-hop-music',
+        permanent: true,
+      },
+      {
         source: '/jimmy-who',
         destination: '/club/jimmy-who',
         permanent: true,

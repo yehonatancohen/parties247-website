@@ -22,6 +22,7 @@ import { toIsraelISO } from "@/lib/dates";
 import { formatLongDate, formatTime } from "@/lib/nights";
 import { venueOf } from "@/components/home/homeData";
 import { HOLIDAYS, getHolidayWindow } from "@/lib/holidays";
+import { ARTISTS, matchesArtist } from '@/data/artists';
 
 export const revalidate = 60;
 
@@ -537,6 +538,16 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
         </div>
 
         {/* ═══ Related parties ═══ */}
+        {ARTISTS.some(artist => matchesArtist(party, artist)) && (
+          <nav aria-label="עוד מסיבות עם האמנים בליינאפ" className="mt-12 border-t border-hairline pt-6">
+            <h2 className="text-xl font-bold mb-4">עוד מסיבות עם האמנים בליינאפ</h2>
+            <div className="flex flex-wrap gap-2">
+              {ARTISTS.filter(artist => matchesArtist(party, artist)).map(artist => (
+                <Link key={artist.slug} href={`/dj/${artist.slug}`} className="rounded-full border border-hairline px-4 py-2 text-link hover:bg-tile">{artist.name}</Link>
+              ))}
+            </div>
+          </nav>
+        )}
         {relatedParties.length > 0 && (
           <section className="mt-20 sm:mt-28">
             <h2 className="mb-8 text-center text-[28px] font-bold sm:text-[40px]">מסיבות דומות שאולי תאהבו</h2>

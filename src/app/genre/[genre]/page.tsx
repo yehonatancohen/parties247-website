@@ -5,17 +5,30 @@ import ExploreMoreLinks from "@/components/ExploreMoreLinks";
 import { findHotNowCarousel } from "@/lib/carousels";
 import { getCarousels, getParties } from "@/services/api";
 import { BASE_URL } from "@/data/constants";
+import type { Party } from '@/data/types';
+import { isHipHopParty } from '@/lib/musicDiscovery';
 
 export const revalidate = 300;
 
-type GenreKey = "techno-music" | "house-music" | "mainstream-music" | "trance-music" | "rave-parties";
+type GenreKey = "hip-hop-music" | "techno-music" | "house-music" | "mainstream-music" | "trance-music" | "rave-parties";
 
 type Faq = { question: string; answer: string };
 
 const genreConfig: Record<
   GenreKey,
-  { title: string; description: string; filter: (party: any) => boolean; basePath: string; body: string; faqs: Faq[] }
+  { title: string; description: string; filter: (party: Party) => boolean; basePath: string; body: string; faqs: Faq[] }
 > = {
+  "hip-hop-music": {
+    title: 'מסיבות היפ־הופ בישראל',
+    description: 'מסיבות היפ־הופ קרובות בישראל: אירועים וליינים שמציינים היפ־הופ, עם תאריכים, מיקומים וקישורים לכרטיסים.',
+    filter: isHipHopParty,
+    basePath: '/genre/hip-hop-music',
+    body: 'מחפשים ערב עם היפ־הופ? כאן מרוכזים אירועים שהיפ־הופ מוזכר בשם, בתיאור או בסגנונות המוזיקה שלהם. הרשימה כוללת גם מסיבות עם כמה רחבות, שבהן היפ־הופ הוא חלק מהליינאפ.\n\nלפני שבוחרים כרטיס, בדקו בעמוד האירוע איזו רחבה מנגנת היפ־הופ, מי מופיע ומהם גיל הכניסה ושעות הפתיחה. פרטי האירועים מתעדכנים יחד עם הרשימה באתר.',
+    faqs: [
+      { question: 'איך נבחרות המסיבות בעמוד ההיפ־הופ?', answer: 'מוצגים אירועים שמציינים היפ־הופ בפרטים שפורסמו. גם אירוע שמשלב היפ־הופ לצד סגנונות אחרים יכול להופיע כאן.' },
+      { question: 'האם כל הרחבות במסיבה מנגנות היפ־הופ?', answer: 'לא בהכרח. באירוע עם כמה רחבות כדאי לבדוק את פירוט המוזיקה והליינאפ בעמוד האירוע ובאתר הכרטיסים.' },
+    ],
+  },
   "techno-music": {
     title: "מסיבות טכנו ורייבים",
     description: "רייבים ומסיבות טכנו בתל אביב וכל הארץ: ליינים מחתרתיים, כרטיסים מוקדמים וסטים שמחזיקים עד הבוקר. מתעדכן בזמן אמת.",

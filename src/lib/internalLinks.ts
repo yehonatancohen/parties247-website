@@ -94,6 +94,7 @@ export const GENRE_HE_LABEL: Record<string, string> = {
   "house-music": "מסיבות האוס",
   "mainstream-music": "מסיבות מיינסטרים",
   "trance-music": "מסיבות טראנס",
+  "hip-hop-music": "מסיבות היפ־הופ",
 };
 
 // ---- Audience --------------------------------------------------------------
@@ -132,6 +133,8 @@ const GENRE_LINK = (slug: string): CrossLink => ({
 
 // Owners that always render inventory — safe universal link targets.
 const CORE_GENRES: CrossLink[] = [
+  GENRE_LINK("hip-hop-music"),
+  GENRE_LINK("house-music"),
   GENRE_LINK("mainstream-music"),
   GENRE_LINK("techno-music"),
   GENRE_LINK("rave-parties"),

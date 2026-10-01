@@ -4,6 +4,7 @@ import Image from 'next/image';
 import PartyGrid from '@/components/PartyGrid';
 import * as api from '@/services/api';
 import { findHotNowCarousel } from '@/lib/carousels';
+import HolidayLinks from '@/components/HolidayLinks';
 
 // Parties happening between now and the end of the coming Saturday (Israel weekend).
 function getWeekendParties(parties: { date: string }[]) {
@@ -110,6 +111,7 @@ export default async function AllPartiesPage({
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
       <div className="space-y-10">
+        <section className="mx-auto w-full max-w-4xl px-4 pt-6"><HolidayLinks /></section>
         <section className="container mx-auto max-w-4xl px-4 pt-10 text-center">
           <h1 className="text-[34px] font-bold leading-tight text-ink sm:text-[48px] mb-4">כל המסיבות בישראל</h1>
           <p className="text-lg text-ink-2 leading-relaxed max-w-2xl mx-auto">

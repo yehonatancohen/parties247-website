@@ -7,6 +7,10 @@ import AllPartiesAISearch from '@/components/AllPartiesAISearch';
 import FlyerFan from '@/components/home/FlyerFan';
 import { buildShelves, sortForDisplay } from '@/components/home/homeData';
 import { currentNight, isInRange, nightOf, rangeNights, weekdayOf } from '@/lib/nights';
+import { isHipHopParty } from '@/lib/musicDiscovery';
+import { ARTISTS, matchesArtist } from '@/data/artists';
+import { groupArtistEvents } from '@/lib/artistEvents';
+import HolidayLinks from '@/components/HolidayLinks';
 
 export const revalidate = 300;
 
@@ -120,6 +124,8 @@ export default async function PartyDiscoveryPage() {
   ];
 
   const styles = [
+    { href: '/genre/hip-hop-music', title: 'היפ־הופ', parties: upcoming.filter(isHipHopParty) },
+    { href: '/genre/rave-parties', title: 'רייבים', parties: upcoming.filter(p => p.musicType === 'טכנו' || p.musicType === 'טראנס') },
     { href: '/genre/mainstream-music', title: 'מיינסטרים', parties: ofMusic('מיינסטרים') },
     { href: '/genre/techno-music', title: 'טכנו', parties: ofMusic('טכנו') },
     { href: '/genre/trance-music', title: 'טראנס', parties: ofMusic('טראנס') },
@@ -180,6 +186,8 @@ export default async function PartyDiscoveryPage() {
               { label: 'סגנונות', hash: '#styles' },
               { label: 'קהלים', hash: '#audiences' },
               { label: 'מועדונים', hash: '#clubs' },
+              { label: 'די־ג׳ייז', hash: '#artists' },
+              { label: 'חגים ומועדים', hash: '#holidays' },
             ].map((item) => (
               <a key={item.hash} href={item.hash} className="text-link hover:underline underline-offset-4">
                 {item.label}
@@ -190,6 +198,9 @@ export default async function PartyDiscoveryPage() {
       </section>
 
       <div className={CONTAINER}>
+        <Section id="holidays" title="חגים ומועדים">
+          <HolidayLinks showHeading={false} />
+        </Section>
         <Section id="nights" title="מתי יוצאים?">
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
             {nightTiles.map((tile) => (
@@ -222,6 +233,11 @@ export default async function PartyDiscoveryPage() {
             <ListRows items={clubs} />
           </Section>
         </div>
+
+        <Section id="artists" title="לפי הדי־ג׳יי">
+          <ListRows items={ARTISTS.map(artist => ({ href: `/dj/${artist.slug}`, title: `${artist.name} · ${artist.stageName}`, blurb: 'מסיבות עם האמן בליינאפ', count: groupArtistEvents(upcoming.filter(p => matchesArtist(p, artist))).length }))} />
+          <Link href="/djs" className="mt-5 inline-block text-link hover:underline">לכל הדי־ג׳ייז והאמנים</Link>
+        </Section>
 
         {collections.length > 0 && (
           <Section id="collections" title="אוספים נבחרים">
