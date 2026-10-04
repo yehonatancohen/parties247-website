@@ -115,15 +115,15 @@ export default function HolidayPage({
                 ללוח המסיבות
               </a>
               {parties.length > 0 && (
-                <span className="text-[15px] text-ink-3">
+                <a href="#parties" className="text-[15px] text-ink-3 transition-colors hover:text-ink-2">
                   <span className="tabular-nums">{parties.length}</span> מסיבות ב{def.hebrewName} {window.year}
-                </span>
+                </a>
               )}
             </div>
           </div>
           {heroFlyers.length >= 3 ? (
             <div className="relative mt-12 sm:mt-16">
-              <FlyerFan parties={heroFlyers} size="lg" />
+              <FlyerFan parties={heroFlyers} size="lg" linked />
             </div>
           ) : heroImage ? (
             <div className="relative mx-auto mt-12 aspect-[16/9] max-w-[900px] overflow-hidden rounded-[28px] px-4 sm:px-6">
