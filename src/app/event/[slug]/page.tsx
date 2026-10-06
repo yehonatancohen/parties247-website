@@ -23,6 +23,7 @@ import { formatLongDate, formatTime } from "@/lib/nights";
 import { venueOf } from "@/components/home/homeData";
 import { HOLIDAYS, getHolidayWindow } from "@/lib/holidays";
 import { ARTISTS, matchesArtist } from '@/data/artists';
+import { findClubForParty } from '@/data/taxonomy';
 
 export const revalidate = 60;
 
@@ -505,7 +506,8 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
               const w = getHolidayWindow(def);
               return partyYmd >= w.start && partyYmd <= w.end;
             });
-            if (!citySlug && !genreSlug && !audienceSlug && !activeHoliday) return null;
+            const club = findClubForParty(party);
+            if (!citySlug && !genreSlug && !audienceSlug && !activeHoliday && !club) return null;
             const chip = "inline-flex items-center gap-1 rounded-full border border-hairline px-4 py-2 text-[15px] text-ink transition-colors hover:border-white/25 hover:bg-tile-hover";
             return (
               <section className={tile}>
@@ -514,6 +516,11 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
                   {activeHoliday && (
                     <Link href={`/${activeHoliday.slug}`} className={chip}>
                       עוד מסיבות {activeHoliday.hebrewName} {chevron}
+                    </Link>
+                  )}
+                  {club && (
+                    <Link href={club.path} className={chip}>
+                      עוד מסיבות ב-{club.label} {chevron}
                     </Link>
                   )}
                   {citySlug && (

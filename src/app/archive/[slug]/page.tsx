@@ -10,6 +10,7 @@ import { BRAND_LOGO_URL, BASE_URL } from "@/data/constants";
 import { CalendarIcon, LocationIcon } from "@/components/Icons";
 import FlyerToRelatedLink from "@/components/FlyerToRelatedLink";
 import { toIsraelISO } from "@/lib/dates";
+import { findClubForParty } from "@/data/taxonomy";
 
 export const revalidate = 3600;
 
@@ -165,6 +166,7 @@ export default async function ArchivedEventPage({ params }: { params: Promise<{ 
 
   const citySlug = CITY_SLUG_MAP[party.location.name] || null;
   const genreSlug = MUSIC_GENRE_SLUG_MAP[party.musicType] || null;
+  const club = findClubForParty(party);
 
   return (
     <div className="font-apple min-h-screen overflow-x-hidden bg-stage pb-24 text-ink">
@@ -257,10 +259,18 @@ export default async function ArchivedEventPage({ params }: { params: Promise<{ 
           </div>
         )}
 
-        {(citySlug || genreSlug) && (
+        {(citySlug || genreSlug || club) && (
           <div className="mb-8 rounded-[28px] bg-tile p-6 sm:p-8">
             <h2 className="text-[19px] font-bold text-ink mb-4">מחפשים את המסיבה הבאה?</h2>
             <div className="flex flex-wrap gap-3">
+              {club && (
+                <Link
+                  href={club.path}
+                  className="inline-flex items-center gap-1 rounded-full bg-action px-4 py-2 text-[15px] font-medium text-on-action transition-colors hover:bg-action-hover"
+                >
+                  מסיבות קרובות ב-{club.label}
+                </Link>
+              )}
               {citySlug && (
                 <Link
                   href={`/cities/${citySlug}`}

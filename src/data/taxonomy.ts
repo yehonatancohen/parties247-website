@@ -1697,6 +1697,19 @@ const filterByClub = (parties: Party[], slug: string) => {
   });
 };
 
+/**
+ * The `/club/<slug>` page for the venue a party is at, if we have one. Matches on the
+ * venue or party name only, not the description (which `filterByClub` also reads):
+ * descriptions mention other venues in passing, and a wrong venue link is worse than none.
+ */
+export const findClubForParty = (party: Pick<Party, 'name' | 'location'>): TaxonomyConfig | undefined => {
+  const haystack = `${party.location?.name || ''} ${party.name || ''}`.toLowerCase();
+  return englishFriendlyTaxonomies.find((config) =>
+    config.type === 'club' &&
+    (clubMappings[config.slug] || [config.slug]).some((alias) => haystack.includes(alias.toLowerCase()))
+  );
+};
+
 const filterByAudience = (parties: Party[], slug: string) => {
   switch (slug) {
     case 'מסיבות-נוער':

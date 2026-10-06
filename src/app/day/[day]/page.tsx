@@ -4,6 +4,8 @@ import PartyGrid from "@/components/PartyGrid";
 import { findHotNowCarousel } from "@/lib/carousels";
 import { getCarousels, getParties } from "@/services/api";
 import { BASE_URL } from "@/data/constants";
+import { getIsraelDateString } from "@/lib/dates";
+import { DayKey, dayRange, isDayKey, isOnDayRange } from "@/lib/dayPages";
 
 export const revalidate = 300;
 
@@ -11,72 +13,29 @@ type DayConfig = {
   title: string;
   description: string;
   basePath: string;
-  filter: (party: any, todayString: string, todayWeekday: number) => boolean;
 };
 
-const getDayConfig = (todayString: string, todayWeekday: number): Record<string, DayConfig> => {
-  const today = new Date();
-
-  // Calculate next Thursday
-  const thursday = new Date(today);
-  thursday.setDate(today.getDate() + ((4 + 7 - today.getDay()) % 7));
-  if (today.getDay() === 4) { thursday.setDate(today.getDate()); } // if today is thursday
-  thursday.setHours(0, 0, 0, 0);
-  const thursdayEnd = new Date(thursday);
-  thursdayEnd.setHours(23, 59, 59, 999);
-
-  // Calculate next Friday
-  const friday = new Date(today);
-  friday.setDate(today.getDate() + ((5 + 7 - today.getDay()) % 7));
-  if (today.getDay() === 5) { friday.setDate(today.getDate()); } // if today is friday
-  friday.setHours(0, 0, 0, 0);
-  const fridayEnd = new Date(friday);
-  fridayEnd.setHours(23, 59, 59, 999);
-
-  // Calculate this/upcoming weekend (Thu-Sat)
-  const weekendStart = new Date(thursday);
-  const weekendEnd = new Date(thursday);
-  weekendEnd.setDate(weekendEnd.getDate() + 2); // Thu -> Sat
-  weekendEnd.setHours(23, 59, 59, 999);
-
-  return {
-    thursday: {
-      title: "מסיבות ביום חמישי הקרוב",
-      description: "רחבות לפתיחת הסופ\"ש עם מיטב הסטים והאמנים.",
-      basePath: "/day/thursday",
-      filter: (party) => {
-        const pDate = new Date(party.date);
-        return pDate >= thursday && pDate <= thursdayEnd;
-      },
-    },
-    friday: {
-      title: "מסיבות ביום שישי הקרוב",
-      description: "ליין-אפים לחמישי בלילה ולחגיגות הסופ\"ש המרכזיות.",
-      basePath: "/day/friday",
-      filter: (party) => {
-        const pDate = new Date(party.date);
-        return pDate >= friday && pDate <= fridayEnd;
-      },
-    },
-    weekend: {
-      title: "מסיבות בסופ\"ש הקרוב",
-      description: "חמישי, שישי ושבת – כל המסיבות של סוף השבוע במקום אחד.",
-      basePath: "/day/weekend",
-      filter: (party) => {
-        const pDate = new Date(party.date);
-        return pDate >= weekendStart && pDate <= weekendEnd;
-      },
-    },
-    today: {
-      title: "מסיבות היום",
-      description: "מה שקורה ממש הערב – מסיבות נבחרות שמתעדכנות בזמן אמת.",
-      basePath: "/day/today",
-      filter: (party, normalizedToday) => {
-        const partyDate = new Date(party.date);
-        return partyDate.toISOString().slice(0, 10) === normalizedToday;
-      },
-    },
-  };
+const dayConfigs: Record<DayKey, DayConfig> = {
+  thursday: {
+    title: "מסיבות ביום חמישי הקרוב",
+    description: "רחבות לפתיחת הסופ\"ש עם מיטב הסטים והאמנים.",
+    basePath: "/day/thursday",
+  },
+  friday: {
+    title: "מסיבות ביום שישי הקרוב",
+    description: "ליין-אפים לחמישי בלילה ולחגיגות הסופ\"ש המרכזיות.",
+    basePath: "/day/friday",
+  },
+  weekend: {
+    title: "מסיבות בסופ\"ש הקרוב",
+    description: "חמישי, שישי ושבת – כל המסיבות של סוף השבוע במקום אחד.",
+    basePath: "/day/weekend",
+  },
+  today: {
+    title: "מסיבות היום",
+    description: "מה שקורה ממש הערב – מסיבות נבחרות שמתעדכנות בזמן אמת.",
+    basePath: "/day/today",
+  },
 };
 
 const dayBodies: Record<string, string> = {
@@ -92,12 +51,10 @@ const dayBodies: Record<string, string> = {
 
 export async function generateMetadata({ params }: { params: { day: string } }): Promise<Metadata> {
   const { day } = await params;
-  const today = new Date();
-  const dayConfigs = getDayConfig(today.toISOString().slice(0, 10), today.getDay());
-  const config = dayConfigs[day];
-  if (!config) {
+  if (!isDayKey(day)) {
     return { title: "מסיבות קרובות" };
   }
+  const config = dayConfigs[day];
 
   return {
     title: config.title,
@@ -118,13 +75,12 @@ export default async function DayPartiesPage({
 }) {
   const { day } = await params;
   const resolvedSearchParams = await searchParams;
-  const today = new Date();
-  const normalizedToday = today.toISOString().slice(0, 10);
-  const dayConfigs = getDayConfig(normalizedToday, today.getDay());
-  const config = dayConfigs[day];
-  if (!config) {
+  if (!isDayKey(day)) {
     notFound();
   }
+  const config = dayConfigs[day];
+  // Israel's calendar date, not the server's UTC one (see lib/dayPages.ts).
+  const range = dayRange(day, getIsraelDateString(new Date()));
 
   const pageParam = typeof resolvedSearchParams.page === 'string' ? parseInt(resolvedSearchParams.page, 10) : 1;
   const currentPage = Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1;
@@ -137,7 +93,7 @@ export default async function DayPartiesPage({
   const hotNowCarousel = findHotNowCarousel(carousels);
 
   const hotPartyIds = new Set(hotNowCarousel?.partyIds || []);
-  const filteredParties = parties.filter((party) => config.filter(party, normalizedToday, today.getDay()));
+  const filteredParties = parties.filter((party) => isOnDayRange(party.date, range));
 
   const itemListJsonLd = {
     '@context': 'https://schema.org',
