@@ -13,6 +13,7 @@
 import { HDate, HebrewCalendar } from '@hebcal/core';
 import { Party } from '@/data/types';
 import { getIsraelDateString } from './dates';
+import { sortPromotedWithinNight } from '@/components/home/homeData';
 
 export interface HolidayDef {
   slug: string;
@@ -183,4 +184,43 @@ export function filterPartiesInHolidayWindow(parties: Party[], def: HolidayDef, 
       return partyYmd >= window.start && partyYmd <= window.end;
     })
     .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+}
+
+/** Owner's per-page choices from the admin (`GET /api/holiday-pages/<slug>`). */
+export interface HolidayCuration {
+  /** Pinned parties, shown first in exactly this order (may be outside the window). */
+  partyIds: string[];
+  /** Parties removed from the page even though they fall in the window. */
+  hiddenIds: string[];
+}
+
+/**
+ * Final list for a holiday page: pinned parties first in the owner's order,
+ * then every other in-window party that isn't hidden, in the site's usual
+ * order (sold-out last, by night, promoted first within a night). New parties
+ * that appear in the window later show up automatically after the pinned ones.
+ * Pinned ids that are no longer in `allParties` (past, deleted) are skipped.
+ */
+export function applyHolidayCuration(
+  windowParties: Party[],
+  allParties: Party[],
+  curation: HolidayCuration | null,
+): Party[] {
+  if (!curation || (curation.partyIds.length === 0 && curation.hiddenIds.length === 0)) {
+    return sortPromotedWithinNight(windowParties);
+  }
+  const byId = new Map<string, Party>();
+  for (const p of [...allParties, ...windowParties]) byId.set(p.id, p);
+  const hidden = new Set(curation.hiddenIds);
+  const pinned: Party[] = [];
+  const pinnedIds = new Set<string>();
+  for (const id of curation.partyIds) {
+    const party = byId.get(id);
+    if (party && !pinnedIds.has(id)) {
+      pinned.push(party);
+      pinnedIds.add(id);
+    }
+  }
+  const rest = windowParties.filter((p) => !pinnedIds.has(p.id) && !hidden.has(p.id));
+  return [...pinned, ...sortPromotedWithinNight(rest)];
 }

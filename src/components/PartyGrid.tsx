@@ -33,6 +33,8 @@ interface PartyGridProps {
    * otherwise "next page" 404s into the [...path] catch-all.
    */
   paginationMode?: 'path' | 'query';
+  /** Render `parties` in the given order (already curated) instead of re-sorting by night. */
+  keepOrder?: boolean;
 }
 
 export default function PartyGrid({
@@ -51,6 +53,7 @@ export default function PartyGrid({
   aiQuery,
   topSection,
   paginationMode = 'path',
+  keepOrder = false,
 }: PartyGridProps) {
 
   const searchTerm = typeof searchParams.query === 'string' ? searchParams.query : '';
@@ -71,7 +74,7 @@ export default function PartyGrid({
   // If AI filter is active, use those specific party IDs
   const aiFilterSet = aiFilterIds ? new Set(aiFilterIds) : null;
 
-  const filteredParties = sortPromotedWithinNight(parties
+  const matchingParties = parties
     .filter((party) => new Date(party.date) >= now) // Filter past events
     .filter((party) => {
       // AI Filter takes priority - if AI filter is active, only show those parties
@@ -104,8 +107,8 @@ export default function PartyGrid({
       }
 
       return true;
-    })
-);
+    });
+  const filteredParties = keepOrder ? matchingParties : sortPromotedWithinNight(matchingParties);
 
   // 3. Pagination Logic
   const totalPages = Math.max(1, Math.ceil(filteredParties.length / pageSize));

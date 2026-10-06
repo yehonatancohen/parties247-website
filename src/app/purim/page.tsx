@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import HolidayPage from '@/components/HolidayPage';
 import * as api from '@/services/api';
 import { BASE_URL } from '@/data/constants';
-import { HOLIDAYS, getHolidayWindow, filterPartiesInHolidayWindow } from '@/lib/holidays';
+import { HOLIDAYS, getHolidayWindow, filterPartiesInHolidayWindow, applyHolidayCuration } from '@/lib/holidays';
 
 export const revalidate = 60;
 
@@ -30,8 +30,8 @@ const FAQS = [
 
 async function getData() {
   try {
-    const allParties = await api.getParties();
-    return filterPartiesInHolidayWindow(allParties, DEF);
+    const [allParties, curation] = await Promise.all([api.getParties(), api.getHolidayCuration(DEF.slug)]);
+    return applyHolidayCuration(filterPartiesInHolidayWindow(allParties, DEF), allParties, curation);
   } catch (error) {
     console.error('Failed to fetch Purim data:', error);
     // Rethrow: during ISR regeneration an error keeps the last good page cached

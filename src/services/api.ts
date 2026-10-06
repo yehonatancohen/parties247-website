@@ -1,6 +1,7 @@
 import { Party, Carousel, AnalyticsSummary, AnalyticsSummaryParty, DetailedAnalyticsResponse, RecentActivityResponse, RecentActivityFilters, VisitorAnalyticsResponse, AuditLogResponse } from '../data/types';
 import { SeoPageConfig } from '../lib/seoparties';
 import { isBuildPhase, withFetchBudget } from '@/lib/buildBudget';
+import type { HolidayCuration } from '@/lib/holidays';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
   ? `${process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')}/api`
@@ -694,6 +695,29 @@ const buildSafe = <A extends unknown[], T>(fn: (...args: A) => Promise<T[]>) =>
 
 export const getParties = buildSafe(getPartiesRaw);
 export const getAllPartiesIncludingPast = buildSafe(getAllPartiesIncludingPastRaw);
+// Owner's pin/hide choices for a holiday landing page. Build time tolerates a
+// dead backend (page renders the default list); at runtime a failure throws so
+// ISR keeps the last good page instead of un-hiding parties.
+export const getHolidayCuration = async (slug: string): Promise<HolidayCuration | null> => {
+  try {
+    const response = await withFetchBudget(
+      fetch(`${API_URL}/holiday-pages/${encodeURIComponent(slug)}`, { next: { revalidate: 30 } }),
+      `GET /holiday-pages/${slug}`
+    );
+    if (response.status === 404) return null; // backend without this endpoint yet
+    if (!response.ok) throw new Error(`Failed to fetch holiday page ${slug}`);
+    const data = await response.json();
+    const ids = (v: unknown) => (Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : []);
+    return { partyIds: ids(data?.partyIds), hiddenIds: ids(data?.hiddenIds) };
+  } catch (error) {
+    if (isBuildPhase()) {
+      console.warn('[build] holiday curation unavailable, using default list:', (error as Error).message);
+      return null;
+    }
+    throw error;
+  }
+};
+
 // Carousels only decorate pages (hot badges, shelves), so they are never allowed
 // to take a page down: any failure, build or runtime, yields an empty list.
 export const getCarousels = async (): Promise<Carousel[]> => {

@@ -139,7 +139,7 @@ export default function HolidayPage({
           </h2>
 
           {parties.length > 0 ? (
-            <PartyGrid parties={parties} showFilters={false} showSearch={false} title="" />
+            <PartyGrid parties={parties} showFilters={false} showSearch={false} title="" keepOrder />
           ) : (
             <div className="mx-4 mt-8 max-w-[680px] rounded-[28px] bg-tile px-6 py-14 text-center md:mx-auto">
               <h3 className="text-[24px] font-bold">טרם פורסמו מסיבות {def.hebrewName} {window.year}</h3>

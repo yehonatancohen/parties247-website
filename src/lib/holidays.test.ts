@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { HOLIDAYS, filterPartiesInHolidayWindow, getHolidayWindow, isHolidayApproaching } from './holidays';
+import { HOLIDAYS, applyHolidayCuration, filterPartiesInHolidayWindow, getHolidayWindow, isHolidayApproaching } from './holidays';
 import { Party } from '@/data/types';
 
 // These run under whatever TZ the test process starts with. package.json's
@@ -89,5 +89,42 @@ describe('filterPartiesInHolidayWindow', () => {
     ];
     const result = filterPartiesInHolidayWindow(parties, HOLIDAYS.sukkot, new Date('2026-09-16T10:00:00Z'));
     expect(result.map((p) => p.id)).toEqual(['erev', 'cholHamoed-late', 'lastDay']);
+  });
+});
+
+describe('applyHolidayCuration', () => {
+  const mk = (id: string, date: string, extra: Partial<Party> = {}): Party => ({
+    id, slug: id, name: id, imageUrl: '', date, musicGenres: '', location: { name: 'Tel Aviv' },
+    description: '', originalUrl: '', region: 'מרכז', musicType: 'אחר', eventType: 'אחר', age: 'כל הגילאים', tags: [],
+    ...extra,
+  });
+  const a = mk('a', '2026-10-29T23:00:00');
+  const b = mk('b', '2026-10-30T23:00:00');
+  const c = mk('c', '2026-10-31T23:00:00');
+  const outside = mk('outside', '2026-11-07T23:00:00');
+  const windowParties = [a, b, c];
+  const all = [a, b, c, outside];
+  const ids = (ps: Party[]) => ps.map((p) => p.id);
+
+  it('keeps the default date order without a curation', () => {
+    expect(ids(applyHolidayCuration(windowParties, all, null))).toEqual(['a', 'b', 'c']);
+    expect(ids(applyHolidayCuration(windowParties, all, { partyIds: [], hiddenIds: [] }))).toEqual(['a', 'b', 'c']);
+  });
+
+  it('puts pinned parties first in the given order, then the rest by date', () => {
+    expect(ids(applyHolidayCuration(windowParties, all, { partyIds: ['c', 'a'], hiddenIds: [] }))).toEqual(['c', 'a', 'b']);
+  });
+
+  it('lets a pinned party from outside the window in, and drops hidden ones', () => {
+    expect(ids(applyHolidayCuration(windowParties, all, { partyIds: ['outside'], hiddenIds: ['b'] }))).toEqual(['outside', 'a', 'c']);
+  });
+
+  it('skips pinned ids that no longer exist (past or deleted parties)', () => {
+    expect(ids(applyHolidayCuration(windowParties, all, { partyIds: ['gone', 'b'], hiddenIds: [] }))).toEqual(['b', 'a', 'c']);
+  });
+
+  it('still sends sold-out non-pinned parties to the end', () => {
+    const soldA = { ...a, soldOut: true };
+    expect(ids(applyHolidayCuration([soldA, b, c], [soldA, b, c], { partyIds: [], hiddenIds: ['zzz'] }))).toEqual(['b', 'c', 'a']);
   });
 });
