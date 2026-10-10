@@ -18,6 +18,11 @@ export interface Party {
   originalUrl: string;
   ticketPrice?: number;
   /** How `ticketPrice` was derived from GoOut's ticket tiers (backend Listing Guard). */
+  /**
+   * `hidden` = taken off every list by the admin or the Listing Guard. Its own
+   * page still opens for someone with the link, without a way to buy.
+   */
+  listingStatus?: 'live' | 'hidden' | 'merged';
   priceInfo?: {
     from: number | null;
     hasFree: boolean;

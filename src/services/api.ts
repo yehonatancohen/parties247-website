@@ -139,6 +139,7 @@ const mapPartyToFrontend = (backendParty: any): Party => {
     performer: backendParty.performer,
     ticketPrice: backendParty.ticketPrice,
     priceInfo: backendParty.priceInfo,
+    listingStatus: backendParty.listingStatus,
     soldOut: backendParty.soldOut ?? false,
   };
 };
@@ -270,11 +271,16 @@ export const getPartyBySlug = async (slug: string): Promise<Party> => {
   const allParties = await getAllPartiesIncludingPast();
   const party = allParties.find(p => p.slug === slug);
 
-  if (!party) {
-    throw new Error(`Party not found with slug: ${slug}`);
-  }
+  if (party) return party;
 
-  return party;
+  // Not in the list: it may be a hidden party, which is off every list but
+  // still opens by direct link.
+  const direct = await fetch(`${API_URL}/parties?slug=${encodeURIComponent(slug)}`, { next: { revalidate: 60 } });
+  if (direct.ok) {
+    const [raw] = await direct.json();
+    if (raw) return mapPartyToFrontend(raw);
+  }
+  throw new Error(`Party not found with slug: ${slug}`);
 };
 
 export const addParty = async (url: string): Promise<Party> => {

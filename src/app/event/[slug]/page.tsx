@@ -177,6 +177,8 @@ export async function generateMetadata(
   return {
     title: titleStr,
     description: descStr,
+    // A hidden party opens by direct link only — keep it out of search too.
+    ...(party.listingStatus === 'hidden' ? { robots: { index: false, follow: false } } : {}),
     alternates: {
       canonical: `/event/${party.slug}`,
       languages: { 'he-IL': `/event/${party.slug}` },
@@ -221,7 +223,8 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
   const hasLastTickets = party.tags.includes(LAST_TICKETS_TAG);
   const price = priceView(party);
   const offerPrice = schemaPrice(party);
-  const salesClosed = !party.soldOut && price.closed;
+  const unlisted = party.listingStatus === 'hidden';
+  const salesClosed = unlisted || (!party.soldOut && price.closed);
 
   // Route the "back" link (and its internal-link equity) to the relevant city
   // listing page rather than /all-parties (position ~25, absorbs a link from
@@ -239,7 +242,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
   const partyPageUrl = `${BASE_URL}/event/${party.slug}`;
   const whatsappMessage = encodeURIComponent(`היי, אשמח לשמור כרטיסים ל"${party.name}" ב-${formattedDate}. ${partyPageUrl}`);
   const whatsappHref = `https://wa.me/?text=${whatsappMessage}`;
-  const showDiscountCode = isCouponEligible(party.referralCode);
+  const showDiscountCode = !unlisted && isCouponEligible(party.referralCode);
 
   const plainDescriptionForLd = cleanPartyDescription(party.description, 'strip').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 
@@ -285,6 +288,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
           : 'https://schema.org/InStock',
     },
   };
+  if (unlisted) delete eventJsonLd['offers'];
   if (party.performer?.name) {
     eventJsonLd['performer'] = { '@type': 'PerformingGroup', 'name': party.performer.name };
   }
@@ -418,7 +422,9 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
 
             {/* ═══ Main call to action ═══ */}
             <div className="mt-6 rounded-[28px] transition-shadow duration-300" id={PURCHASE_ANCHOR_ID}>
-              {party.soldOut ? (
+              {unlisted ? (
+                <p className="mb-4 text-[21px] font-semibold text-ink-2">הכרטיסים לא נמכרים דרך האתר</p>
+              ) : party.soldOut ? (
                 <p className="mb-4 text-[21px] font-semibold text-ink-2">הכרטיסים אזלו</p>
               ) : price.amount !== null ? (
                 <p className="mb-4 text-[17px] text-ink-2">
@@ -455,7 +461,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
               )}
 
               <div className="mt-6 flex items-center justify-between border-t border-hairline pt-5">
-                <ShareButtons partyName={party.name} shareUrl={referralUrl} />
+                <ShareButtons partyName={party.name} shareUrl={unlisted ? partyPageUrl : referralUrl} />
               </div>
             </div>
 
@@ -474,7 +480,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
               <h2 className="mb-4 text-[24px] font-bold">על האירוע</h2>
               <div
                 className="text-[17px] leading-[1.75] text-ink-2 [&_h2]:mb-3 [&_h2]:mt-6 [&_h2]:text-[21px] [&_h2]:font-bold [&_h2]:text-ink [&_h2:first-child]:mt-0 [&_h3]:mb-2 [&_h3]:mt-4 [&_h3]:text-[19px] [&_h3]:font-bold [&_h3]:text-ink [&_h3:first-child]:mt-0 [&_p]:mb-3 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-none [&_ul]:space-y-1.5 [&_li]:font-medium [&_li]:text-ink"
-                dangerouslySetInnerHTML={{ __html: cleanPartyDescription(party.description, party.soldOut ? 'strip' : 'purchase-link') }}
+                dangerouslySetInnerHTML={{ __html: cleanPartyDescription(party.description, party.soldOut || unlisted ? 'strip' : 'purchase-link') }}
               />
             </section>
           )}
