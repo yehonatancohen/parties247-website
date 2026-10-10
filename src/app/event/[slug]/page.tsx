@@ -19,6 +19,7 @@ import WhatsappNudge from "@/components/WhatsappNudge";
 import { BASE_URL, LAST_TICKETS_TAG, isCouponEligible } from "@/data/constants";
 import { resolveCitySlug, resolveAudienceSlug, CITY_HEBREW_NAMES, AUDIENCE_HE_LABEL } from "@/lib/internalLinks";
 import { toIsraelISO } from "@/lib/dates";
+import { priceView, priceLabel, schemaPrice, SALES_CLOSED_LABEL } from "@/lib/price";
 import { formatLongDate, formatTime } from "@/lib/nights";
 import { venueOf } from "@/components/home/homeData";
 import { HOLIDAYS, getHolidayWindow } from "@/lib/holidays";
@@ -218,6 +219,9 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
 
   const referralUrl = getReferralUrl(party.originalUrl, party.referralCode);
   const hasLastTickets = party.tags.includes(LAST_TICKETS_TAG);
+  const price = priceView(party);
+  const offerPrice = schemaPrice(party);
+  const salesClosed = !party.soldOut && price.closed;
 
   // Route the "back" link (and its internal-link equity) to the relevant city
   // listing page rather than /all-parties (position ~25, absorbs a link from
@@ -273,7 +277,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
     'offers': {
       '@type': 'Offer',
       'url': referralUrl,
-      ...(party.ticketPrice != null ? { 'price': String(party.ticketPrice), 'priceCurrency': 'ILS' } : {}),
+      ...(offerPrice !== null ? { 'price': offerPrice, 'priceCurrency': 'ILS' } : {}),
       'availability': hasLastTickets
         ? 'https://schema.org/LimitedAvailability'
         : party.soldOut
@@ -416,14 +420,19 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
             <div className="mt-6 rounded-[28px] transition-shadow duration-300" id={PURCHASE_ANCHOR_ID}>
               {party.soldOut ? (
                 <p className="mb-4 text-[21px] font-semibold text-ink-2">הכרטיסים אזלו</p>
-              ) : party.ticketPrice ? (
+              ) : price.amount !== null ? (
                 <p className="mb-4 text-[17px] text-ink-2">
-                  כרטיסים החל מ-<span className="text-[28px] font-bold tabular-nums text-ink">{party.ticketPrice} ₪</span>
+                  כרטיסים החל מ-<span className="text-[28px] font-bold tabular-nums text-ink">{price.amount} ₪</span>
+                  {price.freeLabel && <span className="mt-1 block text-[15px] font-medium text-ink">{price.freeLabel}</span>}
                 </p>
+              ) : price.free ? (
+                <p className="mb-4 text-[21px] font-semibold text-ink">כניסה חופשית</p>
+              ) : price.closed ? (
+                <p className="mb-4 text-[21px] font-semibold text-ink-2">{SALES_CLOSED_LABEL}</p>
               ) : null}
 
               <div className="flex flex-col gap-3">
-                <PurchaseButton partyId={party.id} slug={party.slug} href={referralUrl} partyName={party.name} price={party.ticketPrice} soldOut={party.soldOut} couponEligible={showDiscountCode} showPriceInLabel={false} />
+                {!salesClosed && <PurchaseButton partyId={party.id} slug={party.slug} href={referralUrl} partyName={party.name} price={price.amount ?? undefined} soldOut={party.soldOut} couponEligible={showDiscountCode} showPriceInLabel={false} />}
 
                 <a
                   href={whatsappHref}
@@ -436,10 +445,10 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
                 </a>
               </div>
 
-              {!party.soldOut && (
+              {!party.soldOut && !salesClosed && (
                 <div className="mt-3 text-center text-[13px] text-ink-3">
                   הכרטיסים נמכרים באתר GO-OUT הרשמי.
-                  {party.ticketPrice && (
+                  {price.amount !== null && (
                     <PriceDisclaimerNote text="* המחיר המוצג הוא מחיר התחלתי ועשוי להשתנות — המחיר הסופי נקבע ב-Go-Out" />
                   )}
                 </div>
@@ -567,16 +576,16 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
         )}
       </div>
 
-      <StickyPurchaseBar
+      {!salesClosed && <StickyPurchaseBar
         href={referralUrl}
         triggerId="main-purchase-button"
         partyId={party.id}
         slug={party.slug}
         partyName={party.name}
-        priceLabel={party.soldOut ? 'הכרטיסים אזלו' : party.ticketPrice ? `כרטיסים החל מ-${party.ticketPrice} ₪` : 'לרכישת כרטיסים'}
+        priceLabel={party.soldOut ? 'הכרטיסים אזלו' : priceLabel(party) ?? 'לרכישת כרטיסים'}
         soldOut={party.soldOut}
         couponEligible={showDiscountCode}
-      />
+      />}
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { Party } from '@/data/types';
 import { isCouponEligible } from '@/data/constants';
 import { formatDayShort, formatTime } from '@/lib/nights';
 import { priceOf, venueOf } from './homeData';
+import { priceView } from '@/lib/price';
 
 interface LaunchPartyCardProps {
   party: Party;
@@ -16,6 +17,7 @@ export default function LaunchPartyCard({ party, sizes, eager = false }: LaunchP
   const venue = venueOf(party);
   const when = [formatDayShort(party.date), formatTime(party.date)].filter(Boolean).join(' · ');
   const hasCoupon = !party.soldOut && isCouponEligible(party.referralCode);
+  const salesClosed = !party.soldOut && priceView(party).closed;
 
   return (
     <Link
@@ -59,16 +61,20 @@ export default function LaunchPartyCard({ party, sizes, eager = false }: LaunchP
               </>
             ) : party.soldOut ? (
               'אזל'
+            ) : priceView(party).free ? (
+              'כניסה חופשית'
+            ) : salesClosed ? (
+              'המכירה לא פתוחה'
             ) : (
               'מחיר בדף האירוע'
             )}
           </span>
           <span
             className={`inline-flex shrink-0 items-center gap-0.5 text-[15px] font-medium ${
-              party.soldOut ? 'text-ink-3' : 'text-link group-hover:underline underline-offset-4'
+              party.soldOut || salesClosed ? 'text-ink-3' : 'text-link group-hover:underline underline-offset-4'
             }`}
           >
-            {party.soldOut ? 'פרטים' : 'כרטיסים'}
+            {party.soldOut || salesClosed ? 'פרטים' : 'כרטיסים'}
             <svg viewBox="0 0 24 24" className="h-[0.8em] w-[0.8em]" fill="none" stroke="currentColor" strokeWidth={2.6} aria-hidden>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 6l-6 6 6 6" />
             </svg>

@@ -1,6 +1,7 @@
 import { Party } from '@/data/types';
 import { toIsraelISO } from './dates';
 import { BASE_URL } from '@/data/constants';
+import { schemaPrice } from './price';
 
 function getReferralUrl(originalUrl: string, partyReferral?: string, defaultReferral?: string): string {
   try {
@@ -24,6 +25,7 @@ function getReferralUrl(originalUrl: string, partyReferral?: string, defaultRefe
 export function buildEventJsonLd(party: Party, defaultReferral?: string): Record<string, unknown> {
   const referralUrl = getReferralUrl(party.originalUrl, party.referralCode, defaultReferral);
   const hasLastTickets = party.tags?.includes('כרטיסים אחרונים');
+  const offerPrice = schemaPrice(party);
   const plainDescription = (party.description || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 
   const jsonLd: Record<string, unknown> = {
@@ -61,7 +63,7 @@ export function buildEventJsonLd(party: Party, defaultReferral?: string): Record
     offers: {
       '@type': 'Offer',
       url: referralUrl,
-      ...(party.ticketPrice != null ? { price: String(party.ticketPrice), priceCurrency: 'ILS' } : {}),
+      ...(offerPrice !== null ? { price: offerPrice, priceCurrency: 'ILS' } : {}),
       availability: hasLastTickets
         ? 'https://schema.org/LimitedAvailability'
         : party.soldOut

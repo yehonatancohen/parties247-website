@@ -17,6 +17,15 @@ export interface Party {
   description: string;
   originalUrl: string;
   ticketPrice?: number;
+  /** How `ticketPrice` was derived from GoOut's ticket tiers (backend Listing Guard). */
+  priceInfo?: {
+    from: number | null;
+    hasFree: boolean;
+    freeLabel: string | null;
+    onlyFree: boolean;
+    salesState: 'on_sale' | 'coming_soon' | 'sold_out' | 'closed';
+    verified: boolean;
+  };
   soldOut?: boolean;
   region: 'דרום' | 'מרכז' | 'צפון' | 'לא ידוע';
   /** Lowercase English area keys from the backend (e.g. "tel aviv", "haifa", "north", "eilat", "south").
