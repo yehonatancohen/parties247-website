@@ -2,7 +2,7 @@ import React from 'react';
 import Link from "next/link";
 import { Party, FilterState } from '@/data/types'; // Adjust path
 import PartyCard from './PartyCard';
-import { sortPromotedWithinNight } from './home/homeData';
+import { sortRankedWithinNight } from './home/homeData';
 
 // These must be Client Components that read/write to the URL
 import AdvancedFilter from './AdvancedFilter';
@@ -108,7 +108,7 @@ export default function PartyGrid({
 
       return true;
     });
-  const filteredParties = keepOrder ? matchingParties : sortPromotedWithinNight(matchingParties);
+  const filteredParties = keepOrder ? matchingParties : sortRankedWithinNight(matchingParties);
 
   // 3. Pagination Logic
   const totalPages = Math.max(1, Math.ceil(filteredParties.length / pageSize));

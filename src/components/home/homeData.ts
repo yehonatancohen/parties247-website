@@ -78,15 +78,23 @@ export function sortForDisplay(parties: Party[]): Party[] {
 }
 
 /**
- * Same as sortForDisplay, but within each night account1 parties lead. Dates still
- * read in order — a promoted Saturday party never jumps ahead of Thursday.
+ * Higher backend `rankScore` first (our commission per ticket x how likely a
+ * visitor is to buy; the owner sets per-party commission in the admin). A party
+ * without one (older backend) falls back to account1 first.
  */
-export function sortPromotedWithinNight(parties: Party[]): Party[] {
+export const byRank = (a: Party, b: Party) =>
+  (b.rankScore ?? -1) - (a.rankScore ?? -1) || Number(isPromoted(b)) - Number(isPromoted(a));
+
+/**
+ * Same as sortForDisplay, but within each night the best-ranked parties lead.
+ * Dates still read in order — a top-ranked Saturday party never jumps ahead of Thursday.
+ */
+export function sortRankedWithinNight(parties: Party[]): Party[] {
   return [...parties].sort(
     (a, b) =>
       Number(!!a.soldOut) - Number(!!b.soldOut) ||
       (nightOf(a.date) ?? a.date).localeCompare(nightOf(b.date) ?? b.date) ||
-      Number(isPromoted(b)) - Number(isPromoted(a)) ||
+      byRank(a, b) ||
       byDate(a, b)
   );
 }

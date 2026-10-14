@@ -10,7 +10,7 @@ import { heroFont } from './heroFont';
 import LaunchPartyCard from './LaunchPartyCard';
 import NightPicker, { NightPanel } from './NightPicker';
 import ShelfRow from './ShelfRow';
-import { buildShelves, isPromoted, sortForDisplay, sortPromotedWithinNight } from './homeData';
+import { buildShelves, byRank, sortForDisplay, sortRankedWithinNight } from './homeData';
 
 export interface HomeHoliday {
   slug: string;
@@ -50,18 +50,17 @@ export default function HomeLaunch({ parties, carousels, holiday }: HomeLaunchPr
   const available = upcoming.filter((p) => !p.soldOut && p.imageUrl);
   const allShelves = buildShelves(carousels, parties);
 
-  // ── Flyer wall: curated "hot" picks first, then the soonest parties.
+  // ── Flyer wall: best-ranked parties first (commission x buy likelihood),
+  // then curated "hot" picks, then the soonest parties.
   const hotIds = new Set((allShelves[0]?.parties ?? []).map((p) => p.id));
-  const wallParties = [
-    ...available.filter((p) => isPromoted(p)),
-    ...available.filter((p) => !isPromoted(p) && hotIds.has(p.id)),
-    ...available.filter((p) => !isPromoted(p) && !hotIds.has(p.id)),
-  ].slice(0, 32);
+  const wallParties = [...available]
+    .sort((a, b) => byRank(a, b) || Number(hotIds.has(b.id)) - Number(hotIds.has(a.id)))
+    .slice(0, 32);
 
   // ── Night picker
   const tonight = currentNight();
   const panels = NIGHT_RANGES.map((range) => {
-    const inRange = sortPromotedWithinNight(upcoming.filter((p) => isInRange(p.date, rangeNights(range.key, tonight))));
+    const inRange = sortRankedWithinNight(upcoming.filter((p) => isInRange(p.date, rangeNights(range.key, tonight))));
     return { ...range, parties: inRange };
   }).filter((r) => r.parties.length > 0);
 

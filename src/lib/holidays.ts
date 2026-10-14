@@ -13,7 +13,7 @@
 import { HDate, HebrewCalendar } from '@hebcal/core';
 import { Party } from '@/data/types';
 import { getIsraelDateString } from './dates';
-import { sortPromotedWithinNight } from '@/components/home/homeData';
+import { sortRankedWithinNight } from '@/components/home/homeData';
 
 export interface HolidayDef {
   slug: string;
@@ -197,7 +197,7 @@ export interface HolidayCuration {
 /**
  * Final list for a holiday page: pinned parties first in the owner's order,
  * then every other in-window party that isn't hidden, in the site's usual
- * order (sold-out last, by night, promoted first within a night). New parties
+ * order (sold-out last, by night, best-ranked first within a night). New parties
  * that appear in the window later show up automatically after the pinned ones.
  * Pinned ids that are no longer in `allParties` (past, deleted) are skipped.
  */
@@ -207,7 +207,7 @@ export function applyHolidayCuration(
   curation: HolidayCuration | null,
 ): Party[] {
   if (!curation || (curation.partyIds.length === 0 && curation.hiddenIds.length === 0)) {
-    return sortPromotedWithinNight(windowParties);
+    return sortRankedWithinNight(windowParties);
   }
   const byId = new Map<string, Party>();
   for (const p of [...allParties, ...windowParties]) byId.set(p.id, p);
@@ -222,5 +222,5 @@ export function applyHolidayCuration(
     }
   }
   const rest = windowParties.filter((p) => !pinnedIds.has(p.id) && !hidden.has(p.id));
-  return [...pinned, ...sortPromotedWithinNight(rest)];
+  return [...pinned, ...sortRankedWithinNight(rest)];
 }

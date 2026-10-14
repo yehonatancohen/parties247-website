@@ -66,8 +66,11 @@ verification of SEO output: `curl -s localhost:3000/event/<slug> | grep -o '"sta
   `jungle-*` / `wood-brown` names are aliases kept for legacy markup — don't use them in new code.
   No emoji as icons, no gradient text, no glow shadows. Shared party card: `components/home/LaunchPartyCard.tsx`.
 - Party dates in UI: format via `lib/nights.ts` (wall-clock parsing), never `new Date(naiveString)`.
-- account1 parties (coupon) are promoted via `sortPromotedWithinNight` / `isPromoted` in
-  `components/home/homeData.ts` — within a night only, never out of date order.
+- Party order: backend `rankScore` (0-100 = our ₪ per ticket x buy likelihood, from
+  `promo.rank_parties`; the owner sets per-party commission in the admin's `/ranking`) via
+  `sortRankedWithinNight` / `byRank` in `components/home/homeData.ts` — within a night only,
+  never out of date order; the home flyer wall is ordered by `byRank` alone. account1 parties
+  still get the coupon (`isPromoted`), and lead when `rankScore` is missing.
 - Prices: read them only through `lib/price.ts` (`priceView` / `priceLabel` /
   `schemaPrice`). `ticketPrice` is the cheapest paid ticket; a free tier is a badge from
   `priceInfo`, and a bare `ticketPrice: 0` without `priceInfo` is *not* shown as free.

@@ -92,6 +92,7 @@ const mapPartyToFrontend = (backendParty: any): Party => {
     age: backendParty.age || 'כל הגילאים',
     tags: backendParty.tags || backendParty.genres || [],
     referralCode: backendParty.referralCode,
+    rankScore: typeof backendParty.rankScore === 'number' ? backendParty.rankScore : undefined,
     eventStatus: eventStatus,
     eventAttendanceMode: backendParty.eventAttendanceMode,
     organizer: backendParty.organizer,

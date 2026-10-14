@@ -42,6 +42,8 @@ export interface Party {
   age: 'נוער' | '18+' | '21+' | 'כל הגילאים';
   tags: string[];
   referralCode?: string;
+  /** Backend ranking, 0-100 (best upcoming party = 100): our commission x buy likelihood. Orders parties within a night. */
+  rankScore?: number;
   pixelId?: string; // Meta Pixel ID for conversion tracking
   eventStatus?: 'EventScheduled' | 'EventCancelled' | 'EventPostponed' | 'EventRescheduled';
   eventAttendanceMode?: 'OnlineEventAttendanceMode' | 'OfflineEventAttendanceMode' | 'MixedEventAttendanceMode';
