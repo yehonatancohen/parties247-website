@@ -5,6 +5,7 @@ import PartyGrid from "@/components/PartyGrid";
 import { findHotNowCarousel } from "@/lib/carousels";
 import { getCarousels, getParties } from "@/services/api";
 import { SPECIFIC_PARTIES_PAGES } from "@/lib/seoparties";
+import { BASE_URL } from "@/data/constants";
 
 // Revalidate every 5 minutes
 export const revalidate = 300;
@@ -64,6 +65,30 @@ export default async function SpecificPartyPage({
         `מומלץ לשריין כרטיסים מראש כיוון שהביקוש לאירועים אלו גבוה, במיוחד בסופי שבוע ובחגים. לחיצה על כל כרטיס תוביל אתכם לפרטים המלאים ולרכישה מאובטחת.`,
       ];
 
+  const itemListJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: config.title,
+    description: config.description,
+    numberOfItems: parties.length,
+    itemListElement: parties.slice(0, 20).map((p, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: p.name,
+      url: `${BASE_URL}/event/${p.slug}`,
+    })),
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "בית", item: { "@type": "Thing", "@id": BASE_URL, name: "בית" } },
+      { "@type": "ListItem", position: 2, name: "כל המסיבות", item: { "@type": "Thing", "@id": `${BASE_URL}/all-parties`, name: "כל המסיבות" } },
+      { "@type": "ListItem", position: 3, name: config.title },
+    ],
+  };
+
   const faqJsonLd = config.faqs && config.faqs.length > 0
     ? {
         "@context": "https://schema.org",
@@ -78,6 +103,8 @@ export default async function SpecificPartyPage({
 
   return (
     <div className="space-y-10 min-h-screen bg-stage">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       {faqJsonLd && (
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
       )}
