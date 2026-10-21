@@ -44,9 +44,11 @@ describe('cleanPartyDescription — purchase-link mode', () => {
     expect(cleanPartyDescription(d, 'purchase-link')).toBe('FROM 22:30 ⚠️ פתיחת שערים 22:30 ⚠️ MAINSTREAM');
   });
 
-  it('leaves one-off invite phrasings (and their URL) alone', () => {
+  it('drops the invite link of a one-off phrasing and keeps the text', () => {
+    // We don't send visitors to a promoter's group (site survey 2026-10-21); the
+    // short lead-in stays, the link goes.
     const d = 'לכל הפרטים והעדכונים👇 https://chat.whatsapp.com/abc 🌿 הלוקיישן: פארק אריאל שרון';
-    expect(cleanPartyDescription(d, 'purchase-link')).toBe(d);
+    expect(cleanPartyDescription(d, 'purchase-link')).toBe('לכל הפרטים והעדכונים👇 🌿 הלוקיישן: פארק אריאל שרון');
   });
 
   it('strips the table-booking line instead of linking it to tickets', () => {
@@ -85,3 +87,51 @@ describe('cleanPartyDescription — strip mode', () => {
     );
   });
 });
+
+// More promoter invite/contact boilerplate from the 2026-10-21 feed (234 of 819
+// descriptions carried one).
+describe('cleanPartyDescription — promoter invites and contact lines', () => {
+  const cases: [string, string, string][] = [
+    [
+      'Gagarin community',
+      'להצטרפות לקהילת המסיבות השקטה שלנו ולכל העדכונים המעניינים :לינק לקבוצה GAGARIN TEL AVIVDECISION FESTIVAL 22.10 היי, זה שוב אנחנו',
+      'GAGARIN TEL AVIVDECISION FESTIVAL 22.10 היי, זה שוב אנחנו',
+    ],
+    [
+      'free-alcohol series perks',
+      'שישי משתה 💃אלכוהול חופשי כל הלילה🍺 לגילאים, סגנון מוזיקה, קוד לבוש, סרטונים מהלוקיישן…והטבות כי חייב לפנק אותכםכנסו לכאן👇https://chat.whatsapp.com/B8mFswACzxy9M6YbJzHkFa?s=cl&amp;p=i&amp;ilr=1 🌠 נפגשים כל שבוע',
+      'שישי משתה 💃אלכוהול חופשי כל הלילה🍺 🌠 נפגשים כל שבוע',
+    ],
+    [
+      'quiet group + table phone',
+      'מיינסטרים מול הים !הצטרפו לקבוצת הווצאפ (השקטה) ותהנו מקודי הנחה והטבות לכלל האירועים הכי מדוברים בארץ! 👇🏻https://chat.whatsapp.com/KC9qC3GCmxDEruwrKAKsMO פרטים וסגירת שולחנות -+972 50-5926987 נתראה',
+      'מיינסטרים מול הים ! נתראה',
+    ],
+    [
+      'all-events group without ה',
+      'פתיחת שערים 22:30 ⚠️ להצטרפות לקבוצת וואטסאפ של כל האירועים https://did.li/ypiba כבר כמעט חודשיים',
+      'פתיחת שערים 22:30 ⚠️ כבר כמעט חודשיים',
+    ],
+    [
+      'generic lead-in stops at the colon',
+      'ARAZI לפרטים נוספים ועדכונים הצטרפו לקבוצת הוואטס אפ של המסיבה:https://chat.whatsapp.com/GiuDKnUEAlL3Q5v נתראה ברחבה',
+      'ARAZI נתראה ברחבה',
+    ],
+    [
+      'bare wa.me link',
+      'יש אפשרות לסגור הסעה לפרטים:wa.me/972552226297 🍾 OPEN BAR',
+      'יש אפשרות לסגור הסעה לפרטים: 🍾 OPEN BAR',
+    ],
+  ];
+  for (const [name, input, expected] of cases) {
+    it(name, () => {
+      expect(cleanPartyDescription(input, 'strip')).toBe(expected);
+    });
+  }
+
+  it('leaves an invitation to the party itself alone', () => {
+    const text = 'הצטרפו אלינו לפסטיבל ייחודי שיחגוג את ראש השנה';
+    expect(cleanPartyDescription(text, 'strip')).toBe(text);
+  });
+});
+

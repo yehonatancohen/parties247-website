@@ -10,6 +10,8 @@ import { BRAND_LOGO_URL, BASE_URL } from "@/data/constants";
 import { CalendarIcon, LocationIcon } from "@/components/Icons";
 import FlyerToRelatedLink from "@/components/FlyerToRelatedLink";
 import { toIsraelISO } from "@/lib/dates";
+import { eventMetaDescription, eventMetaTitle, eventSummary } from "@/lib/eventMeta";
+import { formatLongDate, formatTime } from "@/lib/nights";
 import { findClubForParty } from "@/data/taxonomy";
 
 export const revalidate = 3600;
@@ -73,22 +75,22 @@ export async function generateMetadata(
   const ogImage = party.imageUrl || BRAND_LOGO_URL;
   const plainDescription = cleanPartyDescription(party.description, 'strip').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 
-  const eventDate = new Date(party.date);
-  const heDate = new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Jerusalem' }).format(eventDate);
-  const heCity = party.location.name;
-  const titleStr = `${party.name} - ${heCity}, ${heDate} | ארכיון מסיבות`;
-  const descStr = (plainDescription.substring(0, 140) || `${party.name} ב${heCity}`) + ` — סיכום האירוע שהתקיים ב-${heDate}.`;
+  const summary = eventSummary(party, { past: true });
 
   return {
-    title: titleStr,
-    description: descStr,
+    title: eventMetaTitle(party, { past: true }),
+    description: eventMetaDescription(party, plainDescription, { past: true }),
+    // Hidden listings (a promoter's test event, a cancelled one) open by direct
+    // link only — keep them out of search.
+    ...(party.listingStatus === 'hidden' ? { robots: { index: false, follow: true } } : {}),
     alternates: {
       canonical: `/archive/${party.slug}`,
       languages: { 'he-IL': `/archive/${party.slug}` },
     },
     openGraph: {
       title: party.name,
-      description: plainDescription.substring(0, 300),
+      description: summary,
+      url: `/archive/${party.slug}`,
       images: ogImage ? [{ url: ogImage, width: 1200, height: 630 }] : [{ url: BRAND_LOGO_URL }],
       type: "website",
       locale: "he_IL",
@@ -110,9 +112,9 @@ export default async function ArchivedEventPage({ params }: { params: Promise<{ 
   // to /event) is handled in middleware.ts — see the note in
   // app/event/[slug]/page.tsx for why this can't be done here.
 
-  const partyDate = new Date(party.date);
-  const formattedDate = new Intl.DateTimeFormat('he-IL', { dateStyle: 'full', timeZone: 'UTC' }).format(partyDate);
-  const formattedTime = new Intl.DateTimeFormat('he-IL', { timeStyle: 'short', timeZone: 'UTC' }).format(partyDate);
+  // Wall-clock: the stored date is already Israel time (see lib/dates.ts).
+  const formattedDate = `${formatLongDate(party.date.slice(0, 10))} ${party.date.slice(0, 4)}`;
+  const formattedTime = formatTime(party.date);
 
   const plainDescriptionForLd = cleanPartyDescription(party.description, 'strip').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 

@@ -1,5 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Next streams page metadata into <body> for clients it doesn't know as bots,
+  // so link-preview fetchers and SEO/AI crawlers outside its list saw a page with
+  // no description / canonical / og:image in <head>. Every page here is a landing
+  // page: always render metadata in <head>.
+  htmlLimitedBots: /.*/,
+
   // 1. Configure Images
   images: {
     remotePatterns: [
@@ -43,6 +49,12 @@ const nextConfig = {
       {
         source: encodeURI('/זאנרים/היפ-הופ'),
         destination: '/genre/hip-hop-music',
+        permanent: true,
+      },
+      // Old home-page chip pointed here; the genre page is /genre/trance-music.
+      {
+        source: '/genre/trance',
+        destination: '/genre/trance-music',
         permanent: true,
       },
       {

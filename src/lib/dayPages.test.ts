@@ -20,6 +20,12 @@ describe('dayRange', () => {
     expect(dayRange('today', '2026-10-06')).toEqual(['2026-10-06', '2026-10-06']);
   });
 
+  it('tomorrow is the next calendar date, across a month end', () => {
+    expect(dayRange('tomorrow', '2026-10-06')).toEqual(['2026-10-07', '2026-10-07']);
+    expect(dayRange('tomorrow', '2026-10-31')).toEqual(['2026-11-01', '2026-11-01']);
+    expect(isDayKey('tomorrow')).toBe(true);
+  });
+
   it('thursday and friday are the next occurrence, counting today', () => {
     expect(dayRange('thursday', '2026-10-06')).toEqual(['2026-10-08', '2026-10-08']); // Tuesday
     expect(dayRange('thursday', '2026-10-08')).toEqual(['2026-10-08', '2026-10-08']); // Thursday

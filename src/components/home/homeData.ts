@@ -2,6 +2,7 @@ import { Carousel, Party } from '@/data/types';
 import { isCouponEligible } from '@/data/constants';
 import { nightOf } from '@/lib/nights';
 import { createCarouselSlug } from '@/lib/carousels';
+import { priceView } from '@/lib/price';
 
 const CITY_NAMES: Record<string, string> = {
   'tel aviv-yafo': 'תל אביב',
@@ -73,8 +74,14 @@ const byDate = (a: Party, b: Party) => (a.date < b.date ? -1 : a.date > b.date ?
 export const isPromoted = (party: Party) => !party.soldOut && isCouponEligible(party.referralCode);
 
 /** Available parties first, sold-out ones last, each group in date order. */
+/**
+ * Nothing to buy right now: sold out, or GoOut's sale isn't open (e.g. an event
+ * abroad listed months ahead). These go after everything that can be bought.
+ */
+export const isUnavailable = (party: Party): boolean => !!party.soldOut || priceView(party).closed;
+
 export function sortForDisplay(parties: Party[]): Party[] {
-  return [...parties].sort((a, b) => Number(!!a.soldOut) - Number(!!b.soldOut) || byDate(a, b));
+  return [...parties].sort((a, b) => Number(isUnavailable(a)) - Number(isUnavailable(b)) || byDate(a, b));
 }
 
 /**
@@ -92,7 +99,7 @@ export const byRank = (a: Party, b: Party) =>
 export function sortRankedWithinNight(parties: Party[]): Party[] {
   return [...parties].sort(
     (a, b) =>
-      Number(!!a.soldOut) - Number(!!b.soldOut) ||
+      Number(isUnavailable(a)) - Number(isUnavailable(b)) ||
       (nightOf(a.date) ?? a.date).localeCompare(nightOf(b.date) ?? b.date) ||
       byRank(a, b) ||
       byDate(a, b)

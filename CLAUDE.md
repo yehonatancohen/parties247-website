@@ -66,17 +66,22 @@ verification of SEO output: `curl -s localhost:3000/event/<slug> | grep -o '"sta
   `jungle-*` / `wood-brown` names are aliases kept for legacy markup — don't use them in new code.
   No emoji as icons, no gradient text, no glow shadows. Shared party card: `components/home/LaunchPartyCard.tsx`.
 - Party dates in UI: format via `lib/nights.ts` (wall-clock parsing), never `new Date(naiveString)`.
+- Event/archive meta title, description, our own summary line, Google Calendar link and share URL come
+  from `lib/eventMeta.ts`; promoter group invites/contact links are stripped by `lib/partyDescription.ts`.
+  `htmlLimitedBots: /.*/` in `next.config.mjs` keeps metadata in `<head>` for every client.
 - Party order: backend `rankScore` (0-100 = our ₪ per ticket x buy likelihood, from
   `promo.rank_parties`; the owner sets per-party commission in the admin's `/ranking`) via
   `sortRankedWithinNight` / `byRank` in `components/home/homeData.ts` — within a night only,
-  never out of date order; the home flyer wall is ordered by `byRank` alone. account1 parties
+  never out of date order; the home flyer wall is ordered by `byRank` alone. Parties with nothing to
+  buy (`isUnavailable`: sold out, or GoOut's sale not open) always go after the buyable ones. account1 parties
   still get the coupon (`isPromoted`), and lead when `rankScore` is missing.
 - Prices: read them only through `lib/price.ts` (`priceView` / `priceLabel` /
   `schemaPrice`). `ticketPrice` is the cheapest paid ticket; a free tier is a badge from
   `priceInfo`, and a bare `ticketPrice: 0` without `priceInfo` is *not* shown as free.
   Never `party.ticketPrice ? … : …` in a component.
 - Don't add social-proof numbers that aren't backed by real data.
-- Every new indexable route must be added to `src/app/sitemap.ts` and get breadcrumb + a
+- Every new indexable route must be added to `src/lib/sitemapPages.ts` (served as a sitemap index at
+  `/sitemap.xml` → `/sitemaps/{static,events,archive-YYYY-MM}.xml`; lastmod only where it is real) and get breadcrumb + a
   cross-links block (`ExploreMoreLinks` / `PageCrossLinks`).
 - Commits from the SEO run use the `seo-update:` prefix; keep using it for SEO-driven work
   so the roadmap's Update Log stays greppable.
