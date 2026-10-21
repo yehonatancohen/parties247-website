@@ -39,6 +39,15 @@ describe('sortRankedWithinNight', () => {
     expect(sorted.map((p) => p.id)).toEqual(['thu-high', 'thu-low', 'fri-top', 'thu-soldout']);
   });
 
+  it('puts a party whose sale is not open after the buyable ones of the same night', () => {
+    const closed = { salesState: 'closed', from: null, hasFree: false, freeLabel: null, onlyFree: false, verified: true } as Party['priceInfo'];
+    const sorted = sortRankedWithinNight([
+      party('abroad-closed', '2026-10-23T18:00:00', { rankScore: 100, priceInfo: closed }),
+      party('tlv', '2026-10-23T23:00:00', { rankScore: 5, ticketPrice: 80 }),
+    ]);
+    expect(sorted.map((p) => p.id)).toEqual(['tlv', 'abroad-closed']);
+  });
+
   it('keeps date order when the backend sent no rank', () => {
     const sorted = sortRankedWithinNight([party('b', '2026-10-15T23:00:00'), party('a', '2026-10-15T22:00:00')]);
     expect(sorted.map((p) => p.id)).toEqual(['a', 'b']);

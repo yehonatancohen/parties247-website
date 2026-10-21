@@ -10,7 +10,7 @@ import { heroFont } from './heroFont';
 import LaunchPartyCard from './LaunchPartyCard';
 import NightPicker, { NightPanel } from './NightPicker';
 import ShelfRow from './ShelfRow';
-import { buildShelves, byRank, sortForDisplay, sortRankedWithinNight } from './homeData';
+import { buildShelves, byRank, isUnavailable, sortForDisplay, sortRankedWithinNight } from './homeData';
 
 export interface HomeHoliday {
   slug: string;
@@ -38,7 +38,7 @@ const ChevronLink = ({ href, children, className = '' }: { href: string; childre
 
 const NIGHT_RANGES: { key: NightRange; label: string; linkLabel: string; href: string }[] = [
   { key: 'tonight', label: 'הלילה', linkLabel: 'לכל מסיבות הלילה', href: '/day/today' },
-  { key: 'tomorrow', label: 'מחר', linkLabel: 'לכל המסיבות הקרובות', href: '/all-parties' },
+  { key: 'tomorrow', label: 'מחר', linkLabel: 'לכל מסיבות מחר', href: '/day/tomorrow' },
   { key: 'weekend', label: 'סוף השבוע', linkLabel: 'לכל מסיבות סוף השבוע', href: '/day/weekend' },
   { key: 'week', label: 'השבוע', linkLabel: 'לכל המסיבות הקרובות', href: '/all-parties' },
 ];
@@ -54,7 +54,7 @@ export default function HomeLaunch({ parties, carousels, holiday }: HomeLaunchPr
   // then curated "hot" picks, then the soonest parties.
   const hotIds = new Set((allShelves[0]?.parties ?? []).map((p) => p.id));
   const wallParties = [...available]
-    .sort((a, b) => byRank(a, b) || Number(hotIds.has(b.id)) - Number(hotIds.has(a.id)))
+    .sort((a, b) => Number(isUnavailable(a)) - Number(isUnavailable(b)) || byRank(a, b) || Number(hotIds.has(b.id)) - Number(hotIds.has(a.id)))
     .slice(0, 32);
 
   // ── Night picker
@@ -82,7 +82,8 @@ export default function HomeLaunch({ parties, carousels, holiday }: HomeLaunchPr
         <div className={`${CONTAINER} mt-6 text-center text-[17px] sm:mt-10`}>
           <ChevronLink href={range.href}>
             {range.linkLabel}
-            {range.parties.length > MAX_NIGHT_CARDS ? ` (${range.parties.length})` : ''}
+            {/* The count is this tab's; only show it when the link lists the same parties. */}
+            {range.key !== 'week' && range.parties.length > MAX_NIGHT_CARDS ? ` (${range.parties.length})` : ''}
           </ChevronLink>
         </div>
       </div>
@@ -278,11 +279,10 @@ export default function HomeLaunch({ parties, carousels, holiday }: HomeLaunchPr
             { href: '/day/weekend', label: 'סוף שבוע' },
             { href: '/genre/techno-music', label: 'טכנו' },
             { href: '/genre/house-music', label: 'האוס' },
-            { href: '/genre/trance', label: 'טראנס' },
+            { href: '/genre/trance-music', label: 'טראנס' },
             { href: '/genre/mainstream-music', label: 'מיינסטרים' },
             { href: '/cities/tel-aviv', label: 'תל אביב' },
             { href: '/cities/haifa', label: 'חיפה' },
-            { href: '/cities/jerusalem', label: 'ירושלים' },
             { href: '/cities/eilat', label: 'אילת' },
           ].map((chip) => (
             <li key={chip.href}>
@@ -311,7 +311,7 @@ export default function HomeLaunch({ parties, carousels, holiday }: HomeLaunchPr
             <p>
               בקרו ב<Link href="/genre/techno-music" className="text-link hover:underline underline-offset-4">דף הטכנו</Link>, ב
               <Link href="/cities/tel-aviv" className="text-link hover:underline underline-offset-4">מדריך תל אביב</Link> או ב
-              <Link href="/audience/student-parties" className="text-link hover:underline underline-offset-4">מסיבות הסטודנטים</Link> כדי לתכנן את הלילה הבא שלכם.
+              <Link href="/day/weekend" className="text-link hover:underline underline-offset-4">מסיבות סוף השבוע</Link> כדי לתכנן את הלילה הבא שלכם.
             </p>
             <p>
               קיצורי הדרך בעמוד מחברים אתכם למסיבות היום, חמישי ושישי, ועמוד החיפוש מציג את כל הקטגוריות – כולל דפי מועדון ל-

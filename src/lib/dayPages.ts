@@ -1,5 +1,5 @@
 /**
- * Date windows for the `/day/[day]` pages ("today", "thursday", "friday", "weekend").
+ * Date windows for the `/day/[day]` pages ("today", "tomorrow", "thursday", "friday", "weekend").
  *
  * Everything here is calendar-date strings (YYYY-MM-DD) in Israel. "Today" must come
  * from `getIsraelDateString(new Date())`, never `new Date().toISOString()`: the server
@@ -8,10 +8,10 @@
  */
 import { addDays, parseWallClock, rangeNights, weekdayOf } from './nights';
 
-export type DayKey = 'today' | 'thursday' | 'friday' | 'weekend';
+export type DayKey = 'today' | 'tomorrow' | 'thursday' | 'friday' | 'weekend';
 
 export const isDayKey = (day: string): day is DayKey =>
-  day === 'today' || day === 'thursday' || day === 'friday' || day === 'weekend';
+  day === 'today' || day === 'tomorrow' || day === 'thursday' || day === 'friday' || day === 'weekend';
 
 /** The next occurrence of a weekday (0 = Sunday), counting today itself. */
 const nextWeekday = (todayYmd: string, weekday: number): string =>
@@ -22,6 +22,10 @@ export function dayRange(day: DayKey, todayYmd: string): [string, string] {
   switch (day) {
     case 'today':
       return [todayYmd, todayYmd];
+    case 'tomorrow': {
+      const d = addDays(todayYmd, 1);
+      return [d, d];
+    }
     case 'thursday': {
       const d = nextWeekday(todayYmd, 4);
       return [d, d];

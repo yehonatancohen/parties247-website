@@ -5,24 +5,16 @@ export interface PageLinkOption {
   description?: string;
 }
 
+// Linked from every page that renders PageCrossLinks — so only pages that have
+// parties. /audience/student-parties and /audience/soldier-parties are left out:
+// no party is tagged for them, so they are empty and noindex (see their config in
+// app/audience/[audience]/page.tsx); add them back once the tagging fills them.
 export const pageLinkOptions: PageLinkOption[] = [
-  {
-    label: 'מסיבות סטודנטים',
-    path: '/audience/student-parties',
-    tag: 'סטודנטים',
-    description: 'אירועים עם הנחות סטודנט ואווירה קמפוסית.',
-  },
   {
     label: 'מסיבות נוער',
     path: '/audience/teenage-parties',
     tag: 'נוער',
     description: 'מסיבות מותאמות לגילאי נוער עם פיקוח בטיחותי.',
-  },
-  {
-    label: 'מסיבות חיילים',
-    path: '/audience/soldier-parties',
-    tag: 'חיילים',
-    description: 'ליינים שמקבלים חוגר ומציעים כניסה מוזלת.',
   },
   {
     label: 'מסיבות 24+',

@@ -1,18 +1,15 @@
 import React from 'react';
 import Link from 'next/link';
 import { SOCIAL_LINKS } from '../data/constants';
+import { CITIES_WITH_INVENTORY, CITY_HEBREW_NAMES } from '@/lib/internalLinks';
 import { InstagramIcon, TikTokIcon, WhatsAppIcon } from './Icons';
 
 const COLUMNS: { title: string; links: { href: string; label: string }[] }[] = [
   {
     title: 'מסיבות לפי עיר',
-    links: [
-      { href: '/cities/tel-aviv', label: 'מסיבות בתל אביב' },
-      { href: '/cities/haifa', label: 'מסיבות בחיפה' },
-      { href: '/cities/jerusalem', label: 'מסיבות בירושלים' },
-      { href: '/cities/eilat', label: 'מסיבות באילת' },
-      { href: '/cities/beer-sheva', label: 'מסיבות בבאר שבע' },
-    ],
+    // Only cities whose page has real inventory: the others render "no parties
+    // found" (noindex), and this footer is on every page.
+    links: CITIES_WITH_INVENTORY.map((slug) => ({ href: `/cities/${slug}`, label: `מסיבות ב${CITY_HEBREW_NAMES[slug]}` })),
   },
   {
     title: 'מסיבות לפי סגנון',
