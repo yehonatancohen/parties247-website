@@ -9,6 +9,8 @@ interface DiscountCodeRevealProps {
   className?: string;
   /** When given, a successful copy fires the `coupon_copy` Clarity event for this party. */
   partyId?: string;
+  /** Show the code and its copy button right away (event page) instead of behind a reveal tap. */
+  startRevealed?: boolean;
 }
 
 const DiscountCodeReveal: React.FC<DiscountCodeRevealProps> = ({
@@ -16,8 +18,9 @@ const DiscountCodeReveal: React.FC<DiscountCodeRevealProps> = ({
   variant = 'compact',
   className,
   partyId,
+  startRevealed = false,
 }) => {
-  const [revealed, setRevealed] = useState(false);
+  const [revealed, setRevealed] = useState(startRevealed);
   const [copied, setCopied] = useState(false);
 
   const containerClassName = className ? `${className}` : undefined;

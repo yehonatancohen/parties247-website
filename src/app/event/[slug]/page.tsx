@@ -19,6 +19,7 @@ import WhatsappNudge from "@/components/WhatsappNudge";
 import { BASE_URL, LAST_TICKETS_TAG, isCouponEligible } from "@/data/constants";
 import { resolveCitySlug, resolveAudienceSlug, CITY_HEBREW_NAMES, AUDIENCE_HE_LABEL } from "@/lib/internalLinks";
 import { toIsraelISO } from "@/lib/dates";
+import { eventMetaDescription, eventMetaTitle, eventSummary, googleCalendarUrl, shareUrl } from "@/lib/eventMeta";
 import { priceView, priceLabel, schemaPrice, SALES_CLOSED_LABEL } from "@/lib/price";
 import { formatLongDate, formatTime } from "@/lib/nights";
 import { venueOf } from "@/components/home/homeData";
@@ -120,24 +121,7 @@ async function fetchPartyData(slug: string) {
 
 // Clarity session recordings (2026-08-02, 5 dead clicks in one session) show users
 // repeatedly tapping the date/time chip expecting it to do something — it was a plain
-// non-interactive div. Turning it into a real "add to calendar" link gives the tap real
-// utility instead of leaving it dead.
-function toGCalUTC(d: Date): string {
-  return d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-}
-
-function buildGoogleCalendarUrl(party: Party, plainDescription: string): string {
-  const start = new Date(party.date);
-  const end = new Date(start.getTime() + 4 * 60 * 60 * 1000);
-  const params = new URLSearchParams({
-    action: 'TEMPLATE',
-    text: party.name,
-    dates: `${toGCalUTC(start)}/${toGCalUTC(end)}`,
-    details: plainDescription.substring(0, 200),
-    location: party.location.address || party.location.name,
-  });
-  return `https://calendar.google.com/calendar/render?${params.toString()}`;
-}
+// non-interactive div. It is a real "add to calendar" link now (`googleCalendarUrl`).
 
 // Same pattern as the date/time chip above: Clarity session recording (2026-08-06,
 // mess-jerusalem event page) showed 4 dead clicks in ~2s on this chip before the user
@@ -168,11 +152,9 @@ export async function generateMetadata(
   const ogImage = getWhatsappOgImage(party.imageUrl);
   const plainDescription = cleanPartyDescription(party.description, 'strip').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 
-  const eventDate = new Date(party.date);
-  const heDate = new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'long', timeZone: 'Asia/Jerusalem' }).format(eventDate);
-  const heCity = party.location.name;
-  const titleStr = `${party.name} - ${heCity}, ${heDate}`;
-  const descStr = plainDescription.substring(0, 160) || `${party.name} ב${heCity}. קנו כרטיסים לאירוע ב-Parties 24/7.`;
+  const titleStr = eventMetaTitle(party);
+  const descStr = eventMetaDescription(party, plainDescription);
+  const summary = eventSummary(party);
 
   return {
     title: titleStr,
@@ -185,7 +167,8 @@ export async function generateMetadata(
     },
     openGraph: {
       title: party.name,
-      description: plainDescription.substring(0, 300),
+      description: summary,
+      url: `/event/${party.slug}`,
       images: ogImage ? [{ url: ogImage, width: 1200, height: 630 }] : [{ url: BRAND_LOGO_URL }],
       type: "website",
       locale: "he_IL",
@@ -193,7 +176,7 @@ export async function generateMetadata(
     twitter: {
       card: "summary_large_image",
       title: party.name,
-      description: plainDescription.substring(0, 160),
+      description: summary,
       images: ogImage ? [ogImage] : [BRAND_LOGO_URL],
     },
   };
@@ -239,9 +222,11 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
     ? `← עוד מסיבות ב${CITY_HEBREW_NAMES[backCitySlug] ?? ''}`.trim()
     : "← חזרה למסיבות";
   const audienceSlug = resolveAudienceSlug({ age: party.age, tags: party.tags });
-  const partyPageUrl = `${BASE_URL}/event/${party.slug}`;
-  const whatsappMessage = encodeURIComponent(`היי, אשמח לשמור כרטיסים ל"${party.name}" ב-${formattedDate}. ${partyPageUrl}`);
+  // The one WhatsApp share: Hebrew, to our own page (not GoOut), UTM-tagged so
+  // shared visits show up in analytics.
+  const whatsappMessage = encodeURIComponent(`בא לך לבוא איתי ל"${party.name}"? ${formattedDate} ${shareUrl(party.slug, BASE_URL, 'whatsapp')}`);
   const whatsappHref = `https://wa.me/?text=${whatsappMessage}`;
+  const summary = eventSummary(party);
   const showDiscountCode = !unlisted && isCouponEligible(party.referralCode);
 
   const plainDescriptionForLd = cleanPartyDescription(party.description, 'strip').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
@@ -381,7 +366,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
                 dead clicks on the old non-interactive date and location text. */}
             <div className="mt-6 divide-y divide-hairline border-y border-hairline" dir="rtl">
               <a
-                href={buildGoogleCalendarUrl(party, plainDescriptionForLd)}
+                href={googleCalendarUrl(party, plainDescriptionForLd)}
                 target="_blank"
                 rel="noopener noreferrer"
                 title="הוסיפו ליומן Google"
@@ -461,13 +446,13 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
               )}
 
               <div className="mt-6 flex items-center justify-between border-t border-hairline pt-5">
-                <ShareButtons partyName={party.name} shareUrl={unlisted ? partyPageUrl : referralUrl} />
+                <ShareButtons partyName={party.name} shareUrl={shareUrl(party.slug, BASE_URL, 'share_button')} />
               </div>
             </div>
 
             {showDiscountCode && (
               <div className="mt-6">
-                <DiscountCodeReveal variant="expanded" partyId={party.id} />
+                <DiscountCodeReveal variant="expanded" partyId={party.id} startRevealed />
               </div>
             )}
           </div>
@@ -475,15 +460,16 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
 
         {/* ═══ Details ═══ */}
         <div className="mx-auto mt-16 max-w-[860px] space-y-4 sm:mt-24">
-          {party.description && (
-            <section className={tile}>
+          <section className={tile}>
               <h2 className="mb-4 text-[24px] font-bold">על האירוע</h2>
+              <p className="mb-4 text-[17px] font-medium leading-[1.6] text-ink">{summary}</p>
+              {party.description && (
               <div
                 className="text-[17px] leading-[1.75] text-ink-2 [&_h2]:mb-3 [&_h2]:mt-6 [&_h2]:text-[21px] [&_h2]:font-bold [&_h2]:text-ink [&_h2:first-child]:mt-0 [&_h3]:mb-2 [&_h3]:mt-4 [&_h3]:text-[19px] [&_h3]:font-bold [&_h3]:text-ink [&_h3:first-child]:mt-0 [&_p]:mb-3 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ul]:list-none [&_ul]:space-y-1.5 [&_li]:font-medium [&_li]:text-ink"
                 dangerouslySetInnerHTML={{ __html: cleanPartyDescription(party.description, party.soldOut || unlisted ? 'strip' : 'purchase-link') }}
               />
-            </section>
-          )}
+              )}
+          </section>
 
           <section className="overflow-hidden rounded-[28px] bg-tile">
             <h2 className="p-6 pb-4 text-[24px] font-bold sm:px-8">מיקום על המפה</h2>
