@@ -67,7 +67,7 @@ export default function AccessibilityPage() {
             <ul className="space-y-1 text-sm">
               <li><strong>שם:</strong> יהונתן כהן</li>
               <li><strong>דוא"ל:</strong> <a href="mailto:yoncohenyon@gmail.com" className="text-jungle-accent hover:underline">yoncohenyon@gmail.com</a></li>
-              <li><strong>טלפון/וואטסאפ:</strong> 0586181898</li>
+              <li><strong>טלפון/וואטסאפ:</strong> 0529488077</li>
             </ul>
           </div>
 
