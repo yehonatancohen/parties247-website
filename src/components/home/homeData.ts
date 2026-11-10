@@ -106,6 +106,14 @@ export function sortRankedWithinNight(parties: Party[]): Party[] {
   );
 }
 
+/**
+ * Order of a shelf's parties. Carousels the owner curated by hand (manualOrder)
+ * keep their saved partyIds order; all others are shown by date.
+ */
+export function orderShelfParties(carousel: Pick<Carousel, 'manualOrder'>, parties: Party[]): Party[] {
+  return carousel.manualOrder ? parties : sortForDisplay(parties);
+}
+
 export interface HomeShelf {
   id: string;
   title: string;
@@ -133,7 +141,7 @@ export function buildShelves(carousels: Carousel[], parties: Party[]): HomeShelf
         id: carousel.id,
         title: cleanTitle(carousel.title),
         href,
-        parties: sortForDisplay(shelfParties),
+        parties: orderShelfParties(carousel, shelfParties),
       };
     })
     .filter((shelf) => shelf.parties.length > 0);

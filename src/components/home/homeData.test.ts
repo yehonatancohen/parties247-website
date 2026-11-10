@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { byRank, cleanTitle, sortRankedWithinNight, venueOf } from './homeData';
+import { byRank, cleanTitle, orderShelfParties, sortRankedWithinNight, venueOf } from './homeData';
 import { Party } from '@/data/types';
 
 const at = (location: string) => ({ location } as unknown as Party);
@@ -55,5 +55,16 @@ describe('sortRankedWithinNight', () => {
 
   it('byRank puts a ranked party before an unranked one', () => {
     expect(byRank(party('x', '2026-10-15', { rankScore: 0 }), party('y', '2026-10-15'))).toBeLessThan(0);
+  });
+});
+
+describe('orderShelfParties', () => {
+  const a = { id: 'a', date: '2026-12-05T22:00:00' } as unknown as Party;
+  const b = { id: 'b', date: '2026-12-01T22:00:00' } as unknown as Party;
+  it('sorts by date by default', () => {
+    expect(orderShelfParties({}, [a, b]).map((p) => p.id)).toEqual(['b', 'a']);
+  });
+  it('keeps saved order when manualOrder is set', () => {
+    expect(orderShelfParties({ manualOrder: true }, [a, b]).map((p) => p.id)).toEqual(['a', 'b']);
   });
 });

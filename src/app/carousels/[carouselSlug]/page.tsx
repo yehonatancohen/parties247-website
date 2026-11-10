@@ -2,6 +2,7 @@ import React from 'react';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Metadata } from 'next';
+import { Party } from '@/data/types';
 import PartyGrid from '@/components/PartyGrid'; // Ensure this path is correct
 import { BASE_URL } from '@/data/constants';
 import { findCarouselBySlug, createCarouselSlug } from '@/lib/carousels';
@@ -26,9 +27,11 @@ async function getCarouselData(slug: string) {
 
     if (!carousel) return null;
 
-    const carouselParties = parties.filter(party => 
-      carousel.partyIds.includes(party.id)
-    );
+    const inCarousel = parties.filter(party => carousel.partyIds.includes(party.id));
+    // Hand-ordered carousels keep their saved order; the rest are ranked by the grid.
+    const carouselParties = carousel.manualOrder
+      ? carousel.partyIds.map(id => inCarousel.find(p => p.id === id)).filter((p): p is Party => Boolean(p))
+      : inCarousel;
 
     return { carousel, carouselParties };
   } catch (error) {
@@ -146,7 +149,7 @@ export default async function CarouselPage({ params }: Props) {
           If PartyGrid uses Next/Image, images will lazy load on the client.
           The text and structure are already here for SEO.
         */}
-        <PartyGrid parties={carouselParties} showFilters={false} showSearch={false} />
+        <PartyGrid parties={carouselParties} showFilters={false} showSearch={false} keepOrder={Boolean(carousel.manualOrder)} />
       </div>
     </>
   );

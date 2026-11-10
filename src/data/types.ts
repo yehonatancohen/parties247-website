@@ -72,6 +72,8 @@ export interface Carousel {
   title: string;
   partyIds: string[];
   order: number;
+  /** Admin-curated: show partyIds in saved order instead of by date. */
+  manualOrder?: boolean;
 }
 
 export interface PartyProviderInitialState {
