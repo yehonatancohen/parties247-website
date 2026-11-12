@@ -43,7 +43,7 @@ async function getData() {
 export async function generateMetadata(): Promise<Metadata> {
   const { year } = getHolidayWindow(DEF);
   return {
-    title: `מסיבות סילבסטר ${year} | לוח מסיבות ראש השנה האזרחית - Parties24/7`,
+    title: `מסיבות סילבסטר ${year} | לוח מסיבות ראש השנה האזרחית`,
     description: `כל מסיבות הסילבסטר ${year} במקום אחד! המסיבות הגדולות של ליל 31 בדצמבר בתל אביב ובכל הארץ. כרטיסים, מחירים ועדכונים בזמן אמת.`,
     keywords: ['מסיבות סילבסטר', `סילבסטר ${year}`, 'מסיבת ראש השנה האזרחית', 'ניו איירס פארטי', 'מסיבות 31.12'],
     alternates: { canonical: '/sylvester' },

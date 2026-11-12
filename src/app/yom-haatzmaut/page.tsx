@@ -43,7 +43,7 @@ async function getData() {
 export async function generateMetadata(): Promise<Metadata> {
   const { year } = getHolidayWindow(DEF);
   return {
-    title: `מסיבות יום העצמאות ${year} | לוח האירועים המלא - Parties24/7`,
+    title: `מסיבות יום העצמאות ${year} | לוח האירועים המלא`,
     description: `כל מסיבות יום העצמאות ${year} במקום אחד! חגיגות רחוב, פסטיבלים ומסיבות מועדון לכבוד יום העצמאות בתל אביב ובכל הארץ. כרטיסים ועדכונים בזמן אמת.`,
     keywords: ['מסיבות יום העצמאות', `יום העצמאות ${year}`, 'חגיגות יום העצמאות', 'מסיבות יום העצמאות תל אביב'],
     alternates: { canonical: '/yom-haatzmaut' },

@@ -29,18 +29,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     if (!res.ok) {
       return {
-        title: `${DEFAULT_TITLE} | ${SITE_NAME}`,
+        title: DEFAULT_TITLE,
         description: DEFAULT_DESCRIPTION,
       };
     }
 
     const data = await res.json();
 
-    const pageTitle = data.h1 ? `${data.h1} | ${SITE_NAME}` : `${DEFAULT_TITLE} | ${SITE_NAME}`;
+    const headTitle = data.h1 || DEFAULT_TITLE; // the root layout template appends " | Parties 24/7"
+    const pageTitle = `${headTitle} | ${SITE_NAME}`;
     const pageDescription = DEFAULT_DESCRIPTION;
 
     return {
-      title: pageTitle,
+      title: headTitle,
       description: pageDescription,
       openGraph: {
         title: pageTitle,
@@ -53,7 +54,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   } catch (error) {
     return {
-      title: `${DEFAULT_TITLE} | ${SITE_NAME}`,
+      title: DEFAULT_TITLE,
       description: DEFAULT_DESCRIPTION,
     };
   }

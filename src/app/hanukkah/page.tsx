@@ -43,8 +43,8 @@ async function getData() {
 export async function generateMetadata(): Promise<Metadata> {
   const { year } = getHolidayWindow(DEF);
   return {
-    title: `מסיבות חנוכה ${year} | לוח המסיבות לחופשת החנוכה - Parties24/7`,
-    description: `כל מסיבות חנוכה ${year} במקום אחד! פסטיבלים, מסיבות סטודנטים ואירועי מועדון לאורך כל שמונת ימי החג. כרטיסים, מחירים ועדכונים בזמן אמת.`,
+    title: `מסיבות חנוכה ${year} | כל המסיבות בחופשת החנוכה`,
+    description: `מחפשים מסיבת חנוכה? כל מסיבות חנוכה ${year} במקום אחד: פסטיבלים, מסיבות סטודנטים ואירועי מועדון לאורך כל שמונת ימי החג, עם מחירי כרטיסים עדכניים וקישור ישיר לרכישה.`,
     keywords: ['מסיבות חנוכה', `חנוכה ${year}`, 'מסיבות חופשת חנוכה', 'מסיבות נוער חנוכה', 'פסטיבלים חנוכה'],
     alternates: { canonical: '/hanukkah' },
     openGraph: {

@@ -48,7 +48,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const weekday = night.toLocaleDateString('he-IL', { weekday: 'long', timeZone: 'UTC' });
   const dayMonth = night.toLocaleDateString('he-IL', { day: 'numeric', month: 'long', timeZone: 'UTC' });
   return {
-    title: `מסיבות האלווין ${year} | Halloween Parties - Parties24/7`,
+    title: `מסיבות האלווין ${year} | Halloween Parties`,
     description: `האלווין ${year} (הלוואין) חל ב${weekday}, ${dayMonth}. כל מסיבות האלווין במקום אחד: נשפי תחפושות, רייבים ומסיבות טכנו תמטיות בתל אביב ובכל הארץ, עם כרטיסים ועדכונים בזמן אמת.`,
     keywords: ['מסיבות האלווין', `האלווין ${year}`, `הלוואין ${year}`, 'Halloween party israel', 'מסיבות תחפושות', 'מסיבות האלווין תל אביב'],
     alternates: { canonical: '/halloween' },

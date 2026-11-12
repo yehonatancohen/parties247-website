@@ -5,6 +5,10 @@ import Link from "next/link";
 import Image from 'next/image';
 import { articles } from "@/data/articles";
 import { BASE_URL } from "@/data/constants";
+import RelatedPartyCard from "@/components/RelatedPartyCard";
+import { getParties } from "@/services/api";
+import { ARTICLE_PARTY_TOPICS, pickArticleParties } from "@/lib/articleParties";
+import type { Party } from "@/data/types";
 
 // Inline formatting for article body text: **bold** and [label](/href) links.
 // (Previously markdown links rendered as literal "[label](/href)" text — the
@@ -101,6 +105,18 @@ export default async function ArticlePage({
 
   if (!article) notFound();
 
+  // Guides end in parties you can buy, not a dead end (seo-update 2026-11-12).
+  // A failed feed just hides the block; the article itself never depends on it.
+  const partyTopic = ARTICLE_PARTY_TOPICS[article.slug];
+  let topicParties: Party[] = [];
+  if (partyTopic) {
+    try {
+      topicParties = pickArticleParties(await getParties(), partyTopic);
+    } catch (error) {
+      console.error("Failed to load parties for article", error);
+    }
+  }
+
   const articleJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -150,6 +166,24 @@ export default async function ArticlePage({
       <article className="space-y-4 rounded-[22px] border border-hairline bg-tile p-6 shadow">
         {renderContent(article.content || "")}
       </article>
+
+      {partyTopic && topicParties.length > 0 && (
+        <section aria-labelledby="article-parties" className="pt-4">
+          <h2 id="article-parties" className="mb-6 text-center text-[24px] font-bold text-ink sm:text-[32px]">
+            {partyTopic.heading}
+          </h2>
+          <div className="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-5 md:grid-cols-4">
+            {topicParties.map((party) => (
+              <RelatedPartyCard key={party.id} party={party} />
+            ))}
+          </div>
+          <div className="mt-6 text-center">
+            <Link href={partyTopic.moreHref} className="text-link font-semibold hover:underline">
+              {partyTopic.moreLabel}
+            </Link>
+          </div>
+        </section>
+      )}
 
       <div className="text-center">
         <Link

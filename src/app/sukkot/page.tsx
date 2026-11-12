@@ -43,7 +43,7 @@ async function getData() {
 export async function generateMetadata(): Promise<Metadata> {
   const { year } = getHolidayWindow(DEF);
   return {
-    title: `מסיבות סוכות ${year} | לוח המסיבות והפסטיבלים לחול המועד - Parties24/7`,
+    title: `מסיבות סוכות ${year} | לוח המסיבות והפסטיבלים לחול המועד`,
     description: `מסיבות סוכות ${year}: לוח מלא של פסטיבלים רב-יומיים, מסיבות טבע, רייבים ואירועי open air בחול המועד – תל אביב, אילת, הכנרת והמדבר. מחירי כרטיסים עדכניים וקישור ישיר לרכישה, לפני שהכרטיסים נגמרים.`,
     keywords: ['מסיבות סוכות', `מסיבות סוכות ${year}`, 'מסיבות חול המועד סוכות', 'פסטיבלים סוכות', `סוכות ${year}`, 'מסיבות טבע סוכות', 'רייבים סוכות'],
     alternates: { canonical: '/sukkot' },

@@ -43,7 +43,7 @@ async function getData() {
 export async function generateMetadata(): Promise<Metadata> {
   const { year } = getHolidayWindow(DEF);
   return {
-    title: `מסיבות פורים ${year} | לוח המסיבות והפסטיבלים המלא - Parties24/7`,
+    title: `מסיבות פורים ${year} | לוח המסיבות והפסטיבלים המלא`,
     description: `כל מסיבות פורים ${year} במקום אחד! רשימת המסיבות, נשפי התחפושות והפסטיבלים הכי חמים של פורים בתל אביב ובכל הארץ. כרטיסים, הנחות ועדכונים.`,
     keywords: ['מסיבות פורים', `פורים ${year}`, 'מסיבות פורים תל אביב', 'פסטיבלים פורים', 'כרטיסים למסיבות פורים'],
     alternates: { canonical: '/purim' },
