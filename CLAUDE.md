@@ -83,6 +83,10 @@ verification of SEO output: `curl -s localhost:3000/event/<slug> | grep -o '"sta
 - Every new indexable route must be added to `src/lib/sitemapPages.ts` (served as a sitemap index at
   `/sitemap.xml` → `/sitemaps/{static,events,archive-YYYY-MM}.xml`; lastmod only where it is real) and get breadcrumb + a
   cross-links block (`ExploreMoreLinks` / `PageCrossLinks`).
+- IndexNow (Bing/Yandex fast recrawl): the key file is `public/3fa5ac6c61880a6376d29e01f6e06bff.txt`
+  — don't delete or rename it. Event pages are pinged by the backend automatically. After a deploy
+  that changes other pages (landing pages, articles, layout), once it is live on Vercel, run
+  `npm run indexnow -- <paths...>` (or `-- --days=2` for sitemap URLs with a recent lastmod).
 - Commits from the SEO run use the `seo-update:` prefix; keep using it for SEO-driven work
   so the roadmap's Update Log stays greppable.
 - The admin dashboard was moved out of this repo on purpose (analytics pollution) — don't
